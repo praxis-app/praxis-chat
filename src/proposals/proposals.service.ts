@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { deleteImageFile } from '../images/images.utils';
@@ -13,14 +13,17 @@ import {
 import { ProposalAction } from './models/proposal-action.entity';
 import { ProposalConfig } from './models/proposal-config.entity';
 import { Proposal } from './models/proposal.entity';
+import { ProposalActionType } from './proposal.types';
 
 interface CreateProposalReq {
   body: string;
   closingAt?: Date;
-  action: Partial<ProposalAction>;
+  action: Partial<ProposalAction> | ProposalActionType;
+  channelId: string;
 }
 
 const proposalRepository = dataSource.getRepository(Proposal);
+const voteRepository = dataSource.getRepository(Vote);
 const imageRepository = dataSource.getRepository(Image);
 const userRepository = dataSource.getRepository(User);
 
@@ -36,6 +39,67 @@ export const getProposals = (
   relations?: string[],
 ) => {
   return proposalRepository.find({ where, relations });
+};
+
+export const getChannelProposals = async (
+  channelId: string,
+  offset?: number,
+  limit?: number,
+  currentUserId?: string,
+) => {
+  const proposals = await proposalRepository.find({
+    where: { channelId },
+    relations: ['user', 'images', 'action'],
+    select: {
+      id: true,
+      body: true,
+      stage: true,
+      channelId: true,
+      user: {
+        id: true,
+        name: true,
+      },
+      images: {
+        id: true,
+        filename: true,
+        createdAt: true,
+      },
+      action: {
+        actionType: true,
+      },
+      createdAt: true,
+    },
+    order: { createdAt: 'DESC' },
+    skip: offset,
+    take: limit,
+  });
+
+  // Fetch the current user's votes for these proposals in one query
+  const proposalIds = proposals.map((p) => p.id);
+  const myVotes =
+    currentUserId && proposalIds.length
+      ? await voteRepository.find({
+          where: { proposalId: In(proposalIds), userId: currentUserId },
+        })
+      : [];
+  const proposalIdToMyVote = new Map(myVotes.map((v) => [v.proposalId, v]));
+
+  return proposals.map((proposal) => ({
+    id: proposal.id,
+    body: proposal.body,
+    stage: proposal.stage,
+    channelId: proposal.channelId,
+    user: proposal.user,
+    images: proposal.images.map((image) => ({
+      id: image.id,
+      isPlaceholder: !image.filename,
+      createdAt: image.createdAt,
+    })),
+    action: proposal.action?.actionType,
+    createdAt: proposal.createdAt,
+    myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
+    myVoteType: proposalIdToMyVote.get(proposal.id)?.voteType,
+  }));
 };
 
 // TODO: Account for instances with multiple servers / guilds
@@ -121,7 +185,7 @@ export const hasMajorityVote = (
 };
 
 export const createProposal = async (
-  { body, closingAt, action }: CreateProposalReq,
+  { body, closingAt, action, channelId }: CreateProposalReq,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);
@@ -142,14 +206,31 @@ export const createProposal = async (
     closingAt: closingAt || configClosingAt,
   };
 
+  const actionEntity: Partial<ProposalAction> =
+    typeof action === 'string' ? { actionType: action } : action;
+
   const proposal = await proposalRepository.save({
     body: sanitizedBody,
     config: proposalConfig,
     userId,
-    action,
+    action: actionEntity,
+    channelId,
   });
 
-  return proposal;
+  // Shape to match feed expectations
+  return {
+    id: proposal.id,
+    body: proposal.body,
+    stage: proposal.stage,
+    channelId: proposal.channelId,
+    images: [],
+    action: proposal.action?.actionType,
+    createdAt: proposal.createdAt,
+    user: await userRepository.findOne({
+      where: { id: userId },
+      select: { id: true, name: true },
+    }),
+  } as const;
 };
 
 export const ratifyProposal = async (proposalId: string) => {

@@ -91,6 +91,7 @@
   "proposals": {
     "labels": {
       "body": "Proposal",
+      "actionType": "Action type",
       "active": "Active",
       "closed": "Closed",
       "consensusProposal": "Consensus Proposal"
@@ -99,6 +100,7 @@
       "create": "Create a New Proposal"
     },
     "placeholders": {
+      "action": "Select an action",
       "body": "Enter your proposal details..."
     },
     "actions": {
@@ -111,6 +113,13 @@
     "descriptions": {
       "create": "Submit a proposal for this room to discuss and vote on.",
       "body": "Enter your proposal"
+    },
+    "actionTypes": {
+      "change-role": "Change role",
+      "change-settings": "Change settings",
+      "create-role": "Create role",
+      "plan-event": "Plan event",
+      "test": "Test"
     },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
@@ -183,7 +192,8 @@
     "errors": {
       "unsupportedFormat": "{{format}} images are not supported.",
       "imageTooLarge": "Image is too large. Maximum file size is 8MB.",
-      "tooManyImages": "You can upload a maximum of 5 images."
+      "tooManyImages": "You can upload a maximum of 5 images.",
+      "fileMissing": "Image file is missing."
     }
   },
 

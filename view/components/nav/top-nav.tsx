@@ -74,7 +74,11 @@ export const TopNav = ({
   return (
     <header className="flex h-[55px] items-center justify-between border-b border-[--color-border] px-2">
       <div className="mr-1 flex flex-1 items-center gap-2.5">
-        {isDesktop || bypassNavSheet ? renderBackBtn() : <NavSheet trigger={renderBackBtn()} />}
+        {isDesktop || bypassNavSheet ? (
+          renderBackBtn()
+        ) : (
+          <NavSheet trigger={renderBackBtn()} />
+        )}
 
         <div className="flex flex-1 items-center text-[1.05rem] font-medium select-none">
           {header}

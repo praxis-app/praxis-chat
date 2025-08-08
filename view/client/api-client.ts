@@ -1,4 +1,4 @@
-// TODO: Add routes for proposals and votes
+// API client for server endpoints
 
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
@@ -11,7 +11,7 @@ import {
 } from '../types/channel.types';
 import { Image } from '../types/image.types';
 import { CreateInviteReq, Invite } from '../types/invite.types';
-import { Message } from '../types/message.types';
+import { FeedItem, Message } from '../types/message.types';
 import {
   CreateRoleReq,
   Role,
@@ -103,6 +103,16 @@ class ApiClient {
     return this.executeRequest<{ channel: Channel }>('get', path);
   };
 
+  getGeneralChannelFeed = async (
+    offset: number,
+    limit = MESSAGES_PAGE_SIZE,
+  ) => {
+    const path = '/channels/general/feed';
+    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
+      params: { offset, limit },
+    });
+  };
+
   getChannelMessages = async (
     channelId: string,
     offset: number,
@@ -110,6 +120,17 @@ class ApiClient {
   ) => {
     const path = `/channels/${channelId}/messages`;
     return this.executeRequest<{ messages: Message[] }>('get', path, {
+      params: { offset, limit },
+    });
+  };
+
+  getChannelFeed = async (
+    channelId: string,
+    offset: number,
+    limit = MESSAGES_PAGE_SIZE,
+  ) => {
+    const path = `/channels/${channelId}/feed`;
+    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
       params: { offset, limit },
     });
   };
@@ -163,26 +184,35 @@ class ApiClient {
     });
   };
 
-  createVote = async (proposalId: string, data: CreateVoteReq) => {
-    const path = `/proposals/${proposalId}/votes`;
+  createVote = async (
+    channelId: string,
+    proposalId: string,
+    data: CreateVoteReq,
+  ) => {
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
     return this.executeRequest<{ vote: Vote }>('post', path, {
       data,
     });
   };
 
   updateVote = async (
+    channelId: string,
     proposalId: string,
     voteId: string,
     data: UpdateVoteReq,
   ) => {
-    const path = `/proposals/${proposalId}/votes/${voteId}`;
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
     return this.executeRequest<{ vote: Vote }>('put', path, {
       data,
     });
   };
 
-  deleteVote = async (proposalId: string, voteId: string) => {
-    const path = `/proposals/${proposalId}/votes/${voteId}`;
+  deleteVote = async (
+    channelId: string,
+    proposalId: string,
+    voteId: string,
+  ) => {
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
 

@@ -1,0 +1,16 @@
+## Auto Attached
+
+description: Rules for api-client.ts usage patterns
+globs:
+
+- view/\*_/_.{ts,tsx}
+  alwaysApply: false
+
+---
+
+- Use the `api` client for all network requests; avoid inlining `axios`.
+- Respect existing method signatures; extend `api-client.ts` when adding endpoints.
+- Fully leverage `@tanstack/react-query` for all data fetching and mutations.
+- Keep query keys accurate and scoped (e.g., ['messages', channelId], ['feed', channelId]).
+- Update react-query caches using the correct query type (`MessagesQuery` vs `FeedQuery`) and structures.
+- On mutations, optimistically update caches only when safe; otherwise, invalidate.

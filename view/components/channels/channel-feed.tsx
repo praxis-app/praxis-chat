@@ -4,7 +4,7 @@ import { useInView } from '@/hooks/use-in-view';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { debounce, throttle } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
-import { Message as MessageType } from '@/types/message.types';
+import { FeedItem } from '@/types/message.types';
 import {
   RefObject,
   UIEvent,
@@ -15,22 +15,25 @@ import {
 } from 'react';
 import { WelcomeMessage } from '../invites/welcome-message';
 import { Message } from '../messages/message';
+import { InlineProposal } from '../proposals/inline-proposal';
 
 const LOAD_MORE_THROTTLE_MS = 1500;
 const IN_VIEW_THRESHOLD = 50;
 
 interface Props {
-  messages: MessageType[];
+  channelId?: string;
+  feed: FeedItem[];
   feedBoxRef: RefObject<HTMLDivElement>;
-  onLoadMore: () => void;
   isLastPage: boolean;
+  onLoadMore: () => void;
 }
 
 export const ChannelFeed = ({
-  messages,
+  channelId,
+  feed,
   feedBoxRef,
-  onLoadMore,
   isLastPage,
+  onLoadMore,
 }: Props) => {
   const { isAppLoading } = useAppStore((state) => state);
   const { isAnon, isLoggedIn } = useAuthData();
@@ -97,9 +100,24 @@ export const ChannelFeed = ({
         <WelcomeMessage onDismiss={() => setShowWelcomeMessage(false)} />
       )}
 
-      {messages.map((message) => (
-        <Message key={message.id} message={message} />
-      ))}
+      {channelId &&
+        feed.map((item) => {
+          if (item.type === 'message') {
+            return (
+              <Message
+                key={`message-${item.message.id}`}
+                message={item.message}
+              />
+            );
+          }
+          return (
+            <InlineProposal
+              key={`proposal-${item.proposal.id}`}
+              proposal={item.proposal}
+              channelId={channelId}
+            />
+          );
+        })}
 
       {/* Bottom is top due to `column-reverse` */}
       <div ref={feedTopRef} className="pb-0.5" />

@@ -1,0 +1,12 @@
+## Auto Attached
+
+description: i18n rules for any user-facing strings
+globs:
+
+- view/\*_/_.{ts,tsx}
+  alwaysApply: false
+
+---
+
+- Never hardcode user-facing strings. Use `useTranslation()` and keys from `view/locales/en.json`.
+- Add new keys under the most specific namespace (e.g., `proposals.actionTypes.*`).

@@ -1,0 +1,16 @@
+## Always
+
+description: Prevent Cursor from committing or pushing to git
+globs:
+alwaysApply: true
+
+---
+
+- Do not execute any VCS operations that modify history or remote state.
+- Prohibited commands include (non-exhaustive):
+  - `git add`, `git commit`, `git push`, `git tag`, `git rebase`, `git merge`, `git cherry-pick`, `git reset --hard`
+  - `gh pr create`, `gh pr merge`, `gh release *`, `gh repo *`
+- When asked to commit or push, instead:
+  - Provide a proposed commit message and the list of changed files.
+  - Offer the exact commands for the user to run locally, but do not run them.
+- This restriction applies even if explicitly requested in chat.

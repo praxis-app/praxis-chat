@@ -2,7 +2,11 @@ import { Request, Response } from 'express';
 import * as votesService from './votes.service';
 
 export const createVote = async (req: Request, res: Response) => {
-  const vote = await votesService.createVote(req.body, res.locals.user.id);
+  const { proposalId } = req.params;
+  const vote = await votesService.createVote(
+    { ...req.body, proposalId },
+    res.locals.user.id,
+  );
   res.json({ vote });
 };
 

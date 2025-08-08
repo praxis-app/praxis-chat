@@ -1,10 +1,4 @@
-export const VOTE_TYPES = [
-  'agreement',
-  'disagreement',
-  'reservations',
-  'stand-aside',
-  'block',
-] as const;
+export const VOTE_TYPES = ['agree', 'disagree', 'abstain', 'block'] as const;
 
 export enum VotingTimeLimit {
   Unlimited = 0,
