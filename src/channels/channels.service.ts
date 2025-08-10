@@ -1,7 +1,7 @@
-// TODO: Add `getChannelFeed` that includes both messages and inline proposals
-
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
+import * as messagesService from '../messages/messages.service';
+import * as proposalsService from '../proposals/proposals.service';
 import { ChannelMember } from './models/channel-member.entity';
 import { Channel } from './models/channel.entity';
 
@@ -50,6 +50,48 @@ export const getGeneralChannel = async () => {
     return initializeGeneralChannel();
   }
   return generalChannel;
+};
+
+export const getChannelFeed = async (
+  channelId: string,
+  offset?: number,
+  limit?: number,
+  currentUserId?: string,
+) => {
+  const [messages, proposals] = await Promise.all([
+    messagesService.getMessages(channelId, offset, limit),
+    proposalsService.getChannelProposals(
+      channelId,
+      offset,
+      limit,
+      currentUserId,
+    ),
+  ]);
+
+  const shapedMessages = messages.map((message) => ({
+    ...message,
+    type: 'message',
+  }));
+
+  const shapedProposals = proposals.map((proposal) => ({
+    ...proposal,
+    type: 'proposal',
+  }));
+
+  const feed = [...shapedMessages, ...shapedProposals]
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
+
+  return feed;
+};
+
+export const getGeneralChannelFeed = async (
+  offset?: number,
+  limit?: number,
+  currentUserId?: string,
+) => {
+  const channel = await getGeneralChannel();
+  return getChannelFeed(channel.id, offset, limit, currentUserId);
 };
 
 export const isChannelMember = async (channelId: string, userId: string) => {

@@ -4,8 +4,9 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
-import { Channel } from '@/types/channel.types';
-import { Message, MessagesQuery } from '@/types/message.types';
+import { Channel, FeedItem, FeedQuery } from '@/types/channel.types';
+import { Message } from '@/types/message.types';
+import { Proposal } from '@/types/proposal.types';
 import { PubSubMessage } from '@/types/shared.types';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -17,6 +18,7 @@ import { ChannelTopNav } from './channel-top-nav';
 enum MessageType {
   MESSAGE = 'message',
   IMAGE = 'image',
+  PROPOSAL = 'proposal',
 }
 
 interface NewMessagePayload {
@@ -24,9 +26,14 @@ interface NewMessagePayload {
   message: Message;
 }
 
+interface NewProposalPayload {
+  type: MessageType.PROPOSAL;
+  proposal: Proposal;
+}
+
 interface ImageMessagePayload {
   type: MessageType.IMAGE;
-  isPlaceholder: false;
+  isPlaceholder: boolean;
   messageId: string;
   imageId: string;
 }
@@ -52,21 +59,18 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     enabled: isLoggedIn,
   });
 
-  const { data: messagesData, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['messages', resolvedChannelId],
+  const { data: feedData, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['feed', resolvedChannelId],
     queryFn: async ({ pageParam }) => {
-      const result = await api.getChannelMessages(
-        resolvedChannelId!,
-        pageParam,
-      );
-      const isLastPage = result.messages.length === 0;
-      if (isLastPage) {
+      const result = await api.getChannelFeed(resolvedChannelId!, pageParam);
+      const isLast = result.feed.length === 0;
+      if (isLast) {
         setIsLastPage(true);
       }
       return result;
     },
     getNextPageParam: (_lastPage, pages) => {
-      return pages.flatMap((page) => page.messages).length;
+      return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
     enabled: !!resolvedChannelId,
@@ -82,19 +86,23 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
 
       // Update cache with new message, images are placeholders
       if (body.type === MessageType.MESSAGE) {
-        queryClient.setQueryData<MessagesQuery>(
-          ['messages', resolvedChannelId],
+        const newFeedItem: FeedItem = {
+          ...body.message,
+          type: 'message',
+        };
+        queryClient.setQueryData<FeedQuery>(
+          ['feed', resolvedChannelId],
           (oldData) => {
             if (!oldData) {
               return {
-                pages: [{ messages: [body.message] }],
+                pages: [{ feed: [newFeedItem] }],
                 pageParams: [0],
               };
             }
             const pages = oldData.pages.map((page, index) => {
               if (index === 0) {
                 return {
-                  messages: [body.message, ...page.messages],
+                  feed: [newFeedItem, ...page.feed],
                 };
               }
               return page;
@@ -106,27 +114,29 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
 
       // Update cache with image status once uploaded
       if (body.type === MessageType.IMAGE) {
-        queryClient.setQueryData<MessagesQuery>(
-          ['messages', resolvedChannelId],
+        queryClient.setQueryData<FeedQuery>(
+          ['feed', resolvedChannelId],
           (oldData) => {
             if (!oldData) {
               return { pages: [], pageParams: [] };
             }
 
             const pages = oldData.pages.map((page) => {
-              const messages = page.messages.map((message) => {
-                if (message.id !== body.messageId || !message.images) {
-                  return message;
+              const feed = page.feed.map((item) => {
+                if (item.type !== 'message') {
+                  return item;
                 }
-                const images = message.images.map((image) => {
-                  if (image.id !== body.imageId) {
-                    return image;
-                  }
-                  return { ...image, isPlaceholder: false };
-                });
-                return { ...message, images };
+                if (item.id !== body.messageId || !item.images) {
+                  return item;
+                }
+                const images = item.images.map((image) =>
+                  image.id === body.imageId
+                    ? { ...image, isPlaceholder: false }
+                    : image,
+                );
+                return { ...item, images } as FeedItem;
               });
-              return { messages };
+              return { feed };
             });
 
             return { pages, pageParams: oldData.pageParams };
@@ -134,6 +144,46 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         );
       }
 
+      scrollToBottom();
+    },
+    enabled: !!meData && !!channel && !!resolvedChannelId,
+  });
+
+  useSubscription(`new-proposal-${channel?.id}-${meData?.user.id}`, {
+    onMessage: (event) => {
+      const { body }: PubSubMessage<NewProposalPayload> = JSON.parse(
+        event.data,
+      );
+      if (!body) {
+        return;
+      }
+      if (body.type === MessageType.PROPOSAL) {
+        const newFeedItem: FeedItem = {
+          ...(body.proposal as FeedItem & { type: 'proposal' }),
+          type: 'proposal',
+        };
+        queryClient.setQueryData<FeedQuery>(
+          ['feed', resolvedChannelId],
+          (oldData) => {
+            if (!oldData) {
+              return { pages: [{ feed: [newFeedItem] }], pageParams: [0] };
+            }
+            const pages = oldData.pages.map((page, index) => {
+              if (index === 0) {
+                const exists = page.feed.some(
+                  (fi) => fi.type === 'proposal' && fi.id === newFeedItem.id,
+                );
+                if (exists) {
+                  return page;
+                }
+                return { feed: [newFeedItem, ...page.feed] };
+              }
+              return page;
+            });
+            return { pages, pageParams: oldData.pageParams };
+          },
+        );
+      }
       scrollToBottom();
     },
     enabled: !!meData && !!channel && !!resolvedChannelId,
@@ -160,9 +210,10 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         <ChannelTopNav channel={channel} />
 
         <ChannelFeed
+          channel={channel}
           feedBoxRef={feedBoxRef}
           onLoadMore={fetchNextPage}
-          messages={messagesData?.pages.flatMap((page) => page.messages) ?? []}
+          feed={feedData?.pages.flatMap((page) => page.feed) ?? []}
           isLastPage={isLastPage}
         />
 

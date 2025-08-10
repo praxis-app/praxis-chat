@@ -1,8 +1,10 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
+import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { deleteImageFile } from '../images/images.utils';
 import { Image } from '../images/models/image.entity';
+import * as pubSubService from '../pub-sub/pub-sub.service';
 import { getServerConfig } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
@@ -18,9 +20,11 @@ interface CreateProposalReq {
   body: string;
   closingAt?: Date;
   action: Partial<ProposalAction>;
+  channelId: string;
 }
 
 const proposalRepository = dataSource.getRepository(Proposal);
+const voteRepository = dataSource.getRepository(Vote);
 const imageRepository = dataSource.getRepository(Image);
 const userRepository = dataSource.getRepository(User);
 
@@ -36,6 +40,67 @@ export const getProposals = (
   relations?: string[],
 ) => {
   return proposalRepository.find({ where, relations });
+};
+
+export const getChannelProposals = async (
+  channelId: string,
+  offset?: number,
+  limit?: number,
+  currentUserId?: string,
+) => {
+  const proposals = await proposalRepository.find({
+    where: { channelId },
+    relations: ['user', 'images', 'action'],
+    select: {
+      id: true,
+      body: true,
+      stage: true,
+      channelId: true,
+      user: {
+        id: true,
+        name: true,
+      },
+      images: {
+        id: true,
+        filename: true,
+        createdAt: true,
+      },
+      action: {
+        actionType: true,
+      },
+      createdAt: true,
+    },
+    order: { createdAt: 'DESC' },
+    skip: offset,
+    take: limit,
+  });
+
+  // Fetch the current user's votes for these proposals in one query
+  const proposalIds = proposals.map((p) => p.id);
+  const myVotes =
+    currentUserId && proposalIds.length
+      ? await voteRepository.find({
+          where: { proposalId: In(proposalIds), userId: currentUserId },
+        })
+      : [];
+  const proposalIdToMyVote = new Map(myVotes.map((v) => [v.proposalId, v]));
+
+  return proposals.map((proposal) => ({
+    id: proposal.id,
+    body: proposal.body,
+    stage: proposal.stage,
+    channelId: proposal.channelId,
+    user: proposal.user,
+    images: proposal.images.map((image) => ({
+      id: image.id,
+      isPlaceholder: !image.filename,
+      createdAt: image.createdAt,
+    })),
+    action: proposal.action?.actionType,
+    createdAt: proposal.createdAt,
+    myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
+    myVoteType: proposalIdToMyVote.get(proposal.id)?.voteType,
+  }));
 };
 
 // TODO: Account for instances with multiple servers / guilds
@@ -121,7 +186,7 @@ export const hasMajorityVote = (
 };
 
 export const createProposal = async (
-  { body, closingAt, action }: CreateProposalReq,
+  { body, closingAt, action, channelId }: CreateProposalReq,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);
@@ -145,11 +210,39 @@ export const createProposal = async (
   const proposal = await proposalRepository.save({
     body: sanitizedBody,
     config: proposalConfig,
-    userId,
     action,
+    channelId,
+    userId,
   });
 
-  return proposal;
+  // Shape to match feed expectations
+  const shapedProposal = {
+    id: proposal.id,
+    body: proposal.body,
+    stage: proposal.stage,
+    channelId: proposal.channelId,
+    images: [],
+    action: proposal.action?.actionType,
+    createdAt: proposal.createdAt,
+    user: await userRepository.findOne({
+      where: { id: userId },
+      select: { id: true, name: true },
+    }),
+  };
+
+  // Publish proposal to all other channel members for realtime feed updates
+  const channelMembers = await channelsService.getChannelMembers(channelId);
+  for (const member of channelMembers) {
+    if (member.userId === userId) {
+      continue;
+    }
+    await pubSubService.publish(getNewProposalKey(channelId, member.userId), {
+      type: 'proposal',
+      proposal: shapedProposal,
+    });
+  }
+
+  return shapedProposal;
 };
 
 export const ratifyProposal = async (proposalId: string) => {
@@ -166,4 +259,8 @@ export const deleteProposal = async (proposalId: string) => {
     }
   }
   return proposalRepository.delete(proposalId);
+};
+
+const getNewProposalKey = (channelId: string, userId: string) => {
+  return `new-proposal-${channelId}-${userId}`;
 };

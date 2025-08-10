@@ -61,14 +61,6 @@ export const getMessages = async (
   }));
 };
 
-export const getGeneralChannelMessages = async (
-  offset?: number,
-  limit?: number,
-) => {
-  const generalChannel = await channelsService.getGeneralChannel();
-  return getMessages(generalChannel.id, offset, limit);
-};
-
 export const createMessage = async (
   { body, imageCount, ...messageData }: CreateMessageReq,
   user: User,

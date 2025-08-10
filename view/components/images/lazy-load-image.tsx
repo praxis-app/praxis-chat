@@ -1,7 +1,8 @@
-import { ComponentProps, SyntheticEvent, useRef, useState } from 'react';
+import { Box } from '@/components/ui/box';
 import { useImageSrc } from '@/hooks/use-image-src';
 import { cn } from '@/lib/shared.utils';
-import { Box } from '@/components/ui/box';
+import { ComponentProps, SyntheticEvent, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends ComponentProps<'img'> {
   alt: string;
@@ -10,6 +11,7 @@ interface Props extends ComponentProps<'img'> {
   imageId?: string;
   src?: string;
   className?: string;
+  onError?: () => void;
 }
 
 export const LazyLoadImage = ({
@@ -20,11 +22,19 @@ export const LazyLoadImage = ({
   onLoad,
   src,
   className,
+  onError,
   ...imgProps
 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
-  const srcFromImageId = useImageSrc(imageId, ref, !isPlaceholder);
+  const srcFromImageId = useImageSrc({
+    enabled: !isPlaceholder,
+    imageId,
+    onError,
+    ref,
+  });
   const [loaded, setLoaded] = useState(!!srcFromImageId);
+  const [failed, setFailed] = useState(false);
+  const { t } = useTranslation();
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
     onLoad && onLoad(event);
@@ -38,16 +48,31 @@ export const LazyLoadImage = ({
     className,
   );
 
+  const resolvedSrc = src || srcFromImageId;
+  const elementType = isPlaceholder || !resolvedSrc || failed ? 'div' : 'img';
+  const showFileMissing = elementType === 'div' && !isPlaceholder;
+
   return (
-    <Box
-      ref={ref}
-      alt={alt}
-      as={isPlaceholder ? 'div' : 'img'}
-      loading={src ? 'lazy' : 'eager'}
-      onLoad={handleLoad}
-      src={src || srcFromImageId}
-      className={imageClassName}
-      {...imgProps}
-    />
+    <>
+      <Box
+        ref={ref}
+        alt={alt}
+        as={elementType}
+        loading={resolvedSrc ? 'lazy' : undefined}
+        onLoad={handleLoad}
+        onError={() => {
+          setFailed(true);
+          onError?.();
+        }}
+        src={resolvedSrc}
+        className={imageClassName}
+        {...imgProps}
+      />
+      {showFileMissing && (
+        <div className="text-muted-foreground text-sm">
+          {t('images.errors.fileMissing')}
+        </div>
+      )}
+    </>
   );
 };

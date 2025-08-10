@@ -16,8 +16,10 @@ interface Props {
 export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
   const queryClient = useQueryClient();
   const previouslyLoaded = queryClient.getQueryData(['image', image.id]);
+
   const [isLoaded, setIsLoaded] = useState(previouslyLoaded);
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
@@ -26,7 +28,7 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
     'w-full',
     isLoaded
       ? 'cursor-pointer h-auto'
-      : `cursor-default ${isDesktop ? 'h-[400px]' : 'h-[300px]'}`,
+      : `cursor-default ${isError ? 'h-2' : isDesktop ? 'h-[400px]' : 'h-[300px]'}`,
     className,
   );
 
@@ -55,6 +57,7 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
               alt={t('images.labels.attachedImage')}
               className={enlargedImageClassName}
               imageId={image.id}
+              onError={() => setIsError(true)}
             />
           )}
         </DialogContent>
@@ -63,10 +66,11 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
       <LazyLoadImage
         imageId={image.id}
         alt={t('images.labels.attachedImage')}
-        onLoad={handleLoad}
+        className={imageClassName}
         isPlaceholder={image.isPlaceholder}
         onClick={handleClick}
-        className={imageClassName}
+        onError={() => setIsError(true)}
+        onLoad={handleLoad}
       />
     </>
   );

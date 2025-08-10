@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import * as channelsService from './channels.service';
-import * as messagesService from '../messages/messages.service';
 
 export const getChannel = async (req: Request, res: Response) => {
   const channel = await channelsService.getChannel(req.params.channelId);
@@ -17,18 +16,30 @@ export const getGeneralChannel = async (_: Request, res: Response) => {
   res.json({ channel });
 };
 
-export const getGeneralChannelMessages = async (
-  req: Request,
-  res: Response,
-) => {
+export const getChannelFeed = async (req: Request, res: Response) => {
+  const { channelId } = req.params;
   const offset = req.query.offset ? Number(req.query.offset) : undefined;
   const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
-  const messages = await messagesService.getGeneralChannelMessages(
+  const feed = await channelsService.getChannelFeed(
+    channelId,
     offset,
     limit,
+    res.locals.user?.id,
   );
-  res.json({ messages });
+  res.json({ feed });
+};
+
+export const getGeneralChannelFeed = async (req: Request, res: Response) => {
+  const offset = req.query.offset ? Number(req.query.offset) : undefined;
+  const limit = req.query.limit ? Number(req.query.limit) : undefined;
+
+  const feed = await channelsService.getGeneralChannelFeed(
+    offset,
+    limit,
+    res.locals.user?.id,
+  );
+  res.json({ feed });
 };
 
 export const createChannel = async (req: Request, res: Response) => {

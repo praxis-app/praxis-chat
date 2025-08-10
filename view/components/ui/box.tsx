@@ -6,7 +6,7 @@ interface BoxProps extends ComponentProps<ElementType> {
   className?: string;
 }
 
-export const Box = React.forwardRef<any, BoxProps>(
+export const Box = React.forwardRef<HTMLElement, BoxProps>(
   ({ children, as: Component = 'div', ...props }, ref) => {
     return (
       <Component ref={ref} {...props}>

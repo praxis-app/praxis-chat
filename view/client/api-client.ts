@@ -1,5 +1,12 @@
-// TODO: Add routes for proposals and votes
+// API client for server endpoints
 
+import {
+  CreateProposalReq,
+  CreateVoteReq,
+  Proposal,
+  UpdateVoteReq,
+  Vote,
+} from '@/types/proposal.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
 import { LocalStorageKeys } from '../constants/shared.constants';
@@ -7,6 +14,7 @@ import { AuthRes, LoginReq, SignUpReq } from '../types/auth.types';
 import {
   Channel,
   CreateChannelReq,
+  FeedItem,
   UpdateChannelReq,
 } from '../types/channel.types';
 import { Image } from '../types/image.types';
@@ -18,13 +26,6 @@ import {
   UpdateRolePermissionsReq,
 } from '../types/role.types';
 import { CurrentUser, User } from '../types/user.types';
-import {
-  CreateProposalReq,
-  CreateVoteReq,
-  Proposal,
-  UpdateVoteReq,
-  Vote,
-} from '@/types/proposal.types';
 
 class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -103,13 +104,23 @@ class ApiClient {
     return this.executeRequest<{ channel: Channel }>('get', path);
   };
 
-  getChannelMessages = async (
+  getGeneralChannelFeed = async (
+    offset: number,
+    limit = MESSAGES_PAGE_SIZE,
+  ) => {
+    const path = '/channels/general/feed';
+    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
+      params: { offset, limit },
+    });
+  };
+
+  getChannelFeed = async (
     channelId: string,
     offset: number,
     limit = MESSAGES_PAGE_SIZE,
   ) => {
-    const path = `/channels/${channelId}/messages`;
-    return this.executeRequest<{ messages: Message[] }>('get', path, {
+    const path = `/channels/${channelId}/feed`;
+    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
       params: { offset, limit },
     });
   };
@@ -163,26 +174,35 @@ class ApiClient {
     });
   };
 
-  createVote = async (proposalId: string, data: CreateVoteReq) => {
-    const path = `/proposals/${proposalId}/votes`;
+  createVote = async (
+    channelId: string,
+    proposalId: string,
+    data: CreateVoteReq,
+  ) => {
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
     return this.executeRequest<{ vote: Vote }>('post', path, {
       data,
     });
   };
 
   updateVote = async (
+    channelId: string,
     proposalId: string,
     voteId: string,
     data: UpdateVoteReq,
   ) => {
-    const path = `/proposals/${proposalId}/votes/${voteId}`;
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
     return this.executeRequest<{ vote: Vote }>('put', path, {
       data,
     });
   };
 
-  deleteVote = async (proposalId: string, voteId: string) => {
-    const path = `/proposals/${proposalId}/votes/${voteId}`;
+  deleteVote = async (
+    channelId: string,
+    proposalId: string,
+    voteId: string,
+  ) => {
+    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
 
@@ -290,7 +310,11 @@ class ApiClient {
   private async executeRequest<T>(
     method: Method,
     path: string,
-    options?: { data?: any; params?: any; responseType?: any },
+    options?: {
+      data?: unknown;
+      params?: Record<string, unknown>;
+      responseType?: AxiosResponse['config']['responseType'];
+    },
   ): Promise<T> {
     try {
       const token = localStorage.getItem(LocalStorageKeys.AccessToken);

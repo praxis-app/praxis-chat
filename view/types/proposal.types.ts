@@ -21,13 +21,17 @@ export interface Proposal {
   action: ProposalActionType;
   images: Image[];
   channelId: string;
+  user?: { id: string; name: string };
+  createdAt: string;
+  myVoteId?: string;
+  myVoteType?: VoteType;
 }
 
 export interface Vote {
   id: string;
   proposalId: string;
   userId: string;
-  vote: VoteType;
+  voteType: VoteType;
 }
 
 export interface CreateProposalReq {
@@ -37,9 +41,9 @@ export interface CreateProposalReq {
 }
 
 export interface CreateVoteReq {
-  vote: Vote;
+  voteType: VoteType;
 }
 
 export interface UpdateVoteReq {
-  vote: Vote;
+  voteType: VoteType;
 }

@@ -54,11 +54,11 @@ vi.mock('../../users/user.entity', () => ({
 }));
 
 // Import the service after mocks
-import * as messagesService from '../messages.service';
 import * as channelsService from '../../channels/channels.service';
-import * as pubSubService from '../../pub-sub/pub-sub.service';
 import { sanitizeText } from '../../common/common.utils';
 import { dataSource } from '../../database/data-source';
+import * as pubSubService from '../../pub-sub/pub-sub.service';
+import * as messagesService from '../messages.service';
 
 // Mock data constants
 const mockMessage = {
@@ -152,35 +152,6 @@ describe('Messages Service', () => {
           createdAt: new Date('2023-01-01'),
         },
       ]);
-    });
-  });
-
-  describe('getGeneralChannelMessages', () => {
-    it('should fetch messages from the general channel', async () => {
-      const mockGeneralChannel = {
-        id: 'general-channel',
-        name: 'General',
-        description: null,
-        messages: [],
-        members: [],
-        createdAt: new Date('2023-01-01'),
-        updatedAt: new Date('2023-01-01'),
-      } as any;
-      vi.mocked(channelsService.getGeneralChannel).mockResolvedValue(
-        mockGeneralChannel,
-      );
-      mockMessageRepository.find.mockResolvedValue([]);
-
-      await messagesService.getGeneralChannelMessages(5, 10);
-
-      expect(channelsService.getGeneralChannel).toHaveBeenCalled();
-      expect(mockMessageRepository.find).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { channelId: 'general-channel' },
-          skip: 5,
-          take: 10,
-        }),
-      );
     });
   });
 

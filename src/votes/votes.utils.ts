@@ -10,13 +10,13 @@ interface SortedConsensusVotes {
 export const sortConsensusVotesByType = (votes: Vote[]) =>
   votes.reduce<SortedConsensusVotes>(
     (result, vote) => {
-      if (vote.voteType === 'agreement') {
+      if (vote.voteType === 'agree') {
         result.agreements.push(vote);
       }
-      if (vote.voteType === 'reservations') {
+      if (vote.voteType === 'disagree') {
         result.reservations.push(vote);
       }
-      if (vote.voteType === 'stand-aside') {
+      if (vote.voteType === 'abstain') {
         result.standAsides.push(vote);
       }
       if (vote.voteType === 'block') {
@@ -35,10 +35,10 @@ export const sortConsensusVotesByType = (votes: Vote[]) =>
 export const sortMajorityVotesByType = (votes: Vote[]) =>
   votes.reduce<{ agreements: Vote[]; disagreements: Vote[] }>(
     (result, vote) => {
-      if (vote.voteType === 'agreement') {
+      if (vote.voteType === 'agree') {
         result.agreements.push(vote);
       }
-      if (vote.voteType === 'disagreement') {
+      if (vote.voteType === 'disagree') {
         result.disagreements.push(vote);
       }
       return result;

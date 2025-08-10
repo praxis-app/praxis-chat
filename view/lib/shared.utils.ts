@@ -14,12 +14,13 @@ export interface Cancelable {
  *
  * Ref: https://github.com/mui/material-ui/blob/master/packages/mui-utils/src/debounce/debounce.ts
  */
-export const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait = 166,
-) => {
+export const debounce = <
+  TThis,
+  TArgs extends unknown[],
+  TReturn,
+>(func: (this: TThis, ...args: TArgs) => TReturn, wait = 166) => {
   let timeout: ReturnType<typeof setTimeout>;
-  function debounced(this: ThisParameterType<T>, ...args: Parameters<T>) {
+  function debounced(this: TThis, ...args: TArgs) {
     const later = () => {
       func.apply(this, args);
     };
@@ -31,22 +32,23 @@ export const debounce = <T extends (...args: any[]) => any>(
     clearTimeout(timeout);
   };
 
-  return debounced as T & Cancelable;
+  return debounced as ((this: TThis, ...args: TArgs) => TReturn) & Cancelable;
 };
 
-export const throttle = <T extends (...args: any[]) => any>(
-  func: T,
-  delay: number,
-) => {
+export const throttle = <
+  TThis,
+  TArgs extends unknown[],
+  TReturn,
+>(func: (this: TThis, ...args: TArgs) => TReturn, delay: number) => {
   let timeoutId: NodeJS.Timeout | null = null;
   let lastExecTime = 0;
 
-  return function (...args: Parameters<T>) {
+  return function (this: TThis, ...args: TArgs) {
     const currentTime = Date.now();
 
     if (currentTime - lastExecTime > delay) {
       // Execute immediately if enough time has passed
-      func(...args);
+      func.apply(this, args);
       lastExecTime = currentTime;
     } else {
       // Schedule execution for later
@@ -56,7 +58,7 @@ export const throttle = <T extends (...args: any[]) => any>(
 
       timeoutId = setTimeout(
         () => {
-          func(...args);
+          func.apply(this, args);
           lastExecTime = Date.now();
           timeoutId = null;
         },

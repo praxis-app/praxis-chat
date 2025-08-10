@@ -1,17 +1,5 @@
-// TODO: Convert from Matrix-JS-SDK to standard web app setup
-
-import { useMatrixClient } from '@/hooks/use-matrix-client';
 import { timeAgo } from '@/lib/time.utils';
-import { ProposalAnswer, ProposalVote } from '@/types/proposal.types';
-import {
-  M_POLL_RESPONSE,
-  M_POLL_START,
-  MatrixEvent,
-  PollResponseSubtype,
-  PollStartSubtype,
-  Room,
-} from 'matrix-js-sdk';
-import { useEffect, useState } from 'react';
+import { Proposal } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { FormattedText } from '../shared/formatted-text';
@@ -19,92 +7,21 @@ import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
-import { ProposalVoteButton } from './proposal-vote-button';
+import { ProposalVoteButtons } from './proposal-vote-buttons';
+import { Channel } from '@/types/channel.types';
 
 interface InlineProposalProps {
-  proposal: MatrixEvent;
-  room: Room;
+  proposal: Proposal;
+  channel: Channel;
 }
 
-const collectUserVotes = (
-  userResponses: ProposalVote[],
-  userId?: string,
-  selected?: string,
-) => {
-  const userVotes: Record<string, ProposalVote> = {};
-
-  for (const response of userResponses) {
-    const otherResponse = userVotes[response.sender];
-    if (!otherResponse || otherResponse.ts < response.ts) {
-      userVotes[response.sender] = response;
-    }
-  }
-
-  if (selected && userId) {
-    userVotes[userId] = {
-      sender: userId,
-      ts: Date.now(),
-      answers: [selected],
-    };
-  }
-
-  return userVotes;
-};
-
-export const InlineProposal = ({ proposal, room }: InlineProposalProps) => {
-  const [votes, setVotes] = useState<Record<string, ProposalVote>>({});
-
-  const matrixClient = useMatrixClient();
-  const currentUserId = matrixClient.getUserId();
-  const myVote = currentUserId ? votes[currentUserId] : undefined;
-
-  const { [M_POLL_START.name]: pollStart } = proposal.getContent();
-  const { answers } = pollStart as PollStartSubtype;
-  const { body } = pollStart.question;
-
-  const userId = proposal.getSender() ?? '';
-  const member = room?.getMember(userId);
-  const name = member?.name ?? userId;
-
-  const createdAt = proposal.getDate()?.toString() ?? '';
-  const formattedDate = timeAgo(createdAt);
-
+export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (Object.keys(votes).length) {
-      return;
-    }
-
-    const getResponses = async () => {
-      const poll = room.polls.get(proposal.getId()!);
-      const responses = await poll?.getResponses();
-      const relations = responses?.getRelations();
-      if (!relations) {
-        return;
-      }
-
-      const userVotes = relations.reduce<ProposalVote[]>((result, relation) => {
-        // Filter out redacted relations
-        if (relation.isRedacted()) {
-          return result;
-        }
-        const { [M_POLL_RESPONSE.name]: pollResponse } = relation.getContent();
-        const { answers } = pollResponse as PollResponseSubtype;
-
-        return result.concat({
-          sender: relation.getSender()!,
-          ts: relation.getTs(),
-          answers,
-        });
-      }, []);
-
-      const collectedVotes = collectUserVotes(userVotes);
-      setVotes(collectedVotes);
-    };
-
-    getResponses();
-  }, [proposal, room, votes]);
+  const { body, user, createdAt, id, myVoteId, myVoteType } = proposal;
+  const name = user?.name ?? '';
+  const userId = user?.id ?? '';
+  const formattedDate = timeAgo(createdAt ?? '');
 
   if (!body) {
     return null;
@@ -129,16 +46,12 @@ export const InlineProposal = ({ proposal, room }: InlineProposalProps) => {
           <FormattedText text={body} className="pt-1 pb-2" />
 
           <CardAction className="flex flex-wrap gap-2">
-            {answers.map((answer) => (
-              <ProposalVoteButton
-                key={answer.id}
-                answer={answer as ProposalAnswer}
-                myVote={myVote}
-                proposalId={proposal.getId()!}
-                roomId={room.roomId}
-                setVotes={setVotes}
-              />
-            ))}
+            <ProposalVoteButtons
+              proposalId={id}
+              channel={channel}
+              myVoteId={myVoteId}
+              myVoteType={myVoteType}
+            />
           </CardAction>
 
           <Separator className="my-1" />

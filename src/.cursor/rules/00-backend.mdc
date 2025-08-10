@@ -1,0 +1,16 @@
+## Auto Attached
+
+description: Rules for server code in /src
+globs:
+
+- src/\*_/_.ts
+  alwaysApply: false
+
+---
+
+- API routes live under `/api`; expose controllers and services per resource.
+- Always validate inputs at the controller/middleware level.
+- Return typed JSON shapes; avoid throwing raw errors to clients.
+- When serving files (e.g., images), check existence and return 404 if missing.
+- Use services for business logic; keep controllers thin.
+- Never log secrets or tokens.

@@ -32,7 +32,10 @@ const SavedImagePreview = ({
   savedImage: Image;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const src = useImageSrc(id, ref);
+  const src = useImageSrc({
+    imageId: id,
+    ref,
+  });
 
   return (
     <div ref={ref} className={cn(className)}>
