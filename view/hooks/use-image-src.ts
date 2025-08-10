@@ -37,7 +37,6 @@ export const useImageSrc = ({
     queryKey: ['image', imageId],
     queryFn: getImageSrc,
     enabled: enabled && !!imageId && viewed,
-    retry: false,
   });
 
   return data;
