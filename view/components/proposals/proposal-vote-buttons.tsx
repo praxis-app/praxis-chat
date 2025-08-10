@@ -77,12 +77,10 @@ export const ProposalVoteButtons = ({
         );
       };
 
-      const resolvedChannelId =
-        channel.name === GENERAL_CHANNEL_NAME
-          ? GENERAL_CHANNEL_NAME
-          : channel.id;
-
-      applyUpdate(['feed', resolvedChannelId]);
+      if (channel.name === GENERAL_CHANNEL_NAME) {
+        applyUpdate(['feed', GENERAL_CHANNEL_NAME]);
+      }
+      applyUpdate(['feed', channel.id]);
 
       toast(t('votes.prompts.voteCast'));
     },
