@@ -171,7 +171,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
             const pages = oldData.pages.map((page, index) => {
               if (index === 0) {
                 const exists = page.feed.some(
-                  (it) => it.type === 'proposal' && it.id === newFeedItem.id,
+                  (fi) => fi.type === 'proposal' && fi.id === newFeedItem.id,
                 );
                 if (exists) {
                   return page;

@@ -96,7 +96,7 @@ export const CreateProposalForm = ({
               return page;
             }
             const exists = page.feed.some(
-              (it) => it.type === 'proposal' && it.id === proposal.id,
+              (fi) => fi.type === 'proposal' && fi.id === proposal.id,
             );
             if (exists) {
               return page;
