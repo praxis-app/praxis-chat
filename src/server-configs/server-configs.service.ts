@@ -18,7 +18,19 @@ export const initializeServerConfig = async () => {
   return serverConfigRepository.save({});
 };
 
-export const updateServerConfig = async (data: any) => {
+export const updateServerConfig = async (
+  data: Partial<
+    Pick<
+      ServerConfig,
+      | 'decisionMakingModel'
+      | 'standAsidesLimit'
+      | 'reservationsLimit'
+      | 'ratificationThreshold'
+      | 'verificationThreshold'
+      | 'votingTimeLimit'
+    >
+  >,
+) => {
   const serverConfig = await getServerConfig();
   return serverConfigRepository.update(serverConfig.id, data);
 };

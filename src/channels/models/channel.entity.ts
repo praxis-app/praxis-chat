@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
+import { Proposal } from '../../proposals/models/proposal.entity';
 import { ChannelMember } from './channel-member.entity';
 
 @Entity()
@@ -27,6 +28,11 @@ export class Channel {
     cascade: true,
   })
   members: ChannelMember[];
+
+  @OneToMany(() => Proposal, (proposal) => proposal.channel, {
+    cascade: true,
+  })
+  proposals: Proposal[];
 
   @CreateDateColumn()
   createdAt: Date;

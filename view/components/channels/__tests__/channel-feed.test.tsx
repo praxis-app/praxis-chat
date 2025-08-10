@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store/app.store';
 import { customRender as render } from '@/test/lib/custom-render';
-import { Message } from '@/types/message.types';
+import { FeedItem } from '@/types/channel.types';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { ChannelFeed } from '../channel-feed';
@@ -51,14 +51,16 @@ vi.mock('@/components/shared/formatted-text', () => ({
 describe('ChannelFeed', () => {
   const mockOnLoadMore = vi.fn();
   const mockFeedBoxRef = { current: document.createElement('div') };
-  const mockMessages: Message[] = [
+  const mockFeed: FeedItem[] = [
     {
+      type: 'message',
       id: '1',
       body: 'Hello world',
       user: { id: 'user1', name: 'John Doe' },
       createdAt: '2023-12-01T12:00:00Z',
     },
     {
+      type: 'message',
       id: '2',
       body: 'Another message',
       user: { id: 'user2', name: 'Jane Smith' },
@@ -80,7 +82,7 @@ describe('ChannelFeed', () => {
 
     render(
       <ChannelFeed
-        messages={mockMessages}
+        feed={mockFeed}
         feedBoxRef={mockFeedBoxRef}
         onLoadMore={mockOnLoadMore}
         isLastPage={false}
@@ -100,7 +102,7 @@ describe('ChannelFeed', () => {
 
     render(
       <ChannelFeed
-        messages={[]}
+        feed={[]}
         feedBoxRef={mockFeedBoxRef}
         onLoadMore={mockOnLoadMore}
         isLastPage={false}

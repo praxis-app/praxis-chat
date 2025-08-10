@@ -26,6 +26,7 @@ export default defineConfig(async () => {
         '@': path.resolve(__dirname, './view'),
       },
     },
+    cacheDir: '../node_modules/.vite',
     build: {
       outDir: '../dist/view',
     },

@@ -6,8 +6,8 @@ import { KeyCodes } from '@/constants/shared.constants';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
+import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { Image } from '@/types/image.types';
-import { MessagesQuery } from '@/types/message.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -103,20 +103,31 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         ? GENERAL_CHANNEL_NAME
         : channelId;
 
-      queryClient.setQueryData<MessagesQuery>(
-        ['messages', resolvedChannelId],
+      const newFeedItem: FeedItem = {
+        ...messageWithImages,
+        type: 'message',
+      };
+
+      queryClient.setQueryData<FeedQuery>(
+        ['feed', resolvedChannelId],
         (oldData) => {
           if (!oldData) {
             return {
-              pages: [{ messages: [messageWithImages] }],
+              pages: [{ feed: [newFeedItem] }],
               pageParams: [0],
             };
           }
+
           const pages = oldData.pages.map((page, index) => {
             if (index === 0) {
-              return {
-                messages: [messageWithImages, ...page.messages],
-              };
+              const alreadyExists = page.feed.some(
+                (item) =>
+                  item.type === 'message' && item.id === messageWithImages.id,
+              );
+              if (alreadyExists) {
+                return page;
+              }
+              return { feed: [newFeedItem, ...page.feed] };
             }
             return page;
           });
@@ -237,6 +248,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             }
             showMenu={showMenu}
             setShowMenu={setShowMenu}
+            channelId={channelId}
+            isGeneralChannel={isGeneralChannel}
           />
 
           <div className="bg-input/30 flex w-full items-center rounded-3xl px-2">
@@ -279,7 +292,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
                 e.preventDefault();
                 handleSendMessage();
               }}
-              className="bg-blurple-1 mx-0.5 size-10 rounded-full"
+              className="bg-blurple-1 hover:bg-blurple-1 mx-0.5 size-10 rounded-full"
               disabled={isDisabled()}
             >
               <BiSolidSend className="ml-0.5 size-5 text-zinc-50" />

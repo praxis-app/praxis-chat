@@ -1,0 +1,18 @@
+## Auto Attached
+
+description: Rules for client code in /view
+globs:
+
+- view/\*_/_.{ts,tsx}
+  alwaysApply: false
+
+---
+
+- Use @tanstack/react-query (v5) for data fetching; keep query keys consistent (e.g., ['feed', channelId]).
+- Use zod + @hookform/resolvers for forms; keep schemas near the form.
+- All strings go through `useTranslation()` with keys under the appropriate namespace.
+
+- Do not invalidate feed queries after creating messages, proposals, or votes.
+  - Avoid calling `queryClient.invalidateQueries` to update the channel feed in response to a create.
+  - Instead, perform an optimistic update using `queryClient.setQueryData` or similar.
+  - Preserve `pageParams` and do not mutate other pages.

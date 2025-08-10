@@ -19,6 +19,20 @@ module.exports = {
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
     'react-hooks/exhaustive-deps': 'error',
-    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'error',
+    curly: 'error',
   },
+  overrides: [
+    {
+      files: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/__tests__/**/*.ts',
+        '**/__tests__/**/*.tsx',
+      ],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 };

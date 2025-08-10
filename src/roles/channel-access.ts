@@ -29,4 +29,17 @@ export const CHANNEL_ACCESS_MAP: Record<string, ChannelAccessPolicy> = {
       },
     },
   },
+  newProposal: {
+    pattern: new RegExp(`^new-proposal-(${UUID_REGEX})-(${UUID_REGEX})$`),
+    rules: {
+      isOwnMessage: (match, user) => {
+        const userId = match[2];
+        return user.id === userId;
+      },
+      isChannelMember: async (match, user) => {
+        const channelId = match[1];
+        return isChannelMember(channelId, user.id);
+      },
+    },
+  },
 };
