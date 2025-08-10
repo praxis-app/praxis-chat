@@ -4,7 +4,7 @@ import { useInView } from '@/hooks/use-in-view';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { debounce, throttle } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
-import { FeedItem } from '@/types/channel.types';
+import { Channel, FeedItem } from '@/types/channel.types';
 import {
   RefObject,
   UIEvent,
@@ -21,7 +21,7 @@ const LOAD_MORE_THROTTLE_MS = 1500;
 const IN_VIEW_THRESHOLD = 50;
 
 interface Props {
-  channelId?: string;
+  channel?: Channel;
   feed: FeedItem[];
   feedBoxRef: RefObject<HTMLDivElement>;
   isLastPage: boolean;
@@ -29,7 +29,7 @@ interface Props {
 }
 
 export const ChannelFeed = ({
-  channelId,
+  channel,
   feed,
   feedBoxRef,
   isLastPage,
@@ -104,14 +104,14 @@ export const ChannelFeed = ({
         if (item.type === 'message') {
           return <Message key={`message-${item.id}`} message={item} />;
         }
-        if (!channelId) {
+        if (!channel) {
           return null;
         }
         return (
           <InlineProposal
             key={`proposal-${item.id}`}
             proposal={item}
-            channelId={channelId}
+            channel={channel}
           />
         );
       })}

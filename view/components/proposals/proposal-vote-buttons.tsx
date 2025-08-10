@@ -1,64 +1,87 @@
 import { api } from '@/client/api-client';
+import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { VOTE_TYPE } from '@/constants/proposal.constants';
 import { cn } from '@/lib/shared.utils';
 import { VoteType } from '@/types/proposal.types';
-import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
+import { Channel } from '@/types/channel.types';
 
 interface Props {
-  channelId: string;
+  channel: Channel;
   myVoteId?: string;
   myVoteType?: VoteType;
   proposalId: string;
 }
 
 export const ProposalVoteButtons = ({
+  channel,
   proposalId,
-  channelId,
-  myVoteId: initialMyVoteId,
-  myVoteType: initialMyVoteType,
+  myVoteId,
+  myVoteType,
 }: Props) => {
   const { t } = useTranslation();
-
-  const [myVoteId, setMyVoteId] = useState<string | undefined>(initialMyVoteId);
-  const [myVoteType, setMyVoteType] = useState<VoteType | undefined>(
-    initialMyVoteType,
-  );
-
-  useEffect(() => {
-    setMyVoteId(initialMyVoteId);
-    setMyVoteType(initialMyVoteType);
-  }, [initialMyVoteId, initialMyVoteType]);
+  const queryClient = useQueryClient();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
       if (!myVoteId) {
-        const { vote } = await api.createVote(channelId, proposalId, {
+        const { vote } = await api.createVote(channel.id, proposalId, {
           voteType,
         });
         return { action: 'create' as const, voteId: vote.id, voteType };
       }
       if (myVoteType === voteType) {
-        await api.deleteVote(channelId, proposalId, myVoteId);
+        await api.deleteVote(channel.id, proposalId, myVoteId);
         return { action: 'delete' as const };
       }
-      await api.updateVote(channelId, proposalId, myVoteId, { voteType });
+      await api.updateVote(channel.id, proposalId, myVoteId, { voteType });
       return { action: 'update' as const, voteId: myVoteId, voteType };
     },
     onSuccess: (result) => {
-      if (result.action === 'create') {
-        setMyVoteId(result.voteId);
-        setMyVoteType(result.voteType);
-      } else if (result.action === 'delete') {
-        setMyVoteId(undefined);
-        setMyVoteType(undefined);
-      } else if (result.action === 'update') {
-        setMyVoteId(result.voteId);
-        setMyVoteType(result.voteType);
-      }
+      const applyUpdate = (cacheKey: [string, string | undefined]) => {
+        queryClient.setQueryData(
+          cacheKey,
+          (
+            oldData:
+              | { pages: { feed: any[] }[]; pageParams: number[] }
+              | undefined,
+          ) => {
+            if (!oldData) return oldData;
+            const pages = oldData.pages.map((page) => {
+              const feed = page.feed.map((item) => {
+                if (item.type !== 'proposal' || item.id !== proposalId) {
+                  return item;
+                }
+                if (result.action === 'delete') {
+                  return {
+                    ...item,
+                    myVoteId: undefined,
+                    myVoteType: undefined,
+                  };
+                }
+                return {
+                  ...item,
+                  myVoteId: result.voteId,
+                  myVoteType: result.voteType,
+                };
+              });
+              return { feed };
+            });
+            return { pages, pageParams: oldData.pageParams };
+          },
+        );
+      };
+
+      const resolvedChannelId =
+        channel.name === GENERAL_CHANNEL_NAME
+          ? GENERAL_CHANNEL_NAME
+          : channel.id;
+
+      applyUpdate(['feed', resolvedChannelId]);
+
       toast(t('votes.prompts.voteCast'));
     },
     onError: () => {

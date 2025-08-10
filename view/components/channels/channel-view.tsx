@@ -210,7 +210,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         <ChannelTopNav channel={channel} />
 
         <ChannelFeed
-          channelId={channel?.id}
+          channel={channel}
           feedBoxRef={feedBoxRef}
           onLoadMore={fetchNextPage}
           feed={feedData?.pages.flatMap((page) => page.feed) ?? []}
