@@ -1,8 +1,8 @@
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdChevronRight } from 'react-icons/md';
 import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
 
 interface Props {
   color: string;

@@ -1,7 +1,7 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,7 +15,7 @@ interface Props {
   editRole?: Role;
 }
 
-const RoleForm = ({ editRole }: Props) => {
+export const RoleForm = ({ editRole }: Props) => {
   const [colorPickerKey, setColorPickerKey] = useState(0);
 
   const { t } = useTranslation();
@@ -134,5 +134,3 @@ const RoleForm = ({ editRole }: Props) => {
     </Card>
   );
 };
-
-export default RoleForm;
