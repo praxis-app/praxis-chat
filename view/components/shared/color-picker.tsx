@@ -1,9 +1,6 @@
-// TODO: Convert from MUI to Shadcn UI - leverage ui/box.tsx component
-
-import { ArrowForwardIos } from '@mui/icons-material';
-import { Box, SxProps, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdChevronRight } from 'react-icons/md';
 import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 
@@ -11,84 +8,72 @@ interface Props {
   color: string;
   label: string;
   onChange(color: string): void;
-  sx?: SxProps;
+  className?: string;
 }
 
-export const ColorPicker = ({ label, color, onChange, sx }: Props) => {
+export const ColorPicker = ({ label, color, onChange, className }: Props) => {
   const [open, setOpen] = useState(false);
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
-  const colorBoxSx: SxProps = {
-    backgroundColor: color,
-    borderRadius: 1,
-    height: 24,
-    marginRight: 1.5,
-    width: 24,
-  };
-
-  const colorOptionSx = (colorOption: string): SxProps => ({
-    backgroundColor: colorOption,
-    width: 28,
-    height: 28,
-    borderRadius: 60,
-    cursor: 'pointer',
-    transition: 'transform 200ms cubic-bezier(.4,0,.2,1)',
-    boxShadow:
-      colorOption === color
-        ? `${colorOption} 0px 0px 0px 15px inset, ${colorOption} 0px 0px 5px`
-        : 'none',
-
-    '&:hover': {
-      transform: isDesktop ? 'scale(1.2)' : 'none',
-    },
-  });
-
   return (
-    <Box sx={sx}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        onClick={() => setOpen(!open)}
-        sx={{ cursor: 'pointer', marginBottom: 0.25, userSelect: 'none' }}
+    <div className={className}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="text-muted-foreground group hover:bg-accent flex w-full items-center justify-between rounded-md px-1 py-1.5 text-sm font-medium"
       >
-        <Typography color="text.secondary" fontWeight={500}>
-          {label}
-        </Typography>
-        <Box display="flex">
-          <Box sx={colorBoxSx}></Box>
-          <Typography maxWidth="65px" marginRight={1.25}>
-            {color}
-          </Typography>
-          <ArrowForwardIos
-            fontSize="small"
-            sx={{ transform: 'translateY(2px)' }}
+        <span>{label}</span>
+        <span className="flex items-center gap-2">
+          <span
+            className="inline-block size-6 rounded"
+            style={{ backgroundColor: color }}
           />
-        </Box>
-      </Box>
+          <span className="text-foreground/80 max-w-24 truncate">{color}</span>
+          <MdChevronRight className="translate-y-[1px]" />
+        </span>
+      </button>
 
       {open && (
-        <Box marginTop={2.5} marginBottom={1.5}>
-          <Typography
-            fontWeight={500}
-            marginBottom={1.25}
-            color="text.secondary"
-          >
+        <div className="mt-3 mb-2">
+          <div className="text-muted-foreground mb-3 text-sm font-medium">
             {t('roles.form.pickColor')}
-          </Typography>
-
-          <Box display="flex" gap="14px" flexWrap="wrap" width="250px">
+          </div>
+          <div className="flex w-[250px] flex-wrap gap-[14px]">
             {ROLE_COLOR_OPTIONS.map((colorOption) => (
-              <Box
+              <div
                 key={colorOption}
-                sx={colorOptionSx(colorOption)}
+                role="button"
+                aria-label={`Pick ${colorOption}`}
+                tabIndex={0}
                 onClick={() => onChange(colorOption)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') onChange(colorOption);
+                }}
+                className="ring-offset-background size-7 rounded-full transition-transform outline-none"
+                style={{
+                  backgroundColor: colorOption,
+                  boxShadow:
+                    colorOption === color
+                      ? `${colorOption} 0px 0px 0px 15px inset, ${colorOption} 0px 0px 5px`
+                      : 'none',
+                  transform: isDesktop ? undefined : 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isDesktop) return;
+                  (e.currentTarget as HTMLDivElement).style.transform =
+                    'scale(1.2)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isDesktop) return;
+                  (e.currentTarget as HTMLDivElement).style.transform = '';
+                }}
               />
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
