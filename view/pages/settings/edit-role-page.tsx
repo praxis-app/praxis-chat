@@ -176,19 +176,14 @@ export const EditRolePage = () => {
 
       <Container>
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <Card className="mb-6">
-            <TabsList className="w-full">
-              <TabsTrigger value="display">
-                {t('roles.tabs.display')}
-              </TabsTrigger>
-              <TabsTrigger value="permissions">
-                {t('roles.tabs.permissions')}
-              </TabsTrigger>
-              <TabsTrigger value="members">
-                {t('roles.tabs.members')}
-              </TabsTrigger>
-            </TabsList>
-          </Card>
+          <TabsList className="mb-3 h-10 w-full">
+            <TabsTrigger value="display">{t('roles.tabs.display')}</TabsTrigger>
+            <TabsTrigger value="permissions">
+              {t('roles.tabs.permissions')}
+            </TabsTrigger>
+            <TabsTrigger value="members">{t('roles.tabs.members')}</TabsTrigger>
+          </TabsList>
+
           <TabsContent value="display">
             <RoleForm editRole={roleData.role} />
 
