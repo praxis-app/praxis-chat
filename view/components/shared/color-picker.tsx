@@ -49,7 +49,9 @@ export const ColorPicker = ({ label, color, onChange, className }: Props) => {
                 tabIndex={0}
                 onClick={() => onChange(colorOption)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') onChange(colorOption);
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    onChange(colorOption);
+                  }
                 }}
                 className="ring-offset-background size-7 rounded-full transition-transform outline-none"
                 style={{
@@ -61,12 +63,16 @@ export const ColorPicker = ({ label, color, onChange, className }: Props) => {
                   transform: isDesktop ? undefined : 'none',
                 }}
                 onMouseEnter={(e) => {
-                  if (!isDesktop) return;
+                  if (!isDesktop) {
+                    return;
+                  }
                   (e.currentTarget as HTMLDivElement).style.transform =
                     'scale(1.2)';
                 }}
                 onMouseLeave={(e) => {
-                  if (!isDesktop) return;
+                  if (!isDesktop) {
+                    return;
+                  }
                   (e.currentTarget as HTMLDivElement).style.transform = '';
                 }}
               />
