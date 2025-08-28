@@ -106,9 +106,11 @@ export const RoleForm = ({ editRole }: Props) => {
     <Card className="mb-3">
       <CardContent>
         <form onSubmit={handleSubmit((fv) => handleSubmitForm(fv))}>
-          <div className="grid gap-4">
+          <div className="grid gap-2">
             <div className="grid gap-2">
-              <Label className="font-medium">{t('roles.form.name')}</Label>
+              <Label className="text-md text-muted-foreground font-normal">
+                {t('roles.form.name')}
+              </Label>
               <Input autoComplete="off" {...register('name')} />
             </div>
 

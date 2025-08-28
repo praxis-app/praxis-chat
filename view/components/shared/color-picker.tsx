@@ -22,7 +22,7 @@ export const ColorPicker = ({ label, color, onChange, className }: Props) => {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-muted-foreground group flex w-full cursor-pointer items-center justify-between rounded-md px-1 py-1.5 text-sm font-medium"
+        className="text-muted-foreground group flex w-full cursor-pointer items-center justify-between rounded-md px-0 py-1.5"
       >
         <span>{label}</span>
         <span className="flex items-center gap-2">
@@ -31,13 +31,13 @@ export const ColorPicker = ({ label, color, onChange, className }: Props) => {
             style={{ backgroundColor: color }}
           />
           <span className="text-foreground/80 max-w-24 truncate">{color}</span>
-          <MdChevronRight className="translate-y-[1px]" />
+          <MdChevronRight className="size-7" />
         </span>
       </button>
 
       {open && (
         <div className="mt-3 mb-2">
-          <div className="text-muted-foreground mb-3 text-sm font-medium">
+          <div className="text-muted-foreground mb-3">
             {t('roles.form.pickColor')}
           </div>
           <div className="flex w-[250px] flex-wrap gap-[14px]">
