@@ -22,7 +22,8 @@
     "loading": "Loading...",
     "noContent": "No content to display.",
     "tryAgain": "Please try again.",
-    "welcomeToPraxis": "Welcome to Praxis"
+    "welcomeToPraxis": "Welcome to Praxis",
+    "accessDenied": "Access denied."
   },
 
   "errors": {
