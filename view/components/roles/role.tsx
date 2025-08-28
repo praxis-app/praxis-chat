@@ -18,15 +18,15 @@ export const Role = ({ role: { id, color, name, memberCount } }: Props) => {
 
   return (
     <Link to={editRolePath}>
-      <div className="hover:bg-ring/10 cursor-pointer rounded-lg p-3 transition-colors">
+      <div className="hover:bg-ring/10 cursor-pointer rounded-lg p-2 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Avatar
-              className="mr-6 h-10 w-10"
-              style={{ backgroundColor: color }}
-            >
-              <AvatarFallback className="font-medium text-black">
-                {name.charAt(0).toUpperCase()}
+            <Avatar className="mr-4 size-10">
+              <AvatarFallback
+                className="font-medium text-black"
+                style={{ backgroundColor: color }}
+              >
+                <MdPerson className="size-7" />
               </AvatarFallback>
             </Avatar>
 
