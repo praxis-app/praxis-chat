@@ -175,8 +175,8 @@ export const EditRolePage = () => {
       />
 
       <Container>
-        <Card className="mb-6">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <Card className="mb-6">
             <TabsList className="w-full">
               <TabsTrigger value="display">
                 {t('roles.tabs.display')}
@@ -188,10 +188,7 @@ export const EditRolePage = () => {
                 {t('roles.tabs.members')}
               </TabsTrigger>
             </TabsList>
-          </Tabs>
-        </Card>
-
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          </Card>
           <TabsContent value="display">
             <RoleForm editRole={roleData.role} />
 
