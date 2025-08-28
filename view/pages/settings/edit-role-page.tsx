@@ -4,6 +4,7 @@ import { RoleForm } from '@/components/roles/role-form';
 import { RoleMember } from '@/components/roles/role-member';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
+import { Container } from '@/components/ui/container';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
@@ -173,102 +174,108 @@ export const EditRolePage = () => {
         onBackClick={() => navigate(NavigationPaths.Roles)}
       />
 
-      <Card className="mb-6">
+      <Container>
+        <Card className="mb-6">
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
+            <TabsList className="w-full">
+              <TabsTrigger value="display">
+                {t('roles.tabs.display')}
+              </TabsTrigger>
+              <TabsTrigger value="permissions">
+                {t('roles.tabs.permissions')}
+              </TabsTrigger>
+              <TabsTrigger value="members">
+                {t('roles.tabs.members')}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Card>
+
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="w-full">
-            <TabsTrigger value="display">{t('roles.tabs.display')}</TabsTrigger>
-            <TabsTrigger value="permissions">
-              {t('roles.tabs.permissions')}
-            </TabsTrigger>
-            <TabsTrigger value="members">{t('roles.tabs.members')}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </Card>
+          <TabsContent value="display">
+            <RoleForm editRole={roleData.role} />
 
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsContent value="display">
-          <RoleForm editRole={roleData.role} />
+            <DeleteButton onClick={() => setIsConfirmModalOpen(true)}>
+              {t('roles.actions.delete')}
+            </DeleteButton>
 
-          <DeleteButton onClick={() => setIsConfirmModalOpen(true)}>
-            {t('roles.actions.delete')}
-          </DeleteButton>
+            <Modal
+              open={isConfirmModalOpen}
+              onClose={() => setIsConfirmModalOpen(false)}
+            >
+              <p className="mb-3">
+                {t('prompts.deleteItem', { itemType: 'role' })}
+              </p>
 
-          <Modal
-            open={isConfirmModalOpen}
-            onClose={() => setIsConfirmModalOpen(false)}
-          >
-            <p className="mb-3">
-              {t('prompts.deleteItem', { itemType: 'role' })}
-            </p>
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsConfirmModalOpen(false)}
-              >
-                {t('actions.cancel')}
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleDeleteBtnClick}
-                disabled={isDeletePending}
-              >
-                {t('actions.delete')}
-              </Button>
-            </div>
-          </Modal>
-        </TabsContent>
-
-        <TabsContent value="permissions">
-          <PermissionsForm role={roleData.role} />
-        </TabsContent>
-
-        <TabsContent value="members">
-          <Card
-            className="mb-3 cursor-pointer"
-            onClick={() => setIsAddMemberModalOpen(true)}
-          >
-            <CardContent className="flex items-center justify-between py-3">
-              <div className="flex items-center">
-                <LuPlus className="mr-3 h-5 w-5" />
-                <span>{t('roles.actions.addMembers')}</span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsConfirmModalOpen(false)}
+                >
+                  {t('actions.cancel')}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteBtnClick}
+                  disabled={isDeletePending}
+                >
+                  {t('actions.delete')}
+                </Button>
               </div>
-              <LuChevronRight className="h-4 w-4" />
-            </CardContent>
-          </Card>
+            </Modal>
+          </TabsContent>
 
-          {!!roleData.role.members.length && (
-            <Card>
-              <CardContent>
-                {roleData.role.members.map((member) => (
-                  <RoleMember
-                    roleId={roleData.role.id}
-                    roleMember={member}
-                    key={member.id}
-                  />
-                ))}
+          <TabsContent value="permissions">
+            <PermissionsForm role={roleData.role} />
+          </TabsContent>
+
+          <TabsContent value="members">
+            <Card
+              className="mb-3 cursor-pointer"
+              onClick={() => setIsAddMemberModalOpen(true)}
+            >
+              <CardContent className="flex items-center justify-between py-3">
+                <div className="flex items-center">
+                  <LuPlus className="mr-3 h-5 w-5" />
+                  <span>{t('roles.actions.addMembers')}</span>
+                </div>
+                <LuChevronRight className="h-4 w-4" />
               </CardContent>
             </Card>
-          )}
 
-          <Modal
-            title={t('roles.actions.addMembers')}
-            actionLabel={t('roles.actions.add')}
-            onClose={() => setIsAddMemberModalOpen(false)}
-            closingAction={addMembers}
-            open={isAddMemberModalOpen}
-          >
-            {eligibleUsersData?.users.map((user) => (
-              <AddRoleMemberOption
-                key={user.id}
-                selectedUserIds={selectedUserIds}
-                setSelectedUserIds={setSelectedUserIds}
-                user={user}
-              />
-            ))}
-          </Modal>
-        </TabsContent>
-      </Tabs>
+            {!!roleData.role.members.length && (
+              <Card>
+                <CardContent>
+                  {roleData.role.members.map((member) => (
+                    <RoleMember
+                      roleId={roleData.role.id}
+                      roleMember={member}
+                      key={member.id}
+                    />
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            <Modal
+              title={t('roles.actions.addMembers')}
+              actionLabel={t('roles.actions.add')}
+              onClose={() => setIsAddMemberModalOpen(false)}
+              closingAction={addMembers}
+              open={isAddMemberModalOpen}
+            >
+              {eligibleUsersData?.users.map((user) => (
+                <AddRoleMemberOption
+                  key={user.id}
+                  selectedUserIds={selectedUserIds}
+                  setSelectedUserIds={setSelectedUserIds}
+                  user={user}
+                />
+              ))}
+            </Modal>
+          </TabsContent>
+        </Tabs>
+      </Container>
     </>
   );
 };
