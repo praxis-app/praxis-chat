@@ -1,12 +1,11 @@
-import { Box } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { PERMISSION_KEYS } from '../../constants/role.constants';
 import { Permission, PermissionKeys, Role } from '../../types/role.types';
-import PrimaryButton from '../shared/primary-button';
-import PermissionToggle from './permission-toggle';
+import { Button } from '../ui/button';
+import { PermissionToggle } from './permission-toggle';
 
 interface FormValues {
   permissions: {
@@ -67,7 +66,7 @@ const getPermissionValues = (permissions: Permission[]) =>
     };
   });
 
-const PermissionsForm = ({ role }: Props) => {
+export const PermissionsForm = ({ role }: Props) => {
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       permissions: getPermissionValues(role.permissions),
@@ -118,10 +117,7 @@ const PermissionsForm = ({ role }: Props) => {
   const { t } = useTranslation();
 
   return (
-    <Box
-      onSubmit={handleSubmit((fv) => updatePermissions(fv))}
-      component="form"
-    >
+    <form onSubmit={handleSubmit((fv) => updatePermissions(fv))}>
       <Controller
         name="permissions"
         control={control}
@@ -132,9 +128,9 @@ const PermissionsForm = ({ role }: Props) => {
                 key={permissionName}
                 permissionName={permissionName}
                 checked={value[index].value}
-                onChange={(e) => {
+                onChange={(checked) => {
                   const newPermissions = [...value];
-                  newPermissions[index].value = e.target.checked;
+                  newPermissions[index].value = checked;
                   onChange(newPermissions);
                 }}
               />
@@ -143,17 +139,11 @@ const PermissionsForm = ({ role }: Props) => {
         )}
       />
 
-      <Box display="flex" justifyContent="end" sx={{ marginTop: 6 }}>
-        <PrimaryButton
-          disabled={isPending || !formState.isDirty}
-          isLoading={isPending}
-          type="submit"
-        >
-          {t('actions.save')}
-        </PrimaryButton>
-      </Box>
-    </Box>
+      <div className="mt-6 flex justify-end">
+        <Button disabled={isPending || !formState.isDirty} type="submit">
+          {isPending ? t('actions.save') : t('actions.save')}
+        </Button>
+      </div>
+    </form>
   );
 };
-
-export default PermissionsForm;

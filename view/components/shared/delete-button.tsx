@@ -1,21 +1,16 @@
-// TODO: Move hex color values to theme
+import { Button } from '../ui/button';
+import { ButtonHTMLAttributes } from 'react';
 
-import { ButtonProps, Button as MuiButton, styled } from '@mui/material';
+interface DeleteButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+}
 
-const Button = styled(MuiButton)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: 8,
-  color: '#f44336',
-
-  ...theme.applyStyles('light', {
-    backgroundColor: theme.palette.background.secondary,
-  }),
-}));
-
-const DeleteButton = ({ children, ...buttonProps }: ButtonProps) => (
-  <Button variant="text" fullWidth {...buttonProps}>
+export const DeleteButton = ({ children, className, ...buttonProps }: DeleteButtonProps) => (
+  <Button 
+    variant="outline" 
+    className={`w-full text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground ${className || ''}`}
+    {...buttonProps}
+  >
     {children}
   </Button>
 );
-
-export default DeleteButton;

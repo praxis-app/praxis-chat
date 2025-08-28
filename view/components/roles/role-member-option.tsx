@@ -1,29 +1,6 @@
-import {
-  Box,
-  Checkbox,
-  CardActionArea as MuiCardActionArea,
-  SxProps,
-  Typography,
-  styled,
-} from '@mui/material';
 import { User } from '../../types/user.types';
-import UserAvatar from '../users/user-avatar';
-
-const ROLE_MEMBER_OPTION_STYLES: SxProps = {
-  borderRadius: 2,
-  display: 'flex',
-  justifyContent: 'space-between',
-  paddingLeft: 0.75,
-  paddingRight: 0.25,
-  paddingY: 0.75,
-};
-
-const CardActionArea = styled(MuiCardActionArea)(() => ({
-  marginBottom: 2,
-  '&:last-child': {
-    marginBottom: 0,
-  },
-}));
+import { UserAvatar } from '../users/user-avatar';
+import { Checkbox } from '../ui/checkbox';
 
 interface Props {
   handleChange(): void;
@@ -31,21 +8,22 @@ interface Props {
   user: User;
 }
 
-const RoleMemberOption = ({ handleChange, user, checked }: Props) => (
-  <CardActionArea onClick={handleChange} sx={ROLE_MEMBER_OPTION_STYLES}>
-    <Box display="flex">
+export const RoleMemberOption = ({ handleChange, user, checked }: Props) => (
+  <div 
+    className="flex items-center justify-between rounded-lg p-3 mb-2 last:mb-0 cursor-pointer hover:bg-muted/50 transition-colors"
+    onClick={handleChange}
+  >
+    <div className="flex items-center">
       <UserAvatar
         userId={user.id}
-        userName={user.name}
-        sx={{ marginRight: 1.5 }}
+        name={user.name}
+        className="mr-3"
       />
-      <Typography sx={{ marginTop: 1, userSelect: 'none' }}>
+      <span className="mt-1 select-none">
         {user.displayName || user.name}
-      </Typography>
-    </Box>
+      </span>
+    </div>
 
-    <Checkbox checked={checked} disableRipple />
-  </CardActionArea>
+    <Checkbox checked={checked} />
+  </div>
 );
-
-export default RoleMemberOption;

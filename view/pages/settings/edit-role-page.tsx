@@ -1,48 +1,31 @@
-import { AddCircle, ArrowForwardIos } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Card,
-  CardActionArea,
-  CardContent as MuiCardContent,
-  styled,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { AddRoleMemberOption } from '@/components/roles/add-role-member-option';
+import { PermissionsForm } from '@/components/roles/permissions-form';
+import { RoleForm } from '@/components/roles/role-form';
+import { RoleMember } from '@/components/roles/role-member';
+import { DeleteButton } from '@/components/shared/delete-button';
+import { PermissionDenied } from '@/components/shared/permission-denied';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LuChevronRight, LuPlus } from 'react-icons/lu';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { api } from '../../client/api-client';
-import TopNav from '../../components/nav/top-nav';
-import AddRoleMemberOption from '../../components/roles/add-role-member-option';
-import PermissionDenied from '../../components/roles/permission-denied';
-import PermissionsForm from '../../components/roles/permissions-form';
-import RoleForm from '../../components/roles/role-form';
-import RoleMember from '../../components/roles/role-member';
-import DeleteButton from '../../components/shared/delete-button';
-import Modal from '../../components/shared/modal';
-import ProgressBar from '../../components/shared/progress-bar';
+import { TopNav } from '../../components/nav/top-nav';
+import { Modal } from '../../components/shared/modal';
+import { ProgressBar } from '../../components/shared/progress-bar';
+import { Button } from '../../components/ui/button';
+import { Card, CardContent } from '../../components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/role.hooks';
-import { useAboveBreakpoint } from '../../hooks/shared.hooks';
-import { useAppStore } from '../../store/app.store';
 import { Role } from '../../types/role.types';
-
-const CardContent = styled(MuiCardContent)(() => ({
-  '&:last-child': {
-    paddingBottom: 16,
-  },
-}));
-
-const FlexCardContent = styled(MuiCardContent)(() => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  paddingBottom: 12,
-  paddingTop: 13,
-}));
 
 enum EditRoleTabName {
   Permissions = 'permissions',
@@ -50,14 +33,12 @@ enum EditRoleTabName {
 }
 
 export const EditRolePage = () => {
-  const [tab, setTab] = useState(0);
+  const [activeTab, setActiveTab] = useState('display');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const { setToast } = useAppStore((state) => state);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const isAboveSmall = useAboveBreakpoint('sm');
   const queryClient = useQueryClient();
   const { roleId } = useParams();
   const { t } = useTranslation();
@@ -79,7 +60,7 @@ export const EditRolePage = () => {
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
     queryKey: ['role', roleId, 'members', 'eligible'],
     queryFn: () => api.getUsersEligibleForRole(roleId!),
-    enabled: !!roleId && tab === 2 && canManageRoles,
+    enabled: !!roleId && activeTab === 'members' && canManageRoles,
   });
 
   const { mutate: addMembers } = useMutation({
@@ -111,10 +92,7 @@ export const EditRolePage = () => {
       const errorMessage =
         (error.response?.data as string) || t('errors.somethingWentWrong');
 
-      setToast({
-        title: errorMessage,
-        status: 'error',
-      });
+      toast.error(errorMessage);
     },
   });
 
@@ -141,25 +119,23 @@ export const EditRolePage = () => {
 
   useEffect(() => {
     if (tabParam === EditRoleTabName.Permissions) {
-      setTab(1);
+      setActiveTab('permissions');
       return;
     }
     if (tabParam === EditRoleTabName.Members) {
-      setTab(2);
+      setActiveTab('members');
       return;
     }
-    setTab(0);
-  }, [tabParam, setTab]);
+    setActiveTab('display');
+  }, [tabParam]);
 
-  const handleTabChange = (
-    _: SyntheticEvent<Element, Event>,
-    value: number,
-  ) => {
-    if (value === 1) {
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === 'permissions') {
       setSearchParams({ tab: EditRoleTabName.Permissions });
       return;
     }
-    if (value === 2) {
+    if (value === 'members') {
       setSearchParams({ tab: EditRoleTabName.Members });
       return;
     }
@@ -187,7 +163,7 @@ export const EditRolePage = () => {
   }
 
   if (!roleData || roleError || eligibleUsersError) {
-    return <Typography>{t('errors.somethingWentWrong')}</Typography>;
+    return <p>{t('errors.somethingWentWrong')}</p>;
   }
 
   return (
@@ -197,21 +173,20 @@ export const EditRolePage = () => {
         onBackClick={() => navigate(NavigationPaths.Roles)}
       />
 
-      <Card sx={{ marginBottom: 6 }}>
-        <Tabs
-          onChange={handleTabChange}
-          value={tab}
-          variant={isAboveSmall ? 'standard' : 'fullWidth'}
-          centered
-        >
-          <Tab label={t('roles.tabs.display')} />
-          <Tab label={t('roles.tabs.permissions')} />
-          <Tab label={t('roles.tabs.members')} />
+      <Card className="mb-6">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <TabsList className="w-full">
+            <TabsTrigger value="display">{t('roles.tabs.display')}</TabsTrigger>
+            <TabsTrigger value="permissions">
+              {t('roles.tabs.permissions')}
+            </TabsTrigger>
+            <TabsTrigger value="members">{t('roles.tabs.members')}</TabsTrigger>
+          </TabsList>
         </Tabs>
       </Card>
 
-      {tab === 0 && (
-        <>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsContent value="display">
           <RoleForm editRole={roleData.role} />
 
           <DeleteButton onClick={() => setIsConfirmModalOpen(true)}>
@@ -222,52 +197,44 @@ export const EditRolePage = () => {
             open={isConfirmModalOpen}
             onClose={() => setIsConfirmModalOpen(false)}
           >
-            <Typography marginBottom={3}>
+            <p className="mb-3">
               {t('prompts.deleteItem', { itemType: 'role' })}
-            </Typography>
+            </p>
 
-            <Box display="flex" gap={1}>
+            <div className="flex gap-2">
               <Button
-                variant="contained"
+                variant="outline"
                 onClick={() => setIsConfirmModalOpen(false)}
               >
                 {t('actions.cancel')}
               </Button>
               <Button
-                variant="contained"
-                sx={{ color: '#f44336' }}
+                variant="destructive"
                 onClick={handleDeleteBtnClick}
                 disabled={isDeletePending}
               >
                 {t('actions.delete')}
               </Button>
-            </Box>
+            </div>
           </Modal>
-        </>
-      )}
+        </TabsContent>
 
-      {tab === 1 && <PermissionsForm role={roleData.role} />}
+        <TabsContent value="permissions">
+          <PermissionsForm role={roleData.role} />
+        </TabsContent>
 
-      {tab === 2 && (
-        <>
-          <Card sx={{ cursor: 'pointer', marginBottom: '12px' }}>
-            <CardActionArea onClick={() => setIsAddMemberModalOpen(true)}>
-              <FlexCardContent>
-                <Box display="flex">
-                  <AddCircle
-                    sx={{
-                      fontSize: 23,
-                      marginRight: 1.25,
-                    }}
-                  />
-                  <Typography>{t('roles.actions.addMembers')}</Typography>
-                </Box>
-                <ArrowForwardIos
-                  fontSize="small"
-                  sx={{ transform: 'translateY(2px)' }}
-                />
-              </FlexCardContent>
-            </CardActionArea>
+        <TabsContent value="members">
+          <Card
+            className="mb-3 cursor-pointer"
+            onClick={() => setIsAddMemberModalOpen(true)}
+          >
+            <CardContent className="flex items-center justify-between py-3">
+              <div className="flex items-center">
+                <LuPlus className="mr-3 h-5 w-5" />
+                <span>{t('roles.actions.addMembers')}</span>
+              </div>
+              <LuChevronRight className="h-4 w-4" />
+            </CardContent>
           </Card>
 
           {!!roleData.role.members.length && (
@@ -300,8 +267,8 @@ export const EditRolePage = () => {
               />
             ))}
           </Modal>
-        </>
-      )}
+        </TabsContent>
+      </Tabs>
     </>
   );
 };

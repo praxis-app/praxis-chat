@@ -1,5 +1,5 @@
+import { RoleMemberOption } from './role-member-option';
 import { User } from '../../types/user.types';
-import RoleMemberOption from './role-member-option';
 
 interface Props {
   selectedUserIds: string[];
@@ -7,7 +7,7 @@ interface Props {
   user: User;
 }
 
-const AddRoleMemberOption = ({
+export const AddRoleMemberOption = ({
   selectedUserIds,
   setSelectedUserIds,
   user,
@@ -32,5 +32,3 @@ const AddRoleMemberOption = ({
     />
   );
 };
-
-export default AddRoleMemberOption;

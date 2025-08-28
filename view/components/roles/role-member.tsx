@@ -1,29 +1,20 @@
-import { RemoveCircle } from '@mui/icons-material';
-import { Box, Button, IconButton, Typography, styled } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { Role } from '../../types/role.types';
 import { User } from '../../types/user.types';
-import { Link } from '../shared/link';
-import Modal from '../shared/modal';
-import UserAvatar from '../users/user-avatar';
-
-const OuterFlex = styled(Box)(() => ({
-  display: 'flex',
-  marginBottom: 12,
-  '&:last-child': {
-    marginBottom: 0,
-  },
-}));
+import { UserAvatar } from '../users/user-avatar';
+import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { LuX } from 'react-icons/lu';
 
 interface Props {
   roleId: string;
   roleMember: User;
 }
 
-const RoleMember = ({ roleId, roleMember }: Props) => {
+export const RoleMember = ({ roleId, roleMember }: Props) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const { t } = useTranslation();
@@ -56,51 +47,52 @@ const RoleMember = ({ roleId, roleMember }: Props) => {
   });
 
   return (
-    <OuterFlex justifyContent="space-between">
-      <Link to="/">
-        <Box display="flex">
-          <UserAvatar
-            userId={roleMember.id}
-            userName={roleMember.name}
-            sx={{ marginRight: 1.5 }}
-          />
-          <Typography sx={{ marginTop: 1 }}>
-            {roleMember.displayName || roleMember.name}
-          </Typography>
-        </Box>
-      </Link>
+    <div className="flex justify-between items-center mb-3 last:mb-0">
+      <div className="flex items-center">
+        <UserAvatar
+          userId={roleMember.id}
+          name={roleMember.name}
+          className="mr-3"
+        />
+        <span className="mt-1">
+          {roleMember.displayName || roleMember.name}
+        </span>
+      </div>
 
-      <IconButton onClick={() => setIsConfirmModalOpen(true)}>
-        <RemoveCircle />
-      </IconButton>
-
-      <Modal
-        open={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsConfirmModalOpen(true)}
+        className="text-destructive hover:text-destructive"
       >
-        <Typography marginBottom={3}>
-          {t('prompts.removeItem', { itemType: 'role member' })}
-        </Typography>
+        <LuX className="h-4 w-4" />
+      </Button>
 
-        <Box display="flex" gap={1}>
-          <Button
-            variant="contained"
-            onClick={() => setIsConfirmModalOpen(false)}
-          >
-            {t('actions.cancel')}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => removeMember()}
-            sx={{ color: '#f44336' }}
-            disabled={isPending}
-          >
-            {t('actions.remove')}
-          </Button>
-        </Box>
-      </Modal>
-    </OuterFlex>
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Remove role member?
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex gap-2 justify-end mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              {t('actions.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => removeMember()}
+              disabled={isPending}
+            >
+              {t('actions.remove')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
-
-export default RoleMember;

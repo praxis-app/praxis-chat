@@ -1,34 +1,31 @@
-import { Box, Switch, SwitchProps, Typography } from '@mui/material';
 import { t } from 'i18next';
 import { PermissionKeys } from '../../types/role.types';
-import { getPermissionText } from '../../utils/role.utils';
+import { getPermissionText } from '../../lib/role.utils';
+import { Switch } from '../ui/switch';
 
 interface Props {
   permissionName: PermissionKeys;
   checked: boolean;
-  onChange: SwitchProps['onChange'];
+  onChange: (checked: boolean) => void;
 }
 
-const PermissionToggle = ({ permissionName, checked, onChange }: Props) => {
+export const PermissionToggle = ({ permissionName, checked, onChange }: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
 
   return (
-    <Box display="flex" justifyContent="space-between" marginBottom={2.8}>
-      <Box>
-        <Typography>{displayName}</Typography>
-
-        <Typography fontSize={12} color="textSecondary">
+    <div className="flex justify-between items-start mb-7">
+      <div>
+        <p className="text-sm font-medium">{displayName}</p>
+        <p className="text-xs text-muted-foreground mt-1">
           {description}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       <Switch
-        inputProps={{ 'aria-label': displayName || t('labels.switch') }}
         checked={checked}
-        onChange={onChange}
+        onCheckedChange={onChange}
+        aria-label={displayName || t('labels.switch')}
       />
-    </Box>
+    </div>
   );
 };
-
-export default PermissionToggle;
