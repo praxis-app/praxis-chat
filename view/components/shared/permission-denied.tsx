@@ -1,36 +1,31 @@
-import { Box, BoxProps, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Box } from '../ui/box';
 import { TopNav } from '../nav/top-nav';
+import { cn } from '@/lib/shared.utils';
 
-interface Props extends BoxProps {
-  topNavProps?: any;
+interface Props {
+  topNavProps?: Record<string, unknown>;
   message?: ReactNode;
+  className?: string;
 }
 
 export const PermissionDenied = ({
   message,
   topNavProps,
-  ...boxProps
+  className,
 }: Props) => {
   const { t } = useTranslation();
 
   return (
     <Box
-      position="fixed"
-      top={0}
-      left={0}
-      width="100vw"
-      height="100vh"
-      display="flex"
-      flexDirection="column"
-      gap="40px"
-      paddingTop="115px"
-      textAlign="center"
-      {...boxProps}
+      className={cn(
+        'fixed top-0 left-0 flex h-screen w-screen flex-col gap-10 pt-[115px] text-center',
+        className,
+      )}
     >
       <TopNav {...topNavProps} />
-      <Typography>{message || t('prompts.accessDenied')}</Typography>
+      <p className="text-foreground">{message || t('prompts.accessDenied')}</p>
     </Box>
   );
 };
