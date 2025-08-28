@@ -14,10 +14,15 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../client/api-client';
 import { TopNav } from '../../components/nav/top-nav';
-import { Modal } from '../../components/shared/modal';
 import { ProgressBar } from '../../components/shared/progress-bar';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../../components/ui/dialog';
 import {
   Tabs,
   TabsContent,
@@ -36,8 +41,8 @@ enum EditRoleTabName {
 export const EditRolePage = () => {
   const [activeTab, setActiveTab] = useState('display');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
@@ -87,7 +92,7 @@ export const EditRolePage = () => {
       });
       queryClient.invalidateQueries({ queryKey: ['me'] });
       setSelectedUserIds([]);
-      setIsAddMemberModalOpen(false);
+      setIsAddMemberDialogOpen(false);
     },
     onError(error: AxiosError) {
       const errorMessage =
@@ -187,34 +192,37 @@ export const EditRolePage = () => {
           <TabsContent value="display">
             <RoleForm editRole={roleData.role} />
 
-            <DeleteButton onClick={() => setIsConfirmModalOpen(true)}>
+            <DeleteButton onClick={() => setIsConfirmDialogOpen(true)}>
               {t('roles.actions.delete')}
             </DeleteButton>
 
-            <Modal
-              open={isConfirmModalOpen}
-              onClose={() => setIsConfirmModalOpen(false)}
+            <Dialog
+              open={isConfirmDialogOpen}
+              onOpenChange={() => setIsConfirmDialogOpen(false)}
             >
-              <p className="mb-3">
-                {t('prompts.deleteItem', { itemType: 'role' })}
-              </p>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsConfirmModalOpen(false)}
-                >
-                  {t('actions.cancel')}
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteBtnClick}
-                  disabled={isDeletePending}
-                >
-                  {t('actions.delete')}
-                </Button>
-              </div>
-            </Modal>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {t('prompts.deleteItem', { itemType: 'role' })}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsConfirmDialogOpen(false)}
+                  >
+                    {t('actions.cancel')}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteBtnClick}
+                    disabled={isDeletePending}
+                  >
+                    {t('actions.delete')}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           <TabsContent value="permissions">
@@ -224,7 +232,7 @@ export const EditRolePage = () => {
           <TabsContent value="members">
             <Card
               className="mb-3 cursor-pointer"
-              onClick={() => setIsAddMemberModalOpen(true)}
+              onClick={() => setIsAddMemberDialogOpen(true)}
             >
               <CardContent className="flex items-center justify-between py-3">
                 <div className="flex items-center">
@@ -249,22 +257,32 @@ export const EditRolePage = () => {
               </Card>
             )}
 
-            <Modal
-              title={t('roles.actions.addMembers')}
-              actionLabel={t('roles.actions.add')}
-              onClose={() => setIsAddMemberModalOpen(false)}
-              closingAction={addMembers}
-              open={isAddMemberModalOpen}
+            <Dialog
+              open={isAddMemberDialogOpen}
+              onOpenChange={() => setIsAddMemberDialogOpen(false)}
             >
-              {eligibleUsersData?.users.map((user) => (
-                <AddRoleMemberOption
-                  key={user.id}
-                  selectedUserIds={selectedUserIds}
-                  setSelectedUserIds={setSelectedUserIds}
-                  user={user}
-                />
-              ))}
-            </Modal>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
+                </DialogHeader>
+                {eligibleUsersData?.users.map((user) => (
+                  <AddRoleMemberOption
+                    key={user.id}
+                    selectedUserIds={selectedUserIds}
+                    setSelectedUserIds={setSelectedUserIds}
+                    user={user}
+                  />
+                ))}
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    onClick={() => addMembers()}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2"
+                  >
+                    {t('roles.actions.add')}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
       </Container>
