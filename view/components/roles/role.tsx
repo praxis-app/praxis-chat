@@ -18,7 +18,7 @@ export const Role = ({ role: { id, color, name, memberCount } }: Props) => {
 
   return (
     <Link to={editRolePath}>
-      <div className="hover:bg-muted/50 cursor-pointer rounded-lg p-3 transition-colors">
+      <div className="hover:bg-ring/10 cursor-pointer rounded-lg p-3 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Avatar
@@ -39,13 +39,13 @@ export const Role = ({ role: { id, color, name, memberCount } }: Props) => {
                 {name}
               </h3>
               <div className="text-muted-foreground flex items-center text-xs">
-                <MdPerson className="mr-1 h-3 w-3" />
+                <MdPerson className="mr-1 size-4" />
                 {t('roles.labels.membersCount', { count: memberCount })}
               </div>
             </div>
           </div>
 
-          <MdArrowForwardIos className="text-muted-foreground h-4 w-4" />
+          <MdArrowForwardIos className="text-muted-foreground size-5" />
         </div>
       </div>
     </Link>

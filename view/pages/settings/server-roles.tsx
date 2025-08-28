@@ -46,8 +46,8 @@ export const ServerRoles = () => {
         <RoleForm />
 
         {data && (
-          <Card>
-            <CardContent>
+          <Card className="py-3">
+            <CardContent className="flex flex-col gap-2 px-3">
               {data.roles.map((role) => (
                 <Role key={role.id} role={role} />
               ))}

@@ -22,7 +22,7 @@ export const ColorPicker = ({ label, color, onChange, className }: Props) => {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-muted-foreground group hover:bg-accent flex w-full items-center justify-between rounded-md px-1 py-1.5 text-sm font-medium"
+        className="text-muted-foreground group flex w-full cursor-pointer items-center justify-between rounded-md px-1 py-1.5 text-sm font-medium"
       >
         <span>{label}</span>
         <span className="flex items-center gap-2">
