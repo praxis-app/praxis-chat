@@ -234,12 +234,12 @@ export const EditRolePage = () => {
               className="mb-3 cursor-pointer"
               onClick={() => setIsAddMemberDialogOpen(true)}
             >
-              <CardContent className="flex items-center justify-between py-3">
+              <CardContent className="flex items-center justify-between py-0.5">
                 <div className="flex items-center">
-                  <LuPlus className="mr-3 h-5 w-5" />
+                  <LuPlus className="mr-3 size-6" />
                   <span>{t('roles.actions.addMembers')}</span>
                 </div>
-                <LuChevronRight className="h-4 w-4" />
+                <LuChevronRight className="size-6" />
               </CardContent>
             </Card>
 
