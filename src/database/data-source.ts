@@ -5,6 +5,9 @@ import { Channel } from '../channels/models/channel.entity';
 import { Image } from '../images/models/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
+import { ProposalActionPermission } from '../proposals/models/proposal-action-permission.entity';
+import { ProposalActionRoleMember } from '../proposals/models/proposal-action-role-member.model';
+import { ProposalActionRole } from '../proposals/models/proposal-action-role.entity';
 import { ProposalAction } from '../proposals/models/proposal-action.entity';
 import { ProposalConfig } from '../proposals/models/proposal-config.entity';
 import { Proposal } from '../proposals/models/proposal.entity';
@@ -34,6 +37,9 @@ export const dataSource = new DataSource({
     Permission,
     Proposal,
     ProposalAction,
+    ProposalActionPermission,
+    ProposalActionRole,
+    ProposalActionRoleMember,
     ProposalConfig,
     Role,
     ServerConfig,
