@@ -20,6 +20,8 @@ import { Card, CardContent } from '../../components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '../../components/ui/dialog';
@@ -201,12 +203,14 @@ export const EditRolePage = () => {
               onOpenChange={() => setIsConfirmDialogOpen(false)}
             >
               <DialogContent>
-                <DialogHeader>
+                <DialogHeader className="pt-6">
                   <DialogTitle>
                     {t('prompts.deleteItem', { itemType: 'role' })}
                   </DialogTitle>
                 </DialogHeader>
-                <div className="flex gap-2">
+                <DialogDescription>{roleData.role.name}</DialogDescription>
+
+                <DialogFooter className="flex flex-row justify-end gap-2">
                   <Button
                     variant="outline"
                     onClick={() => setIsConfirmDialogOpen(false)}
@@ -220,7 +224,7 @@ export const EditRolePage = () => {
                   >
                     {t('actions.delete')}
                   </Button>
-                </div>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </TabsContent>
