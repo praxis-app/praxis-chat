@@ -265,7 +265,7 @@ export const EditRolePage = () => {
               open={isAddMemberDialogOpen}
               onOpenChange={() => setIsAddMemberDialogOpen(false)}
             >
-              <DialogContent>
+              <DialogContent className="md:min-w-xl">
                 <DialogHeader>
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
                 </DialogHeader>
@@ -278,10 +278,7 @@ export const EditRolePage = () => {
                   />
                 ))}
                 <div className="mt-4 flex justify-end">
-                  <Button
-                    onClick={() => addMembers()}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2"
-                  >
+                  <Button onClick={() => addMembers()} className="w-18">
                     {t('roles.actions.add')}
                   </Button>
                 </div>
