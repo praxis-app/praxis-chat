@@ -6,7 +6,14 @@ import { Role } from '../../types/role.types';
 import { User } from '../../types/user.types';
 import { UserAvatar } from '../users/user-avatar';
 import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { LuX } from 'react-icons/lu';
 
 interface Props {
@@ -46,17 +53,17 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
     },
   });
 
+  const roleMemberName = roleMember.displayName || roleMember.name;
+
   return (
-    <div className="flex justify-between items-center mb-3 last:mb-0">
+    <div className="mb-3 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
         <UserAvatar
           userId={roleMember.id}
           name={roleMember.name}
           className="mr-3"
         />
-        <span className="mt-1">
-          {roleMember.displayName || roleMember.name}
-        </span>
+        <span className="mt-1">{roleMemberName}</span>
       </div>
 
       <Button
@@ -69,14 +76,18 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
       </Button>
 
       <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Remove role member?
+        <DialogContent className="md:min-w-sm">
+          <DialogHeader className="pt-3">
+            <DialogTitle className="text-left">
+              {t('roles.prompts.removeRoleMember')}
             </DialogTitle>
           </DialogHeader>
-          
-          <div className="flex gap-2 justify-end mt-4">
+
+          <DialogDescription className="pb-3">
+            {roleMemberName}
+          </DialogDescription>
+
+          <DialogFooter className="flex flex-row justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setIsConfirmModalOpen(false)}
@@ -90,7 +101,7 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
             >
               {t('actions.remove')}
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

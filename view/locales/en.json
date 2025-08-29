@@ -210,6 +210,9 @@
       "manageRoles": "Manage roles",
       "viewRoles": "View roles"
     },
+    "prompts": {
+      "removeRoleMember": "Remove role member?"
+    },
     "headers": {
       "serverRoles": "Roles",
       "viewServerRoles": "Roles Overview"
