@@ -20,7 +20,7 @@ export const PermissionDenied = ({
   return (
     <Box
       className={cn(
-        'fixed top-0 left-0 flex h-screen w-screen flex-col gap-10 pt-[115px] text-center',
+        'fixed top-0 left-0 flex h-screen w-screen flex-col gap-10 text-center',
         className,
       )}
     >
