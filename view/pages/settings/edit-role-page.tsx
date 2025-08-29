@@ -32,7 +32,7 @@ import {
   TabsTrigger,
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
-import { useAbility } from '../../hooks/role.hooks';
+import { useAbility } from '../../hooks/use-ability';
 import { Role } from '../../types/role.types';
 
 enum EditRoleTabName {
