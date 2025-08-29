@@ -56,7 +56,7 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
   const roleMemberName = roleMember.displayName || roleMember.name;
 
   return (
-    <div className="mb-3 flex items-center justify-between last:mb-0">
+    <div className="mb-4 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
         <UserAvatar
           userId={roleMember.id}

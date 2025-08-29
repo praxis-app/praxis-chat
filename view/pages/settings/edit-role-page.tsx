@@ -247,8 +247,8 @@ export const EditRolePage = () => {
             </Card>
 
             {!!roleData.role.members.length && (
-              <Card>
-                <CardContent>
+              <Card className="py-5">
+                <CardContent className="px-5">
                   {roleData.role.members.map((member) => (
                     <RoleMember
                       roleId={roleData.role.id}
