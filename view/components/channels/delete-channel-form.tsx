@@ -26,7 +26,7 @@ export const DeleteChannelFormSubmitButton = ({
   const { t } = useTranslation();
   return (
     <Button type="submit" variant="destructive" disabled={isSubmitting}>
-      {isSubmitting ? t('actions.deleting') : t('actions.delete')}
+      {isSubmitting ? t('states.deleting') : t('actions.delete')}
     </Button>
   );
 };

@@ -7,13 +7,17 @@
     "copy": "Copy",
     "create": "Create",
     "delete": "Delete",
-    "deleting": "Deleting...",
     "edit": "Edit",
     "remove": "Remove",
     "save": "Save",
     "submit": "Submit",
     "goToHome": "Back to home",
     "refresh": "Refresh"
+  },
+
+  "states": {
+    "saving": "Saving...",
+    "deleting": "Deleting..."
   },
 
   "prompts": {

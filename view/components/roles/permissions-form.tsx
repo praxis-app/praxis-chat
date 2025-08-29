@@ -141,7 +141,7 @@ export const PermissionsForm = ({ role }: Props) => {
 
       <div className="mt-6 flex justify-end">
         <Button disabled={isPending || !formState.isDirty} type="submit">
-          {isPending ? t('actions.save') : t('actions.save')}
+          {isPending ? t('states.saving') : t('actions.save')}
         </Button>
       </div>
     </form>
