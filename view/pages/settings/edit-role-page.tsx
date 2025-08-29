@@ -14,7 +14,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../client/api-client';
 import { TopNav } from '../../components/nav/top-nav';
-import { ProgressBar } from '../../components/shared/progress-bar';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import {
@@ -167,7 +166,7 @@ export const EditRolePage = () => {
   }
 
   if (isRolePending) {
-    return <ProgressBar />;
+    return null;
   }
 
   if (!roleData || roleError || eligibleUsersError) {
