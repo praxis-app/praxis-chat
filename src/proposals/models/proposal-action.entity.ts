@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { PROPOSAL_ACTION_TYPE } from '../proposal.constants';
 import { ProposalActionType } from '../proposal.types';
+import { ProposalActionRole } from './proposal-action-role.entity';
 import { Proposal } from './proposal.entity';
 
 @Entity()
@@ -19,16 +20,15 @@ export class ProposalAction {
   @Column({ type: 'enum', enum: PROPOSAL_ACTION_TYPE })
   actionType: ProposalActionType;
 
-  // TODO: Uncomment when ProposalActionRole is defined
-  // @OneToOne(
-  //   () => ProposalActionRole,
-  //   (proposedRole) => proposedRole.proposalAction,
-  //   {
-  //     cascade: true,
-  //     nullable: true,
-  //   },
-  // )
-  // role?: ProposalActionRole;
+  @OneToOne(
+    () => ProposalActionRole,
+    (proposedRole) => proposedRole.proposalAction,
+    {
+      cascade: true,
+      nullable: true,
+    },
+  )
+  role?: ProposalActionRole;
 
   @OneToOne(() => Proposal, (proposal) => proposal.action, {
     onDelete: 'CASCADE',

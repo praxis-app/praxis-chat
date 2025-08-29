@@ -13,6 +13,7 @@ import { Message } from '../messages/message.entity';
 import { Proposal } from '../proposals/models/proposal.entity';
 import { Role } from '../roles/models/role.entity';
 import { Vote } from '../votes/vote.entity';
+import { ProposalActionRoleMember } from '../proposals/models/proposal-action-role-member.model';
 
 @Entity()
 export class User {
@@ -69,6 +70,11 @@ export class User {
     cascade: true,
   })
   invites: Invite[];
+
+  @OneToMany(() => ProposalActionRoleMember, (roleMember) => roleMember.user, {
+    cascade: true,
+  })
+  proposalActionRoleMembers: ProposalActionRoleMember[];
 
   @CreateDateColumn()
   createdAt: Date;
