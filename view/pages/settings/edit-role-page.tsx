@@ -181,7 +181,7 @@ export const EditRolePage = () => {
 
       <Container>
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="mb-3 h-10 w-full">
+          <TabsList className="mb-4 h-10 w-full">
             <TabsTrigger value="display">{t('roles.tabs.display')}</TabsTrigger>
             <TabsTrigger value="permissions">
               {t('roles.tabs.permissions')}
