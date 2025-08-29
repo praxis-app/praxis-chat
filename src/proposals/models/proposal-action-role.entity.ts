@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { Role } from '../../roles/models/role.entity';
 import { ProposalActionPermission } from './proposal-action-permission.entity';
-import { ProposalActionRoleMember } from './proposal-action-role-member.model';
+import { ProposalActionRoleMember } from './proposal-action-role-member.entity';
 import { ProposalAction } from './proposal-action.entity';
 
 @Entity()

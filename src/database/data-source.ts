@@ -6,7 +6,7 @@ import { Image } from '../images/models/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { ProposalActionPermission } from '../proposals/models/proposal-action-permission.entity';
-import { ProposalActionRoleMember } from '../proposals/models/proposal-action-role-member.model';
+import { ProposalActionRoleMember } from '../proposals/models/proposal-action-role-member.entity';
 import { ProposalActionRole } from '../proposals/models/proposal-action-role.entity';
 import { ProposalAction } from '../proposals/models/proposal-action.entity';
 import { ProposalConfig } from '../proposals/models/proposal-config.entity';
