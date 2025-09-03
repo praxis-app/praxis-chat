@@ -12,9 +12,9 @@ import {
   sortConsensusVotesByType,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
-import { CreateProposalReq } from './models/dtos/create-proposal-req.dto';
-import { ProposalConfig } from './models/proposal-config.entity';
-import { Proposal } from './models/proposal.entity';
+import { CreateProposalReq } from './dtos/create-proposal-req.dto';
+import { ProposalConfig } from './entities/proposal-config.entity';
+import { Proposal } from './entities/proposal.entity';
 
 const imageRepository = dataSource.getRepository(Image);
 const proposalRepository = dataSource.getRepository(Proposal);

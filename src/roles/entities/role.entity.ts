@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProposalActionRole } from '../../proposals/proposal-actions/models/proposal-action-role.entity';
+import { ProposalActionRole } from '../../proposals/proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../../users/user.entity';
 import { Permission } from './permission.entity';
 
