@@ -1,4 +1,4 @@
-import { FindOptionsWhere, In } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, In } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
@@ -15,6 +15,7 @@ import {
 import { CreateProposalReq } from './dtos/create-proposal-req.dto';
 import { ProposalConfig } from './entities/proposal-config.entity';
 import { Proposal } from './entities/proposal.entity';
+import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
 
 const imageRepository = dataSource.getRepository(Image);
 const proposalRepository = dataSource.getRepository(Proposal);
@@ -200,10 +201,18 @@ export const createProposal = async (
     closingAt: closingAt || configClosingAt,
   };
 
+  const proposalAction: DeepPartial<ProposalAction> = {
+    actionType: action.actionType,
+    role: {
+      id: action.role?.roleToUpdateId,
+      permissions: action.role?.permissions,
+    },
+  };
+
   const proposal = await proposalRepository.save({
     body: sanitizedBody,
     config: proposalConfig,
-    action,
+    action: proposalAction,
     channelId,
     userId,
   });

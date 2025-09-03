@@ -2,8 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,14 +25,13 @@ export class ProposalActionPermission {
   @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
   subject: AbilitySubject;
 
-  @OneToOne(
+  @ManyToOne(
     () => ProposalActionRole,
-    (proposalActionRole) => proposalActionRole.permission,
+    (proposalActionRole) => proposalActionRole.permissions,
     {
       onDelete: 'CASCADE',
     },
   )
-  @JoinColumn()
   proposalActionRole: ProposalActionRole;
 
   @Column()

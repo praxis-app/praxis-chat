@@ -1,8 +1,8 @@
-import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
+import { CreateProposalActionReq } from '../../proposal-actions/dtos/create-proposal-action-req.dto';
 
 export interface CreateProposalReq {
   body: string;
   closingAt?: Date;
-  action: Partial<ProposalAction>;
+  action: CreateProposalActionReq;
   channelId: string;
 }

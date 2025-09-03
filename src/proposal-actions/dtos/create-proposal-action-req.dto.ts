@@ -1,6 +1,7 @@
-import { AbilitySubject } from '../../roles/app-ability';
+import { ProposalActionType } from '../../proposals/proposal.types';
+import { CreateProposalActionRoleReq } from './create-proposal-action-role-req.dto';
 
 export interface CreateProposalActionReq {
-  roleToUpdateId?: number;
-  permissions?: AbilitySubject[];
+  actionType: ProposalActionType;
+  role?: CreateProposalActionRoleReq;
 }

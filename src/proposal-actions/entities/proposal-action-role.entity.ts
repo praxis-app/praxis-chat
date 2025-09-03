@@ -31,16 +31,15 @@ export class ProposalActionRole {
   @Column({ nullable: true })
   oldColor?: string;
 
-  // TODO: This should be one to many
-  @OneToOne(
+  @OneToMany(
     () => ProposalActionPermission,
-    (permission) => permission.proposalActionRole,
+    (rolePermission) => rolePermission.proposalActionRole,
     {
       cascade: true,
       nullable: true,
     },
   )
-  permission?: ProposalActionPermission;
+  permissions?: ProposalActionPermission[];
 
   @OneToMany(
     () => ProposalActionRoleMember,
