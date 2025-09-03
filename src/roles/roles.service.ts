@@ -5,8 +5,8 @@ import { dataSource } from '../database/data-source';
 import { User } from '../users/user.entity';
 import { AbilityAction, AbilitySubject, AppAbility } from './app-ability';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
-import { Permission } from './models/permission.entity';
-import { Role } from './models/role.entity';
+import { Permission } from './entities/permission.entity';
+import { Role } from './entities/role.entity';
 
 export const DEFAULT_ROLE_COLOR = '#f44336';
 export const ADMIN_ROLE_NAME = 'admin';

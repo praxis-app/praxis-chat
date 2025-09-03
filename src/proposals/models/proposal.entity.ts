@@ -16,8 +16,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Channel } from '../../channels/models/channel.entity';
-import { Image } from '../../images/models/image.entity';
+import { Channel } from '../../channels/entities/channel.entity';
+import { Image } from '../../images/entities/image.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
 import { ProposalAction } from '../proposal-actions/models/proposal-action.entity';

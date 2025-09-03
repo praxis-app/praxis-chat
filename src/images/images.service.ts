@@ -1,6 +1,6 @@
 import { dataSource } from '../database/data-source';
 import { deleteImageFile } from './images.utils';
-import { Image } from './models/image.entity';
+import { Image } from './entities/image.entity';
 
 const imageRepository = dataSource.getRepository(Image);
 

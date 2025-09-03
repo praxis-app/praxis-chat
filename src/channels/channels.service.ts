@@ -2,8 +2,8 @@ import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as proposalsService from '../proposals/proposals.service';
-import { ChannelMember } from './models/channel-member.entity';
-import { Channel } from './models/channel.entity';
+import { ChannelMember } from './entities/channel-member.entity';
+import { Channel } from './entities/channel.entity';
 
 export interface CreateChannelReq {
   name: string;

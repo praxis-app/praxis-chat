@@ -7,12 +7,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ChannelMember } from '../channels/models/channel-member.entity';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { Proposal } from '../proposals/models/proposal.entity';
 import { ProposalActionRoleMember } from '../proposals/proposal-actions/models/proposal-action-role-member.entity';
-import { Role } from '../roles/models/role.entity';
+import { Role } from '../roles/entities/role.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()

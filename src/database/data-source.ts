@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
-import { ChannelMember } from '../channels/models/channel-member.entity';
-import { Channel } from '../channels/models/channel.entity';
-import { Image } from '../images/models/image.entity';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
+import { Channel } from '../channels/entities/channel.entity';
+import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { ProposalConfig } from '../proposals/models/proposal-config.entity';
@@ -11,9 +11,9 @@ import { ProposalActionPermission } from '../proposals/proposal-actions/models/p
 import { ProposalActionRoleMember } from '../proposals/proposal-actions/models/proposal-action-role-member.entity';
 import { ProposalActionRole } from '../proposals/proposal-actions/models/proposal-action-role.entity';
 import { ProposalAction } from '../proposals/proposal-actions/models/proposal-action.entity';
-import { Permission } from '../roles/models/permission.entity';
-import { Role } from '../roles/models/role.entity';
-import { ServerConfig } from '../server-configs/models/server-config.entity';
+import { Permission } from '../roles/entities/permission.entity';
+import { Role } from '../roles/entities/role.entity';
+import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Init1740949608930 } from './migrations/1740949608930-Init';
