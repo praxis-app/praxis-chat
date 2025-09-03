@@ -10,8 +10,8 @@ import {
 import { ChannelMember } from '../channels/models/channel-member.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { ProposalActionRoleMember } from '../proposals/models/proposal-action-role-member.entity';
 import { Proposal } from '../proposals/models/proposal.entity';
+import { ProposalActionRoleMember } from '../proposals/proposal-actions/models/proposal-action-role-member.entity';
 import { Role } from '../roles/models/role.entity';
 import { Vote } from '../votes/vote.entity';
 
@@ -71,9 +71,13 @@ export class User {
   })
   invites: Invite[];
 
-  @OneToMany(() => ProposalActionRoleMember, (roleMember) => roleMember.user, {
-    cascade: true,
-  })
+  @OneToMany(
+    () => ProposalActionRoleMember,
+    (proposalActionRoleMember) => proposalActionRoleMember.user,
+    {
+      cascade: true,
+    },
+  )
   proposalActionRoleMembers: ProposalActionRoleMember[];
 
   @CreateDateColumn()

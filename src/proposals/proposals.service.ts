@@ -12,21 +12,14 @@ import {
   sortConsensusVotesByType,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
-import { ProposalAction } from './models/proposal-action.entity';
+import { CreateProposalReq } from './models/dtos/create-proposal-req.dto';
 import { ProposalConfig } from './models/proposal-config.entity';
 import { Proposal } from './models/proposal.entity';
 
-interface CreateProposalReq {
-  body: string;
-  closingAt?: Date;
-  action: Partial<ProposalAction>;
-  channelId: string;
-}
-
-const proposalRepository = dataSource.getRepository(Proposal);
-const voteRepository = dataSource.getRepository(Vote);
 const imageRepository = dataSource.getRepository(Image);
+const proposalRepository = dataSource.getRepository(Proposal);
 const userRepository = dataSource.getRepository(User);
+const voteRepository = dataSource.getRepository(Vote);
 
 export const getProposal = (id: string, relations?: string[]) => {
   return proposalRepository.findOneOrFail({

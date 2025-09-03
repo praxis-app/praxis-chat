@@ -20,9 +20,9 @@ import { Channel } from '../../channels/models/channel.entity';
 import { Image } from '../../images/models/image.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
+import { ProposalAction } from '../proposal-actions/models/proposal-action.entity';
 import { PROPOSAL_STAGE } from '../proposal.constants';
 import { ProposalStage } from '../proposal.types';
-import { ProposalAction } from './proposal-action.entity';
 import { ProposalConfig } from './proposal-config.entity';
 
 @Entity()

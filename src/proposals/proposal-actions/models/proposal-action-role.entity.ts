@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from '../../roles/models/role.entity';
+import { Role } from '../../../roles/models/role.entity';
 import { ProposalActionPermission } from './proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './proposal-action-role-member.entity';
 import { ProposalAction } from './proposal-action.entity';
@@ -31,6 +31,7 @@ export class ProposalActionRole {
   @Column({ nullable: true })
   oldColor?: string;
 
+  // TODO: This should be one to many
   @OneToOne(
     () => ProposalActionPermission,
     (permission) => permission.proposalActionRole,

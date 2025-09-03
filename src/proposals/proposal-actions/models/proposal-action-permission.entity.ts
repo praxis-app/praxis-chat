@@ -1,5 +1,3 @@
-// TODO: Determine how proposed permission changes will be persisted
-
 import {
   Column,
   CreateDateColumn,
@@ -14,7 +12,7 @@ import {
   ABILITY_SUBJECTS,
   AbilityAction,
   AbilitySubject,
-} from '../../roles/app-ability';
+} from '../../../roles/app-ability';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
