@@ -1,4 +1,4 @@
-import { dataSource } from '../../database/data-source';
+import { dataSource } from '../database/data-source';
 import { CreateProposalActionReq } from './dtos/create-proposal-action-req.dto';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
 

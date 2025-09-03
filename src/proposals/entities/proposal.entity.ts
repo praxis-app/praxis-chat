@@ -18,9 +18,9 @@ import {
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Image } from '../../images/entities/image.entity';
+import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
-import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
 import { PROPOSAL_STAGE } from '../proposal.constants';
 import { ProposalStage } from '../proposal.types';
 import { ProposalConfig } from './proposal-config.entity';

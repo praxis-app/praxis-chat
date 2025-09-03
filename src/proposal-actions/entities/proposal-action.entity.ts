@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Proposal } from '../../entities/proposal.entity';
-import { PROPOSAL_ACTION_TYPE } from '../../../proposals/proposal.constants';
-import { ProposalActionType } from '../../../proposals/proposal.types';
+import { Proposal } from '../../proposals/entities/proposal.entity';
+import { PROPOSAL_ACTION_TYPE } from '../../proposals/proposal.constants';
+import { ProposalActionType } from '../../proposals/proposal.types';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()

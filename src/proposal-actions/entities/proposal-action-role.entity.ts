@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from '../../../roles/entities/role.entity';
+import { Role } from '../../roles/entities/role.entity';
 import { ProposalActionPermission } from './proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './proposal-action-role-member.entity';
 import { ProposalAction } from './proposal-action.entity';
