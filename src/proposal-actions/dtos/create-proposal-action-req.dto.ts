@@ -1,4 +1,4 @@
-import { AbilitySubject } from '../../../../roles/app-ability';
+import { AbilitySubject } from '../../roles/app-ability';
 
 export interface CreateProposalActionReq {
   roleToUpdateId?: number;
