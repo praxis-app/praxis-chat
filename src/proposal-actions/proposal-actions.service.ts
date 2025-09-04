@@ -82,30 +82,25 @@ export const implementChangeRole = async (proposalActionId: string) => {
   }
 };
 
-// TODO: Implement create role - uncomment and convert when ready
-// async implementCreateRole(proposalActionId: number, groupId?: number) {
-//   const role = await this.getProposalActionRole({ proposalActionId }, [
-//     'permission',
-//     'members',
-//   ]);
-//   if (!role) {
-//     throw new UserInputError('Could not find proposal action role');
-//   }
-//   const { name, color, permission } = role;
-//   const members = role.members?.map(({ userId }) => ({ id: userId }));
+export const implementCreateRole = async (proposalActionId: string) => {
+  const actionRole = await proposalActionRoleRepository.findOneOrFail({
+    where: { proposalActionId },
+    relations: ['permission', 'members'],
+  });
 
-//   const createRole = groupId
-//     ? this.groupRolesService.createGroupRole
-//     : this.serverRolesService.createServerRole;
+  const { name, color, permissions } = actionRole;
+  const members = actionRole.members?.map(({ userId }) => ({ id: userId }));
 
-//   await createRole(
-//     {
-//       name,
-//       color,
-//       permission,
-//       members,
-//       groupId,
-//     },
-//     true,
-//   );
-// }
+  if (!name || !color || !permissions || !members) {
+    throw new Error('Failed to find all required proposal action role data', {
+      cause: actionRole,
+    });
+  }
+
+  await rolesRepository.save({
+    name,
+    color,
+    permissions,
+    members,
+  });
+};

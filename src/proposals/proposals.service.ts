@@ -265,11 +265,9 @@ export const implementProposal = async (proposalId: string) => {
   if (actionType === 'change-role') {
     await proposalActionsService.implementChangeRole(id);
   }
-
-  // TODO: Implement create role
-  // if (actionType === 'create-role') {
-  //   await proposalActionsService.implementCreateRole(id);
-  // }
+  if (actionType === 'create-role') {
+    await proposalActionsService.implementCreateRole(id);
+  }
 };
 
 export const deleteProposal = async (proposalId: string) => {
