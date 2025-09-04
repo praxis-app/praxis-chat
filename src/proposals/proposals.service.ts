@@ -251,6 +251,7 @@ export const createProposal = async (
   return shapedProposal;
 };
 
+// TODO: Ensure notifications and pub-sub messages are sent when proposals are ratified
 export const ratifyProposal = async (proposalId: string) => {
   await proposalRepository.update(proposalId, {
     stage: 'ratified',
