@@ -11,11 +11,18 @@ import { Role } from './entities/role.entity';
 export const DEFAULT_ROLE_COLOR = '#f44336';
 export const ADMIN_ROLE_NAME = 'admin';
 
+// TODO: Add the following types to a separate file
+
 type PermissionMap = Record<string, AbilityAction[]>;
 
 interface CreateRoleReq {
   name: string;
   color: string;
+}
+
+interface UpdateRoleReq {
+  name?: string;
+  color?: string;
 }
 
 interface UpdateRolePermissionsReq {
@@ -118,7 +125,7 @@ export const createAdminRole = async (userId: string) => {
 
 export const updateRole = async (
   id: string,
-  { name, color }: CreateRoleReq,
+  { name, color }: UpdateRoleReq,
 ) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedColor = sanitizeText(color);
@@ -204,6 +211,7 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   });
 };
 
+// TODO: Remove `removeRoleMember` and leverage `removeRoleMembers` instead
 export const removeRoleMember = async (roleId: string, userId: string) => {
   const role = await roleRepository.findOne({
     where: { id: roleId },
@@ -213,6 +221,18 @@ export const removeRoleMember = async (roleId: string, userId: string) => {
     throw new Error('Role not found');
   }
   role.members = role.members.filter((member) => member.id !== userId);
+  await roleRepository.save(role);
+};
+
+export const removeRoleMembers = async (roleId: string, userIds: string[]) => {
+  const role = await roleRepository.findOne({
+    where: { id: roleId },
+    relations: ['members'],
+  });
+  if (!role) {
+    throw new Error('Role not found');
+  }
+  role.members = role.members.filter((member) => !userIds.includes(member.id));
   await roleRepository.save(role);
 };
 
