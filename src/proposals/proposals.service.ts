@@ -257,6 +257,21 @@ export const ratifyProposal = async (proposalId: string) => {
   });
 };
 
+export const implementProposal = async (proposalId: string) => {
+  const {
+    action: { id, actionType },
+  } = await getProposal(proposalId, ['action']);
+
+  if (actionType === 'change-role') {
+    await proposalActionsService.implementChangeRole(id);
+  }
+
+  // TODO: Implement create role
+  // if (actionType === 'create-role') {
+  //   await proposalActionsService.implementCreateRole(id);
+  // }
+};
+
 export const deleteProposal = async (proposalId: string) => {
   const images = await imageRepository.find({ where: { proposalId } });
   for (const { filename } of images) {
