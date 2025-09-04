@@ -5,8 +5,8 @@ export const DECISION_MAKING_MODEL = [
 ] as const;
 
 export const PROPOSAL_ACTION_TYPE = [
-  'change-role',
   'change-settings',
+  'change-role',
   'create-role',
   'plan-event',
   'test',

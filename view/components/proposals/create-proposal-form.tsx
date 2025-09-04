@@ -42,7 +42,7 @@ const formSchema = zod.object({
     .max(PROPOSAL_BODY_MAX, {
       message: t('proposals.errors.longBody'),
     }),
-  action: zod.enum(PROPOSAL_ACTION_TYPE),
+  action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
 });
 
 export const CreateProposalForm = ({
@@ -55,13 +55,16 @@ export const CreateProposalForm = ({
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { body: '', action: PROPOSAL_ACTION_TYPE[0] },
+    defaultValues: { body: '', action: '' },
   });
 
   const { mutate: createProposal, isPending } = useMutation({
     mutationFn: async (values: zod.infer<typeof formSchema>) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
+      }
+      if (!values.action) {
+        throw new Error('Action is required');
       }
       return api.createProposal(channelId, {
         body: values.body.trim(),
