@@ -11,8 +11,8 @@ import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
 export class ProposalActionRoleMember {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   changeType: string;
@@ -23,7 +23,7 @@ export class ProposalActionRoleMember {
   user: User;
 
   @Column()
-  userId: number;
+  userId: string;
 
   @ManyToOne(() => ProposalActionRole, (role) => role.members, {
     onDelete: 'CASCADE',
@@ -31,7 +31,7 @@ export class ProposalActionRoleMember {
   proposalActionRole: ProposalActionRole;
 
   @Column()
-  proposalActionRoleId: number;
+  proposalActionRoleId: string;
 
   @CreateDateColumn()
   createdAt: Date;

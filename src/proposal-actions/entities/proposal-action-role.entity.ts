@@ -16,8 +16,8 @@ import { ProposalAction } from './proposal-action.entity';
 
 @Entity()
 export class ProposalActionRole {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   name?: string;
@@ -58,7 +58,7 @@ export class ProposalActionRole {
   proposalAction: ProposalAction;
 
   @Column()
-  proposalActionId: number;
+  proposalActionId: string;
 
   @ManyToOne(() => Role, (role) => role.proposalActionRoles, {
     nullable: true,
@@ -67,7 +67,7 @@ export class ProposalActionRole {
   role?: Role;
 
   @Column({ nullable: true })
-  roleId?: number;
+  roleId?: string;
 
   @CreateDateColumn()
   createdAt: Date;

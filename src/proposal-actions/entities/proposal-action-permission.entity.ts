@@ -16,8 +16,8 @@ import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
 export class ProposalActionPermission {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'enum', enum: ABILITY_ACTIONS })
   action: AbilityAction;
@@ -35,7 +35,7 @@ export class ProposalActionPermission {
   proposalActionRole: ProposalActionRole;
 
   @Column()
-  proposalActionRoleId: number;
+  proposalActionRoleId: string;
 
   @CreateDateColumn()
   createdAt: Date;

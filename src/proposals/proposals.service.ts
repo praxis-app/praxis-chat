@@ -1,9 +1,11 @@
-import { DeepPartial, FindOptionsWhere, In } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
-import { deleteImageFile } from '../images/images.utils';
 import { Image } from '../images/entities/image.entity';
+import { deleteImageFile } from '../images/images.utils';
+import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
+import * as proposalActionsService from '../proposal-actions/proposal-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { getServerConfig } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
@@ -15,7 +17,6 @@ import {
 import { CreateProposalReq } from './dtos/create-proposal-req.dto';
 import { ProposalConfig } from './entities/proposal-config.entity';
 import { Proposal } from './entities/proposal.entity';
-import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
 
 const imageRepository = dataSource.getRepository(Image);
 const proposalRepository = dataSource.getRepository(Proposal);
@@ -201,12 +202,8 @@ export const createProposal = async (
     closingAt: closingAt || configClosingAt,
   };
 
-  const proposalAction: DeepPartial<ProposalAction> = {
+  const proposalAction: Partial<ProposalAction> = {
     actionType: action.actionType,
-    role: {
-      id: action.role?.roleToUpdateId,
-      permissions: action.role?.permissions,
-    },
   };
 
   const proposal = await proposalRepository.save({
@@ -216,6 +213,13 @@ export const createProposal = async (
     channelId,
     userId,
   });
+
+  if (action.role) {
+    await proposalActionsService.createProposalActionRole(
+      proposal.action.id,
+      action.role,
+    );
+  }
 
   // Shape to match feed expectations
   const shapedProposal = {
