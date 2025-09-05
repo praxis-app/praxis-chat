@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { dataSource } from '../database/data-source';
-import { ServerConfig } from './models/server-config.entity';
+import { ServerConfig } from './entities/server-config.entity';
 
 dotenv.config();
 

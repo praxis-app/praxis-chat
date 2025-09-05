@@ -14,8 +14,8 @@ export class ChannelMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true, type: 'int' })
-  lastMessageReadId: number | null;
+  @Column({ nullable: true, type: 'uuid' })
+  lastMessageReadId: string | null;
 
   @ManyToOne(() => User, (user) => user.channelMembers, {
     onDelete: 'CASCADE',

@@ -96,7 +96,7 @@
   "proposals": {
     "labels": {
       "body": "Proposal",
-      "actionType": "Action type",
+      "actionType": "Action",
       "active": "Active",
       "closed": "Closed",
       "consensusProposal": "Consensus Proposal"
@@ -105,7 +105,7 @@
       "create": "Create a New Proposal"
     },
     "placeholders": {
-      "action": "Select an action",
+      "action": "Select an action type",
       "body": "Enter your proposal details..."
     },
     "actions": {

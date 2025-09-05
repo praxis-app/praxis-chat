@@ -34,7 +34,7 @@ export const createVote = async (voteData: CreateVoteReq, userId: string) => {
   );
   if (isProposalRatifiable) {
     await proposalsService.ratifyProposal(vote.proposalId);
-    // TODO: Implement proposal here (implementProposal)
+    await proposalsService.implementProposal(vote.proposalId);
   }
 
   return vote;
@@ -50,7 +50,7 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
     );
     if (isProposalRatifiable) {
       await proposalsService.ratifyProposal(vote.proposalId);
-      // TODO: Implement proposal here (implementProposal)
+      await proposalsService.implementProposal(vote.proposalId);
     }
   }
 

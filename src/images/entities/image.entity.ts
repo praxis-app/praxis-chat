@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/models/proposal.entity';
+import { Proposal } from '../../proposals/entities/proposal.entity';
 
 @Entity()
 export class Image {
