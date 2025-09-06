@@ -8,10 +8,8 @@ import { CHANNEL_ACCESS_MAP } from './channel-access';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
 
-export const DEFAULT_ROLE_COLOR = '#f44336';
-export const ADMIN_ROLE_NAME = 'admin';
-
-// TODO: Add the following types to a separate file
+const DEFAULT_ROLE_COLOR = '#f44336';
+const ADMIN_ROLE_NAME = 'admin';
 
 type PermissionMap = Record<string, AbilityAction[]>;
 
