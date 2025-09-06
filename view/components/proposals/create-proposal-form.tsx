@@ -68,7 +68,7 @@ export const CreateProposalForm = ({
       }
       return api.createProposal(channelId, {
         body: values.body.trim(),
-        action: values.action,
+        action: { actionType: values.action },
         images: [],
       });
     },

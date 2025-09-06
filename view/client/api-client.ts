@@ -1,12 +1,7 @@
 // API client for server endpoints
 
-import {
-  CreateProposalReq,
-  CreateVoteReq,
-  Proposal,
-  UpdateVoteReq,
-  Vote,
-} from '@/types/proposal.types';
+import { CreateProposalReq, Proposal } from '@/types/proposal.types';
+import { CreateVoteReq, UpdateVoteReq, Vote } from '@/types/vote.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
 import { LocalStorageKeys } from '../constants/shared.constants';
