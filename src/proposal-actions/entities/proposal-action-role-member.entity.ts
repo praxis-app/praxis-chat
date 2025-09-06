@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/user.entity';
-import { CHANGE_TYPE } from '../proposal-action.constants';
-import { ChangeType } from '../proposal-action.types';
+import { ROLE_MEMBER_CHANGE_TYPE } from '../proposal-action.constants';
+import { RoleMemberChangeType } from '../proposal-action.types';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
@@ -16,8 +16,8 @@ export class ProposalActionRoleMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: CHANGE_TYPE })
-  changeType: ChangeType;
+  @Column({ type: 'enum', enum: ROLE_MEMBER_CHANGE_TYPE })
+  changeType: RoleMemberChangeType;
 
   @ManyToOne(() => User, (user) => user.proposalActionRoleMembers, {
     onDelete: 'CASCADE',

@@ -1,3 +1,3 @@
-import { CHANGE_TYPE } from './proposal-action.constants';
+import { ROLE_MEMBER_CHANGE_TYPE } from './proposal-action.constants';
 
-export type ChangeType = (typeof CHANGE_TYPE)[number];
+export type RoleMemberChangeType = (typeof ROLE_MEMBER_CHANGE_TYPE)[number];

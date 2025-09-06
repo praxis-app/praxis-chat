@@ -1,6 +1,6 @@
-import { ChangeType } from '../proposal-action.types';
+import { RoleMemberChangeType } from '../proposal-action.types';
 
 export interface CreateProposalActionRoleMemberReq {
   userId: string;
-  changeType: ChangeType;
+  changeType: RoleMemberChangeType;
 }
