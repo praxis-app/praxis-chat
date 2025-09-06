@@ -5,12 +5,12 @@ import * as proposalsService from '../proposals/proposals.service';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
 
-export interface CreateChannelReq {
+export interface CreateChannelDto {
   name: string;
   description?: string;
 }
 
-export interface UpdateChannelReq {
+export interface UpdateChannelDto {
   name: string;
   description?: string;
 }
@@ -118,7 +118,7 @@ export const addMemberToAllChannels = async (userId: string) => {
 };
 
 export const createChannel = (
-  { name, description }: CreateChannelReq,
+  { name, description }: CreateChannelDto,
   currentUserId: string,
 ) => {
   const sanitizedName = sanitizeText(name);
@@ -134,7 +134,7 @@ export const createChannel = (
 
 export const updateChannel = async (
   channelId: string,
-  { name, description }: UpdateChannelReq,
+  { name, description }: UpdateChannelDto,
 ) => {
   const sanitizedName = sanitizeText(name);
   const normalizedName = sanitizedName.toLocaleLowerCase();

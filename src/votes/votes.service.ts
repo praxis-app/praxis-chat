@@ -4,7 +4,7 @@ import * as proposalsService from '../proposals/proposals.service';
 import { Vote } from './vote.entity';
 import { VoteType } from './vote.types';
 
-interface CreateVoteReq {
+interface CreateVoteDto {
   proposalId: string;
   voteType: VoteType;
 }
@@ -23,7 +23,7 @@ export const getVoteCount = async () => {
   return voteRepository.count();
 };
 
-export const createVote = async (voteData: CreateVoteReq, userId: string) => {
+export const createVote = async (voteData: CreateVoteDto, userId: string) => {
   const vote = await voteRepository.save({
     ...voteData,
     userId,

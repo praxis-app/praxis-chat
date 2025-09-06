@@ -1,6 +1,6 @@
 import { AbilityAction, AbilitySubject } from '../../roles/app-ability';
 
-export interface CreateProposalActionRolePermissionReq {
+export interface ProposalActionRolePermissionDto {
   subject: AbilitySubject;
   actions: AbilityAction[];
 }

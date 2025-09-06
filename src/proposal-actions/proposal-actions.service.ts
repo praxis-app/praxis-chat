@@ -1,7 +1,7 @@
 import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
-import { CreateProposalActionRoleReq } from './dtos/create-proposal-action-role-req.dto';
+import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
 
@@ -12,7 +12,7 @@ const rolesRepository = dataSource.getRepository(Role);
 
 export const createProposalActionRole = async (
   proposalActionId: string,
-  { roleToUpdateId, members, ...role }: CreateProposalActionRoleReq,
+  { roleToUpdateId, members, ...role }: ProposalActionRoleDto,
 ) => {
   const savedRole = await proposalActionRoleRepository.save({
     ...role,

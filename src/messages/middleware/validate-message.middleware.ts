@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { sanitizeText } from '../../common/common.utils';
-import { CreateMessageReq } from '../messages.service';
+import { CreateMessageDto } from '../messages.service';
 
 const MESSAGE_BODY_MAX = 6000;
 const MESSAGE_IMAGE_COUNT_MAX = 5;
@@ -10,7 +10,7 @@ export const validateMessage = (
   res: Response,
   next: NextFunction,
 ) => {
-  const message = req.body as CreateMessageReq;
+  const message = req.body as CreateMessageDto;
   if (typeof message.channelId !== 'string') {
     res.status(422).send('Channel ID must be a string');
     return;

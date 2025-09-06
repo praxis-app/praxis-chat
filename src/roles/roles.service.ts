@@ -15,17 +15,17 @@ export const ADMIN_ROLE_NAME = 'admin';
 
 type PermissionMap = Record<string, AbilityAction[]>;
 
-interface CreateRoleReq {
+interface CreateRoleDto {
   name: string;
   color: string;
 }
 
-interface UpdateRoleReq {
+interface UpdateRoleDto {
   name?: string;
   color?: string;
 }
 
-interface UpdateRolePermissionsReq {
+interface UpdateRolePermissionsDto {
   permissions: RawRuleOf<AppAbility>[];
 }
 
@@ -103,7 +103,7 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   });
 };
 
-export const createRole = async ({ name, color }: CreateRoleReq) => {
+export const createRole = async ({ name, color }: CreateRoleDto) => {
   const role = await roleRepository.save({ name, color });
   return { ...role, memberCount: 0 };
 };
@@ -125,7 +125,7 @@ export const createAdminRole = async (userId: string) => {
 
 export const updateRole = async (
   id: string,
-  { name, color }: UpdateRoleReq,
+  { name, color }: UpdateRoleDto,
 ) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedColor = sanitizeText(color);
@@ -138,7 +138,7 @@ export const updateRole = async (
 
 export const updateRolePermissions = async (
   roleId: string,
-  { permissions }: UpdateRolePermissionsReq,
+  { permissions }: UpdateRolePermissionsDto,
 ) => {
   const role = await roleRepository.findOne({
     where: { id: roleId },

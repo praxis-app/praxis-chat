@@ -11,7 +11,7 @@ enum MessageType {
   IMAGE = 'image',
 }
 
-export interface CreateMessageReq {
+export interface CreateMessageDto {
   body?: string;
   channelId: string;
   imageCount: number;
@@ -62,7 +62,7 @@ export const getMessages = async (
 };
 
 export const createMessage = async (
-  { body, imageCount, ...messageData }: CreateMessageReq,
+  { body, imageCount, ...messageData }: CreateMessageDto,
   user: User,
 ) => {
   const message = await messageRepository.save({

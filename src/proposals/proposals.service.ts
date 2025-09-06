@@ -14,7 +14,7 @@ import {
   sortConsensusVotesByType,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
-import { CreateProposalReq } from './dtos/create-proposal-req.dto';
+import { ProposalDto } from './dtos/proposal.dto';
 import { ProposalConfig } from './entities/proposal-config.entity';
 import { Proposal } from './entities/proposal.entity';
 
@@ -181,7 +181,7 @@ export const hasMajorityVote = (
 };
 
 export const createProposal = async (
-  { body, closingAt, action, channelId }: CreateProposalReq,
+  { body, closingAt, action, channelId }: ProposalDto,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);
