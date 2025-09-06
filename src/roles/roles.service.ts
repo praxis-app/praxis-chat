@@ -209,19 +209,6 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   });
 };
 
-// TODO: Remove `removeRoleMember` and leverage `removeRoleMembers` instead
-export const removeRoleMember = async (roleId: string, userId: string) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
-    relations: ['members'],
-  });
-  if (!role) {
-    throw new Error('Role not found');
-  }
-  role.members = role.members.filter((member) => member.id !== userId);
-  await roleRepository.save(role);
-};
-
 export const removeRoleMembers = async (roleId: string, userIds: string[]) => {
   const role = await roleRepository.findOne({
     where: { id: roleId },
