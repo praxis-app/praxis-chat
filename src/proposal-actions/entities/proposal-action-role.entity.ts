@@ -33,7 +33,7 @@ export class ProposalActionRole {
 
   @OneToMany(
     () => ProposalActionPermission,
-    (rolePermission) => rolePermission.proposalActionRole,
+    (permission) => permission.proposalActionRole,
     {
       cascade: true,
       nullable: true,
@@ -43,7 +43,7 @@ export class ProposalActionRole {
 
   @OneToMany(
     () => ProposalActionRoleMember,
-    (roleMember) => roleMember.proposalActionRole,
+    (member) => member.proposalActionRole,
     {
       cascade: true,
       nullable: true,
