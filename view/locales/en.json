@@ -16,6 +16,7 @@
     "previous": "Previous",
     "enabled": "Enabled",
     "disabled": "Disabled",
+    "loading": "Loading...",
     "refresh": "Refresh"
   },
 
@@ -140,6 +141,19 @@
       "rolesPermissions": "Roles and Permissions",
       "rolesPermissionsDescription": "Configure the roles and permissions changes",
       "permissions": "Permissions",
+      "roleMembers": "Role Members",
+      "roleMembersDescription": "Add or remove members from the role",
+      "selectRole": "Select Role",
+      "selectRoleDescription": "Choose the role you want to modify",
+      "availableRoles": "Available Roles",
+      "roleSelection": "Role Selection",
+      "selectRolePlaceholder": "Select a role...",
+      "selectedRoleInfo": "Selected Role Information",
+      "searchMembers": "Search Members",
+      "searchPlaceholder": "Search users...",
+      "memberChanges": "Member Changes",
+      "noUsersFound": "No users found",
+      "selectedRole": "Selected Role",
       "review": "Review Proposal",
       "reviewDescription": "Review your proposal before submitting"
     }

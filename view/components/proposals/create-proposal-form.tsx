@@ -13,7 +13,9 @@ import * as zod from 'zod';
 import { Form } from '../ui/form';
 import { Wizard, WizardStepData } from '../shared/wizard';
 import { BasicProposalStep } from './wizard-steps/basic-proposal-step';
+import { RoleSelectionStep } from './wizard-steps/role-selection-step';
 import { RolesPermissionsStep } from './wizard-steps/roles-permissions-step';
+import { RoleMembersStep } from './wizard-steps/role-members-step';
 import { ReviewStep } from './wizard-steps/review-step';
 
 const PROPOSAL_BODY_MAX = 6000;
@@ -33,6 +35,11 @@ const formSchema = zod.object({
     }),
   action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
   permissions: zod.record(zod.string(), zod.boolean()).optional(),
+  roleMembers: zod.array(zod.object({
+    userId: zod.string(),
+    changeType: zod.enum(['add', 'remove']),
+  })).optional(),
+  selectedRoleId: zod.string().optional(),
 });
 
 export const CreateProposalForm = ({
@@ -46,7 +53,13 @@ export const CreateProposalForm = ({
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { body: '', action: '', permissions: {} },
+    defaultValues: { 
+      body: '', 
+      action: '', 
+      permissions: {},
+      roleMembers: [],
+      selectedRoleId: '',
+    },
   });
 
   const { mutate: createProposal, isPending } = useMutation({
@@ -62,6 +75,8 @@ export const CreateProposalForm = ({
         action: {
           actionType: values.action,
           ...(values.permissions && { permissions: values.permissions }),
+          ...(values.roleMembers && { members: values.roleMembers }),
+          ...(values.selectedRoleId && { roleToUpdateId: values.selectedRoleId }),
         },
         images: [],
       });
@@ -127,10 +142,22 @@ export const CreateProposalForm = ({
     ...(showRolesPermissionsStep
       ? [
           {
+            id: 'role-selection',
+            title: t('proposals.wizard.selectRole'),
+            description: t('proposals.wizard.selectRoleDescription'),
+            component: RoleSelectionStep,
+          },
+          {
             id: 'roles-permissions',
             title: t('proposals.wizard.rolesPermissions'),
             description: t('proposals.wizard.rolesPermissionsDescription'),
             component: RolesPermissionsStep,
+          },
+          {
+            id: 'role-members',
+            title: t('proposals.wizard.roleMembers'),
+            description: t('proposals.wizard.roleMembersDescription'),
+            component: RoleMembersStep,
           },
         ]
       : []),

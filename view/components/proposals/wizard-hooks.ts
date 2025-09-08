@@ -5,6 +5,8 @@ interface ProposalFormData {
   body: string;
   action: '' | 'change-role' | 'change-settings' | 'create-role' | 'plan-event' | 'test';
   permissions?: Record<string, boolean>;
+  roleMembers?: Array<{ userId: string; changeType: 'add' | 'remove' }>;
+  selectedRoleId?: string;
 }
 
 interface WizardContextType {

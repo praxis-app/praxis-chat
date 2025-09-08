@@ -16,7 +16,7 @@ export const ReviewStep = (_props: ReviewStepProps) => {
   const { form, onSubmit, onPrevious, isSubmitting } = useWizardContext();
   
   const formValues = form.getValues();
-  const { action, body, permissions } = formValues;
+  const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
 
   return (
     <div className="space-y-6">
@@ -70,6 +70,37 @@ export const ReviewStep = (_props: ReviewStepProps) => {
                     </div>
                   );
                 })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {action === 'change-role' && selectedRoleId && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('proposals.wizard.selectedRole')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm">{selectedRoleId}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {action === 'change-role' && roleMembers && roleMembers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('proposals.wizard.memberChanges')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {roleMembers.map((member, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-sm">User ID: {member.userId}</span>
+                    <Badge variant={member.changeType === 'add' ? 'default' : 'destructive'}>
+                      {member.changeType === 'add' ? t('actions.add' as never) : t('actions.remove')}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
