@@ -125,7 +125,6 @@
     },
     "actionTypes": {
       "change-role": "Change role",
-      "change-roles-and-permissions": "Change Roles and Permissions",
       "change-settings": "Change settings",
       "create-role": "Create role",
       "plan-event": "Plan event",

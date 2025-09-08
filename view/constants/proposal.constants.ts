@@ -6,7 +6,6 @@ export const DECISION_MAKING_MODEL = [
 
 export const PROPOSAL_ACTION_TYPE = [
   'change-settings',
-  'change-roles-and-permissions',
   'change-role',
   'create-role',
   'plan-event',

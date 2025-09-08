@@ -31,7 +31,7 @@ export const BasicProposalStep = (_props: BasicProposalStepProps) => {
 
   const handleNext = () => {
     const actionType = form.getValues('action');
-    if (actionType === 'change-roles-and-permissions') {
+    if (actionType === 'change-role') {
       // This will be handled by the wizard logic
       onNext();
     } else {

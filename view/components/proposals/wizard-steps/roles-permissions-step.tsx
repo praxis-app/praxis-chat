@@ -7,7 +7,7 @@ import { useWizardContext } from '../wizard-hooks';
 
 interface ProposalFormData {
   body: string;
-  action: '' | 'change-role' | 'change-roles-and-permissions' | 'change-settings' | 'create-role' | 'plan-event' | 'test';
+  action: '' | 'change-role' | 'change-settings' | 'create-role' | 'plan-event' | 'test';
   permissions?: Record<string, boolean>;
 }
 

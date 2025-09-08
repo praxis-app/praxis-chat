@@ -48,7 +48,7 @@ export const ReviewStep = (_props: ReviewStepProps) => {
           </CardContent>
         </Card>
 
-        {action === 'change-roles-and-permissions' && permissions && (
+        {action === 'change-role' && permissions && (
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{t('proposals.wizard.permissions')}</CardTitle>

@@ -115,7 +115,7 @@ export const CreateProposalForm = ({
 
   // Determine which steps to show based on action type
   const actionType = form.watch('action');
-  const showRolesPermissionsStep = actionType === 'change-roles-and-permissions';
+  const showRolesPermissionsStep = actionType === 'change-role';
 
   const steps: WizardStepData[] = [
     {
