@@ -28,9 +28,8 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   const { form, onNext, onPrevious } = useWizardContext();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const formValues = form.getValues();
-  const roleMembers = formValues.roleMembers || [];
-  const selectedRoleId = formValues.selectedRoleId;
+  const roleMembers = form.watch('roleMembers') || [];
+  const selectedRoleId = form.watch('selectedRoleId');
 
   // Get eligible users for the selected role
   const { data: eligibleUsersData, isLoading: isLoadingEligible } = useQuery({
@@ -47,7 +46,10 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   });
 
   const setFieldValue = (field: string, value: unknown) => {
-    form.setValue(field as keyof ProposalFormData, value as never);
+    form.setValue(field as keyof ProposalFormData, value as never, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const handleMemberChange = (memberChanges: Array<{ userId: string; changeType: 'add' | 'remove' }>) => {

@@ -22,8 +22,7 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
   const { t } = useTranslation();
   const { form, onNext, onPrevious } = useWizardContext();
 
-  const formValues = form.getValues();
-  const permissions = formValues.permissions || {};
+  const permissions = form.watch('permissions') || {};
 
   const setFieldValue = (field: string, value?: boolean) => {
     // Handle nested field paths like "permissions.manageRoles"
@@ -38,9 +37,15 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
       const filteredPermissions = Object.fromEntries(
         Object.entries(newPermissions).filter(([_, v]) => v !== undefined)
       ) as Record<string, boolean>;
-      form.setValue('permissions', filteredPermissions);
+      form.setValue('permissions', filteredPermissions, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     } else {
-      form.setValue(field as keyof ProposalFormData, value as never);
+      form.setValue(field as keyof ProposalFormData, value as never, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   };
 
@@ -68,7 +73,7 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
             {PERMISSION_KEYS.map((permissionName) => (
               <ProposePermissionToggle
                 key={permissionName}
-                formValues={formValues as unknown as Record<string, unknown>}
+                formValues={{ permissions }}
                 permissionName={permissionName}
                 permissions={permissions}
                 setFieldValue={setFieldValue}
