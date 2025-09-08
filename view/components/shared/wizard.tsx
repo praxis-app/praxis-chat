@@ -1,8 +1,8 @@
-import { cn } from '../../lib/shared.utils';
-import { WizardStep } from './wizard-step';
-import { WizardProvider } from '../proposals/wizard-context';
 import { UseFormReturn } from 'react-hook-form';
+import { cn } from '../../lib/shared.utils';
+import { WizardProvider } from '../proposals/wizard-context';
 import { ProposalFormData } from '../proposals/wizard-hooks';
+import { WizardStep } from './wizard-step';
 
 interface StepComponentProps {
   stepIndex: number;
@@ -71,17 +71,18 @@ export const Wizard = ({
 
         {/* Step Content */}
         <div className="min-h-[400px]">
-          {steps[currentStep] && (() => {
-            const StepComponent = steps[currentStep].component;
-            return (
-              <StepComponent
-                stepIndex={currentStep}
-                totalSteps={steps.length}
-                isFirstStep={currentStep === 0}
-                isLastStep={currentStep === steps.length - 1}
-              />
-            );
-          })()}
+          {steps[currentStep] &&
+            (() => {
+              const StepComponent = steps[currentStep].component;
+              return (
+                <StepComponent
+                  stepIndex={currentStep}
+                  totalSteps={steps.length}
+                  isFirstStep={currentStep === 0}
+                  isLastStep={currentStep === steps.length - 1}
+                />
+              );
+            })()}
         </div>
       </div>
     </WizardProvider>

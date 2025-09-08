@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import * as zod from 'zod';
 import { Form } from '../ui/form';
-import { Wizard, WizardStepData } from '../ui/wizard';
+import { Wizard, WizardStepData } from '../shared/wizard';
 import { BasicProposalStep } from './wizard-steps/basic-proposal-step';
 import { RolesPermissionsStep } from './wizard-steps/roles-permissions-step';
 import { ReviewStep } from './wizard-steps/review-step';
@@ -59,9 +59,9 @@ export const CreateProposalForm = ({
       }
       return api.createProposal(channelId, {
         body: values.body.trim(),
-        action: { 
+        action: {
           actionType: values.action,
-          ...(values.permissions && { permissions: values.permissions })
+          ...(values.permissions && { permissions: values.permissions }),
         },
         images: [],
       });
@@ -124,12 +124,16 @@ export const CreateProposalForm = ({
       description: t('proposals.wizard.basicInfoDescription'),
       component: BasicProposalStep,
     },
-    ...(showRolesPermissionsStep ? [{
-      id: 'roles-permissions',
-      title: t('proposals.wizard.rolesPermissions'),
-      description: t('proposals.wizard.rolesPermissionsDescription'),
-      component: RolesPermissionsStep,
-    }] : []),
+    ...(showRolesPermissionsStep
+      ? [
+          {
+            id: 'roles-permissions',
+            title: t('proposals.wizard.rolesPermissions'),
+            description: t('proposals.wizard.rolesPermissionsDescription'),
+            component: RolesPermissionsStep,
+          },
+        ]
+      : []),
     {
       id: 'review',
       title: t('proposals.wizard.review'),
