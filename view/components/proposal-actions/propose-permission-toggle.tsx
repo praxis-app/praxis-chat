@@ -1,16 +1,12 @@
-// TODO: Convert from Material UI to Shadcn UI
-
-import { Box, Switch, Typography } from '@mui/material';
-import { t } from 'i18next';
-import { ChangeEvent } from 'react';
-import theme from '../../../styles/theme';
-import Flex from '../../Shared/Flex';
 import { getPermissionText } from '@/lib/role.utils';
+import { PermissionKeys } from '@/types/role.types';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 
 interface Props {
-  formValues: any;
-  permissionName: any;
-  permissions: Partial<any>;
+  formValues: Record<string, unknown>;
+  permissionName: PermissionKeys;
+  permissions: Partial<Record<PermissionKeys, boolean>>;
   setFieldValue(field: string, value?: boolean): void;
 }
 
@@ -23,15 +19,13 @@ export const ProposePermissionToggle = ({
   const { displayName, description } = getPermissionText(permissionName);
 
   const permissionInput =
-    formValues.permissions && formValues.permissions[permissionName];
+    formValues.permissions && (formValues.permissions as Record<string, boolean>)[permissionName];
   const isEnabled = permissions[permissionName];
   const isChecked = !!(permissionInput !== undefined
     ? permissionInput
     : isEnabled);
 
-  const handleSwitchChange = ({
-    target: { checked },
-  }: ChangeEvent<HTMLInputElement>) => {
+  const handleSwitchChange = (checked: boolean) => {
     const field = `permissions.${permissionName}`;
 
     if (!checked && isEnabled) {
@@ -46,20 +40,22 @@ export const ProposePermissionToggle = ({
   };
 
   return (
-    <Flex justifyContent="space-between" marginBottom={2.8}>
-      <Box>
-        <Typography>{displayName}</Typography>
-
-        <Typography fontSize={12} sx={{ color: theme.palette.text.secondary }}>
+    <div className="flex items-center justify-between space-x-2 py-2">
+      <div className="space-y-1">
+        <Label htmlFor={`permission-${permissionName}`} className="text-sm font-medium">
+          {displayName}
+        </Label>
+        <p className="text-xs text-muted-foreground">
           {description}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       <Switch
-        inputProps={{ 'aria-label': displayName || t('labels.switch') }}
-        onChange={handleSwitchChange}
+        id={`permission-${permissionName}`}
         checked={isChecked}
+        onCheckedChange={handleSwitchChange}
+        aria-label={displayName}
       />
-    </Flex>
+    </div>
   );
 };

@@ -7,25 +7,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import * as zod from 'zod';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { Textarea } from '../ui/textarea';
+import { Form } from '../ui/form';
+import { Wizard, WizardStepData } from '../ui/wizard';
+import { BasicProposalStep } from './wizard-steps/basic-proposal-step';
+import { RolesPermissionsStep } from './wizard-steps/roles-permissions-step';
+import { ReviewStep } from './wizard-steps/review-step';
 
 const PROPOSAL_BODY_MAX = 6000;
 
@@ -43,6 +32,7 @@ const formSchema = zod.object({
       message: t('proposals.errors.longBody'),
     }),
   action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
+  permissions: zod.record(zod.string(), zod.boolean()).optional(),
 });
 
 export const CreateProposalForm = ({
@@ -52,10 +42,11 @@ export const CreateProposalForm = ({
 }: CreateProposalFormProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [currentStep, setCurrentStep] = useState(0);
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { body: '', action: '' },
+    defaultValues: { body: '', action: '', permissions: {} },
   });
 
   const { mutate: createProposal, isPending } = useMutation({
@@ -68,7 +59,10 @@ export const CreateProposalForm = ({
       }
       return api.createProposal(channelId, {
         body: values.body.trim(),
-        action: { actionType: values.action },
+        action: { 
+          actionType: values.action,
+          ...(values.permissions && { permissions: values.permissions })
+        },
         images: [],
       });
     },
@@ -119,64 +113,65 @@ export const CreateProposalForm = ({
     },
   });
 
+  // Determine which steps to show based on action type
+  const actionType = form.watch('action');
+  const showRolesPermissionsStep = actionType === 'change-roles-and-permissions';
+
+  const steps: WizardStepData[] = [
+    {
+      id: 'basic',
+      title: t('proposals.wizard.basicInfo'),
+      description: t('proposals.wizard.basicInfoDescription'),
+      component: BasicProposalStep,
+    },
+    ...(showRolesPermissionsStep ? [{
+      id: 'roles-permissions',
+      title: t('proposals.wizard.rolesPermissions'),
+      description: t('proposals.wizard.rolesPermissionsDescription'),
+      component: RolesPermissionsStep,
+    }] : []),
+    {
+      id: 'review',
+      title: t('proposals.wizard.review'),
+      description: t('proposals.wizard.reviewDescription'),
+      component: ReviewStep,
+    },
+  ];
+
+  const handleStepChange = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    form.handleSubmit((values) => createProposal(values))();
+  };
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => createProposal(values))}
+      <Wizard
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={handleStepChange}
+        allowStepNavigation={false}
         className="space-y-6"
-      >
-        <FormField
-          control={form.control}
-          name="action"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('proposals.labels.actionType')}</FormLabel>
-              <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={t('proposals.placeholders.action')}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROPOSAL_ACTION_TYPE.map((action) => (
-                      <SelectItem key={action} value={action}>
-                        {t(`proposals.actionTypes.${action}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="body"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('proposals.labels.body')}</FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder={t('proposals.placeholders.body')}
-                  className="w-full resize-none md:min-w-md"
-                  rows={4}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={isPending || !channelId}>
-            {isPending ? t('actions.submit') : t('proposals.actions.create')}
-          </Button>
-        </div>
-      </form>
+        form={form}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onSubmit={handleSubmit}
+        isSubmitting={isPending}
+      />
     </Form>
   );
 };

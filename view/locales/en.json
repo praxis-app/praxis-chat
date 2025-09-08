@@ -12,6 +12,10 @@
     "save": "Save",
     "submit": "Submit",
     "goToHome": "Back to home",
+    "next": "Next",
+    "previous": "Previous",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "refresh": "Refresh"
   },
 
@@ -121,6 +125,7 @@
     },
     "actionTypes": {
       "change-role": "Change role",
+      "change-roles-and-permissions": "Change Roles and Permissions",
       "change-settings": "Change settings",
       "create-role": "Create role",
       "plan-event": "Plan event",
@@ -129,6 +134,15 @@
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
       "errorCreatingProposal": "Error creating proposal"
+    },
+    "wizard": {
+      "basicInfo": "Basic Information",
+      "basicInfoDescription": "Provide the basic details for your proposal",
+      "rolesPermissions": "Roles and Permissions",
+      "rolesPermissionsDescription": "Configure the roles and permissions changes",
+      "permissions": "Permissions",
+      "review": "Review Proposal",
+      "reviewDescription": "Review your proposal before submitting"
     }
   },
 

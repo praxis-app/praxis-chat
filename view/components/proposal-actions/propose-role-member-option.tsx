@@ -1,11 +1,15 @@
 import { User } from '@/types/user.types';
 import { RoleMemberOption } from '../roles/role-member-option';
 
-// TODO: Ensure correct types are used - remove any
+interface RoleMemberChange {
+  userId: string;
+  changeType: 'add' | 'remove';
+}
+
 interface Props {
   member: User;
-  selectedMembers: any[];
-  setSelectedMembers(selectedMembers: User[]): void;
+  selectedMembers: RoleMemberChange[];
+  setSelectedMembers(selectedMembers: RoleMemberChange[]): void;
   currentRoleMembers?: User[];
 }
 
