@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { normalizeText } from '../../common/common.utils';
 import { getValidInvite } from '../../invites/invites.service';
 import { getUserCount, isFirstUser } from '../../users/users.service';
-import { SignUpReq } from '../auth.service';
+import { SignUpDto } from '../auth.service';
 
 const VALID_EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 const EMAIL_MAX_LENGTH = 254;
@@ -19,7 +19,7 @@ export const validateSignUp = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, name, password, inviteToken } = req.body as SignUpReq;
+  const { email, name, password, inviteToken } = req.body as SignUpDto;
 
   if (!VALID_EMAIL_REGEX.test(email)) {
     res.status(422).send('Invalid email address');

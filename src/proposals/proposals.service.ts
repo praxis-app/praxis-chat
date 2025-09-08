@@ -2,8 +2,10 @@ import { FindOptionsWhere, In } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
+import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
-import { Image } from '../images/models/image.entity';
+import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
+import * as proposalActionsService from '../proposal-actions/proposal-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { getServerConfig } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
@@ -12,21 +14,14 @@ import {
   sortConsensusVotesByType,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
-import { ProposalAction } from './models/proposal-action.entity';
-import { ProposalConfig } from './models/proposal-config.entity';
-import { Proposal } from './models/proposal.entity';
+import { ProposalDto } from './dtos/proposal.dto';
+import { ProposalConfig } from './entities/proposal-config.entity';
+import { Proposal } from './entities/proposal.entity';
 
-interface CreateProposalReq {
-  body: string;
-  closingAt?: Date;
-  action: Partial<ProposalAction>;
-  channelId: string;
-}
-
-const proposalRepository = dataSource.getRepository(Proposal);
-const voteRepository = dataSource.getRepository(Vote);
 const imageRepository = dataSource.getRepository(Image);
+const proposalRepository = dataSource.getRepository(Proposal);
 const userRepository = dataSource.getRepository(User);
+const voteRepository = dataSource.getRepository(Vote);
 
 export const getProposal = (id: string, relations?: string[]) => {
   return proposalRepository.findOneOrFail({
@@ -186,7 +181,7 @@ export const hasMajorityVote = (
 };
 
 export const createProposal = async (
-  { body, closingAt, action, channelId }: CreateProposalReq,
+  { body, closingAt, action, channelId }: ProposalDto,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);
@@ -207,13 +202,24 @@ export const createProposal = async (
     closingAt: closingAt || configClosingAt,
   };
 
+  const proposalAction: Partial<ProposalAction> = {
+    actionType: action.actionType,
+  };
+
   const proposal = await proposalRepository.save({
     body: sanitizedBody,
     config: proposalConfig,
-    action,
+    action: proposalAction,
     channelId,
     userId,
   });
+
+  if (action.role) {
+    await proposalActionsService.createProposalActionRole(
+      proposal.action.id,
+      action.role,
+    );
+  }
 
   // Shape to match feed expectations
   const shapedProposal = {
@@ -245,10 +251,24 @@ export const createProposal = async (
   return shapedProposal;
 };
 
+// TODO: Ensure notifications and pub-sub messages are sent when proposals are ratified
 export const ratifyProposal = async (proposalId: string) => {
   await proposalRepository.update(proposalId, {
     stage: 'ratified',
   });
+};
+
+export const implementProposal = async (proposalId: string) => {
+  const {
+    action: { id, actionType },
+  } = await getProposal(proposalId, ['action']);
+
+  if (actionType === 'change-role') {
+    await proposalActionsService.implementChangeRole(id);
+  }
+  if (actionType === 'create-role') {
+    await proposalActionsService.implementCreateRole(id);
+  }
 };
 
 export const deleteProposal = async (proposalId: string) => {

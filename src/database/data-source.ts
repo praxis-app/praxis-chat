@@ -1,16 +1,19 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
-import { ChannelMember } from '../channels/models/channel-member.entity';
-import { Channel } from '../channels/models/channel.entity';
-import { Image } from '../images/models/image.entity';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
+import { Channel } from '../channels/entities/channel.entity';
+import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { ProposalAction } from '../proposals/models/proposal-action.entity';
-import { ProposalConfig } from '../proposals/models/proposal-config.entity';
-import { Proposal } from '../proposals/models/proposal.entity';
-import { Permission } from '../roles/models/permission.entity';
-import { Role } from '../roles/models/role.entity';
-import { ServerConfig } from '../server-configs/models/server-config.entity';
+import { ProposalActionPermission } from '../proposal-actions/entities/proposal-action-permission.entity';
+import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
+import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
+import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
+import { ProposalConfig } from '../proposals/entities/proposal-config.entity';
+import { Proposal } from '../proposals/entities/proposal.entity';
+import { Permission } from '../roles/entities/permission.entity';
+import { Role } from '../roles/entities/role.entity';
+import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Init1740949608930 } from './migrations/1740949608930-Init';
@@ -34,6 +37,9 @@ export const dataSource = new DataSource({
     Permission,
     Proposal,
     ProposalAction,
+    ProposalActionPermission,
+    ProposalActionRole,
+    ProposalActionRoleMember,
     ProposalConfig,
     Role,
     ServerConfig,

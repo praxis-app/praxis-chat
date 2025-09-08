@@ -2,9 +2,9 @@ import { ForcedSubject, MongoAbility } from '@casl/ability';
 import { PERMISSION_KEYS } from '../constants/role.constants';
 import { User } from './user.types';
 
-type AbilityAction = 'delete' | 'create' | 'read' | 'update' | 'manage';
+export type AbilityAction = 'delete' | 'create' | 'read' | 'update' | 'manage';
 
-type AbilitySubject =
+export type AbilitySubject =
   | 'ServerConfig'
   | 'Channel'
   | 'Invite'

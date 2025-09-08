@@ -58,7 +58,7 @@ export const MessageFormMenu = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DialogContent className="pt-10 md:pt-6">
+      <DialogContent className="pt-10 md:w-xl md:pt-6">
         <DialogHeader>
           <DialogTitle>{t('proposals.headers.create')}</DialogTitle>
         </DialogHeader>

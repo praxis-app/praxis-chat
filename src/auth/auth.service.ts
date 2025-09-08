@@ -10,21 +10,21 @@ import * as usersService from '../users/users.service';
 const ACCESS_TOKEN_EXPIRES_IN = 60 * 60 * 24 * 90;
 const SALT_ROUNDS = 10;
 
-export interface SignUpReq {
+export interface SignUpDto {
   email: string;
   name?: string;
   password: string;
   inviteToken?: string;
 }
 
-export interface LoginReq {
+export interface LoginDto {
   email: string;
   password: string;
 }
 
 const userRepository = dataSource.getRepository(User);
 
-export const login = async ({ email, password }: LoginReq) => {
+export const login = async ({ email, password }: LoginDto) => {
   if (!email) {
     throw new Error('Email is required');
   }
@@ -53,7 +53,7 @@ export const signUp = async ({
   name,
   password,
   inviteToken,
-}: SignUpReq) => {
+}: SignUpDto) => {
   const passwordHash = await hash(password, SALT_ROUNDS);
   const user = await usersService.createUser(email, name, passwordHash);
 
@@ -64,7 +64,7 @@ export const signUp = async ({
 };
 
 export const upgradeAnonSession = async (
-  { name, email, password }: SignUpReq,
+  { name, email, password }: SignUpDto,
   userId: string,
 ) => {
   const passwordHash = await hash(password, SALT_ROUNDS);

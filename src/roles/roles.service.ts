@@ -5,20 +5,25 @@ import { dataSource } from '../database/data-source';
 import { User } from '../users/user.entity';
 import { AbilityAction, AbilitySubject, AppAbility } from './app-ability';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
-import { Permission } from './models/permission.entity';
-import { Role } from './models/role.entity';
+import { Permission } from './entities/permission.entity';
+import { Role } from './entities/role.entity';
 
-export const DEFAULT_ROLE_COLOR = '#f44336';
-export const ADMIN_ROLE_NAME = 'admin';
+const DEFAULT_ROLE_COLOR = '#f44336';
+const ADMIN_ROLE_NAME = 'admin';
 
 type PermissionMap = Record<string, AbilityAction[]>;
 
-interface CreateRoleReq {
+interface CreateRoleDto {
   name: string;
   color: string;
 }
 
-interface UpdateRolePermissionsReq {
+interface UpdateRoleDto {
+  name?: string;
+  color?: string;
+}
+
+interface UpdateRolePermissionsDto {
   permissions: RawRuleOf<AppAbility>[];
 }
 
@@ -96,7 +101,7 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   });
 };
 
-export const createRole = async ({ name, color }: CreateRoleReq) => {
+export const createRole = async ({ name, color }: CreateRoleDto) => {
   const role = await roleRepository.save({ name, color });
   return { ...role, memberCount: 0 };
 };
@@ -118,7 +123,7 @@ export const createAdminRole = async (userId: string) => {
 
 export const updateRole = async (
   id: string,
-  { name, color }: CreateRoleReq,
+  { name, color }: UpdateRoleDto,
 ) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedColor = sanitizeText(color);
@@ -131,7 +136,7 @@ export const updateRole = async (
 
 export const updateRolePermissions = async (
   roleId: string,
-  { permissions }: UpdateRolePermissionsReq,
+  { permissions }: UpdateRolePermissionsDto,
 ) => {
   const role = await roleRepository.findOne({
     where: { id: roleId },
@@ -204,7 +209,7 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   });
 };
 
-export const removeRoleMember = async (roleId: string, userId: string) => {
+export const removeRoleMembers = async (roleId: string, userIds: string[]) => {
   const role = await roleRepository.findOne({
     where: { id: roleId },
     relations: ['members'],
@@ -212,7 +217,7 @@ export const removeRoleMember = async (roleId: string, userId: string) => {
   if (!role) {
     throw new Error('Role not found');
   }
-  role.members = role.members.filter((member) => member.id !== userId);
+  role.members = role.members.filter((member) => !userIds.includes(member.id));
   await roleRepository.save(role);
 };
 

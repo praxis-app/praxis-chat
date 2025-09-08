@@ -5,7 +5,7 @@ import { User } from '../users/user.entity';
 
 const INVITES_PAGE_SIZE = 20;
 
-interface CreateInviteReq {
+interface CreateInviteDto {
   maxUses?: number;
   expiresAt?: number;
 }
@@ -50,7 +50,7 @@ export const getValidInvites = async () => {
   return validInvites.slice(0, INVITES_PAGE_SIZE);
 };
 
-export const createInvite = async (inviteData: CreateInviteReq, user: User) => {
+export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
   const token = cryptoRandomString({ length: 8 });
   const invite = await inviteRepository.save({
     ...inviteData,

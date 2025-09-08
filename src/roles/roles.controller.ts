@@ -37,7 +37,7 @@ export const addRoleMembers = async (req: Request, res: Response) => {
 };
 
 export const removeRoleMember = async (req: Request, res: Response) => {
-  await rolesService.removeRoleMember(req.params.roleId, req.params.userId);
+  await rolesService.removeRoleMembers(req.params.roleId, [req.params.userId]);
   res.sendStatus(204);
 };
 

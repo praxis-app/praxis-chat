@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProposalActionRole } from '../../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../../users/user.entity';
 import { Permission } from './permission.entity';
 
@@ -30,6 +31,12 @@ export class Role {
   @ManyToMany(() => User, (user) => user.roles)
   @JoinTable()
   members: User[];
+
+  @OneToMany(
+    () => ProposalActionRole,
+    (proposalActionRole) => proposalActionRole.role,
+  )
+  proposalActionRoles: ProposalActionRole[];
 
   @CreateDateColumn()
   createdAt: Date;
