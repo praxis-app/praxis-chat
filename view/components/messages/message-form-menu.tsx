@@ -58,7 +58,7 @@ export const MessageFormMenu = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DialogContent className="pt-10 md:w-xl md:pt-6">
+      <DialogContent className="overflow-y-auto pt-10 md:max-h-[90vh] md:w-xl md:pt-6">
         <DialogHeader>
           <DialogTitle>{t('proposals.headers.create')}</DialogTitle>
         </DialogHeader>
