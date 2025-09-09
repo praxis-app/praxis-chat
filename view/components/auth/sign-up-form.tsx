@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { useAppStore } from '@/store/app.store';
 
 const EMAIL_MAX_LENGTH = 254;
 
@@ -82,6 +83,8 @@ interface Props {
 }
 
 export const SignUpForm = ({ setIsRedirecting }: Props) => {
+  const { setIsLoggedIn } = useAppStore();
+
   const form = useForm<zod.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -106,6 +109,7 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
     onSuccess({ access_token }) {
       localStorage.setItem(LocalStorageKeys.AccessToken, access_token);
       navigate(NavigationPaths.Home);
+      setIsLoggedIn(true);
     },
     onError(error: AxiosError) {
       const errorMessage =
