@@ -11,7 +11,7 @@ COPY package-lock.json /app
 COPY tsconfig.json /app
 COPY tsconfig.src.json /app
 COPY tsconfig.view.json /app
-COPY vite.config.ts /app
+COPY vite.config.mts /app
 COPY .eslintrc.cjs /app
 COPY start-prod.sh /app
 
@@ -28,7 +28,7 @@ RUN npm run build
 RUN npm run build:client
 
 # Clean up for runtime image
-RUN rm package-lock.json vite.config.ts .eslintrc.cjs
+RUN rm package-lock.json vite.config.mts .eslintrc.cjs
 RUN rm tsconfig.json tsconfig.view.json
 RUN rm -rf view
 
