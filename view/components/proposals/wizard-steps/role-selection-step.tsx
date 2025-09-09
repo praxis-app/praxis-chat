@@ -45,8 +45,10 @@ export const RoleSelectionStep = (_props: RoleSelectionStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('proposals.wizard.selectRole')}</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold">
+          {t('proposals.wizard.selectRole')}
+        </h2>
+        <p className="text-muted-foreground text-sm">
           {t('proposals.wizard.selectRoleDescription')}
         </p>
       </div>
@@ -69,12 +71,14 @@ export const RoleSelectionStep = (_props: RoleSelectionStepProps) => {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
                         <SelectValue
-                          placeholder={t('proposals.wizard.selectRolePlaceholder')}
+                          placeholder={t(
+                            'proposals.wizard.selectRolePlaceholder',
+                          )}
                         />
                       </SelectTrigger>
                       <SelectContent>
                         {isLoading ? (
-                          <div className="p-2 text-sm text-muted-foreground">
+                          <div className="text-muted-foreground p-2 text-sm">
                             {t('actions.loading')}
                           </div>
                         ) : (
@@ -82,12 +86,16 @@ export const RoleSelectionStep = (_props: RoleSelectionStepProps) => {
                             <SelectItem key={role.id} value={role.id}>
                               <div className="flex items-center space-x-2">
                                 <div
-                                  className="w-3 h-3 rounded-full"
+                                  className="h-3 w-3 rounded-full"
                                   style={{ backgroundColor: role.color }}
                                 />
                                 <span>{role.name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  ({role.memberCount} {t('roles.labels.membersCount', { count: role.memberCount })})
+                                <span className="text-muted-foreground text-xs">
+                                  (
+                                  {t('roles.labels.membersCount', {
+                                    count: role.memberCount,
+                                  })}
+                                  )
                                 </span>
                               </div>
                             </SelectItem>
@@ -112,22 +120,26 @@ export const RoleSelectionStep = (_props: RoleSelectionStepProps) => {
             </CardHeader>
             <CardContent>
               {(() => {
-                const selectedRole = roles.find(role => role.id === form.watch('selectedRoleId'));
+                const selectedRole = roles.find(
+                  (role) => role.id === form.watch('selectedRoleId'),
+                );
                 if (!selectedRole) {
                   return null;
                 }
-                
+
                 return (
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <div
-                        className="w-4 h-4 rounded-full"
+                        className="h-4 w-4 rounded-full"
                         style={{ backgroundColor: selectedRole.color }}
                       />
                       <span className="font-medium">{selectedRole.name}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {t('roles.labels.membersCount', { count: selectedRole.memberCount })}
+                    <p className="text-muted-foreground text-sm">
+                      {t('roles.labels.membersCount', {
+                        count: selectedRole.memberCount,
+                      })}
                     </p>
                   </div>
                 );
