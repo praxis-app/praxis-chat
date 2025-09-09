@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   app:
-    container_name: rhizome
+    container_name: praxis-chat
     build:
       context: .
       target: runtime_stage
