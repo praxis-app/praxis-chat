@@ -121,7 +121,7 @@
       "disagree": "Disagree"
     },
     "descriptions": {
-      "create": "Submit a proposal for this room to discuss and vote on.",
+      "create": "Submit a proposal to discuss and vote on.",
       "body": "Enter your proposal"
     },
     "actionTypes": {

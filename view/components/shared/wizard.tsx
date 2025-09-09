@@ -2,7 +2,6 @@ import { UseFormReturn } from 'react-hook-form';
 import { cn } from '../../lib/shared.utils';
 import { WizardProvider } from '../proposals/wizard-context';
 import { ProposalFormData } from '../proposals/wizard-hooks';
-import { WizardStep } from './wizard-step';
 
 interface StepComponentProps {
   stepIndex: number;
@@ -21,8 +20,6 @@ export interface WizardStepData {
 interface WizardProps {
   steps: WizardStepData[];
   currentStep: number;
-  onStepChange?: (stepIndex: number) => void;
-  allowStepNavigation?: boolean;
   className?: string;
   form: UseFormReturn<ProposalFormData>;
   onNext: () => void;
@@ -34,8 +31,6 @@ interface WizardProps {
 export const Wizard = ({
   steps,
   currentStep,
-  onStepChange,
-  allowStepNavigation = false,
   className,
   form,
   onNext,
@@ -54,22 +49,6 @@ export const Wizard = ({
       }}
     >
       <div className={cn('space-y-6', className)}>
-        {/* Step Navigation */}
-        <div className="space-y-2">
-          {steps.map((step, index) => (
-            <WizardStep
-              key={step.id}
-              title={step.title}
-              description={step.description}
-              isActive={index === currentStep}
-              isCompleted={index < currentStep}
-              isClickable={allowStepNavigation && index <= currentStep}
-              onClick={() => allowStepNavigation && onStepChange?.(index)}
-            />
-          ))}
-        </div>
-
-        {/* Step Content */}
         <div className="min-h-[400px]">
           {steps[currentStep] &&
             (() => {

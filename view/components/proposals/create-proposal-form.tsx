@@ -32,13 +32,18 @@ const formSchema = zod.object({
     .min(1)
     .max(PROPOSAL_BODY_MAX, {
       message: t('proposals.errors.longBody'),
-    }),
+    })
+    .optional(),
   action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
   permissions: zod.record(zod.string(), zod.boolean()).optional(),
-  roleMembers: zod.array(zod.object({
-    userId: zod.string(),
-    changeType: zod.enum(['add', 'remove']),
-  })).optional(),
+  roleMembers: zod
+    .array(
+      zod.object({
+        userId: zod.string(),
+        changeType: zod.enum(['add', 'remove']),
+      }),
+    )
+    .optional(),
   selectedRoleId: zod.string().optional(),
 });
 
@@ -53,9 +58,9 @@ export const CreateProposalForm = ({
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { 
-      body: '', 
-      action: '', 
+    defaultValues: {
+      body: '',
+      action: '',
       permissions: {},
       roleMembers: [],
       selectedRoleId: '',
@@ -71,12 +76,14 @@ export const CreateProposalForm = ({
         throw new Error('Action is required');
       }
       return api.createProposal(channelId, {
-        body: values.body.trim(),
+        body: values.body?.trim(),
         action: {
           actionType: values.action,
           ...(values.permissions && { permissions: values.permissions }),
           ...(values.roleMembers && { members: values.roleMembers }),
-          ...(values.selectedRoleId && { roleToUpdateId: values.selectedRoleId }),
+          ...(values.selectedRoleId && {
+            roleToUpdateId: values.selectedRoleId,
+          }),
         },
         images: [],
       });
@@ -169,10 +176,6 @@ export const CreateProposalForm = ({
     },
   ];
 
-  const handleStepChange = (stepIndex: number) => {
-    setCurrentStep(stepIndex);
-  };
-
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -194,8 +197,6 @@ export const CreateProposalForm = ({
       <Wizard
         steps={steps}
         currentStep={currentStep}
-        onStepChange={handleStepChange}
-        allowStepNavigation={false}
         className="space-y-6"
         form={form}
         onNext={handleNext}

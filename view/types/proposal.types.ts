@@ -27,7 +27,7 @@ export interface Proposal {
 }
 
 export interface CreateProposalReq {
-  body: string;
+  body?: string;
   action: CreateProposalActionReq;
   images: Image[];
 }

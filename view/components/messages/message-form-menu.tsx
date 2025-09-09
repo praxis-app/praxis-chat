@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { Separator } from '../ui/separator';
 
 interface Props {
   showMenu: boolean;
@@ -65,6 +66,8 @@ export const MessageFormMenu = ({
         <DialogDescription>
           {t('proposals.descriptions.create')}
         </DialogDescription>
+
+        <Separator className="mt-1" />
 
         <CreateProposalForm
           channelId={channelId}
