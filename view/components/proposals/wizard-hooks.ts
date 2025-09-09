@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, FieldValues } from 'react-hook-form';
 
-interface ProposalFormData {
+export interface ProposalFormData extends FieldValues {
   body?: string;
   action:
     | ''
@@ -15,23 +15,24 @@ interface ProposalFormData {
   selectedRoleId?: string;
 }
 
-interface WizardContextType {
-  form: UseFormReturn<ProposalFormData>;
+export interface WizardContextType<T extends FieldValues = FieldValues> {
+  form: UseFormReturn<T>;
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
 }
 
-const WizardContext = createContext<WizardContextType | undefined>(undefined);
+export const WizardContext = createContext<
+  WizardContextType<FieldValues> | undefined
+>(undefined);
 
-export const useWizardContext = () => {
+export const useWizardContext = <
+  T extends FieldValues = FieldValues,
+>(): WizardContextType<T> => {
   const context = useContext(WizardContext);
   if (context === undefined) {
     throw new Error('useWizardContext must be used within a WizardProvider');
   }
-  return context;
+  return context as WizardContextType<T>;
 };
-
-export { WizardContext };
-export type { ProposalFormData, WizardContextType };

@@ -1,20 +1,12 @@
+import { api } from '@/client/api-client';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/client/api-client';
+import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
-import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
-import { useWizardContext } from '../wizard-hooks';
-
-interface ProposalFormData {
-  body: string;
-  action: '' | 'change-role' | 'change-settings' | 'create-role' | 'plan-event' | 'test';
-  permissions?: Record<string, boolean>;
-  roleMembers?: Array<{ userId: string; changeType: 'add' | 'remove' }>;
-  selectedRoleId?: string;
-}
+import { ProposalFormData, useWizardContext } from '../wizard-hooks';
 
 interface RoleMembersStepProps {
   stepIndex: number;
@@ -25,7 +17,7 @@ interface RoleMembersStepProps {
 
 export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   const { t } = useTranslation();
-  const { form, onNext, onPrevious } = useWizardContext();
+  const { form, onNext, onPrevious } = useWizardContext<ProposalFormData>();
   const [searchTerm, setSearchTerm] = useState('');
 
   const roleMembers = form.watch('roleMembers') || [];
@@ -46,19 +38,25 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   });
 
   const setFieldValue = (field: string, value: unknown) => {
-    form.setValue(field as keyof ProposalFormData, value as never, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form.setValue(field as any, value as any, {
       shouldDirty: true,
       shouldValidate: true,
     });
   };
 
-  const handleMemberChange = (memberChanges: Array<{ userId: string; changeType: 'add' | 'remove' }>) => {
+  const handleMemberChange = (
+    memberChanges: Array<{ userId: string; changeType: 'add' | 'remove' }>,
+  ) => {
     setFieldValue('roleMembers', memberChanges);
   };
 
-  const filteredUsers = eligibleUsersData?.users.filter((user) =>
-    (user.displayName || user.name).toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredUsers =
+    eligibleUsersData?.users.filter((user) =>
+      (user.displayName || user.name)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
+    ) || [];
 
   const currentRoleMembers = roleData?.role.members || [];
 
@@ -69,8 +67,10 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('proposals.wizard.roleMembers')}</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold">
+          {t('proposals.wizard.roleMembers')}
+        </h2>
+        <p className="text-muted-foreground text-sm">
           {t('proposals.wizard.roleMembersDescription')}
         </p>
       </div>
@@ -101,11 +101,11 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
               </CardHeader>
               <CardContent className="space-y-2">
                 {isLoadingEligible || isLoadingRole ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {t('actions.loading')}
                   </p>
                 ) : (
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                  <div className="max-h-60 space-y-2 overflow-y-auto">
                     {filteredUsers.map((user) => (
                       <ProposeRoleMemberOption
                         key={user.id}
@@ -116,7 +116,7 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
                       />
                     ))}
                     {filteredUsers.length === 0 && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {t('proposals.wizard.noUsersFound')}
                       </p>
                     )}
@@ -132,9 +132,7 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext}>
-          {t('actions.next')}
-        </Button>
+        <Button onClick={handleNext}>{t('actions.next')}</Button>
       </div>
     </div>
   );

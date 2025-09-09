@@ -1,7 +1,6 @@
-import { UseFormReturn } from 'react-hook-form';
+import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { cn } from '../../lib/shared.utils';
 import { WizardProvider } from '../proposals/wizard-context';
-import { ProposalFormData } from '../proposals/wizard-hooks';
 
 interface StepComponentProps {
   stepIndex: number;
@@ -17,18 +16,18 @@ export interface WizardStepData {
   component: React.ComponentType<StepComponentProps>;
 }
 
-interface WizardProps {
+interface WizardProps<T extends FieldValues = FieldValues> {
   steps: WizardStepData[];
   currentStep: number;
   className?: string;
-  form: UseFormReturn<ProposalFormData>;
+  form: UseFormReturn<T>;
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
 }
 
-export const Wizard = ({
+export const Wizard = <T extends FieldValues = FieldValues>({
   steps,
   currentStep,
   className,
@@ -37,9 +36,9 @@ export const Wizard = ({
   onPrevious,
   onSubmit,
   isSubmitting,
-}: WizardProps) => {
+}: WizardProps<T>) => {
   return (
-    <WizardProvider
+    <WizardProvider<T>
       value={{
         form,
         onNext,

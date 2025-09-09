@@ -1,15 +1,17 @@
 import { ReactNode } from 'react';
+import { FieldValues } from 'react-hook-form';
 import { WizardContext, WizardContextType } from './wizard-hooks';
 
-interface WizardProviderProps {
+interface WizardProviderProps<T extends FieldValues = FieldValues> {
   children: ReactNode;
-  value: WizardContextType;
+  value: WizardContextType<T>;
 }
 
-export const WizardProvider = ({ children, value }: WizardProviderProps) => {
+export const WizardProvider = <T extends FieldValues = FieldValues>({
+  children,
+  value,
+}: WizardProviderProps<T>) => {
   return (
-    <WizardContext.Provider value={value}>
-      {children}
-    </WizardContext.Provider>
+    <WizardContext.Provider value={value as WizardContextType<FieldValues>}>{children}</WizardContext.Provider>
   );
 };

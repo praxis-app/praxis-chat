@@ -3,13 +3,7 @@ import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
-import { useWizardContext } from '../wizard-hooks';
-
-interface ProposalFormData {
-  body: string;
-  action: '' | 'change-role' | 'change-settings' | 'create-role' | 'plan-event' | 'test';
-  permissions?: Record<string, boolean>;
-}
+import { useWizardContext, ProposalFormData } from '../wizard-hooks';
 
 interface RolesPermissionsStepProps {
   stepIndex: number;
@@ -20,7 +14,7 @@ interface RolesPermissionsStepProps {
 
 export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
   const { t } = useTranslation();
-  const { form, onNext, onPrevious } = useWizardContext();
+  const { form, onNext, onPrevious } = useWizardContext<ProposalFormData>();
 
   const permissions = form.watch('permissions') || {};
 
@@ -42,7 +36,8 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
         shouldValidate: true,
       });
     } else {
-      form.setValue(field as keyof ProposalFormData, value as never, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      form.setValue(field as any, value as any, {
         shouldDirty: true,
         shouldValidate: true,
       });

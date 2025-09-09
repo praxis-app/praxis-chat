@@ -1,5 +1,5 @@
-import { useTranslation } from 'react-i18next';
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/button';
 import {
   FormControl,
@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '../../ui/select';
 import { Textarea } from '../../ui/textarea';
-import { useWizardContext } from '../wizard-hooks';
+import { ProposalFormData, useWizardContext } from '../wizard-hooks';
 
 interface BasicProposalStepProps {
   stepIndex: number;
@@ -27,7 +27,7 @@ interface BasicProposalStepProps {
 
 export const BasicProposalStep = (_props: BasicProposalStepProps) => {
   const { t } = useTranslation();
-  const { form, onNext } = useWizardContext();
+  const { form, onNext } = useWizardContext<ProposalFormData>();
 
   const handleNext = () => {
     const actionType = form.getValues('action');
@@ -43,8 +43,10 @@ export const BasicProposalStep = (_props: BasicProposalStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('proposals.wizard.basicInfo')}</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold">
+          {t('proposals.wizard.basicInfo')}
+        </h2>
+        <p className="text-muted-foreground text-sm">
           {t('proposals.wizard.basicInfoDescription')}
         </p>
       </div>

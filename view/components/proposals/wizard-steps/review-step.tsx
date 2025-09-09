@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
+import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { useWizardContext } from '../wizard-hooks';
+import { ProposalFormData, useWizardContext } from '../wizard-hooks';
 
 interface ReviewStepProps {
   stepIndex: number;
@@ -13,16 +13,19 @@ interface ReviewStepProps {
 
 export const ReviewStep = (_props: ReviewStepProps) => {
   const { t } = useTranslation();
-  const { form, onSubmit, onPrevious, isSubmitting } = useWizardContext();
-  
+  const { form, onSubmit, onPrevious, isSubmitting } =
+    useWizardContext<ProposalFormData>();
+
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('proposals.wizard.review')}</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold">
+          {t('proposals.wizard.review')}
+        </h2>
+        <p className="text-muted-foreground text-sm">
           {t('proposals.wizard.reviewDescription')}
         </p>
       </div>
@@ -30,7 +33,9 @@ export const ReviewStep = (_props: ReviewStepProps) => {
       <div className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t('proposals.labels.actionType')}</CardTitle>
+            <CardTitle className="text-base">
+              {t('proposals.labels.actionType')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="secondary">
@@ -41,7 +46,9 @@ export const ReviewStep = (_props: ReviewStepProps) => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t('proposals.labels.body')}</CardTitle>
+            <CardTitle className="text-base">
+              {t('proposals.labels.body')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm whitespace-pre-wrap">{body}</p>
@@ -51,7 +58,9 @@ export const ReviewStep = (_props: ReviewStepProps) => {
         {action === 'change-role' && permissions && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{t('proposals.wizard.permissions')}</CardTitle>
+              <CardTitle className="text-base">
+                {t('proposals.wizard.permissions')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -60,7 +69,10 @@ export const ReviewStep = (_props: ReviewStepProps) => {
                     return null;
                   }
                   return (
-                    <div key={key} className="flex items-center justify-between">
+                    <div
+                      key={key}
+                      className="flex items-center justify-between"
+                    >
                       <span className="text-sm">
                         {t(`permissions.names.${key}` as never)}
                       </span>
@@ -78,7 +90,9 @@ export const ReviewStep = (_props: ReviewStepProps) => {
         {action === 'change-role' && selectedRoleId && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{t('proposals.wizard.selectedRole')}</CardTitle>
+              <CardTitle className="text-base">
+                {t('proposals.wizard.selectedRole')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm">{selectedRoleId}</p>
@@ -89,18 +103,36 @@ export const ReviewStep = (_props: ReviewStepProps) => {
         {action === 'change-role' && roleMembers && roleMembers.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{t('proposals.wizard.memberChanges')}</CardTitle>
+              <CardTitle className="text-base">
+                {t('proposals.wizard.memberChanges')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {roleMembers.map((member, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm">User ID: {member.userId}</span>
-                    <Badge variant={member.changeType === 'add' ? 'default' : 'destructive'}>
-                      {member.changeType === 'add' ? t('actions.add' as never) : t('actions.remove')}
-                    </Badge>
-                  </div>
-                ))}
+                {roleMembers.map(
+                  (
+                    member: { userId: string; changeType: 'add' | 'remove' },
+                    index: number,
+                  ) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm">User ID: {member.userId}</span>
+                      <Badge
+                        variant={
+                          member.changeType === 'add'
+                            ? 'default'
+                            : 'destructive'
+                        }
+                      >
+                        {member.changeType === 'add'
+                          ? t('actions.add' as never)
+                          : t('actions.remove')}
+                      </Badge>
+                    </div>
+                  ),
+                )}
               </div>
             </CardContent>
           </Card>
