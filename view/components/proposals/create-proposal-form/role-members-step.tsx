@@ -39,9 +39,11 @@ export const RoleMembersStep = (_props: RoleMembersStepProps) => {
     enabled: !!selectedRoleId,
   });
 
-  const setFieldValue = (field: string, value: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    form.setValue(field as any, value as any, {
+  const setFieldValue = (
+    field: keyof CreateProposalFormSchema,
+    value: CreateProposalFormSchema[keyof CreateProposalFormSchema],
+  ) => {
+    form.setValue(field, value, {
       shouldDirty: true,
       shouldValidate: true,
     });

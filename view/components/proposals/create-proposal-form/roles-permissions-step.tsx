@@ -20,7 +20,10 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
 
   const permissions = form.watch('permissions') || {};
 
-  const setFieldValue = (field: string, value?: boolean) => {
+  const setFieldValue = (
+    field: keyof CreateProposalFormSchema,
+    value: CreateProposalFormSchema[keyof CreateProposalFormSchema],
+  ) => {
     // Handle nested field paths like "permissions.manageRoles"
     if (field.startsWith('permissions.')) {
       const permissionKey = field.replace('permissions.', '');
@@ -38,8 +41,7 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
         shouldValidate: true,
       });
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      form.setValue(field as any, value as any, {
+      form.setValue(field, value, {
         shouldDirty: true,
         shouldValidate: true,
       });
