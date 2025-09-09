@@ -5,18 +5,18 @@ import { t } from '@/lib/shared.utils';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { Wizard, WizardStepData } from '../shared/wizard/wizard';
 import { Form } from '../ui/form';
-import { Wizard, WizardStepData } from '../shared/wizard';
 import { BasicProposalStep } from './wizard-steps/basic-proposal-step';
+import { ReviewStep } from './wizard-steps/review-step';
+import { RoleMembersStep } from './wizard-steps/role-members-step';
 import { RoleSelectionStep } from './wizard-steps/role-selection-step';
 import { RolesPermissionsStep } from './wizard-steps/roles-permissions-step';
-import { RoleMembersStep } from './wizard-steps/role-members-step';
-import { ReviewStep } from './wizard-steps/review-step';
 
 const PROPOSAL_BODY_MAX = 6000;
 

@@ -17,7 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../ui/select';
-import { ProposalFormData, useWizardContext } from '../wizard-hooks';
+import {
+  ProposalFormData,
+  useWizardContext,
+} from '../../shared/wizard/wizard-hooks';
 
 interface RoleSelectionStepProps {
   stepIndex: number;

@@ -16,7 +16,10 @@ import {
   SelectValue,
 } from '../../ui/select';
 import { Textarea } from '../../ui/textarea';
-import { ProposalFormData, useWizardContext } from '../wizard-hooks';
+import {
+  ProposalFormData,
+  useWizardContext,
+} from '../../shared/wizard/wizard-hooks';
 
 interface BasicProposalStepProps {
   stepIndex: number;

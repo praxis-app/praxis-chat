@@ -2,7 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { ProposalFormData, useWizardContext } from '../wizard-hooks';
+import {
+  ProposalFormData,
+  useWizardContext,
+} from '../../shared/wizard/wizard-hooks';
 
 interface ReviewStepProps {
   stepIndex: number;

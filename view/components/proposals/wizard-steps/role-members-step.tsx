@@ -6,7 +6,10 @@ import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-mem
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
-import { ProposalFormData, useWizardContext } from '../wizard-hooks';
+import {
+  ProposalFormData,
+  useWizardContext,
+} from '../../shared/wizard/wizard-hooks';
 
 interface RoleMembersStepProps {
   stepIndex: number;

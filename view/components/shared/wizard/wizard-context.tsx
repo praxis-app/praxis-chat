@@ -12,6 +12,8 @@ export const WizardProvider = <T extends FieldValues = FieldValues>({
   value,
 }: WizardProviderProps<T>) => {
   return (
-    <WizardContext.Provider value={value as WizardContextType<FieldValues>}>{children}</WizardContext.Provider>
+    <WizardContext.Provider value={value as WizardContextType<FieldValues>}>
+      {children}
+    </WizardContext.Provider>
   );
 };

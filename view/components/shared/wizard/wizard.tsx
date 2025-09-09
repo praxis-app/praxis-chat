@@ -1,6 +1,6 @@
+import { cn } from '@/lib/shared.utils';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
-import { cn } from '../../lib/shared.utils';
-import { WizardProvider } from '../proposals/wizard-context';
+import { WizardProvider } from './wizard-context';
 
 interface StepComponentProps {
   stepIndex: number;

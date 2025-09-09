@@ -3,7 +3,10 @@ import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
-import { useWizardContext, ProposalFormData } from '../wizard-hooks';
+import {
+  useWizardContext,
+  ProposalFormData,
+} from '../../shared/wizard/wizard-hooks';
 
 interface RolesPermissionsStepProps {
   stepIndex: number;
@@ -29,7 +32,7 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
       };
       // Filter out undefined values
       const filteredPermissions = Object.fromEntries(
-        Object.entries(newPermissions).filter(([_, v]) => v !== undefined)
+        Object.entries(newPermissions).filter(([_, v]) => v !== undefined),
       ) as Record<string, boolean>;
       form.setValue('permissions', filteredPermissions, {
         shouldDirty: true,
@@ -51,8 +54,10 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('proposals.wizard.rolesPermissions')}</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold">
+          {t('proposals.wizard.rolesPermissions')}
+        </h2>
+        <p className="text-muted-foreground text-sm">
           {t('proposals.wizard.rolesPermissionsDescription')}
         </p>
       </div>
@@ -82,9 +87,7 @@ export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext}>
-          {t('actions.next')}
-        </Button>
+        <Button onClick={handleNext}>{t('actions.next')}</Button>
       </div>
     </div>
   );
