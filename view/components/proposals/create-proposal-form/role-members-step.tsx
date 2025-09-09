@@ -3,13 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
+import { useWizardContext } from '../../shared/wizard/wizard-hooks';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
-import {
-  ProposalFormData,
-  useWizardContext,
-} from '../../shared/wizard/wizard-hooks';
+import { CreateProposalFormSchema } from './create-proposa-form.types';
 
 interface RoleMembersStepProps {
   stepIndex: number;
@@ -20,7 +18,8 @@ interface RoleMembersStepProps {
 
 export const RoleMembersStep = (_props: RoleMembersStepProps) => {
   const { t } = useTranslation();
-  const { form, onNext, onPrevious } = useWizardContext<ProposalFormData>();
+  const { form, onNext, onPrevious } =
+    useWizardContext<CreateProposalFormSchema>();
   const [searchTerm, setSearchTerm] = useState('');
 
   const roleMembers = form.watch('roleMembers') || [];

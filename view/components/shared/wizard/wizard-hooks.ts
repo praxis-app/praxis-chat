@@ -1,19 +1,5 @@
 import { createContext, useContext } from 'react';
-import { UseFormReturn, FieldValues } from 'react-hook-form';
-
-export interface ProposalFormData extends FieldValues {
-  body?: string;
-  action:
-    | ''
-    | 'change-role'
-    | 'change-settings'
-    | 'create-role'
-    | 'plan-event'
-    | 'test';
-  permissions?: Record<string, boolean>;
-  roleMembers?: Array<{ userId: string; changeType: 'add' | 'remove' }>;
-  selectedRoleId?: string;
-}
+import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 export interface WizardContextType<T extends FieldValues = FieldValues> {
   form: UseFormReturn<T>;

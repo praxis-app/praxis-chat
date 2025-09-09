@@ -1,5 +1,6 @@
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import { useTranslation } from 'react-i18next';
+import { useWizardContext } from '../../shared/wizard/wizard-hooks';
 import { Button } from '../../ui/button';
 import {
   FormControl,
@@ -16,21 +17,18 @@ import {
   SelectValue,
 } from '../../ui/select';
 import { Textarea } from '../../ui/textarea';
-import {
-  ProposalFormData,
-  useWizardContext,
-} from '../../shared/wizard/wizard-hooks';
+import { CreateProposalFormSchema } from './create-proposa-form.types';
 
-interface BasicProposalStepProps {
+interface Props {
   stepIndex: number;
   totalSteps: number;
   isFirstStep: boolean;
   isLastStep: boolean;
 }
 
-export const BasicProposalStep = (_props: BasicProposalStepProps) => {
+export const BasicProposalStep = (_props: Props) => {
   const { t } = useTranslation();
-  const { form, onNext } = useWizardContext<ProposalFormData>();
+  const { form, onNext } = useWizardContext<CreateProposalFormSchema>();
 
   const handleNext = () => {
     const actionType = form.getValues('action');

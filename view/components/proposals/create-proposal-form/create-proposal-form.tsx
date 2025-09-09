@@ -1,7 +1,5 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
-import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
-import { t } from '@/lib/shared.utils';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -9,43 +7,23 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import * as zod from 'zod';
-import { Wizard, WizardStepData } from '../shared/wizard/wizard';
-import { Form } from '../ui/form';
-import { BasicProposalStep } from './wizard-steps/basic-proposal-step';
-import { ReviewStep } from './wizard-steps/review-step';
-import { RoleMembersStep } from './wizard-steps/role-members-step';
-import { RoleSelectionStep } from './wizard-steps/role-selection-step';
-import { RolesPermissionsStep } from './wizard-steps/roles-permissions-step';
-
-const PROPOSAL_BODY_MAX = 6000;
+import { Wizard, WizardStepData } from '../../shared/wizard/wizard';
+import { Form } from '../../ui/form';
+import { BasicProposalStep } from './basic-proposal-step';
+import {
+  CreateProposalFormSchema,
+  createProposalFormSchema,
+} from './create-proposa-form.types';
+import { ReviewStep } from './review-step';
+import { RoleMembersStep } from './role-members-step';
+import { RoleSelectionStep } from './role-selection-step';
+import { RolesPermissionsStep } from './roles-permissions-step';
 
 interface CreateProposalFormProps {
   channelId?: string;
   isGeneralChannel?: boolean;
   onSuccess?: () => void;
 }
-
-const formSchema = zod.object({
-  body: zod
-    .string()
-    .min(1)
-    .max(PROPOSAL_BODY_MAX, {
-      message: t('proposals.errors.longBody'),
-    })
-    .optional(),
-  action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
-  permissions: zod.record(zod.string(), zod.boolean()).optional(),
-  roleMembers: zod
-    .array(
-      zod.object({
-        userId: zod.string(),
-        changeType: zod.enum(['add', 'remove']),
-      }),
-    )
-    .optional(),
-  selectedRoleId: zod.string().optional(),
-});
 
 export const CreateProposalForm = ({
   channelId,
@@ -56,8 +34,8 @@ export const CreateProposalForm = ({
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(0);
 
-  const form = useForm<zod.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateProposalFormSchema>({
+    resolver: zodResolver(createProposalFormSchema),
     defaultValues: {
       body: '',
       action: '',
@@ -68,7 +46,7 @@ export const CreateProposalForm = ({
   });
 
   const { mutate: createProposal, isPending } = useMutation({
-    mutationFn: async (values: zod.infer<typeof formSchema>) => {
+    mutationFn: async (values: CreateProposalFormSchema) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
       }

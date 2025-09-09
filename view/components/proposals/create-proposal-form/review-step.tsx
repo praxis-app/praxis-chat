@@ -1,11 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useWizardContext } from '../../shared/wizard/wizard-hooks';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import {
-  ProposalFormData,
-  useWizardContext,
-} from '../../shared/wizard/wizard-hooks';
+import { CreateProposalFormSchema } from './create-proposa-form.types';
 
 interface ReviewStepProps {
   stepIndex: number;
@@ -17,7 +15,7 @@ interface ReviewStepProps {
 export const ReviewStep = (_props: ReviewStepProps) => {
   const { t } = useTranslation();
   const { form, onSubmit, onPrevious, isSubmitting } =
-    useWizardContext<ProposalFormData>();
+    useWizardContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
