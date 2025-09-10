@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
-import { AbilityAction, AbilitySubject } from '@/types/role.types';
+import { CreateProposalActionRolePermissionReq } from '@/types/proposal.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -55,57 +55,95 @@ export const CreateProposalForm = ({
         throw new Error('Action is required');
       }
 
-      // TODO: Refactor logic for transforming permissions to API format - likely too complex or incomplete
-
-      // Transform permissions from form format to API format
-      const transformedPermissions = values.permissions?.map((permission) => {
-        // Map PermissionKeys to AbilitySubject and AbilityAction
+      // Shape permissions from form format to API format
+      const shapedPermissions = values.permissions?.reduce<
+        CreateProposalActionRolePermissionReq[]
+      >((result, permission) => {
         switch (permission.name) {
           case 'manageChannels':
-            return {
-              subject: 'Channel' as AbilitySubject,
-              actions: ['manage'] as AbilityAction[],
-            };
+            result.push({
+              subject: 'Channel',
+              actions: [
+                {
+                  action: 'manage',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
           case 'manageSettings':
-            return {
-              subject: 'ServerConfig' as AbilitySubject,
-              actions: ['manage'] as AbilityAction[],
-            };
-          case 'manageRoles':
-            return {
-              subject: 'Role' as AbilitySubject,
-              actions: ['manage'] as AbilityAction[],
-            };
+            result.push({
+              subject: 'ServerConfig',
+              actions: [
+                {
+                  action: 'manage',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
           case 'createInvites':
-            return {
-              subject: 'Invite' as AbilitySubject,
-              actions: ['create'] as AbilityAction[],
-            };
+            result.push({
+              subject: 'Invite',
+              actions: [
+                {
+                  action: 'create',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
           case 'manageInvites':
-            return {
-              subject: 'Invite' as AbilitySubject,
-              actions: ['manage'] as AbilityAction[],
-            };
+            result.push({
+              subject: 'Invite',
+              actions: [
+                {
+                  action: 'manage',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
+          case 'manageRoles':
+            result.push({
+              subject: 'Role',
+              actions: [
+                {
+                  action: 'manage',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
           default:
-            return {
-              subject: 'Channel' as AbilitySubject,
-              actions: ['read'] as AbilityAction[],
-            };
+            result.push({
+              subject: 'Channel',
+              actions: [
+                {
+                  action: 'read',
+                  changeType: permission.value ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
         }
-      });
+        return result;
+      }, []);
+
+      const role =
+        values.action === 'change-role' || values.action === 'create-role'
+          ? {
+              permissions: shapedPermissions,
+              members: values.roleMembers,
+              roleToUpdateId: values.selectedRoleId,
+            }
+          : undefined;
 
       return api.createProposal(channelId, {
         body: values.body?.trim(),
         action: {
           actionType: values.action,
-          ...(transformedPermissions &&
-            transformedPermissions.length > 0 && {
-              permissions: transformedPermissions,
-            }),
-          ...(values.roleMembers && { members: values.roleMembers }),
-          ...(values.selectedRoleId && {
-            roleToUpdateId: values.selectedRoleId,
-          }),
+          role,
         },
 
         // TODO: Handle images
