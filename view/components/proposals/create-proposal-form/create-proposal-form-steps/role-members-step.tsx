@@ -2,11 +2,11 @@ import { api } from '@/client/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ProposeRoleMemberOption } from '../../../proposal-actions/propose-role-member-option';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Input } from '../../../ui/input';
+import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 interface Props {

@@ -1,8 +1,8 @@
 import { getPermissionText } from '@/lib/role.utils';
 import { PermissionKeys } from '@/types/role.types';
-import { CreateProposalFormSchema } from '../proposals/create-proposal-form/create-proposa-form.types';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
+import { Label } from '../../ui/label';
+import { Switch } from '../../ui/switch';
+import { CreateProposalFormSchema } from '../create-proposal-form/create-proposa-form.types';
 
 interface Props {
   formValues: Record<string, unknown>;

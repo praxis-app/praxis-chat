@@ -1,5 +1,5 @@
 import { User } from '@/types/user.types';
-import { RoleMemberOption } from '../roles/role-member-option';
+import { RoleMemberOption } from '../../roles/role-member-option';
 
 interface RoleMemberChange {
   userId: string;
