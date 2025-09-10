@@ -39,7 +39,7 @@ export const CreateProposalForm = ({
     defaultValues: {
       body: '',
       action: '',
-      permissions: {},
+      permissions: [],
       roleMembers: [],
       selectedRoleId: '',
     },
