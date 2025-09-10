@@ -2,13 +2,22 @@ import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
+import { ProposalActionPermission } from './entities/proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
+
+const rolesRepository = dataSource.getRepository(Role);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
 
-const rolesRepository = dataSource.getRepository(Role);
+const proposalActionRoleMemberRepository = dataSource.getRepository(
+  ProposalActionRoleMember,
+);
+
+const proposalActionPermissionRepository = dataSource.getRepository(
+  ProposalActionPermission,
+);
 
 export const createProposalActionRole = async (
   proposalActionId: string,
@@ -16,15 +25,28 @@ export const createProposalActionRole = async (
 ) => {
   const savedRole = await proposalActionRoleRepository.save({
     ...role,
-    permissions: role.permissions,
     roleId: roleToUpdateId,
     proposalActionId,
   });
 
+  if (role.permissions && role.permissions.length > 0) {
+    // TODO: Convert reduce to for loop
+    const permissionsToSave = role.permissions.reduce<
+      Partial<ProposalActionPermission>[]
+    >((result, permission) => {
+      for (const action of permission.actions) {
+        result.push({
+          ...action,
+          subject: permission.subject,
+          proposalActionRoleId: savedRole.id,
+        });
+      }
+      return result;
+    }, []);
+    await proposalActionPermissionRepository.save(permissionsToSave);
+  }
+
   if (members && members.length > 0) {
-    const proposalActionRoleMemberRepository = dataSource.getRepository(
-      ProposalActionRoleMember,
-    );
     await proposalActionRoleMemberRepository.save(
       members.map((member) => ({
         userId: member.userId,

@@ -12,6 +12,8 @@ import {
   AbilityAction,
   AbilitySubject,
 } from '../../roles/app-ability';
+import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '../proposal-action.constants';
+import { RoleAttributeChangeType } from '../proposal-action.types';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
@@ -24,6 +26,9 @@ export class ProposalActionPermission {
 
   @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
   subject: AbilitySubject;
+
+  @Column({ type: 'enum', enum: ROLE_ATTRIBUTE_CHANGE_TYPE })
+  changeType: RoleAttributeChangeType;
 
   @ManyToOne(
     () => ProposalActionRole,

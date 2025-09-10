@@ -49,21 +49,28 @@ export const getRole = async (roleId: string) => {
 };
 
 export const getRoles = async () => {
-  const roles = await dataSource
-    .createQueryBuilder()
-    .select('role.id', 'id')
-    .addSelect('role.name', 'name')
-    .addSelect('role.color', 'color')
-    .addSelect('COUNT(member.id)', 'memberCount')
-    .from(Role, 'role')
-    .leftJoin('role.members', 'member')
-    .groupBy('role.id')
-    .orderBy('role.updatedAt', 'DESC')
-    .getRawMany<Role & { memberCount: string }>();
+  const roles = await roleRepository.find({
+    relations: ['members', 'permissions'],
+    select: {
+      id: true,
+      name: true,
+      color: true,
+      members: {
+        id: true,
+        name: true,
+        displayName: true,
+      },
+      permissions: {
+        subject: true,
+        action: true,
+      },
+    },
+  });
 
   return roles.map((role) => ({
     ...role,
-    memberCount: parseInt(role.memberCount),
+    permissions: buildPermissionRules([role]),
+    memberCount: role.members.length,
   }));
 };
 
