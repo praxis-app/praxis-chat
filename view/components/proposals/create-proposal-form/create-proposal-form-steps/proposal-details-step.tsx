@@ -26,9 +26,10 @@ interface Props {
   isLastStep: boolean;
 }
 
-export const BasicProposalStep = (_props: Props) => {
-  const { t } = useTranslation();
+export const ProposalDetailsStep = (_props: Props) => {
   const { form, onNext } = useWizardContext<CreateProposalFormSchema>();
+
+  const { t } = useTranslation();
 
   const handleNext = () => {
     const actionType = form.getValues('action');

@@ -13,7 +13,7 @@ import {
   CreateProposalFormSchema,
   createProposalFormSchema,
 } from './create-proposa-form.types';
-import { BasicProposalStep } from './create-proposal-form-steps/basic-proposal-step';
+import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
 import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
 import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
@@ -30,9 +30,10 @@ export const CreateProposalForm = ({
   isGeneralChannel,
   onSuccess,
 }: CreateProposalFormProps) => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(0);
+
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const form = useForm<CreateProposalFormSchema>({
     resolver: zodResolver(createProposalFormSchema),
@@ -122,7 +123,7 @@ export const CreateProposalForm = ({
       id: 'basic',
       title: t('proposals.wizard.basicInfo'),
       description: t('proposals.wizard.basicInfoDescription'),
-      component: BasicProposalStep,
+      component: ProposalDetailsStep,
     },
     ...(showRolesPermissionsStep
       ? [

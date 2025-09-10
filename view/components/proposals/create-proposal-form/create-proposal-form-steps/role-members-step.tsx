@@ -17,13 +17,15 @@ interface Props {
 }
 
 export const RoleMembersStep = (_props: Props) => {
-  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
+
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
-  const [searchTerm, setSearchTerm] = useState('');
 
   const roleMembers = form.watch('roleMembers') || [];
   const selectedRoleId = form.watch('selectedRoleId');
+
+  const { t } = useTranslation();
 
   // Get eligible users for the selected role
   const { data: eligibleUsersData, isLoading: isLoadingEligible } = useQuery({

@@ -14,9 +14,10 @@ interface Props {
 }
 
 export const RolesPermissionsStep = (_props: Props) => {
-  const { t } = useTranslation();
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
+
+  const { t } = useTranslation();
 
   const permissions = form.watch('permissions') || {};
 

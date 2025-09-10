@@ -13,12 +13,13 @@ interface Props {
 }
 
 export const ProposalReviewStep = (_props: Props) => {
-  const { t } = useTranslation();
   const { form, onSubmit, onPrevious, isSubmitting } =
     useWizardContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
+
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">

@@ -28,9 +28,10 @@ interface Props {
 }
 
 export const RoleSelectionStep = (_props: Props) => {
-  const { t } = useTranslation();
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
+
+  const { t } = useTranslation();
 
   // Get all available roles
   const { data: rolesData, isLoading } = useQuery({
