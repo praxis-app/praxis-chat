@@ -9,15 +9,15 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Wizard, WizardStepData } from '../../shared/wizard/wizard';
 import { Form } from '../../ui/form';
-import { BasicProposalStep } from './basic-proposal-step';
 import {
   CreateProposalFormSchema,
   createProposalFormSchema,
 } from './create-proposa-form.types';
-import { ReviewStep } from './review-step';
-import { RoleMembersStep } from './role-members-step';
-import { RoleSelectionStep } from './role-selection-step';
-import { RolesPermissionsStep } from './roles-permissions-step';
+import { BasicProposalStep } from './create-proposal-form-steps/basic-proposal-step';
+import { ReviewStep } from './create-proposal-form-steps/review-step';
+import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
+import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
+import { RolesPermissionsStep } from './create-proposal-form-steps/roles-permissions-step';
 
 interface CreateProposalFormProps {
   channelId?: string;

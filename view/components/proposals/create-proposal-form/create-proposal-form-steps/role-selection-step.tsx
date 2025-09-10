@@ -1,24 +1,24 @@
 import { api } from '@/client/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../shared/wizard/wizard-hooks';
-import { Button } from '../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../ui/form';
+} from '../../../ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select';
-import { CreateProposalFormSchema } from './create-proposa-form.types';
+} from '../../../ui/select';
+import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 interface RoleSelectionStepProps {
   stepIndex: number;

@@ -1,23 +1,23 @@
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../shared/wizard/wizard-hooks';
-import { Button } from '../../ui/button';
+import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../ui/form';
+} from '../../../ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select';
-import { Textarea } from '../../ui/textarea';
-import { CreateProposalFormSchema } from './create-proposa-form.types';
+} from '../../../ui/select';
+import { Textarea } from '../../../ui/textarea';
+import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 interface Props {
   stepIndex: number;

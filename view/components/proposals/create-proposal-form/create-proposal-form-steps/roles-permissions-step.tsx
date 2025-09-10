@@ -1,10 +1,10 @@
 import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { useTranslation } from 'react-i18next';
-import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
-import { useWizardContext } from '../../shared/wizard/wizard-hooks';
-import { Button } from '../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { CreateProposalFormSchema } from './create-proposa-form.types';
+import { ProposePermissionToggle } from '../../../proposal-actions/propose-permission-toggle';
+import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 interface RolesPermissionsStepProps {
   stepIndex: number;

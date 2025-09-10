@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../shared/wizard/wizard-hooks';
-import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { CreateProposalFormSchema } from './create-proposa-form.types';
+import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
+import { Badge } from '../../../ui/badge';
+import { Button } from '../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 interface ReviewStepProps {
   stepIndex: number;
