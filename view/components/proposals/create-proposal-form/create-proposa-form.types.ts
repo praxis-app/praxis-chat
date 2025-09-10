@@ -7,7 +7,6 @@ const PROPOSAL_BODY_MAX = 6000;
 export const createProposalFormSchema = zod.object({
   body: zod
     .string()
-    .min(1)
     .max(PROPOSAL_BODY_MAX, {
       message: t('proposals.errors.longBody'),
     })
