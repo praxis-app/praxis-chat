@@ -5,14 +5,14 @@ import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface ReviewStepProps {
+interface Props {
   stepIndex: number;
   totalSteps: number;
   isFirstStep: boolean;
   isLastStep: boolean;
 }
 
-export const ReviewStep = (_props: ReviewStepProps) => {
+export const ProposalReviewStep = (_props: Props) => {
   const { t } = useTranslation();
   const { form, onSubmit, onPrevious, isSubmitting } =
     useWizardContext<CreateProposalFormSchema>();

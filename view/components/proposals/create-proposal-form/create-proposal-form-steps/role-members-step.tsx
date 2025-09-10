@@ -9,14 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Input } from '../../../ui/input';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface RoleMembersStepProps {
+interface Props {
   stepIndex: number;
   totalSteps: number;
   isFirstStep: boolean;
   isLastStep: boolean;
 }
 
-export const RoleMembersStep = (_props: RoleMembersStepProps) => {
+export const RoleMembersStep = (_props: Props) => {
   const { t } = useTranslation();
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();

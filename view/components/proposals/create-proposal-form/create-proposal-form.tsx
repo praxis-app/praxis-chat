@@ -14,7 +14,7 @@ import {
   createProposalFormSchema,
 } from './create-proposa-form.types';
 import { BasicProposalStep } from './create-proposal-form-steps/basic-proposal-step';
-import { ReviewStep } from './create-proposal-form-steps/review-step';
+import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
 import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
 import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
 import { RolesPermissionsStep } from './create-proposal-form-steps/roles-permissions-step';
@@ -150,7 +150,7 @@ export const CreateProposalForm = ({
       id: 'review',
       title: t('proposals.wizard.review'),
       description: t('proposals.wizard.reviewDescription'),
-      component: ReviewStep,
+      component: ProposalReviewStep,
     },
   ];
 

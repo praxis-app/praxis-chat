@@ -6,14 +6,14 @@ import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface RolesPermissionsStepProps {
+interface Props {
   stepIndex: number;
   totalSteps: number;
   isFirstStep: boolean;
   isLastStep: boolean;
 }
 
-export const RolesPermissionsStep = (_props: RolesPermissionsStepProps) => {
+export const RolesPermissionsStep = (_props: Props) => {
   const { t } = useTranslation();
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
