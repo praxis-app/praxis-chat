@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { CreateProposalActionRoleMemberReq } from '@/types/proposal.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -46,7 +47,7 @@ export const RoleMembersStep = () => {
   };
 
   const handleMemberChange = (
-    memberChanges: Array<{ userId: string; changeType: 'add' | 'remove' }>,
+    memberChanges: Array<CreateProposalActionRoleMemberReq>,
   ) => {
     setFieldValue('roleMembers', memberChanges);
   };

@@ -3,6 +3,7 @@ import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
   PERMISSION_KEYS,
+  ROLE_ATTRIBUTE_CHANGE_TYPE,
 } from '../constants/role.constants';
 import { User } from './user.types';
 
@@ -41,3 +42,6 @@ export interface UpdateRolePermissionsReq {
 }
 
 export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
+
+export type RoleAttributeChangeType =
+  (typeof ROLE_ATTRIBUTE_CHANGE_TYPE)[number];

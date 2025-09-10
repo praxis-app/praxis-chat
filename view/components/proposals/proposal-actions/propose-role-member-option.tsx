@@ -1,15 +1,13 @@
+import { CreateProposalActionRoleMemberReq } from '@/types/proposal.types';
 import { User } from '@/types/user.types';
 import { RoleMemberOption } from '../../roles/role-member-option';
 
-interface RoleMemberChange {
-  userId: string;
-  changeType: 'add' | 'remove';
-}
-
 interface Props {
   member: User;
-  selectedMembers: RoleMemberChange[];
-  setSelectedMembers(selectedMembers: RoleMemberChange[]): void;
+  selectedMembers: CreateProposalActionRoleMemberReq[];
+  setSelectedMembers(
+    selectedMembers: CreateProposalActionRoleMemberReq[],
+  ): void;
   currentRoleMembers?: User[];
 }
 

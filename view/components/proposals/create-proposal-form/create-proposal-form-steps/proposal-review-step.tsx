@@ -1,4 +1,7 @@
-import { ProposalActionType } from '@/types/proposal.types';
+import {
+  CreateProposalActionRoleMemberReq,
+  ProposalActionType,
+} from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -84,8 +87,12 @@ export const ProposalReviewStep = () => {
                     <span className="text-sm">
                       {getPermissionName(permission.name)}
                     </span>
-                    <Badge variant={permission.value ? 'default' : 'destructive'}>
-                      {permission.value ? t('actions.enabled') : t('actions.disabled')}
+                    <Badge
+                      variant={permission.value ? 'default' : 'destructive'}
+                    >
+                      {permission.value
+                        ? t('actions.enabled')
+                        : t('actions.disabled')}
                     </Badge>
                   </div>
                 ))}
@@ -118,7 +125,7 @@ export const ProposalReviewStep = () => {
               <div className="space-y-2">
                 {roleMembers.map(
                   (
-                    member: { userId: string; changeType: 'add' | 'remove' },
+                    member: CreateProposalActionRoleMemberReq,
                     index: number,
                   ) => (
                     <div

@@ -4,7 +4,11 @@ import {
   PROPOSAL_STAGE,
 } from '../constants/proposal.constants';
 import { Image } from './image.types';
-import { AbilityAction, AbilitySubject } from './role.types';
+import {
+  AbilityAction,
+  AbilitySubject,
+  RoleAttributeChangeType,
+} from './role.types';
 import { VoteType } from './vote.types';
 
 export type DecisionMakingModel = (typeof DECISION_MAKING_MODEL)[number];
@@ -47,7 +51,7 @@ export interface CreateProposalActionRoleReq {
 
 export interface CreateProposalActionRoleMemberReq {
   userId: string;
-  changeType: 'add' | 'remove';
+  changeType: RoleAttributeChangeType;
 }
 
 export interface CreateProposalActionRolePermissionReq {
