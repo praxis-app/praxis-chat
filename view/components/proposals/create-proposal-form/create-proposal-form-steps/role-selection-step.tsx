@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { getPermissionValues } from '@/lib/role.utils';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,18 @@ export const RoleSelectionStep = () => {
 
   const roles = rolesData?.roles || [];
 
+  const handleValueChange = (value: string) => {
+    const selectedRole = roles.find((role) => role.id === value);
+
+    if (selectedRole) {
+      form.setValue(
+        'permissions',
+        getPermissionValues(selectedRole.permissions),
+      );
+      form.setValue('selectedRoleId', value);
+    }
+  };
+
   const handleNext = () => {
     onNext();
   };
@@ -65,7 +78,10 @@ export const RoleSelectionStep = () => {
                 <FormItem>
                   <FormLabel>{t('proposals.wizard.roleSelection')}</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      value={field.value}
+                      onValueChange={handleValueChange}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue
                           placeholder={t(

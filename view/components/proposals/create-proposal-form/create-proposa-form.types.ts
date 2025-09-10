@@ -1,4 +1,5 @@
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
+import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { t } from '@/lib/shared.utils';
 import * as zod from 'zod';
 
@@ -12,7 +13,14 @@ export const createProposalFormSchema = zod.object({
     })
     .optional(),
   action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
-  permissions: zod.record(zod.string(), zod.boolean()).optional(),
+  permissions: zod
+    .array(
+      zod.object({
+        value: zod.boolean(),
+        name: zod.enum(PERMISSION_KEYS),
+      }),
+    )
+    .optional(),
   roleMembers: zod
     .array(
       zod.object({
