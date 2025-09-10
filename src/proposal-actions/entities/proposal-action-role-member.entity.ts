@@ -24,7 +24,7 @@ export class ProposalActionRoleMember {
   })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
   @ManyToOne(
@@ -36,7 +36,7 @@ export class ProposalActionRoleMember {
   )
   proposalActionRole: ProposalActionRole;
 
-  @Column()
+  @Column({ type: 'uuid' })
   proposalActionRoleId: string;
 
   @CreateDateColumn()

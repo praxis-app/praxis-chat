@@ -39,7 +39,7 @@ export class ProposalActionPermission {
   )
   proposalActionRole: ProposalActionRole;
 
-  @Column()
+  @Column({ type: 'uuid' })
   proposalActionRoleId: string;
 
   @CreateDateColumn()
