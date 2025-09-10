@@ -54,16 +54,18 @@ export const ProposalReviewStep = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              {t('proposals.labels.body')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm whitespace-pre-wrap">{body}</p>
-          </CardContent>
-        </Card>
+        {body && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t('proposals.labels.body')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm whitespace-pre-wrap">{body}</p>
+            </CardContent>
+          </Card>
+        )}
 
         {action === 'change-role' && permissions && (
           <Card>
