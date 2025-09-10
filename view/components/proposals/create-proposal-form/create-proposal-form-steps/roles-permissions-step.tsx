@@ -6,14 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface Props {
-  stepIndex: number;
-  totalSteps: number;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-}
-
-export const RolesPermissionsStep = (_props: Props) => {
+export const RolesPermissionsStep = () => {
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
 

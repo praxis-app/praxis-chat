@@ -20,14 +20,7 @@ import {
 } from '../../../ui/select';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface Props {
-  stepIndex: number;
-  totalSteps: number;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-}
-
-export const RoleSelectionStep = (_props: Props) => {
+export const RoleSelectionStep = () => {
   const { form, onNext, onPrevious } =
     useWizardContext<CreateProposalFormSchema>();
 

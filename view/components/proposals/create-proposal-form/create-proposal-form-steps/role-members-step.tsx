@@ -9,14 +9,7 @@ import { Input } from '../../../ui/input';
 import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface Props {
-  stepIndex: number;
-  totalSteps: number;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-}
-
-export const RoleMembersStep = (_props: Props) => {
+export const RoleMembersStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const { form, onNext, onPrevious } =

@@ -19,14 +19,7 @@ import {
 import { Textarea } from '../../../ui/textarea';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
-interface Props {
-  stepIndex: number;
-  totalSteps: number;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-}
-
-export const ProposalDetailsStep = (_props: Props) => {
+export const ProposalDetailsStep = () => {
   const { form, onNext } = useWizardContext<CreateProposalFormSchema>();
 
   const { t } = useTranslation();

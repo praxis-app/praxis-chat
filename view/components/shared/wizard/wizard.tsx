@@ -1,19 +1,13 @@
 import { cn } from '@/lib/shared.utils';
+import { ComponentType } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { WizardProvider } from './wizard-context';
-
-interface StepComponentProps {
-  stepIndex: number;
-  totalSteps: number;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-}
 
 export interface WizardStepData {
   id: string;
   title: string;
   description?: string;
-  component: React.ComponentType<StepComponentProps>;
+  component: ComponentType;
 }
 
 interface WizardProps<T extends FieldValues = FieldValues> {
@@ -37,6 +31,8 @@ export const Wizard = <T extends FieldValues = FieldValues>({
   onSubmit,
   isSubmitting,
 }: WizardProps<T>) => {
+  const StepComponent = steps[currentStep].component;
+
   return (
     <WizardProvider<T>
       value={{
@@ -49,18 +45,7 @@ export const Wizard = <T extends FieldValues = FieldValues>({
     >
       <div className={cn('space-y-6', className)}>
         <div className="min-h-[400px]">
-          {steps[currentStep] &&
-            (() => {
-              const StepComponent = steps[currentStep].component;
-              return (
-                <StepComponent
-                  stepIndex={currentStep}
-                  totalSteps={steps.length}
-                  isFirstStep={currentStep === 0}
-                  isLastStep={currentStep === steps.length - 1}
-                />
-              );
-            })()}
+          <StepComponent />
         </div>
       </div>
     </WizardProvider>

@@ -116,7 +116,7 @@ export const CreateProposalForm = ({
 
   // Determine which steps to show based on action type
   const actionType = form.watch('action');
-  const showRolesPermissionsStep = actionType === 'change-role';
+  const showChangeRoleSteps = actionType === 'change-role';
 
   const steps: WizardStepData[] = [
     {
@@ -125,7 +125,7 @@ export const CreateProposalForm = ({
       description: t('proposals.wizard.basicInfoDescription'),
       component: ProposalDetailsStep,
     },
-    ...(showRolesPermissionsStep
+    ...(showChangeRoleSteps
       ? [
           {
             id: 'role-selection',
@@ -134,7 +134,7 @@ export const CreateProposalForm = ({
             component: RoleSelectionStep,
           },
           {
-            id: 'roles-permissions',
+            id: 'role-permissions',
             title: t('proposals.wizard.rolesPermissions'),
             description: t('proposals.wizard.rolesPermissionsDescription'),
             component: RolesPermissionsStep,
