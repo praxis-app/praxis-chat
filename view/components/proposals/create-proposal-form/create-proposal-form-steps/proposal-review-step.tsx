@@ -67,7 +67,7 @@ export const ProposalReviewStep = () => {
           </Card>
         )}
 
-        {action === 'change-role' && permissions && (
+        {action === 'change-role' && permissions && permissions.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
@@ -76,24 +76,19 @@ export const ProposalReviewStep = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {Object.entries(permissions).map(([key, value]) => {
-                  if (value === undefined) {
-                    return null;
-                  }
-                  return (
-                    <div
-                      key={key}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-sm">
-                        {getPermissionName(key as PermissionKeys)}
-                      </span>
-                      <Badge variant={value ? 'default' : 'destructive'}>
-                        {value ? t('actions.enabled') : t('actions.disabled')}
-                      </Badge>
-                    </div>
-                  );
-                })}
+                {permissions.map((permission) => (
+                  <div
+                    key={permission.name}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm">
+                      {getPermissionName(permission.name)}
+                    </span>
+                    <Badge variant={permission.value ? 'default' : 'destructive'}>
+                      {permission.value ? t('actions.enabled') : t('actions.disabled')}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

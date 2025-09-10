@@ -1,6 +1,7 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
+import { AbilityAction, AbilitySubject } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -53,11 +54,54 @@ export const CreateProposalForm = ({
       if (!values.action) {
         throw new Error('Action is required');
       }
+
+      // TODO: Refactor logic for transforming permissions to API format - likely too complex or incomplete
+
+      // Transform permissions from form format to API format
+      const transformedPermissions = values.permissions?.map((permission) => {
+        // Map PermissionKeys to AbilitySubject and AbilityAction
+        switch (permission.name) {
+          case 'manageChannels':
+            return {
+              subject: 'Channel' as AbilitySubject,
+              actions: ['manage'] as AbilityAction[],
+            };
+          case 'manageSettings':
+            return {
+              subject: 'ServerConfig' as AbilitySubject,
+              actions: ['manage'] as AbilityAction[],
+            };
+          case 'manageRoles':
+            return {
+              subject: 'Role' as AbilitySubject,
+              actions: ['manage'] as AbilityAction[],
+            };
+          case 'createInvites':
+            return {
+              subject: 'Invite' as AbilitySubject,
+              actions: ['create'] as AbilityAction[],
+            };
+          case 'manageInvites':
+            return {
+              subject: 'Invite' as AbilitySubject,
+              actions: ['manage'] as AbilityAction[],
+            };
+          default:
+            return {
+              subject: 'Channel' as AbilitySubject,
+              actions: ['read'] as AbilityAction[],
+            };
+        }
+      });
+
       return api.createProposal(channelId, {
         body: values.body?.trim(),
         action: {
           actionType: values.action,
-          ...(values.permissions && { permissions: values.permissions }),
+          ...(transformedPermissions &&
+            transformedPermissions.length > 0 && {
+              permissions: transformedPermissions,
+            }),
           ...(values.roleMembers && { members: values.roleMembers }),
           ...(values.selectedRoleId && {
             roleToUpdateId: values.selectedRoleId,

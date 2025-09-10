@@ -2,23 +2,19 @@ import { getPermissionText } from '@/lib/role.utils';
 import { PermissionKeys } from '@/types/role.types';
 import { Label } from '../../ui/label';
 import { Switch } from '../../ui/switch';
-import { CreateProposalFormSchema } from '../create-proposal-form/create-proposa-form.types';
 
 interface Props {
   formValues: Record<string, unknown>;
   permissionName: PermissionKeys;
-  permissions: Partial<Record<PermissionKeys, boolean>>;
-  setFieldValue(
-    field: keyof CreateProposalFormSchema,
-    value?: CreateProposalFormSchema[keyof CreateProposalFormSchema],
-  ): void;
+  permissions: Record<PermissionKeys, boolean>;
+  updatePermission: (permissionName: PermissionKeys, value: boolean) => void;
 }
 
 export const ProposePermissionToggle = ({
   formValues,
   permissionName,
   permissions,
-  setFieldValue,
+  updatePermission,
 }: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
 
@@ -31,18 +27,7 @@ export const ProposePermissionToggle = ({
     : isEnabled);
 
   const handleSwitchChange = (checked: boolean) => {
-    if (!checked && isEnabled) {
-      setFieldValue('permissions', { ...permissions, [permissionName]: false });
-      return;
-    }
-    if (checked === isEnabled) {
-      setFieldValue('permissions', {
-        ...permissions,
-        [permissionName]: undefined,
-      });
-      return;
-    }
-    setFieldValue('permissions', { ...permissions, [permissionName]: true });
+    updatePermission(permissionName, checked);
   };
 
   return (

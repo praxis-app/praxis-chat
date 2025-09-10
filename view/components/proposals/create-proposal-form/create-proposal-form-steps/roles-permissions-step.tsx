@@ -1,4 +1,5 @@
 import { PERMISSION_KEYS } from '@/constants/role.constants';
+import { PermissionKeys } from '@/types/role.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -13,34 +14,40 @@ export const RolesPermissionsStep = () => {
 
   const { t } = useTranslation();
 
-  const permissions = form.watch('permissions') || {};
+  const permissions = form.watch('permissions') || [];
 
-  const setFieldValue = (
-    field: keyof CreateProposalFormSchema,
-    value: CreateProposalFormSchema[keyof CreateProposalFormSchema],
-  ) => {
-    // Handle nested field paths like "permissions.manageRoles"
-    if (field.startsWith('permissions.')) {
-      const permissionKey = field.replace('permissions.', '');
-      const currentPermissions = form.getValues('permissions') || {};
-      const newPermissions = {
-        ...currentPermissions,
-        [permissionKey]: value,
-      };
-      // Filter out undefined values
-      const filteredPermissions = Object.fromEntries(
-        Object.entries(newPermissions).filter(([_, v]) => v !== undefined),
-      ) as Record<string, boolean>;
-      form.setValue('permissions', filteredPermissions, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
+  // TODO: Revisit whether an object should be used at all for permissions
+
+  // Convert permissions array to object for easier access in components
+  const permissionsObject = permissions.reduce(
+    (acc, permission) => {
+      acc[permission.name] = permission.value;
+      return acc;
+    },
+    {} as Record<string, boolean>,
+  );
+
+  const updatePermission = (permissionName: PermissionKeys, value: boolean) => {
+    const currentPermissions = form.getValues('permissions') || [];
+
+    // Find existing permission or create new one
+    const existingIndex = currentPermissions.findIndex(
+      (p) => p.name === permissionName,
+    );
+    const newPermissions = [...currentPermissions];
+
+    if (existingIndex >= 0) {
+      // Update existing permission
+      newPermissions[existingIndex] = { name: permissionName, value };
     } else {
-      form.setValue(field, value, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
+      // Add new permission
+      newPermissions.push({ name: permissionName, value });
     }
+
+    form.setValue('permissions', newPermissions, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const handleNext = () => {
@@ -69,10 +76,10 @@ export const RolesPermissionsStep = () => {
             {PERMISSION_KEYS.map((permissionName) => (
               <ProposePermissionToggle
                 key={permissionName}
-                formValues={{ permissions }}
+                formValues={{ permissions: permissionsObject }}
                 permissionName={permissionName}
-                permissions={permissions}
-                setFieldValue={setFieldValue}
+                permissions={permissionsObject}
+                updatePermission={updatePermission}
               />
             ))}
           </CardContent>
