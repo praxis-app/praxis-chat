@@ -1,6 +1,6 @@
 import { cn } from '@/lib/shared.utils';
 import { ComponentType } from 'react';
-import { FieldValues, UseFormReturn } from 'react-hook-form';
+import { FieldValues, FormProvider, UseFormReturn } from 'react-hook-form';
 import { WizardProvider } from './wizard-context';
 
 export interface WizardStepData {
@@ -34,20 +34,21 @@ export const Wizard = <T extends FieldValues = FieldValues>({
   const StepComponent = steps[currentStep].component;
 
   return (
-    <WizardProvider<T>
-      value={{
-        form,
-        onNext,
-        onPrevious,
-        onSubmit,
-        isSubmitting,
-      }}
-    >
-      <div className={cn('space-y-6', className)}>
-        <div className="min-h-[400px]">
-          <StepComponent />
+    <FormProvider {...form}>
+      <WizardProvider
+        value={{
+          onNext,
+          onPrevious,
+          onSubmit,
+          isSubmitting,
+        }}
+      >
+        <div className={cn('space-y-6', className)}>
+          <div className="min-h-[400px]">
+            <StepComponent />
+          </div>
         </div>
-      </div>
-    </WizardProvider>
+      </WizardProvider>
+    </FormProvider>
   );
 };

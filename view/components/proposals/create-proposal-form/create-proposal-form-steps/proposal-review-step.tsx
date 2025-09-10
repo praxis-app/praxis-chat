@@ -1,5 +1,6 @@
 import { ProposalActionType } from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Badge } from '../../../ui/badge';
@@ -8,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 export const ProposalReviewStep = () => {
-  const { form, onSubmit, onPrevious, isSubmitting } =
-    useWizardContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
+  const { onSubmit, onPrevious, isSubmitting } = useWizardContext();
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;

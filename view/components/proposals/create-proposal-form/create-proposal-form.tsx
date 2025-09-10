@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Wizard, WizardStepData } from '../../shared/wizard/wizard';
-import { Form } from '../../ui/form';
 import {
   CreateProposalFormSchema,
   createProposalFormSchema,
@@ -172,17 +171,15 @@ export const CreateProposalForm = ({
   };
 
   return (
-    <Form {...form}>
-      <Wizard
-        steps={steps}
-        currentStep={currentStep}
-        className="space-y-6"
-        form={form}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        onSubmit={handleSubmit}
-        isSubmitting={isPending}
-      />
-    </Form>
+    <Wizard
+      steps={steps}
+      currentStep={currentStep}
+      className="space-y-6"
+      form={form}
+      onNext={handleNext}
+      onPrevious={handlePrevious}
+      onSubmit={handleSubmit}
+      isSubmitting={isPending}
+    />
   );
 };

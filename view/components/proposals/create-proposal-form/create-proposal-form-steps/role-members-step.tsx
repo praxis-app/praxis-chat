@@ -1,6 +1,7 @@
 import { api } from '@/client/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
@@ -12,8 +13,8 @@ import { CreateProposalFormSchema } from '../create-proposa-form.types';
 export const RoleMembersStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { form, onNext, onPrevious } =
-    useWizardContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
+  const { onNext, onPrevious } = useWizardContext();
 
   const roleMembers = form.watch('roleMembers') || [];
   const selectedRoleId = form.watch('selectedRoleId');

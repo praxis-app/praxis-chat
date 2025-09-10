@@ -1,4 +1,5 @@
 import { PERMISSION_KEYS } from '@/constants/role.constants';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
@@ -7,8 +8,8 @@ import { ProposePermissionToggle } from '../../proposal-actions/propose-permissi
 import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 export const RolesPermissionsStep = () => {
-  const { form, onNext, onPrevious } =
-    useWizardContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
+  const { onNext, onPrevious } = useWizardContext();
 
   const { t } = useTranslation();
 
