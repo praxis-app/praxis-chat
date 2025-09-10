@@ -1,3 +1,5 @@
+import { ProposalActionType } from '@/types/proposal.types';
+import { PermissionKeys } from '@/types/role.types';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Badge } from '../../../ui/badge';
@@ -13,6 +15,20 @@ export const ProposalReviewStep = () => {
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
 
   const { t } = useTranslation();
+
+  const getProposalActionType = (action: ProposalActionType | '') => {
+    if (!action) {
+      return '';
+    }
+    return t(`proposals.actionTypes.${action}`);
+  };
+
+  const getPermissionName = (name: PermissionKeys | '') => {
+    if (!name) {
+      return '';
+    }
+    return t(`permissions.names.${name}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -33,9 +49,7 @@ export const ProposalReviewStep = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary">
-              {t(`proposals.actionTypes.${action}` as never)}
-            </Badge>
+            <Badge variant="secondary">{getProposalActionType(action)}</Badge>
           </CardContent>
         </Card>
 
@@ -69,7 +83,7 @@ export const ProposalReviewStep = () => {
                       className="flex items-center justify-between"
                     >
                       <span className="text-sm">
-                        {t(`permissions.names.${key}` as never)}
+                        {getPermissionName(key as PermissionKeys)}
                       </span>
                       <Badge variant={value ? 'default' : 'destructive'}>
                         {value ? t('actions.enabled') : t('actions.disabled')}
@@ -122,7 +136,7 @@ export const ProposalReviewStep = () => {
                         }
                       >
                         {member.changeType === 'add'
-                          ? t('actions.add' as never)
+                          ? t('actions.add')
                           : t('actions.remove')}
                       </Badge>
                     </div>
