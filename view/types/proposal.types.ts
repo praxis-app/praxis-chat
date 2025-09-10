@@ -56,5 +56,5 @@ export interface CreateProposalActionRoleMemberReq {
 
 export interface CreateProposalActionRolePermissionReq {
   subject: AbilitySubject;
-  actions: AbilityAction[];
+  actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
 }

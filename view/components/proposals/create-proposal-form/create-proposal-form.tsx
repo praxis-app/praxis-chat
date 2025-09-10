@@ -107,6 +107,8 @@ export const CreateProposalForm = ({
             roleToUpdateId: values.selectedRoleId,
           }),
         },
+
+        // TODO: Handle images
         images: [],
       });
     },
