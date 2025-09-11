@@ -47,6 +47,7 @@ export const CreateProposalForm = ({
     },
   });
 
+  // TODO: Remove unneeded / unchanged entries before API call
   const { mutate: createProposal, isPending } = useMutation({
     mutationFn: async (values: CreateProposalFormSchema) => {
       if (!channelId) {

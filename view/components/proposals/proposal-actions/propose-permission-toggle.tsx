@@ -8,38 +8,20 @@ import { CreateProposalFormSchema } from '../create-proposal-form/create-proposa
 interface Props {
   permissionName: PermissionKeys;
   formPermissions: Record<PermissionKeys, boolean>;
-  permissions: Record<PermissionKeys, boolean>;
   setValue: UseFormSetValue<CreateProposalFormSchema>;
 }
 
 export const ProposePermissionToggle = ({
   formPermissions,
   permissionName,
-  permissions,
   setValue,
 }: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
 
-  const permissionInput = formPermissions && formPermissions[permissionName];
-  const isEnabled = permissions[permissionName];
-  const isChecked = !!(permissionInput !== undefined
-    ? permissionInput
-    : isEnabled);
-
-  // TODO: Remove unneeded entries near API call and review step instead of here
   const handleSwitchChange = (checked: boolean) => {
-    const getNewValue = () => {
-      if (!checked && isEnabled) {
-        return false;
-      }
-      if (checked === isEnabled) {
-        return undefined;
-      }
-      return true;
-    };
     setValue('permissions', {
       ...formPermissions,
-      [permissionName]: getNewValue(),
+      [permissionName]: checked,
     });
   };
 
@@ -57,7 +39,7 @@ export const ProposePermissionToggle = ({
 
       <Switch
         id={`permission-${permissionName}`}
-        checked={isChecked}
+        defaultChecked={formPermissions[permissionName]}
         onCheckedChange={handleSwitchChange}
         aria-label={displayName}
       />

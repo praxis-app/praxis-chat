@@ -1,8 +1,11 @@
+import { api } from '@/client/api-client';
+import { getPermissionValues } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
   ProposalActionType,
 } from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
+import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -17,6 +20,28 @@ export const ProposalReviewStep = () => {
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
+
+  const { data: roleData } = useQuery({
+    queryKey: ['role', selectedRoleId],
+    queryFn: () => api.getRole(selectedRoleId!),
+    enabled: !!selectedRoleId,
+  });
+
+  const shapedRolePermissions = getPermissionValues(
+    roleData?.role.permissions || [],
+  ).reduce<Record<string, boolean>>((acc, permission) => {
+    acc[permission.name] = permission.value;
+    return acc;
+  }, {});
+
+  const changedPermissions = Object.entries(permissions || {}).reduce<
+    Record<string, boolean>
+  >((acc, [permission, value]) => {
+    if (value !== shapedRolePermissions[permission]) {
+      acc[permission] = value;
+    }
+    return acc;
+  }, {});
 
   const { t } = useTranslation();
 
@@ -71,8 +96,7 @@ export const ProposalReviewStep = () => {
         )}
 
         {action === 'change-role' &&
-          permissions &&
-          Object.keys(permissions).length > 0 && (
+          Object.keys(changedPermissions).length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
@@ -81,7 +105,7 @@ export const ProposalReviewStep = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {Object.entries(permissions).map(
+                  {Object.entries(changedPermissions).map(
                     ([permissionName, permissionValue]) => (
                       <div
                         key={permissionName}

@@ -1,7 +1,4 @@
-import { api } from '@/client/api-client';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
-import { getPermissionValues } from '@/lib/role.utils';
-import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -12,25 +9,10 @@ import { CreateProposalFormSchema } from '../create-proposa-form.types';
 
 export const RolesPermissionsStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();
-  const { onNext, onPrevious } = useWizardContext();
-
-  const { t } = useTranslation();
-
-  const selectedRoleId = form.watch('selectedRoleId');
   const formPermissions = form.watch('permissions')!;
 
-  const { data: roleData } = useQuery({
-    queryKey: ['role', selectedRoleId],
-    queryFn: () => api.getRole(selectedRoleId!),
-    enabled: !!selectedRoleId,
-  });
-
-  const shapedRolePermissions = getPermissionValues(
-    roleData?.role.permissions || [],
-  ).reduce<Record<string, boolean>>((acc, permission) => {
-    acc[permission.name] = permission.value;
-    return acc;
-  }, {});
+  const { onNext, onPrevious } = useWizardContext();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -55,7 +37,6 @@ export const RolesPermissionsStep = () => {
               <ProposePermissionToggle
                 key={permissionName}
                 formPermissions={formPermissions}
-                permissions={shapedRolePermissions}
                 permissionName={permissionName}
                 setValue={form.setValue}
               />
