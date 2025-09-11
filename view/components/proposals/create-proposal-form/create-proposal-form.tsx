@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { CreateProposalActionRolePermissionReq } from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
@@ -59,7 +60,6 @@ export const CreateProposalForm = ({
       currentStep > 1,
   });
 
-  // TODO: Remove unneeded / unchanged entries before API call
   const { mutate: createProposal, isPending } = useMutation({
     mutationFn: async (values: CreateProposalFormSchema) => {
       if (!channelId) {
@@ -69,10 +69,17 @@ export const CreateProposalForm = ({
         throw new Error('Action is required');
       }
 
+      const shapedRolePermissions = getPermissionValuesMap(
+        roleData?.role?.permissions || [],
+      );
+
       // Shape permissions from form format to API format
       const shapedPermissions = Object.entries(values.permissions || {}).reduce<
         CreateProposalActionRolePermissionReq[]
       >((result, [permissionName, permissionValue]) => {
+        if (shapedRolePermissions[permissionName] === permissionValue) {
+          return result;
+        }
         switch (permissionName as PermissionKeys) {
           case 'manageChannels':
             result.push({

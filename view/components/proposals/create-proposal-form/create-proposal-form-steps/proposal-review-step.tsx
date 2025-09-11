@@ -1,4 +1,4 @@
-import { getPermissionValues } from '@/lib/role.utils';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
   ProposalActionType,
@@ -28,12 +28,9 @@ export const ProposalReviewStep = () => {
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
 
-  const shapedRolePermissions = getPermissionValues(
+  const shapedRolePermissions = getPermissionValuesMap(
     selectedRole?.permissions || [],
-  ).reduce<Record<string, boolean>>((acc, permission) => {
-    acc[permission.name] = permission.value;
-    return acc;
-  }, {});
+  );
 
   const changedPermissions = Object.entries(permissions || {}).reduce<
     Record<string, boolean>
