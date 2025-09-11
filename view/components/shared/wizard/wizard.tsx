@@ -10,18 +10,18 @@ export interface WizardStepData {
   component: ComponentType;
 }
 
-interface WizardProps<T extends FieldValues = FieldValues> {
+interface WizardProps<FormValues extends FieldValues> {
   steps: WizardStepData[];
   currentStep: number;
   className?: string;
-  form: UseFormReturn<T>;
+  form: UseFormReturn<FormValues>;
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
 }
 
-export const Wizard = <T extends FieldValues = FieldValues>({
+export const Wizard = <FormValues extends FieldValues>({
   steps,
   currentStep,
   className,
@@ -30,7 +30,7 @@ export const Wizard = <T extends FieldValues = FieldValues>({
   onPrevious,
   onSubmit,
   isSubmitting,
-}: WizardProps<T>) => {
+}: WizardProps<FormValues>) => {
   const StepComponent = steps[currentStep].component;
 
   return (
