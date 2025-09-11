@@ -4,7 +4,7 @@ import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { CreateProposalActionRolePermissionReq } from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,18 @@ export const CreateProposalForm = ({
       roleMembers: [],
       selectedRoleId: '',
     },
+  });
+
+  const selectedRoleId = form.watch('selectedRoleId');
+  const actionType = form.watch('action');
+
+  const { data: roleData } = useQuery({
+    queryKey: ['role', selectedRoleId],
+    queryFn: () => api.getRole(selectedRoleId!),
+    enabled:
+      (actionType === 'change-role' || actionType === 'create-role') &&
+      !!selectedRoleId &&
+      currentStep > 1,
   });
 
   // TODO: Remove unneeded / unchanged entries before API call
@@ -189,7 +201,6 @@ export const CreateProposalForm = ({
   });
 
   // Determine which steps to show based on action type
-  const actionType = form.watch('action');
   const showChangeRoleSteps = actionType === 'change-role';
 
   const steps: WizardStepData[] = [
@@ -247,14 +258,15 @@ export const CreateProposalForm = ({
 
   return (
     <Wizard
+      form={form}
       steps={steps}
       currentStep={currentStep}
-      className="space-y-6"
-      form={form}
+      context={{ selectedRole: roleData?.role }}
       onNext={handleNext}
       onPrevious={handlePrevious}
       onSubmit={handleSubmit}
       isSubmitting={isPending}
+      className="space-y-6"
     />
   );
 };

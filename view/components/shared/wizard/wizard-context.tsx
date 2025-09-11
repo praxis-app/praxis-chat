@@ -1,15 +1,16 @@
 import { ReactNode } from 'react';
 import { WizardContext, WizardContextType } from './wizard-hooks';
 
-interface WizardProviderProps {
+interface WizardProviderProps<ContextValues> {
   children: ReactNode;
-  value: WizardContextType;
+  value: WizardContextType<ContextValues>;
 }
 
-export const WizardProvider = ({ children, value }: WizardProviderProps) => {
+export const WizardProvider = <ContextValues,>({
+  children,
+  value,
+}: WizardProviderProps<ContextValues>) => {
   return (
-    <WizardContext.Provider value={value}>
-      {children}
-    </WizardContext.Provider>
+    <WizardContext.Provider value={value}>{children}</WizardContext.Provider>
   );
 };

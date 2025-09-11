@@ -9,13 +9,20 @@ import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Input } from '../../../ui/input';
 import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
-import { CreateProposalFormSchema } from '../create-proposa-form.types';
+import {
+  CreateProposalFormSchema,
+  CreateProposalWizardContext,
+} from '../create-proposa-form.types';
 
 export const RoleMembersStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const form = useFormContext<CreateProposalFormSchema>();
-  const { onNext, onPrevious } = useWizardContext();
+  const {
+    context: { selectedRole },
+    onNext,
+    onPrevious,
+  } = useWizardContext<CreateProposalWizardContext>();
 
   const roleMembers = form.watch('roleMembers') || [];
   const selectedRoleId = form.watch('selectedRoleId');
@@ -26,13 +33,6 @@ export const RoleMembersStep = () => {
   const { data: eligibleUsersData, isLoading: isLoadingEligible } = useQuery({
     queryKey: ['role', selectedRoleId, 'members', 'eligible'],
     queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
-    enabled: !!selectedRoleId,
-  });
-
-  // Get current role members
-  const { data: roleData, isLoading: isLoadingRole } = useQuery({
-    queryKey: ['role', selectedRoleId],
-    queryFn: () => api.getRole(selectedRoleId!),
     enabled: !!selectedRoleId,
   });
 
@@ -59,7 +59,7 @@ export const RoleMembersStep = () => {
         .includes(searchTerm.toLowerCase()),
     ) || [];
 
-  const currentRoleMembers = roleData?.role.members || [];
+  const currentRoleMembers = selectedRole?.members || [];
 
   const handleNext = () => {
     onNext();
@@ -101,7 +101,7 @@ export const RoleMembersStep = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {isLoadingEligible || isLoadingRole ? (
+                {isLoadingEligible ? (
                   <p className="text-muted-foreground text-sm">
                     {t('actions.loading')}
                   </p>

@@ -1,34 +1,35 @@
-import { api } from '@/client/api-client';
 import { getPermissionValues } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
   ProposalActionType,
 } from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
-import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Badge } from '../../../ui/badge';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import { CreateProposalFormSchema } from '../create-proposa-form.types';
+import {
+  CreateProposalFormSchema,
+  CreateProposalWizardContext,
+} from '../create-proposa-form.types';
 
 export const ProposalReviewStep = () => {
+  const {
+    context: { selectedRole },
+    onSubmit,
+    onPrevious,
+    isSubmitting,
+  } = useWizardContext<CreateProposalWizardContext>();
+
   const form = useFormContext<CreateProposalFormSchema>();
-  const { onSubmit, onPrevious, isSubmitting } = useWizardContext();
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
 
-  const { data: roleData } = useQuery({
-    queryKey: ['role', selectedRoleId],
-    queryFn: () => api.getRole(selectedRoleId!),
-    enabled: !!selectedRoleId,
-  });
-
   const shapedRolePermissions = getPermissionValues(
-    roleData?.role.permissions || [],
+    selectedRole?.permissions || [],
   ).reduce<Record<string, boolean>>((acc, permission) => {
     acc[permission.name] = permission.value;
     return acc;
