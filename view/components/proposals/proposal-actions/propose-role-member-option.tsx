@@ -1,41 +1,27 @@
-import { CreateProposalActionRoleMemberReq } from '@/types/proposal.types';
 import { User } from '@/types/user.types';
 import { RoleMemberOption } from '../../roles/role-member-option';
 
 interface Props {
   member: User;
-  selectedMembers: CreateProposalActionRoleMemberReq[];
-  setSelectedMembers(
-    selectedMembers: CreateProposalActionRoleMemberReq[],
-  ): void;
-  currentRoleMembers?: User[];
+  selectedMembers: string[];
+  setSelectedMembers(selectedMembers: string[]): void;
 }
 
 export const ProposeRoleMemberOption = ({
   member,
   selectedMembers,
   setSelectedMembers,
-  currentRoleMembers,
 }: Props) => {
-  const isSelectedToAdd = selectedMembers.some(
-    ({ userId, changeType }) => userId === member.id && changeType === 'add',
-  );
-  const isSelectedToRemove = selectedMembers.some(
-    ({ userId, changeType }) => userId === member.id && changeType === 'remove',
-  );
-  const isAlreadyAdded = currentRoleMembers?.some(({ id }) => id === member.id);
-
-  const checked = (isAlreadyAdded && !isSelectedToRemove) || isSelectedToAdd;
+  const checked = selectedMembers.some((userId) => userId === member.id);
 
   const handleChange = () => {
-    if ((!isAlreadyAdded && checked) || (isAlreadyAdded && !checked)) {
+    if (checked) {
       setSelectedMembers(
-        selectedMembers.filter(({ userId }) => userId !== member.id),
+        selectedMembers.filter((userId) => userId !== member.id),
       );
       return;
     }
-    const changeType = isAlreadyAdded && checked ? 'remove' : 'add';
-    setSelectedMembers([...selectedMembers, { changeType, userId: member.id }]);
+    setSelectedMembers([...selectedMembers, member.id]);
   };
 
   return (

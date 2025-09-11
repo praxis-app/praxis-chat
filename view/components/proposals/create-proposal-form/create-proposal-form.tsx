@@ -2,7 +2,10 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
-import { CreateProposalActionRolePermissionReq } from '@/types/proposal.types';
+import {
+  CreateProposalActionRoleMemberReq,
+  CreateProposalActionRolePermissionReq,
+} from '@/types/proposal.types';
 import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -51,13 +54,20 @@ export const CreateProposalForm = ({
   const selectedRoleId = form.watch('selectedRoleId');
   const actionType = form.watch('action');
 
+  const isRoleProposal =
+    actionType === 'change-role' || actionType === 'create-role';
+
   const { data: roleData } = useQuery({
     queryKey: ['role', selectedRoleId],
     queryFn: () => api.getRole(selectedRoleId!),
-    enabled:
-      (actionType === 'change-role' || actionType === 'create-role') &&
-      !!selectedRoleId &&
-      currentStep > 1,
+    enabled: isRoleProposal && !!selectedRoleId && currentStep > 1,
+  });
+
+  // Get eligible users for the selected role
+  const { data: eligibleUsersData } = useQuery({
+    queryKey: ['role', selectedRoleId, 'members', 'eligible'],
+    queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
+    enabled: isRoleProposal && !!selectedRoleId && currentStep > 2,
   });
 
   const { mutate: createProposal, isPending } = useMutation({
@@ -73,8 +83,8 @@ export const CreateProposalForm = ({
         roleData?.role?.permissions || [],
       );
 
-      // Shape permissions from form format to API format
-      const shapedPermissions = Object.entries(values.permissions || {}).reduce<
+      // Shape permissions from form format to API format and remove unchanged entries
+      const permissionChanges = Object.entries(values.permissions || {}).reduce<
         CreateProposalActionRolePermissionReq[]
       >((result, [permissionName, permissionValue]) => {
         if (shapedRolePermissions[permissionName] === permissionValue) {
@@ -140,11 +150,23 @@ export const CreateProposalForm = ({
         return result;
       }, []);
 
+      const memberChanges: CreateProposalActionRoleMemberReq[] = [];
+      for (const user of eligibleUsersData?.users || []) {
+        if (values.roleMembers?.includes(user.id)) {
+          memberChanges.push({ userId: user.id, changeType: 'add' });
+        }
+      }
+      for (const member of roleData?.role?.members || []) {
+        if (!values.roleMembers?.includes(member.id)) {
+          memberChanges.push({ userId: member.id, changeType: 'remove' });
+        }
+      }
+
       const role =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
-              permissions: shapedPermissions,
-              members: values.roleMembers,
+              permissions: permissionChanges,
+              members: memberChanges,
               roleToUpdateId: values.selectedRoleId,
             }
           : undefined;
@@ -268,7 +290,10 @@ export const CreateProposalForm = ({
       form={form}
       steps={steps}
       currentStep={currentStep}
-      context={{ selectedRole: roleData?.role }}
+      context={{
+        selectedRole: roleData?.role,
+        usersEligibleForRole: eligibleUsersData?.users,
+      }}
       onNext={handleNext}
       onPrevious={handlePrevious}
       onSubmit={handleSubmit}

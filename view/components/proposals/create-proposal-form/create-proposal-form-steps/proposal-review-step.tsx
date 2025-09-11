@@ -17,7 +17,7 @@ import {
 
 export const ProposalReviewStep = () => {
   const {
-    context: { selectedRole },
+    context: { selectedRole, usersEligibleForRole },
     onSubmit,
     onPrevious,
     isSubmitting,
@@ -42,6 +42,21 @@ export const ProposalReviewStep = () => {
   }, {});
 
   const { t } = useTranslation();
+
+  const getMemberChanges = () => {
+    const memberChanges: CreateProposalActionRoleMemberReq[] = [];
+    for (const user of usersEligibleForRole || []) {
+      if (roleMembers?.includes(user.id)) {
+        memberChanges.push({ userId: user.id, changeType: 'add' });
+      }
+    }
+    for (const member of selectedRole?.members || []) {
+      if (!roleMembers?.includes(member.id)) {
+        memberChanges.push({ userId: member.id, changeType: 'remove' });
+      }
+    }
+    return memberChanges;
+  };
 
   const getProposalActionType = (action: ProposalActionType | '') => {
     if (!action) {
@@ -149,7 +164,7 @@ export const ProposalReviewStep = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {roleMembers.map(
+                {getMemberChanges().map(
                   (
                     member: CreateProposalActionRoleMemberReq,
                     index: number,

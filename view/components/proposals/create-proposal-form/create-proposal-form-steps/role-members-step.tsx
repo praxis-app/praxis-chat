@@ -1,6 +1,3 @@
-import { api } from '@/client/api-client';
-import { CreateProposalActionRoleMemberReq } from '@/types/proposal.types';
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,26 +12,23 @@ import {
 } from '../create-proposa-form.types';
 
 export const RoleMembersStep = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const form = useFormContext<CreateProposalFormSchema>();
   const {
-    context: { selectedRole },
+    context: { selectedRole, usersEligibleForRole },
     onNext,
     onPrevious,
   } = useWizardContext<CreateProposalWizardContext>();
 
-  const roleMembers = form.watch('roleMembers') || [];
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const form = useFormContext<CreateProposalFormSchema>();
   const selectedRoleId = form.watch('selectedRoleId');
 
-  const { t } = useTranslation();
+  const selectedMembers = [
+    ...(selectedRole?.members.map((member) => member.id) || []),
+    ...(form.watch('roleMembers') || []),
+  ];
 
-  // Get eligible users for the selected role
-  const { data: eligibleUsersData, isLoading: isLoadingEligible } = useQuery({
-    queryKey: ['role', selectedRoleId, 'members', 'eligible'],
-    queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
-    enabled: !!selectedRoleId,
-  });
+  const { t } = useTranslation();
 
   const setFieldValue = (
     field: keyof CreateProposalFormSchema,
@@ -46,20 +40,17 @@ export const RoleMembersStep = () => {
     });
   };
 
-  const handleMemberChange = (
-    memberChanges: Array<CreateProposalActionRoleMemberReq>,
-  ) => {
+  const handleMemberChange = (memberChanges: string[]) => {
     setFieldValue('roleMembers', memberChanges);
   };
 
   const filteredUsers =
-    eligibleUsersData?.users.filter((user) =>
-      (user.displayName || user.name)
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()),
+    [...(selectedRole?.members || []), ...(usersEligibleForRole || [])].filter(
+      (user) =>
+        (user.displayName || user.name)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
     ) || [];
-
-  const currentRoleMembers = selectedRole?.members || [];
 
   const handleNext = () => {
     onNext();
@@ -101,28 +92,21 @@ export const RoleMembersStep = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {isLoadingEligible ? (
-                  <p className="text-muted-foreground text-sm">
-                    {t('actions.loading')}
-                  </p>
-                ) : (
-                  <div className="max-h-60 space-y-2 overflow-y-auto">
-                    {filteredUsers.map((user) => (
-                      <ProposeRoleMemberOption
-                        key={user.id}
-                        member={user}
-                        selectedMembers={roleMembers}
-                        setSelectedMembers={handleMemberChange}
-                        currentRoleMembers={currentRoleMembers}
-                      />
-                    ))}
-                    {filteredUsers.length === 0 && (
-                      <p className="text-muted-foreground text-sm">
-                        {t('proposals.wizard.noUsersFound')}
-                      </p>
-                    )}
-                  </div>
-                )}
+                <div className="max-h-60 space-y-2 overflow-y-auto">
+                  {filteredUsers.map((user) => (
+                    <ProposeRoleMemberOption
+                      key={user.id}
+                      member={user}
+                      selectedMembers={selectedMembers}
+                      setSelectedMembers={handleMemberChange}
+                    />
+                  ))}
+                  {filteredUsers.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                      {t('proposals.wizard.noUsersFound')}
+                    </p>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </>
