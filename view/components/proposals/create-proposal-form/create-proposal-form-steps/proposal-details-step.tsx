@@ -99,7 +99,7 @@ export const ProposalDetailsStep = () => {
       <div className="flex justify-end">
         <Button
           onClick={handleNext}
-          disabled={!form.formState.isValid || form.watch('action') === ''}
+          disabled={!form.formState.isValid && form.watch('action') === ''}
         >
           {t('actions.next')}
         </Button>

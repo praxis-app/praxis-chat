@@ -1,5 +1,5 @@
 import { api } from '@/client/api-client';
-import { getPermissionValues } from '@/lib/role.utils';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -28,12 +28,10 @@ export const RoleSelectionStep = () => {
 
   const { t } = useTranslation();
 
-  // Get all available roles
   const { data: rolesData, isLoading } = useQuery({
     queryKey: ['roles'],
     queryFn: () => api.getRoles(),
   });
-
   const roles = rolesData?.roles || [];
 
   const handleValueChange = (value: string) => {
@@ -42,7 +40,7 @@ export const RoleSelectionStep = () => {
     if (selectedRole) {
       form.setValue(
         'permissions',
-        getPermissionValues(selectedRole.permissions),
+        getPermissionValuesMap(selectedRole.permissions),
       );
       form.setValue('selectedRoleId', value);
     }

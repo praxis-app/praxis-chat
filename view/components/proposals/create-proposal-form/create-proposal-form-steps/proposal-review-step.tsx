@@ -70,36 +70,40 @@ export const ProposalReviewStep = () => {
           </Card>
         )}
 
-        {action === 'change-role' && permissions && permissions.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t('proposals.wizard.permissions')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {permissions.map((permission) => (
-                  <div
-                    key={permission.name}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-sm">
-                      {getPermissionName(permission.name)}
-                    </span>
-                    <Badge
-                      variant={permission.value ? 'default' : 'destructive'}
-                    >
-                      {permission.value
-                        ? t('actions.enabled')
-                        : t('actions.disabled')}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {action === 'change-role' &&
+          permissions &&
+          Object.keys(permissions).length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {t('proposals.wizard.permissions')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Object.entries(permissions).map(
+                    ([permissionName, permissionValue]) => (
+                      <div
+                        key={permissionName}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-sm">
+                          {getPermissionName(permissionName as PermissionKeys)}
+                        </span>
+                        <Badge
+                          variant={permissionValue ? 'default' : 'destructive'}
+                        >
+                          {permissionValue
+                            ? t('actions.enabled')
+                            : t('actions.disabled')}
+                        </Badge>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         {action === 'change-role' && selectedRoleId && (
           <Card>

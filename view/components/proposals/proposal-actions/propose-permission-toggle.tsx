@@ -1,33 +1,46 @@
 import { getPermissionText } from '@/lib/role.utils';
 import { PermissionKeys } from '@/types/role.types';
+import { UseFormSetValue } from 'react-hook-form';
 import { Label } from '../../ui/label';
 import { Switch } from '../../ui/switch';
+import { CreateProposalFormSchema } from '../create-proposal-form/create-proposa-form.types';
 
 interface Props {
-  formValues: Record<string, unknown>;
   permissionName: PermissionKeys;
+  formPermissions: Record<PermissionKeys, boolean>;
   permissions: Record<PermissionKeys, boolean>;
-  updatePermission: (permissionName: PermissionKeys, value: boolean) => void;
+  setValue: UseFormSetValue<CreateProposalFormSchema>;
 }
 
 export const ProposePermissionToggle = ({
-  formValues,
+  formPermissions,
   permissionName,
   permissions,
-  updatePermission,
+  setValue,
 }: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
 
-  const permissionInput =
-    formValues.permissions &&
-    (formValues.permissions as Record<string, boolean>)[permissionName];
+  const permissionInput = formPermissions && formPermissions[permissionName];
   const isEnabled = permissions[permissionName];
   const isChecked = !!(permissionInput !== undefined
     ? permissionInput
     : isEnabled);
 
+  // TODO: Remove unneeded entries near API call and review step instead of here
   const handleSwitchChange = (checked: boolean) => {
-    updatePermission(permissionName, checked);
+    const getNewValue = () => {
+      if (!checked && isEnabled) {
+        return false;
+      }
+      if (checked === isEnabled) {
+        return undefined;
+      }
+      return true;
+    };
+    setValue('permissions', {
+      ...formPermissions,
+      [permissionName]: getNewValue(),
+    });
   };
 
   return (

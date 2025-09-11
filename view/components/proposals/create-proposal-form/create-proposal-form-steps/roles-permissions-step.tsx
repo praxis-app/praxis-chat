@@ -1,5 +1,7 @@
+import { api } from '@/client/api-client';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
-import { PermissionKeys } from '@/types/role.types';
+import { getPermissionValues } from '@/lib/role.utils';
+import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -14,45 +16,21 @@ export const RolesPermissionsStep = () => {
 
   const { t } = useTranslation();
 
-  const permissions = form.watch('permissions') || [];
+  const selectedRoleId = form.watch('selectedRoleId');
+  const formPermissions = form.watch('permissions')!;
 
-  // TODO: Revisit whether an object should be used at all for permissions
+  const { data: roleData } = useQuery({
+    queryKey: ['role', selectedRoleId],
+    queryFn: () => api.getRole(selectedRoleId!),
+    enabled: !!selectedRoleId,
+  });
 
-  // Convert permissions array to object for easier access in components
-  const permissionsObject = permissions.reduce(
-    (acc, permission) => {
-      acc[permission.name] = permission.value;
-      return acc;
-    },
-    {} as Record<string, boolean>,
-  );
-
-  const updatePermission = (permissionName: PermissionKeys, value: boolean) => {
-    const currentPermissions = form.getValues('permissions') || [];
-
-    // Find existing permission or create new one
-    const existingIndex = currentPermissions.findIndex(
-      (p) => p.name === permissionName,
-    );
-    const newPermissions = [...currentPermissions];
-
-    if (existingIndex >= 0) {
-      // Update existing permission
-      newPermissions[existingIndex] = { name: permissionName, value };
-    } else {
-      // Add new permission
-      newPermissions.push({ name: permissionName, value });
-    }
-
-    form.setValue('permissions', newPermissions, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  };
-
-  const handleNext = () => {
-    onNext();
-  };
+  const shapedRolePermissions = getPermissionValues(
+    roleData?.role.permissions || [],
+  ).reduce<Record<string, boolean>>((acc, permission) => {
+    acc[permission.name] = permission.value;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-6">
@@ -76,10 +54,10 @@ export const RolesPermissionsStep = () => {
             {PERMISSION_KEYS.map((permissionName) => (
               <ProposePermissionToggle
                 key={permissionName}
-                formValues={{ permissions: permissionsObject }}
+                formPermissions={formPermissions}
+                permissions={shapedRolePermissions}
                 permissionName={permissionName}
-                permissions={permissionsObject}
-                updatePermission={updatePermission}
+                setValue={form.setValue}
               />
             ))}
           </CardContent>
@@ -90,7 +68,7 @@ export const RolesPermissionsStep = () => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext}>{t('actions.next')}</Button>
+        <Button onClick={onNext}>{t('actions.next')}</Button>
       </div>
     </div>
   );

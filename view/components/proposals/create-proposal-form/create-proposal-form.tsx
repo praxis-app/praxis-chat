@@ -2,6 +2,7 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
 import { CreateProposalActionRolePermissionReq } from '@/types/proposal.types';
+import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -40,7 +41,7 @@ export const CreateProposalForm = ({
     defaultValues: {
       body: '',
       action: '',
-      permissions: [],
+      permissions: {},
       roleMembers: [],
       selectedRoleId: '',
     },
@@ -56,17 +57,17 @@ export const CreateProposalForm = ({
       }
 
       // Shape permissions from form format to API format
-      const shapedPermissions = values.permissions?.reduce<
+      const shapedPermissions = Object.entries(values.permissions || {}).reduce<
         CreateProposalActionRolePermissionReq[]
-      >((result, permission) => {
-        switch (permission.name) {
+      >((result, [permissionName, permissionValue]) => {
+        switch (permissionName as PermissionKeys) {
           case 'manageChannels':
             result.push({
               subject: 'Channel',
               actions: [
                 {
                   action: 'manage',
-                  changeType: permission.value ? 'add' : 'remove',
+                  changeType: permissionValue ? 'add' : 'remove',
                 },
               ],
             });
@@ -77,29 +78,7 @@ export const CreateProposalForm = ({
               actions: [
                 {
                   action: 'manage',
-                  changeType: permission.value ? 'add' : 'remove',
-                },
-              ],
-            });
-            break;
-          case 'createInvites':
-            result.push({
-              subject: 'Invite',
-              actions: [
-                {
-                  action: 'create',
-                  changeType: permission.value ? 'add' : 'remove',
-                },
-              ],
-            });
-            break;
-          case 'manageInvites':
-            result.push({
-              subject: 'Invite',
-              actions: [
-                {
-                  action: 'manage',
-                  changeType: permission.value ? 'add' : 'remove',
+                  changeType: permissionValue ? 'add' : 'remove',
                 },
               ],
             });
@@ -110,18 +89,29 @@ export const CreateProposalForm = ({
               actions: [
                 {
                   action: 'manage',
-                  changeType: permission.value ? 'add' : 'remove',
+                  changeType: permissionValue ? 'add' : 'remove',
                 },
               ],
             });
             break;
-          default:
+          case 'createInvites':
             result.push({
-              subject: 'Channel',
+              subject: 'Invite',
               actions: [
                 {
-                  action: 'read',
-                  changeType: permission.value ? 'add' : 'remove',
+                  action: 'create',
+                  changeType: permissionValue ? 'add' : 'remove',
+                },
+              ],
+            });
+            break;
+          case 'manageInvites':
+            result.push({
+              subject: 'Invite',
+              actions: [
+                {
+                  action: 'manage',
+                  changeType: permissionValue ? 'add' : 'remove',
                 },
               ],
             });
