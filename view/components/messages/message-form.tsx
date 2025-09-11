@@ -1,5 +1,3 @@
-// TODO: Add remaining layout and functionality - below is a WIP
-
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { KeyCodes } from '@/constants/shared.constants';
