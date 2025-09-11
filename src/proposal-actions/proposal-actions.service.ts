@@ -30,19 +30,16 @@ export const createProposalActionRole = async (
   });
 
   if (role.permissions && role.permissions.length > 0) {
-    // TODO: Convert reduce to for loop
-    const permissionsToSave = role.permissions.reduce<
-      Partial<ProposalActionPermission>[]
-    >((result, permission) => {
+    const permissionsToSave: Partial<ProposalActionPermission>[] = [];
+    for (const permission of role.permissions) {
       for (const action of permission.actions) {
-        result.push({
+        permissionsToSave.push({
           ...action,
           subject: permission.subject,
           proposalActionRoleId: savedRole.id,
         });
       }
-      return result;
-    }, []);
+    }
     await proposalActionPermissionRepository.save(permissionsToSave);
   }
 
