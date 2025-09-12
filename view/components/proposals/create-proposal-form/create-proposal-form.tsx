@@ -6,7 +6,7 @@ import { FeedItem, FeedQuery } from '@/types/channel.types';
 import {
   CreateProposalActionRoleMemberReq,
   CreateProposalActionRolePermissionReq,
-} from '@/types/proposal.types';
+} from '@/types/proposal-action.types';
 import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

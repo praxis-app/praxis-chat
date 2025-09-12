@@ -4,7 +4,7 @@ import { getPermissionValuesMap } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
   ProposalActionType,
-} from '@/types/proposal.types';
+} from '@/types/proposal-action.types';
 import { PermissionKeys } from '@/types/role.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

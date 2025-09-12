@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -19,7 +19,7 @@ const channelSchema = zod.object({
 });
 
 interface Props {
-  editChannel: Channel;
+  editChannel: ChannelRes;
   onSuccess: () => void;
 }
 
@@ -44,17 +44,17 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
         });
 
         const channel = { ...editChannel, ...values };
-        queryClient.setQueryData<{ channel: Channel }>(
+        queryClient.setQueryData<{ channel: ChannelRes }>(
           ['channels', editChannel.id],
           { channel },
         );
         if (channel.name === GENERAL_CHANNEL_NAME) {
-          queryClient.setQueryData<{ channel: Channel }>(
+          queryClient.setQueryData<{ channel: ChannelRes }>(
             ['channels', GENERAL_CHANNEL_NAME],
             { channel },
           );
         }
-        queryClient.setQueryData<{ channels: Channel[] }>(
+        queryClient.setQueryData<{ channels: ChannelRes[] }>(
           ['channels'],
           (oldData) => {
             if (!oldData) {

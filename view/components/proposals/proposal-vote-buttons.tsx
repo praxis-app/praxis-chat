@@ -2,7 +2,7 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { VOTE_TYPE } from '@/constants/proposal.constants';
 import { cn } from '@/lib/shared.utils';
-import { Channel, FeedItem } from '@/types/channel.types';
+import { ChannelRes, FeedItem } from '@/types/channel.types';
 import { VoteType } from '@/types/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { Button } from '../ui/button';
 
 interface Props {
-  channel: Channel;
+  channel: ChannelRes;
   myVoteId?: string;
   myVoteType?: VoteType;
   proposalId: string;

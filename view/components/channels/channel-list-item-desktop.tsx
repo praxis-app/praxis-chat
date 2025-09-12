@@ -2,7 +2,7 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { cn } from '@/lib/shared.utils';
 import { truncate } from '@/lib/text.utils';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdSettings, MdTag } from 'react-icons/md';
@@ -28,7 +28,7 @@ import {
 } from './delete-channel-form';
 
 interface Props {
-  channel: Channel;
+  channel: ChannelRes;
   isActive: boolean;
   isGeneralChannel?: boolean;
 }

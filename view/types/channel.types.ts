@@ -1,7 +1,7 @@
 import { Message } from './message.types';
 import { Proposal } from './proposal.types';
 
-export interface Channel {
+export interface ChannelRes {
   id: string;
   name: string;
   description: string | null;

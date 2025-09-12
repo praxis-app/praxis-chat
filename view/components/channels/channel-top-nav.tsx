@@ -6,7 +6,7 @@ import {
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { truncate } from '@/lib/text.utils';
 import { useAppStore } from '@/store/app.store';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
@@ -18,7 +18,7 @@ import { ChannelDetailsDialogDesktop } from './channel-details-dialog-desktop';
 import { ChannelDetailsDrawer } from './channel-details-drawer';
 
 interface Props {
-  channel?: Channel;
+  channel?: ChannelRes;
 }
 
 export const ChannelTopNav = ({ channel }: Props) => {

@@ -1,4 +1,4 @@
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { ReactNode } from 'react';
 import { MdTag } from 'react-icons/md';
 import {
@@ -11,7 +11,7 @@ import {
 } from '../ui/dialog';
 
 interface Props {
-  channel: Channel;
+  channel: ChannelRes;
   trigger: ReactNode;
 }
 

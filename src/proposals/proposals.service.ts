@@ -62,6 +62,21 @@ export const getChannelProposals = async (
       },
       action: {
         actionType: true,
+        role: {
+          name: true,
+          color: true,
+          oldName: true,
+          oldColor: true,
+          permissions: {
+            subject: true,
+            action: true,
+            changeType: true,
+          },
+          members: {
+            userId: true,
+            changeType: true,
+          },
+        },
       },
       createdAt: true,
     },
@@ -91,7 +106,7 @@ export const getChannelProposals = async (
       isPlaceholder: !image.filename,
       createdAt: image.createdAt,
     })),
-    action: proposal.action?.actionType,
+    action: proposal.action,
     createdAt: proposal.createdAt,
     myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
     myVoteType: proposalIdToMyVote.get(proposal.id)?.voteType,

@@ -7,7 +7,7 @@ import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
 import { LocalStorageKeys } from '../constants/shared.constants';
 import { AuthRes, LoginReq, SignUpReq } from '../types/auth.types';
 import {
-  Channel,
+  ChannelRes,
   CreateChannelReq,
   FeedItem,
   UpdateChannelReq,
@@ -86,17 +86,17 @@ class ApiClient {
 
   getChannel = async (channelId: string) => {
     const path = `/channels/${channelId}`;
-    return this.executeRequest<{ channel: Channel }>('get', path);
+    return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
   getChannels = async () => {
     const path = '/channels';
-    return this.executeRequest<{ channels: Channel[] }>('get', path);
+    return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 
   getGeneralChannel = async () => {
     const path = '/channels/general';
-    return this.executeRequest<{ channel: Channel }>('get', path);
+    return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
   getGeneralChannelFeed = async (
@@ -122,7 +122,7 @@ class ApiClient {
 
   createChannel = async (data: CreateChannelReq) => {
     const path = '/channels';
-    return this.executeRequest<{ channel: Channel }>('post', path, {
+    return this.executeRequest<{ channel: ChannelRes }>('post', path, {
       data,
     });
   };
