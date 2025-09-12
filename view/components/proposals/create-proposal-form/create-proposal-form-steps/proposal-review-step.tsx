@@ -26,7 +26,8 @@ export const ProposalReviewStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
-  const { action, body, permissions, roleMembers, roleName, roleColor } = formValues;
+  const { action, body, permissions, roleMembers, roleName, roleColor } =
+    formValues;
 
   const shapedRolePermissions = getPermissionValuesMap(
     selectedRole?.permissions || [],
@@ -87,7 +88,7 @@ export const ProposalReviewStep = () => {
           {t('proposals.wizard.review')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.wizard.reviewDescription')}
+          {t('proposals.descriptions.reviewDescription')}
         </p>
       </div>
 
@@ -131,7 +132,8 @@ export const ProposalReviewStep = () => {
 
         {action === 'change-role' &&
           selectedRole &&
-          (roleName !== selectedRole.name || roleColor !== selectedRole.color) && (
+          (roleName !== selectedRole.name ||
+            roleColor !== selectedRole.color) && (
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -146,7 +148,7 @@ export const ProposalReviewStep = () => {
                         {t('proposals.wizard.roleNameChange')}
                       </span>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {selectedRole.name}
                         </span>
                         <span className="text-sm">→</span>
@@ -164,7 +166,7 @@ export const ProposalReviewStep = () => {
                           className="h-4 w-4 rounded-full"
                           style={{ backgroundColor: selectedRole.color }}
                         />
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {selectedRole.color}
                         </span>
                         <span className="text-sm">→</span>

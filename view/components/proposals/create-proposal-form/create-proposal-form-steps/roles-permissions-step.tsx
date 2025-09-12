@@ -21,7 +21,7 @@ export const RolesPermissionsStep = () => {
           {t('proposals.wizard.rolesPermissions')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.wizard.rolesPermissionsDescription')}
+          {t('proposals.descriptions.rolesPermissionsDescription')}
         </p>
       </div>
 

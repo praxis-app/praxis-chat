@@ -44,7 +44,7 @@ export const ProposalDetailsStep = () => {
           {t('proposals.wizard.basicInfo')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.wizard.basicInfoDescription')}
+          {t('proposals.descriptions.basicInfoDescription')}
         </p>
       </div>
 

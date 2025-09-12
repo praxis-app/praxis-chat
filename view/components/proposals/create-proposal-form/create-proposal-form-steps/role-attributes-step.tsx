@@ -36,7 +36,7 @@ export const RoleAttributesStep = () => {
           {t('proposals.wizard.roleAttributes')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.wizard.roleAttributesDescription')}
+          {t('proposals.descriptions.roleAttributesDescription')}
         </p>
       </div>
 
