@@ -56,7 +56,7 @@ export const RoleMembersStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.roleMembers')}
+          {t('proposals.headers.roleMembers')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.roleMembersDescription')}
@@ -69,12 +69,12 @@ export const RoleMembersStep = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.wizard.searchMembers')}
+                  {t('proposals.headers.searchMembers')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Input
-                  placeholder={t('proposals.wizard.searchPlaceholder')}
+                  placeholder={t('proposals.placeholders.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -84,7 +84,7 @@ export const RoleMembersStep = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.wizard.memberChanges')}
+                  {t('proposals.headers.memberChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -99,7 +99,7 @@ export const RoleMembersStep = () => {
                   ))}
                   {filteredUsers.length === 0 && (
                     <p className="text-muted-foreground text-sm">
-                      {t('proposals.wizard.noUsersFound')}
+                      {t('proposals.prompts.noUsersFound')}
                     </p>
                   )}
                 </div>

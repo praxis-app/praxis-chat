@@ -41,7 +41,7 @@ export const ProposalDetailsStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.basicInfo')}
+          {t('proposals.headers.basicInfo')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.basicInfoDescription')}

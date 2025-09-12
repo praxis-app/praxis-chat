@@ -85,7 +85,7 @@ export const ProposalReviewStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.review')}
+          {t('proposals.headers.review')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.reviewDescription')}
@@ -121,7 +121,7 @@ export const ProposalReviewStep = () => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.wizard.selectedRole')}
+                {t('proposals.headers.selectedRole')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -137,7 +137,7 @@ export const ProposalReviewStep = () => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.wizard.roleAttributesChanges')}
+                  {t('proposals.headers.roleAttributesChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -145,7 +145,7 @@ export const ProposalReviewStep = () => {
                   {roleName !== selectedRole.name && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('proposals.wizard.roleNameChange')}
+                        {t('proposals.labels.roleNameChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <span className="text-muted-foreground text-sm">
@@ -159,7 +159,7 @@ export const ProposalReviewStep = () => {
                   {roleColor !== selectedRole.color && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('proposals.wizard.roleColorChange')}
+                        {t('proposals.labels.roleColorChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <div
@@ -188,7 +188,7 @@ export const ProposalReviewStep = () => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.wizard.permissions')}
+                  {t('proposals.headers.permissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -222,7 +222,7 @@ export const ProposalReviewStep = () => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.wizard.memberChanges')}
+                {t('proposals.headers.memberChanges')}
               </CardTitle>
             </CardHeader>
             <CardContent>

@@ -101,18 +101,38 @@
 
   "proposals": {
     "labels": {
-      "body": "Proposal",
       "actionType": "Action",
       "active": "Active",
+      "body": "Proposal",
       "closed": "Closed",
-      "consensusProposal": "Consensus Proposal"
+      "consensusProposal": "Consensus Proposal",
+      "roleColorChange": "Role Color",
+      "roleNameChange": "Role Name",
+      "roleSelection": "Role Selection"
     },
     "headers": {
-      "create": "Create a New Proposal"
+      "availableRoles": "Available Roles",
+      "basicInfo": "Basic Information",
+      "create": "Create a New Proposal",
+      "currentRoleInfo": "Current Role Information",
+      "memberChanges": "Member Changes",
+      "permissions": "Permissions",
+      "review": "Review Proposal",
+      "roleAttributes": "Role Attributes",
+      "roleAttributesChanges": "Role Attributes Changes",
+      "roleAttributesTitle": "Role Name and Color",
+      "roleMembers": "Role Members",
+      "rolesPermissions": "Roles and Permissions",
+      "searchMembers": "Search Members",
+      "selectRole": "Select Role",
+      "selectedRole": "Selected Role",
+      "selectedRoleInfo": "Selected Role Information"
     },
     "placeholders": {
       "action": "Select an action type",
-      "body": "Enter your proposal details..."
+      "body": "Enter your proposal details...",
+      "searchPlaceholder": "Search users...",
+      "selectRolePlaceholder": "Select a role..."
     },
     "actions": {
       "abstain": "Abstain",
@@ -122,14 +142,14 @@
       "disagree": "Disagree"
     },
     "descriptions": {
-      "create": "Submit a proposal to discuss and vote on.",
-      "body": "Enter your proposal",
       "basicInfoDescription": "Provide the basic details for your proposal",
+      "body": "Enter your proposal",
+      "create": "Submit a proposal to discuss and vote on.",
+      "reviewDescription": "Review your proposal before submitting",
       "roleAttributesDescription": "Modify the role's name and color",
-      "rolesPermissionsDescription": "Configure the roles and permissions changes",
       "roleMembersDescription": "Add or remove members from the role",
-      "selectRoleDescription": "Choose the role you want to modify",
-      "reviewDescription": "Review your proposal before submitting"
+      "rolesPermissionsDescription": "Configure the roles and permissions changes",
+      "selectRoleDescription": "Choose the role you want to modify"
     },
     "actionTypes": {
       "change-role": "Change Role",
@@ -138,32 +158,12 @@
       "plan-event": "Plan Event",
       "test": "QA Test"
     },
+    "prompts": {
+      "noUsersFound": "No users found"
+    },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
       "errorCreatingProposal": "Error creating proposal"
-    },
-    "wizard": {
-      "basicInfo": "Basic Information",
-      "roleAttributes": "Role Attributes",
-      "roleAttributesTitle": "Role Name and Color",
-      "currentRoleInfo": "Current Role Information",
-      "rolesPermissions": "Roles and Permissions",
-      "permissions": "Permissions",
-      "roleMembers": "Role Members",
-      "selectRole": "Select Role",
-      "availableRoles": "Available Roles",
-      "roleSelection": "Role Selection",
-      "selectRolePlaceholder": "Select a role...",
-      "selectedRoleInfo": "Selected Role Information",
-      "searchMembers": "Search Members",
-      "searchPlaceholder": "Search users...",
-      "memberChanges": "Member Changes",
-      "noUsersFound": "No users found",
-      "selectedRole": "Selected Role",
-      "roleAttributesChanges": "Role Attributes Changes",
-      "roleNameChange": "Role Name",
-      "roleColorChange": "Role Color",
-      "review": "Review Proposal"
     }
   },
 

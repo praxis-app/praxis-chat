@@ -61,7 +61,7 @@ export const RoleSelectionStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.selectRole')}
+          {t('proposals.headers.selectRole')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.selectRoleDescription')}
@@ -72,7 +72,7 @@ export const RoleSelectionStep = () => {
         <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('proposals.wizard.availableRoles')}
+              {t('proposals.headers.availableRoles')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -81,7 +81,7 @@ export const RoleSelectionStep = () => {
               name="selectedRoleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('proposals.wizard.roleSelection')}</FormLabel>
+                  <FormLabel>{t('proposals.labels.roleSelection')}</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -90,7 +90,7 @@ export const RoleSelectionStep = () => {
                       <SelectTrigger className="w-full">
                         <SelectValue
                           placeholder={t(
-                            'proposals.wizard.selectRolePlaceholder',
+                            'proposals.placeholders.selectRolePlaceholder',
                           )}
                         />
                       </SelectTrigger>
@@ -133,7 +133,7 @@ export const RoleSelectionStep = () => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.wizard.selectedRoleInfo')}
+                {t('proposals.headers.selectedRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>

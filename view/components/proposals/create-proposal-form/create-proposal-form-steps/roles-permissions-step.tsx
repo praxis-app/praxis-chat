@@ -18,7 +18,7 @@ export const RolesPermissionsStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.rolesPermissions')}
+          {t('proposals.headers.rolesPermissions')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.rolesPermissionsDescription')}
@@ -29,7 +29,7 @@ export const RolesPermissionsStep = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {t('proposals.wizard.permissions')}
+              {t('proposals.headers.permissions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">

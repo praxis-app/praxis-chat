@@ -33,7 +33,7 @@ export const RoleAttributesStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.roleAttributes')}
+          {t('proposals.headers.roleAttributes')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t('proposals.descriptions.roleAttributesDescription')}
@@ -44,7 +44,7 @@ export const RoleAttributesStep = () => {
         <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('proposals.wizard.roleAttributesTitle')}
+              {t('proposals.headers.roleAttributesTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -89,7 +89,7 @@ export const RoleAttributesStep = () => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.wizard.currentRoleInfo')}
+                {t('proposals.headers.currentRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>
