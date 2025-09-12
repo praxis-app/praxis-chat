@@ -1,17 +1,9 @@
 import { cn } from '@/lib/shared.utils';
-import { ComponentType } from 'react';
 import { FieldValues, FormProvider, UseFormReturn } from 'react-hook-form';
 import { WizardProvider } from './wizard-context';
 
-export interface WizardStepData {
-  id: string;
-  title: string;
-  description?: string;
-  component: ComponentType;
-}
-
 interface WizardProps<FormValues extends FieldValues, ContextValues> {
-  steps: WizardStepData[];
+  steps: (() => JSX.Element)[];
   currentStep: number;
   className?: string;
   form: UseFormReturn<FormValues>;
@@ -33,7 +25,7 @@ export const Wizard = <FormValues extends FieldValues, ContextValues>({
   onSubmit,
   isSubmitting,
 }: WizardProps<FormValues, ContextValues>) => {
-  const StepComponent = steps[currentStep].component;
+  const StepComponent = steps[currentStep];
 
   return (
     <FormProvider {...form}>

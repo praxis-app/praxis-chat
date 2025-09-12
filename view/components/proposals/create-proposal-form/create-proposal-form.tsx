@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Wizard, WizardStepData } from '../../shared/wizard/wizard';
+import { Wizard } from '../../shared/wizard/wizard';
 import {
   CreateProposalFormSchema,
   createProposalFormSchema,
@@ -237,47 +237,17 @@ export const CreateProposalForm = ({
   // Determine which steps to show based on action type
   const showChangeRoleSteps = actionType === 'change-role';
 
-  const steps: WizardStepData[] = [
-    {
-      id: 'basic',
-      title: t('proposals.wizard.basicInfo'),
-      description: t('proposals.wizard.basicInfoDescription'),
-      component: ProposalDetailsStep,
-    },
+  const steps: (() => JSX.Element)[] = [
+    ProposalDetailsStep,
     ...(showChangeRoleSteps
       ? [
-          {
-            id: 'role-selection',
-            title: t('proposals.wizard.selectRole'),
-            description: t('proposals.wizard.selectRoleDescription'),
-            component: RoleSelectionStep,
-          },
-          {
-            id: 'role-attributes',
-            title: t('proposals.wizard.roleAttributes'),
-            description: t('proposals.wizard.roleAttributesDescription'),
-            component: RoleAttributesStep,
-          },
-          {
-            id: 'role-permissions',
-            title: t('proposals.wizard.rolesPermissions'),
-            description: t('proposals.wizard.rolesPermissionsDescription'),
-            component: RolesPermissionsStep,
-          },
-          {
-            id: 'role-members',
-            title: t('proposals.wizard.roleMembers'),
-            description: t('proposals.wizard.roleMembersDescription'),
-            component: RoleMembersStep,
-          },
+          RoleSelectionStep,
+          RoleAttributesStep,
+          RolesPermissionsStep,
+          RoleMembersStep,
         ]
       : []),
-    {
-      id: 'review',
-      title: t('proposals.wizard.review'),
-      description: t('proposals.wizard.reviewDescription'),
-      component: ProposalReviewStep,
-    },
+    ProposalReviewStep,
   ];
 
   const handleNext = () => {
