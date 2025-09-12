@@ -91,21 +91,21 @@ export const ProposalReviewStep = () => {
         </p>
       </div>
 
-      {body && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              {t('proposals.labels.body')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm whitespace-pre-wrap">{body}</p>
-          </CardContent>
-        </Card>
-      )}
-
       <div className="space-y-4">
-        <Card>
+        {body && (
+          <Card className="gap-3 py-5">
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t('proposals.labels.body')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm whitespace-pre-wrap">{body}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="gap-3 py-5">
           <CardHeader>
             <CardTitle className="text-base">
               {t('proposals.labels.actionType')}
@@ -117,7 +117,7 @@ export const ProposalReviewStep = () => {
         </Card>
 
         {action === 'change-role' && selectedRole && (
-          <Card>
+          <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
                 {t('proposals.wizard.selectedRole')}
@@ -131,7 +131,7 @@ export const ProposalReviewStep = () => {
 
         {action === 'change-role' &&
           Object.keys(changedPermissions).length > 0 && (
-            <Card>
+            <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
                   {t('proposals.wizard.permissions')}
@@ -165,7 +165,7 @@ export const ProposalReviewStep = () => {
           )}
 
         {action === 'change-role' && roleMembers && roleMembers.length > 0 && (
-          <Card>
+          <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
                 {t('proposals.wizard.memberChanges')}
