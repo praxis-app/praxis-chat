@@ -97,7 +97,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="max-h-60 space-y-2 overflow-y-auto">
+                <div className="min-h-48 space-y-2">
                   {filteredUsers.map((user) => (
                     <RoleMemberOption
                       key={user.id}
