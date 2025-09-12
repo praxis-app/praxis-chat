@@ -95,7 +95,7 @@ export const ChannelListItemDesktop = ({
         <ContextMenuContent>
           {canManageChannels && (
             <ContextMenuItem onClick={() => navigate(settingsPath)}>
-              {t('channels.headers.channelSettings')}
+              {t('channels.labels.channelSettings')}
             </ContextMenuItem>
           )}
 
