@@ -19,6 +19,7 @@ import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
 } from '../create-proposal-form.types';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 
 export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const {
@@ -102,14 +103,15 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div
-                    className="h-4 w-4 rounded-full"
-                    style={{ backgroundColor: selectedRole.color }}
-                  />
-                  <span className="font-medium">{selectedRole.name}</span>
-                </div>
+              <div className="flex items-center space-x-2">
+                <div
+                  className="h-4 w-4 rounded-full"
+                  style={{ backgroundColor: selectedRole.color }}
+                />
+                <span className="font-medium">{selectedRole.name}</span>
+                <span className="text-muted-foreground text-sm">
+                  {MIDDOT_WITH_SPACES}
+                </span>
                 <p className="text-muted-foreground text-sm">
                   {t('roles.labels.membersCount', {
                     count: selectedRole.memberCount,

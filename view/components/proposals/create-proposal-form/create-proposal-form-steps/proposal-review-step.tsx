@@ -1,4 +1,5 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
@@ -134,7 +135,21 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm">{selectedRole.name}</p>
+              <div className="flex items-center space-x-2">
+                <div
+                  className="h-4 w-4 rounded-full"
+                  style={{ backgroundColor: selectedRole.color }}
+                />
+                <span className="font-medium">{selectedRole.name}</span>
+                <span className="text-muted-foreground text-sm">
+                  {MIDDOT_WITH_SPACES}
+                </span>
+                <p className="text-muted-foreground text-sm">
+                  {t('roles.labels.membersCount', {
+                    count: selectedRole.memberCount,
+                  })}
+                </p>
+              </div>
             </CardContent>
           </Card>
         )}
