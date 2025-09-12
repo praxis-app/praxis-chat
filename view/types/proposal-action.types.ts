@@ -15,8 +15,8 @@ export interface ProposalActionReq {
 export interface ProposalActionRoleReq {
   name?: string;
   color?: string;
-  oldName?: string;
-  oldColor?: string;
+  prevName?: string;
+  prevColor?: string;
   members?: ProposalActionRoleMemberReq[];
   permissions?: ProposalActionRolePermissionReq[];
 }

@@ -26,10 +26,10 @@ export class ProposalActionRole {
   color?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  oldName?: string;
+  prevName?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  oldColor?: string;
+  prevColor?: string;
 
   @OneToMany(
     () => ProposalActionPermission,

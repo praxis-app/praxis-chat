@@ -65,8 +65,8 @@ export const getChannelProposals = async (
         role: {
           name: true,
           color: true,
-          oldName: true,
-          oldColor: true,
+          prevName: true,
+          prevColor: true,
           permissions: {
             subject: true,
             action: true,

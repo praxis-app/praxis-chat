@@ -30,8 +30,8 @@ export const createProposalActionRole = async (
     name: name?.trim(),
     color: color?.trim(),
     roleId: roleToUpdateId,
-    oldName: roleToUpdate.name,
-    oldColor: roleToUpdate.color,
+    prevName: roleToUpdate.name,
+    prevColor: roleToUpdate.color,
     proposalActionId,
   });
 
@@ -101,8 +101,8 @@ export const implementChangeRole = async (proposalActionId: string) => {
   // Update proposal action role old name and color
   if (actionRole.name || actionRole.color) {
     await proposalActionRoleRepository.update(actionRole.id, {
-      oldName: actionRole.name ? roleToUpdate.name : undefined,
-      oldColor: actionRole.color ? roleToUpdate.color : undefined,
+      prevName: actionRole.name ? roleToUpdate.name : undefined,
+      prevColor: actionRole.color ? roleToUpdate.color : undefined,
     });
   }
 };
