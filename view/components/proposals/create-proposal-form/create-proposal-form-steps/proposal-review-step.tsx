@@ -260,7 +260,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
                       key={index}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-sm">
+                      <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
                         {getMemberName(member.userId)}
                       </span>
                       <Badge
