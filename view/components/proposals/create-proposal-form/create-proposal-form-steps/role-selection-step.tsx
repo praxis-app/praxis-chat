@@ -38,6 +38,10 @@ export const RoleSelectionStep = () => {
     const selectedRole = roles.find((role) => role.id === value);
 
     if (selectedRole) {
+      form.setValue('selectedRoleId', value);
+      form.setValue('roleName', selectedRole.name);
+      form.setValue('roleColor', selectedRole.color);
+
       form.setValue(
         'permissions',
         getPermissionValuesMap(selectedRole.permissions),
@@ -46,7 +50,6 @@ export const RoleSelectionStep = () => {
         'roleMembers',
         selectedRole.members.map((member) => member.id),
       );
-      form.setValue('selectedRoleId', value);
     }
   };
 

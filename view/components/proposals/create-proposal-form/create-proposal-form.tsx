@@ -20,6 +20,7 @@ import {
 } from './create-proposa-form.types';
 import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
+import { RoleAttributesStep } from './create-proposal-form-steps/role-attributes-step';
 import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
 import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
 import { RolesPermissionsStep } from './create-proposal-form-steps/roles-permissions-step';
@@ -45,6 +46,8 @@ export const CreateProposalForm = ({
     defaultValues: {
       body: '',
       action: '',
+      roleName: '',
+      roleColor: '',
       permissions: {},
       roleMembers: [],
       selectedRoleId: '',
@@ -165,6 +168,8 @@ export const CreateProposalForm = ({
       const role =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
+              name: values.roleName,
+              color: values.roleColor,
               permissions: permissionChanges,
               members: memberChanges,
               roleToUpdateId: values.selectedRoleId,
@@ -246,6 +251,12 @@ export const CreateProposalForm = ({
             title: t('proposals.wizard.selectRole'),
             description: t('proposals.wizard.selectRoleDescription'),
             component: RoleSelectionStep,
+          },
+          {
+            id: 'role-attributes',
+            title: t('proposals.wizard.rolesPermissions'),
+            description: t('proposals.wizard.rolesPermissionsDescription'),
+            component: RoleAttributesStep,
           },
           {
             id: 'role-permissions',
