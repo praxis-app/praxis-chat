@@ -17,6 +17,7 @@ import {
 import { ProposalDto } from './dtos/proposal.dto';
 import { ProposalConfig } from './entities/proposal-config.entity';
 import { Proposal } from './entities/proposal.entity';
+import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 
 const imageRepository = dataSource.getRepository(Image);
 const proposalRepository = dataSource.getRepository(Proposal);
@@ -45,7 +46,15 @@ export const getChannelProposals = async (
 ) => {
   const proposals = await proposalRepository.find({
     where: { channelId },
-    relations: ['user', 'images', 'action'],
+    relations: [
+      'user',
+      'images',
+      'action',
+      'action.role',
+      'action.role.permissions',
+      'action.role.members',
+      'action.role.members.user',
+    ],
     select: {
       id: true,
       body: true,
@@ -54,6 +63,7 @@ export const getChannelProposals = async (
       user: {
         id: true,
         name: true,
+        displayName: true,
       },
       images: {
         id: true,
@@ -73,8 +83,12 @@ export const getChannelProposals = async (
             changeType: true,
           },
           members: {
-            userId: true,
             changeType: true,
+            user: {
+              id: true,
+              name: true,
+              displayName: true,
+            },
           },
         },
       },
@@ -229,6 +243,7 @@ export const createProposal = async (
     userId,
   });
 
+  let proposalActionRole: ProposalActionRole | undefined;
   if (action.role) {
     await proposalActionsService.createProposalActionRole(
       proposal.action.id,
@@ -242,13 +257,17 @@ export const createProposal = async (
     body: proposal.body,
     stage: proposal.stage,
     channelId: proposal.channelId,
-    images: [],
-    action: proposal.action?.actionType,
-    createdAt: proposal.createdAt,
+    action: {
+      actionType: proposal.action?.actionType,
+      role: proposalActionRole,
+    },
     user: await userRepository.findOne({
       where: { id: userId },
       select: { id: true, name: true },
     }),
+    // TODO: Handle images
+    images: [],
+    createdAt: proposal.createdAt,
   };
 
   // Publish proposal to all other channel members for realtime feed updates
