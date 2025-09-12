@@ -152,11 +152,11 @@
       "selectRoleDescription": "Choose the role you want to modify"
     },
     "actionTypes": {
-      "change-role": "Change Role",
-      "change-settings": "Change Settings",
-      "create-role": "Create Role",
-      "plan-event": "Plan Event",
-      "test": "QA Test"
+      "change-role": "Change role",
+      "change-settings": "Change settings",
+      "create-role": "Create role",
+      "plan-event": "Plan event",
+      "test": "QA test"
     },
     "prompts": {
       "noUsersFound": "No users found"
