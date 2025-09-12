@@ -159,6 +159,9 @@
       "memberChanges": "Member Changes",
       "noUsersFound": "No users found",
       "selectedRole": "Selected Role",
+      "roleAttributesChanges": "Role Attributes Changes",
+      "roleNameChange": "Role Name",
+      "roleColorChange": "Role Color",
       "review": "Review Proposal",
       "reviewDescription": "Review your proposal before submitting"
     }

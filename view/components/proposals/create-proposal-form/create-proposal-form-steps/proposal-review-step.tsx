@@ -26,7 +26,7 @@ export const ProposalReviewStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
-  const { action, body, permissions, roleMembers } = formValues;
+  const { action, body, permissions, roleMembers, roleName, roleColor } = formValues;
 
   const shapedRolePermissions = getPermissionValuesMap(
     selectedRole?.permissions || [],
@@ -128,6 +128,58 @@ export const ProposalReviewStep = () => {
             </CardContent>
           </Card>
         )}
+
+        {action === 'change-role' &&
+          selectedRole &&
+          (roleName !== selectedRole.name || roleColor !== selectedRole.color) && (
+            <Card className="gap-3 py-5">
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {t('proposals.wizard.roleAttributesChanges')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {roleName !== selectedRole.name && (
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">
+                        {t('proposals.wizard.roleNameChange')}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-muted-foreground">
+                          {selectedRole.name}
+                        </span>
+                        <span className="text-sm">→</span>
+                        <span className="text-sm font-medium">{roleName}</span>
+                      </div>
+                    </div>
+                  )}
+                  {roleColor !== selectedRole.color && (
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">
+                        {t('proposals.wizard.roleColorChange')}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="h-4 w-4 rounded-full"
+                          style={{ backgroundColor: selectedRole.color }}
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {selectedRole.color}
+                        </span>
+                        <span className="text-sm">→</span>
+                        <div
+                          className="h-4 w-4 rounded-full"
+                          style={{ backgroundColor: roleColor }}
+                        />
+                        <span className="text-sm font-medium">{roleColor}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         {action === 'change-role' &&
           Object.keys(permissionChanges).length > 0 && (
