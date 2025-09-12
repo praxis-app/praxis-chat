@@ -32,7 +32,7 @@ export const ProposalReviewStep = () => {
     selectedRole?.permissions || [],
   );
 
-  const changedPermissions = Object.entries(permissions || {}).reduce<
+  const permissionChanges = Object.entries(permissions || {}).reduce<
     Record<string, boolean>
   >((acc, [permission, value]) => {
     if (value !== shapedRolePermissions[permission]) {
@@ -41,9 +41,7 @@ export const ProposalReviewStep = () => {
     return acc;
   }, {});
 
-  const { t } = useTranslation();
-
-  const getMemberChanges = () => {
+  const memberChanges = (() => {
     const memberChanges: CreateProposalActionRoleMemberReq[] = [];
     for (const member of selectedRole?.members || []) {
       if (!roleMembers?.includes(member.id)) {
@@ -56,7 +54,9 @@ export const ProposalReviewStep = () => {
       }
     }
     return memberChanges;
-  };
+  })();
+
+  const { t } = useTranslation();
 
   const getMemberName = (userId: string) => {
     const user = [
@@ -130,7 +130,7 @@ export const ProposalReviewStep = () => {
         )}
 
         {action === 'change-role' &&
-          Object.keys(changedPermissions).length > 0 && (
+          Object.keys(permissionChanges).length > 0 && (
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -139,7 +139,7 @@ export const ProposalReviewStep = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {Object.entries(changedPermissions).map(
+                  {Object.entries(permissionChanges).map(
                     ([permissionName, permissionValue]) => (
                       <div
                         key={permissionName}
@@ -164,7 +164,7 @@ export const ProposalReviewStep = () => {
             </Card>
           )}
 
-        {action === 'change-role' && roleMembers && roleMembers.length > 0 && (
+        {action === 'change-role' && memberChanges.length > 0 && (
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
@@ -173,7 +173,7 @@ export const ProposalReviewStep = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {getMemberChanges().map(
+                {memberChanges.map(
                   (
                     member: CreateProposalActionRoleMemberReq,
                     index: number,
