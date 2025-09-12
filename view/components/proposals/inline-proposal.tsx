@@ -23,10 +23,6 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const userId = user?.id ?? '';
   const formattedDate = timeAgo(createdAt ?? '');
 
-  if (!body) {
-    return null;
-  }
-
   return (
     <div className="flex gap-4 pt-4">
       <UserAvatar name={name} userId={userId} className="mt-0.5" />
@@ -43,7 +39,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
             {t('proposals.labels.consensusProposal')}
           </div>
 
-          <FormattedText text={body} className="pt-1 pb-2" />
+          {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
           <CardAction className="flex flex-wrap gap-2">
             <ProposalVoteButtons
