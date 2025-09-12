@@ -20,16 +20,14 @@ import {
 } from '../create-proposa-form.types';
 
 export const RoleAttributesStep = () => {
+  const {
+    onNext,
+    onPrevious,
+    context: { selectedRole },
+  } = useWizardContext<CreateProposalWizardContext>();
+
   const form = useFormContext<CreateProposalFormSchema>();
-  const { onNext, onPrevious, context } =
-    useWizardContext<CreateProposalWizardContext>();
   const { t } = useTranslation();
-
-  const selectedRole = context?.selectedRole;
-
-  const handleNext = () => {
-    onNext();
-  };
 
   return (
     <div className="space-y-6">
@@ -112,7 +110,7 @@ export const RoleAttributesStep = () => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext}>{t('actions.next')}</Button>
+        <Button onClick={onNext}>{t('actions.next')}</Button>
       </div>
     </div>
   );
