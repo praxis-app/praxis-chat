@@ -9,16 +9,18 @@ interface Props {
   onChange: (checked: boolean) => void;
 }
 
-export const PermissionToggle = ({ permissionName, checked, onChange }: Props) => {
+export const PermissionToggle = ({
+  permissionName,
+  checked,
+  onChange,
+}: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
 
   return (
-    <div className="flex justify-between items-start mb-7">
+    <div className="mb-7 flex items-start justify-between">
       <div>
         <p className="text-sm font-medium">{displayName}</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {description}
-        </p>
+        <p className="text-muted-foreground mt-1 text-xs">{description}</p>
       </div>
 
       <Switch
