@@ -26,17 +26,19 @@ import {
   createProposalFormSchema,
 } from './create-proposal-form.types';
 
-interface CreateProposalFormProps {
+interface Props {
   channelId?: string;
   isGeneralChannel?: boolean;
-  onSuccess?: () => void;
+  onSuccess: () => void;
+  onNavigate: () => void;
 }
 
 export const CreateProposalForm = ({
   channelId,
   isGeneralChannel,
   onSuccess,
-}: CreateProposalFormProps) => {
+  onNavigate,
+}: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const queryClient = useQueryClient();
@@ -227,7 +229,7 @@ export const CreateProposalForm = ({
         },
       );
 
-      onSuccess?.();
+      onSuccess();
     },
     onError: () => {
       toast(t('proposals.errors.errorCreatingProposal'), {
@@ -279,12 +281,14 @@ export const CreateProposalForm = ({
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+      onNavigate();
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      onNavigate();
     }
   };
 
