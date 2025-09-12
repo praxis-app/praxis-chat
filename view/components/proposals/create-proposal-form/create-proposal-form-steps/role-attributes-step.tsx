@@ -31,7 +31,11 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const { t } = useTranslation();
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="text-muted-foreground text-sm">
+        {t('actions.loading')}
+      </div>
+    );
   }
 
   return (

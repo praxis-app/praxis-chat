@@ -39,7 +39,11 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="text-muted-foreground text-sm">
+        {t('actions.loading')}
+      </div>
+    );
   }
 
   return (
