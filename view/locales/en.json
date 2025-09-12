@@ -126,11 +126,11 @@
       "body": "Enter your proposal"
     },
     "actionTypes": {
-      "change-role": "Change role",
-      "change-settings": "Change settings",
-      "create-role": "Create role",
-      "plan-event": "Plan event",
-      "test": "Test"
+      "change-role": "Change Role",
+      "change-settings": "Change Settings",
+      "create-role": "Create Role",
+      "plan-event": "Plan Event",
+      "test": "QA Test"
     },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",

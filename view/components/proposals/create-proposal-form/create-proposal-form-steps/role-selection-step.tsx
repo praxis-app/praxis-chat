@@ -66,7 +66,7 @@ export const RoleSelectionStep = () => {
       </div>
 
       <div className="space-y-4">
-        <Card>
+        <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
               {t('proposals.wizard.availableRoles')}
@@ -127,7 +127,7 @@ export const RoleSelectionStep = () => {
         </Card>
 
         {form.watch('selectedRoleId') && (
-          <Card>
+          <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
                 {t('proposals.wizard.selectedRoleInfo')}

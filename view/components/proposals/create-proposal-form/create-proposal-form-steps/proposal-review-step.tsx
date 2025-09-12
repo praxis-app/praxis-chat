@@ -26,7 +26,7 @@ export const ProposalReviewStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
-  const { action, body, permissions, roleMembers, selectedRoleId } = formValues;
+  const { action, body, permissions, roleMembers } = formValues;
 
   const shapedRolePermissions = getPermissionValuesMap(
     selectedRole?.permissions || [],
@@ -91,6 +91,19 @@ export const ProposalReviewStep = () => {
         </p>
       </div>
 
+      {body && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t('proposals.labels.body')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm whitespace-pre-wrap">{body}</p>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-4">
         <Card>
           <CardHeader>
@@ -99,19 +112,19 @@ export const ProposalReviewStep = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary">{getProposalActionType(action)}</Badge>
+            <p className="text-sm">{getProposalActionType(action)}</p>
           </CardContent>
         </Card>
 
-        {body && (
+        {action === 'change-role' && selectedRole && (
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.labels.body')}
+                {t('proposals.wizard.selectedRole')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm whitespace-pre-wrap">{body}</p>
+              <p className="text-sm">{selectedRole.name}</p>
             </CardContent>
           </Card>
         )}
@@ -137,6 +150,7 @@ export const ProposalReviewStep = () => {
                         </span>
                         <Badge
                           variant={permissionValue ? 'default' : 'destructive'}
+                          className="w-17"
                         >
                           {permissionValue
                             ? t('actions.enabled')
@@ -149,19 +163,6 @@ export const ProposalReviewStep = () => {
               </CardContent>
             </Card>
           )}
-
-        {action === 'change-role' && selectedRoleId && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t('proposals.wizard.selectedRole')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm">{selectedRoleId}</p>
-            </CardContent>
-          </Card>
-        )}
 
         {action === 'change-role' && roleMembers && roleMembers.length > 0 && (
           <Card>
@@ -190,6 +191,7 @@ export const ProposalReviewStep = () => {
                             ? 'default'
                             : 'destructive'
                         }
+                        className="w-16"
                       >
                         {member.changeType === 'add'
                           ? t('actions.add')
