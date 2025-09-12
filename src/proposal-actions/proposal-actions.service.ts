@@ -21,17 +21,23 @@ const proposalActionPermissionRepository = dataSource.getRepository(
 
 export const createProposalActionRole = async (
   proposalActionId: string,
-  { roleToUpdateId, members, ...role }: ProposalActionRoleDto,
+  { roleToUpdateId, members, permissions, name, color }: ProposalActionRoleDto,
 ) => {
+  const roleToUpdate = await rolesRepository.findOneOrFail({
+    where: { id: roleToUpdateId },
+  });
   const savedRole = await proposalActionRoleRepository.save({
-    ...role,
+    name: name?.trim(),
+    color: color?.trim(),
     roleId: roleToUpdateId,
+    oldName: roleToUpdate.name,
+    oldColor: roleToUpdate.color,
     proposalActionId,
   });
 
-  if (role.permissions && role.permissions.length > 0) {
+  if (permissions && permissions.length > 0) {
     const permissionsToSave: Partial<ProposalActionPermission>[] = [];
-    for (const permission of role.permissions) {
+    for (const permission of permissions) {
       for (const action of permission.actions) {
         permissionsToSave.push({
           ...action,
