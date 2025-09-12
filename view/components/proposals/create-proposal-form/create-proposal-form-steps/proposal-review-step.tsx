@@ -1,3 +1,4 @@
+import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import {
   CreateProposalActionRoleMemberReq,
@@ -15,7 +16,7 @@ import {
   CreateProposalWizardContext,
 } from '../create-proposal-form.types';
 
-export const ProposalReviewStep = () => {
+export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   const {
     context: { selectedRole, usersEligibleForRole },
     onSubmit,
@@ -80,6 +81,10 @@ export const ProposalReviewStep = () => {
     }
     return t(`permissions.names.${name}`);
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

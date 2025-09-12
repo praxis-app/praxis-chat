@@ -1,7 +1,9 @@
 // TODO: Add remaining layout and functionality - the following is a WIP
 
+import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { ColorPicker } from '../../../shared/color-picker';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
@@ -13,13 +15,12 @@ import {
   FormMessage,
 } from '../../../ui/form';
 import { Input } from '../../../ui/input';
-import { ColorPicker } from '../../../shared/color-picker';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
 } from '../create-proposal-form.types';
 
-export const RoleAttributesStep = () => {
+export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const {
     onNext,
     onPrevious,
@@ -28,6 +29,10 @@ export const RoleAttributesStep = () => {
 
   const form = useFormContext<CreateProposalFormSchema>();
   const { t } = useTranslation();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

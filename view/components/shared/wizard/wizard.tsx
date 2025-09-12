@@ -1,9 +1,10 @@
 import { cn } from '@/lib/shared.utils';
 import { FieldValues, FormProvider, UseFormReturn } from 'react-hook-form';
 import { WizardProvider } from './wizard-context';
+import { WizardStepData } from './wizard.types';
 
 interface WizardProps<FormValues extends FieldValues, ContextValues> {
-  steps: (() => JSX.Element)[];
+  steps: WizardStepData[];
   currentStep: number;
   className?: string;
   form: UseFormReturn<FormValues>;
@@ -25,7 +26,8 @@ export const Wizard = <FormValues extends FieldValues, ContextValues>({
   onSubmit,
   isSubmitting,
 }: WizardProps<FormValues, ContextValues>) => {
-  const StepComponent = steps[currentStep];
+  const step = steps[currentStep];
+  const StepComponent = step.component;
 
   return (
     <FormProvider {...form}>
@@ -40,7 +42,7 @@ export const Wizard = <FormValues extends FieldValues, ContextValues>({
       >
         <div className={cn('space-y-6', className)}>
           <div className="min-h-[400px]">
-            <StepComponent />
+            <StepComponent {...step.props} />
           </div>
         </div>
       </WizardProvider>

@@ -1,3 +1,4 @@
+import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,7 @@ import {
   CreateProposalWizardContext,
 } from '../create-proposal-form.types';
 
-export const RoleMembersStep = () => {
+export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
   const {
     context: { selectedRole, usersEligibleForRole },
     onNext,
@@ -51,6 +52,10 @@ export const RoleMembersStep = () => {
   const handleNext = () => {
     onNext();
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

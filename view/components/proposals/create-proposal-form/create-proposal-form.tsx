@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { WizardStepData } from '@/components/shared/wizard/wizard.types';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItem, FeedQuery } from '@/types/channel.types';
@@ -14,16 +15,16 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Wizard } from '../../shared/wizard/wizard';
-import {
-  CreateProposalFormSchema,
-  createProposalFormSchema,
-} from './create-proposal-form.types';
 import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
 import { RoleAttributesStep } from './create-proposal-form-steps/role-attributes-step';
 import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
 import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
 import { RolesPermissionsStep } from './create-proposal-form-steps/roles-permissions-step';
+import {
+  CreateProposalFormSchema,
+  createProposalFormSchema,
+} from './create-proposal-form.types';
 
 interface CreateProposalFormProps {
   channelId?: string;
@@ -60,18 +61,19 @@ export const CreateProposalForm = ({
   const isRoleProposal =
     actionType === 'change-role' || actionType === 'create-role';
 
-  const { data: roleData } = useQuery({
+  const { data: roleData, isLoading: isRoleLoading } = useQuery({
     queryKey: ['role', selectedRoleId],
     queryFn: () => api.getRole(selectedRoleId!),
     enabled: isRoleProposal && !!selectedRoleId && currentStep > 1,
   });
 
   // Get eligible users for the selected role
-  const { data: eligibleUsersData } = useQuery({
-    queryKey: ['role', selectedRoleId, 'members', 'eligible'],
-    queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
-    enabled: isRoleProposal && !!selectedRoleId && currentStep > 2,
-  });
+  const { data: eligibleUsersData, isLoading: isEligibleUsersLoading } =
+    useQuery({
+      queryKey: ['role', selectedRoleId, 'members', 'eligible'],
+      queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
+      enabled: isRoleProposal && !!selectedRoleId && currentStep > 2,
+    });
 
   const { mutate: createProposal, isPending } = useMutation({
     mutationFn: async (values: CreateProposalFormSchema) => {
@@ -237,17 +239,41 @@ export const CreateProposalForm = ({
   // Determine which steps to show based on action type
   const showChangeRoleSteps = actionType === 'change-role';
 
-  const steps: (() => JSX.Element)[] = [
-    ProposalDetailsStep,
+  const steps: WizardStepData[] = [
+    {
+      id: 'proposal-details',
+      component: ProposalDetailsStep,
+      props: { isLoading: false },
+    },
     ...(showChangeRoleSteps
       ? [
-          RoleSelectionStep,
-          RoleAttributesStep,
-          RolesPermissionsStep,
-          RoleMembersStep,
+          {
+            id: 'role-selection',
+            component: RoleSelectionStep,
+            props: { isLoading: false },
+          },
+          {
+            id: 'role-attributes',
+            component: RoleAttributesStep,
+            props: { isLoading: isRoleLoading },
+          },
+          {
+            id: 'roles-permissions',
+            component: RolesPermissionsStep,
+            props: { isLoading: isRoleLoading },
+          },
+          {
+            id: 'role-members',
+            component: RoleMembersStep,
+            props: { isLoading: isRoleLoading || isEligibleUsersLoading },
+          },
         ]
       : []),
-    ProposalReviewStep,
+    {
+      id: 'proposal-review',
+      component: ProposalReviewStep,
+      props: { isLoading: false },
+    },
   ];
 
   const handleNext = () => {

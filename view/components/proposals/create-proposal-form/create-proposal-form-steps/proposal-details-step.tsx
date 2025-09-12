@@ -1,3 +1,4 @@
+import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,7 @@ import {
 import { Textarea } from '../../../ui/textarea';
 import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
-export const ProposalDetailsStep = () => {
+export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreateProposalFormSchema>();
   const { onNext } = useWizardContext();
 
@@ -36,6 +37,10 @@ export const ProposalDetailsStep = () => {
       onNext();
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

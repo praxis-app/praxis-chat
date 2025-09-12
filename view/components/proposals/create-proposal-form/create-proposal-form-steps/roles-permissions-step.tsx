@@ -1,3 +1,4 @@
+import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,12 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
 import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
-export const RolesPermissionsStep = () => {
+export const RolesPermissionsStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreateProposalFormSchema>();
   const formPermissions = form.watch('permissions')!;
 
   const { onNext, onPrevious } = useWizardContext();
   const { t } = useTranslation();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
