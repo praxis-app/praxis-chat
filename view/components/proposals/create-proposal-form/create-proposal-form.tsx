@@ -192,8 +192,6 @@ export const CreateProposalForm = ({
       });
     },
     onSuccess: ({ proposal }) => {
-      form.reset();
-
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
