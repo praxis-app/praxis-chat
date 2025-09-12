@@ -21,12 +21,8 @@ export const RoleMembersStep = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const form = useFormContext<CreateProposalFormSchema>();
+  const selectedMembers = form.watch('roleMembers') || [];
   const selectedRoleId = form.watch('selectedRoleId');
-
-  const selectedMembers = [
-    ...(selectedRole?.members.map((member) => member.id) || []),
-    ...(form.watch('roleMembers') || []),
-  ];
 
   const { t } = useTranslation();
 

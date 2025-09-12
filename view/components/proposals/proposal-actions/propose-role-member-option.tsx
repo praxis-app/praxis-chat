@@ -27,7 +27,7 @@ export const ProposeRoleMemberOption = ({
   return (
     <RoleMemberOption
       handleChange={handleChange}
-      checked={checked}
+      defaultChecked={checked}
       user={member}
     />
   );

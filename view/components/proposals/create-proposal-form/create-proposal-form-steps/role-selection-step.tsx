@@ -42,6 +42,10 @@ export const RoleSelectionStep = () => {
         'permissions',
         getPermissionValuesMap(selectedRole.permissions),
       );
+      form.setValue(
+        'roleMembers',
+        selectedRole.members.map((member) => member.id),
+      );
       form.setValue('selectedRoleId', value);
     }
   };

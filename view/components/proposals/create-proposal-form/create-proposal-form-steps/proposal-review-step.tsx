@@ -45,17 +45,25 @@ export const ProposalReviewStep = () => {
 
   const getMemberChanges = () => {
     const memberChanges: CreateProposalActionRoleMemberReq[] = [];
-    for (const user of usersEligibleForRole || []) {
-      if (roleMembers?.includes(user.id)) {
-        memberChanges.push({ userId: user.id, changeType: 'add' });
-      }
-    }
     for (const member of selectedRole?.members || []) {
       if (!roleMembers?.includes(member.id)) {
         memberChanges.push({ userId: member.id, changeType: 'remove' });
       }
     }
+    for (const user of usersEligibleForRole || []) {
+      if (roleMembers?.includes(user.id)) {
+        memberChanges.push({ userId: user.id, changeType: 'add' });
+      }
+    }
     return memberChanges;
+  };
+
+  const getMemberName = (userId: string) => {
+    const user = [
+      ...(usersEligibleForRole || []),
+      ...(selectedRole?.members || []),
+    ].find((user) => user.id === userId);
+    return user?.displayName || user?.name;
   };
 
   const getProposalActionType = (action: ProposalActionType | '') => {
@@ -173,7 +181,9 @@ export const ProposalReviewStep = () => {
                       key={index}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-sm">User ID: {member.userId}</span>
+                      <span className="text-sm">
+                        {getMemberName(member.userId)}
+                      </span>
                       <Badge
                         variant={
                           member.changeType === 'add'
