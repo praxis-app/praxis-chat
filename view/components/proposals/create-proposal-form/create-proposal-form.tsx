@@ -17,7 +17,7 @@ import { Wizard } from '../../shared/wizard/wizard';
 import {
   CreateProposalFormSchema,
   createProposalFormSchema,
-} from './create-proposa-form.types';
+} from './create-proposal-form.types';
 import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
 import { RoleAttributesStep } from './create-proposal-form-steps/role-attributes-step';

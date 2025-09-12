@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
-} from '../create-proposa-form.types';
+} from '../create-proposal-form.types';
 
 export const ProposalReviewStep = () => {
   const {

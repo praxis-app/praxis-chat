@@ -9,7 +9,7 @@ import { Input } from '../../../ui/input';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
-} from '../create-proposa-form.types';
+} from '../create-proposal-form.types';
 
 export const RoleMembersStep = () => {
   const {

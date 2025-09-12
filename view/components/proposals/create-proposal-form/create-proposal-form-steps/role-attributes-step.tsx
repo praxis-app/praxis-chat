@@ -17,7 +17,7 @@ import { ColorPicker } from '../../../shared/color-picker';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
-} from '../create-proposa-form.types';
+} from '../create-proposal-form.types';
 
 export const RoleAttributesStep = () => {
   const {

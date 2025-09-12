@@ -5,7 +5,7 @@ import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
-import { CreateProposalFormSchema } from '../create-proposa-form.types';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
 export const RolesPermissionsStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();

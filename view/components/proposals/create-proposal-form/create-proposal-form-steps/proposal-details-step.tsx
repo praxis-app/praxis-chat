@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '../../../ui/select';
 import { Textarea } from '../../../ui/textarea';
-import { CreateProposalFormSchema } from '../create-proposa-form.types';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
 export const ProposalDetailsStep = () => {
   const form = useFormContext<CreateProposalFormSchema>();
