@@ -254,8 +254,8 @@ export const CreateProposalForm = ({
           },
           {
             id: 'role-attributes',
-            title: t('proposals.wizard.rolesPermissions'),
-            description: t('proposals.wizard.rolesPermissionsDescription'),
+            title: t('proposals.wizard.roleAttributes'),
+            description: t('proposals.wizard.roleAttributesDescription'),
             component: RoleAttributesStep,
           },
           {

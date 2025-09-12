@@ -33,17 +33,19 @@ export const RoleAttributesStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.wizard.rolesPermissions')}
+          {t('proposals.wizard.roleAttributes')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.wizard.rolesPermissionsDescription')}
+          {t('proposals.wizard.roleAttributesDescription')}
         </p>
       </div>
 
       <div className="space-y-4">
         <Card className="gap-3">
           <CardHeader>
-            <CardTitle className="text-base">{t('roles.form.name')}</CardTitle>
+            <CardTitle className="text-base">
+              {t('proposals.wizard.roleAttributesTitle')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -53,7 +55,11 @@ export const RoleAttributesStep = () => {
                 <FormItem>
                   <FormLabel>{t('roles.form.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('roles.form.name')} {...field} />
+                    <Input
+                      placeholder={t('roles.form.name')}
+                      autoComplete="off"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,7 +89,7 @@ export const RoleAttributesStep = () => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.wizard.selectedRoleInfo')}
+                {t('proposals.wizard.currentRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>

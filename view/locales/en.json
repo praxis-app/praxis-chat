@@ -139,6 +139,10 @@
     "wizard": {
       "basicInfo": "Basic Information",
       "basicInfoDescription": "Provide the basic details for your proposal",
+      "roleAttributes": "Role Attributes",
+      "roleAttributesDescription": "Modify the role's name and color",
+      "roleAttributesTitle": "Role Name and Color",
+      "currentRoleInfo": "Current Role Information",
       "rolesPermissions": "Roles and Permissions",
       "rolesPermissionsDescription": "Configure the roles and permissions changes",
       "permissions": "Permissions",

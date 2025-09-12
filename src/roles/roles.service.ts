@@ -45,7 +45,7 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  return { ...role, permissions, members };
+  return { ...role, permissions, members, memberCount: members.length };
 };
 
 export const getRoles = async () => {
