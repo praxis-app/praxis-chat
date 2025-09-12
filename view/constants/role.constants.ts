@@ -1,3 +1,32 @@
+// TODO: Move dupe constants to shared folder in project root
+
+export const ABILITY_ACTIONS = [
+  'delete',
+  'create',
+  'read',
+  'update',
+  'manage',
+] as const;
+
+export const ABILITY_SUBJECTS = [
+  'ServerConfig',
+  'Channel',
+  'Invite',
+  'Message',
+  'Role',
+  'all',
+] as const;
+
+export const ROLE_ATTRIBUTE_CHANGE_TYPE = ['add', 'remove'] as const;
+
+export const PERMISSION_KEYS = [
+  'manageChannels',
+  'manageSettings',
+  'createInvites',
+  'manageInvites',
+  'manageRoles',
+] as const;
+
 export const ROLE_COLOR_OPTIONS = [
   '#f44336',
   '#e91e63',
@@ -18,11 +47,3 @@ export const ROLE_COLOR_OPTIONS = [
   '#795548',
   '#607d8b',
 ];
-
-export const PERMISSION_KEYS = [
-  'manageChannels',
-  'manageSettings',
-  'createInvites',
-  'manageInvites',
-  'manageRoles',
-] as const;

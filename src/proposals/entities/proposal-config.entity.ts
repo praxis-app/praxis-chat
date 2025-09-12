@@ -19,16 +19,16 @@ export class ProposalConfig {
   @Column({ type: 'enum', enum: DECISION_MAKING_MODEL })
   decisionMakingModel: DecisionMakingModel;
 
-  @Column()
+  @Column({ type: 'int' })
   standAsidesLimit: number;
 
-  @Column()
+  @Column({ type: 'int' })
   reservationsLimit: number;
 
-  @Column()
+  @Column({ type: 'int' })
   ratificationThreshold: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   closingAt?: Date;
 
   @OneToOne(() => Proposal, (proposal) => proposal.config, {
@@ -37,7 +37,7 @@ export class ProposalConfig {
   @JoinColumn()
   proposal: Proposal;
 
-  @Column()
+  @Column({ type: 'uuid' })
   proposalId: string;
 
   @CreateDateColumn()

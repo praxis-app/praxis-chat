@@ -2,29 +2,54 @@ import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
+import { ProposalActionPermission } from './entities/proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
+
+const rolesRepository = dataSource.getRepository(Role);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
 
-const rolesRepository = dataSource.getRepository(Role);
+const proposalActionRoleMemberRepository = dataSource.getRepository(
+  ProposalActionRoleMember,
+);
+
+const proposalActionPermissionRepository = dataSource.getRepository(
+  ProposalActionPermission,
+);
 
 export const createProposalActionRole = async (
   proposalActionId: string,
-  { roleToUpdateId, members, ...role }: ProposalActionRoleDto,
+  { roleToUpdateId, members, permissions, name, color }: ProposalActionRoleDto,
 ) => {
+  const roleToUpdate = await rolesRepository.findOneOrFail({
+    where: { id: roleToUpdateId },
+  });
   const savedRole = await proposalActionRoleRepository.save({
-    ...role,
-    permissions: role.permissions,
+    name: name?.trim(),
+    color: color?.trim(),
     roleId: roleToUpdateId,
+    prevName: roleToUpdate.name,
+    prevColor: roleToUpdate.color,
     proposalActionId,
   });
 
+  if (permissions && permissions.length > 0) {
+    const permissionsToSave: Partial<ProposalActionPermission>[] = [];
+    for (const permission of permissions) {
+      for (const action of permission.actions) {
+        permissionsToSave.push({
+          ...action,
+          subject: permission.subject,
+          proposalActionRoleId: savedRole.id,
+        });
+      }
+    }
+    await proposalActionPermissionRepository.save(permissionsToSave);
+  }
+
   if (members && members.length > 0) {
-    const proposalActionRoleMemberRepository = dataSource.getRepository(
-      ProposalActionRoleMember,
-    );
     await proposalActionRoleMemberRepository.save(
       members.map((member) => ({
         userId: member.userId,
@@ -76,8 +101,8 @@ export const implementChangeRole = async (proposalActionId: string) => {
   // Update proposal action role old name and color
   if (actionRole.name || actionRole.color) {
     await proposalActionRoleRepository.update(actionRole.id, {
-      oldName: actionRole.name ? roleToUpdate.name : undefined,
-      oldColor: actionRole.color ? roleToUpdate.color : undefined,
+      prevName: actionRole.name ? roleToUpdate.name : undefined,
+      prevColor: actionRole.color ? roleToUpdate.color : undefined,
     });
   }
 };

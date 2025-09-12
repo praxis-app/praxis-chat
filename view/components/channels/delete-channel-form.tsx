@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { ReactNode } from 'react';
@@ -15,7 +15,7 @@ interface DeleteChannelFormSubmitButtonProps {
 }
 
 interface DeleteChannelFormProps {
-  channel: Channel;
+  channel: ChannelRes;
   submitButton: (props: DeleteChannelFormSubmitButtonProps) => ReactNode;
   onSubmit?(): void;
 }
@@ -45,7 +45,7 @@ export const DeleteChannelForm = ({
     mutationFn: async () => {
       await api.deleteChannel(channel.id);
 
-      queryClient.setQueryData<{ channels: Channel[] }>(
+      queryClient.setQueryData<{ channels: ChannelRes[] }>(
         ['channels'],
         (oldData) => {
           if (!oldData) {

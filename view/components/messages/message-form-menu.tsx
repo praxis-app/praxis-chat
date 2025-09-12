@@ -1,7 +1,7 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdPoll } from 'react-icons/md';
-import { CreateProposalForm } from '../proposals/create-proposal-form';
+import { CreateProposalForm } from '../proposals/create-proposal-form/create-proposal-form';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { Separator } from '../ui/separator';
 
 interface Props {
   showMenu: boolean;
@@ -33,8 +34,15 @@ export const MessageFormMenu = ({
   isGeneralChannel,
 }: Props) => {
   const [showProposalForm, setShowProposalForm] = useState(false);
+  const dialogContentRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
+
+  const handleProposalFormNavigate = () => {
+    if (dialogContentRef.current) {
+      dialogContentRef.current.scrollTop = 0;
+    }
+  };
 
   return (
     <Dialog open={showProposalForm} onOpenChange={setShowProposalForm}>
@@ -58,7 +66,10 @@ export const MessageFormMenu = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DialogContent className="pt-10 md:w-xl md:pt-6">
+      <DialogContent
+        className="overflow-y-auto pt-10 md:max-h-[90vh] md:w-xl md:pt-6"
+        ref={dialogContentRef}
+      >
         <DialogHeader>
           <DialogTitle>{t('proposals.headers.create')}</DialogTitle>
         </DialogHeader>
@@ -66,10 +77,13 @@ export const MessageFormMenu = ({
           {t('proposals.descriptions.create')}
         </DialogDescription>
 
+        <Separator className="mt-1" />
+
         <CreateProposalForm
           channelId={channelId}
           isGeneralChannel={isGeneralChannel}
           onSuccess={() => setShowProposalForm(false)}
+          onNavigate={handleProposalFormNavigate}
         />
       </DialogContent>
     </Dialog>

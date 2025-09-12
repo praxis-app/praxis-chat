@@ -4,7 +4,7 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
-import { Channel, FeedItem, FeedQuery } from '@/types/channel.types';
+import { ChannelRes, FeedItem, FeedQuery } from '@/types/channel.types';
 import { Message } from '@/types/message.types';
 import { Proposal } from '@/types/proposal.types';
 import { PubSubMessage } from '@/types/shared.types';
@@ -39,7 +39,7 @@ interface ImageMessagePayload {
 }
 
 interface Props {
-  channel?: Channel;
+  channel?: ChannelRes;
   isGeneralChannel?: boolean;
 }
 

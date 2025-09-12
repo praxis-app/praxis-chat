@@ -8,11 +8,11 @@ import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 
 interface InlineProposalProps {
   proposal: Proposal;
-  channel: Channel;
+  channel: ChannelRes;
 }
 
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {

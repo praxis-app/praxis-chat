@@ -1,3 +1,4 @@
-import { ROLE_MEMBER_CHANGE_TYPE } from './proposal-action.constants';
+import { ROLE_ATTRIBUTE_CHANGE_TYPE } from './proposal-action.constants';
 
-export type RoleMemberChangeType = (typeof ROLE_MEMBER_CHANGE_TYPE)[number];
+export type RoleAttributeChangeType =
+  (typeof ROLE_ATTRIBUTE_CHANGE_TYPE)[number];

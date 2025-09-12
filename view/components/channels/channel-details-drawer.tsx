@@ -1,6 +1,6 @@
 import { useAbility } from '@/hooks/use-ability';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiTrash } from 'react-icons/bi';
@@ -31,7 +31,7 @@ import {
 } from './delete-channel-form';
 
 interface Props {
-  channel: Channel;
+  channel: ChannelRes;
   trigger: ReactNode;
 }
 

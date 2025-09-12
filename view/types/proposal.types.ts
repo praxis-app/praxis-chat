@@ -1,15 +1,15 @@
 import {
   DECISION_MAKING_MODEL,
-  PROPOSAL_ACTION_TYPE,
   PROPOSAL_STAGE,
 } from '../constants/proposal.constants';
 import { Image } from './image.types';
-import { AbilityAction, AbilitySubject } from './role.types';
+import {
+  CreateProposalActionReq,
+  ProposalActionReq,
+} from './proposal-action.types';
 import { VoteType } from './vote.types';
 
 export type DecisionMakingModel = (typeof DECISION_MAKING_MODEL)[number];
-
-export type ProposalActionType = (typeof PROPOSAL_ACTION_TYPE)[number];
 
 export type ProposalStage = (typeof PROPOSAL_STAGE)[number];
 
@@ -17,7 +17,7 @@ export interface Proposal {
   id: string;
   body: string;
   stage: ProposalStage;
-  action: ProposalActionType;
+  action: ProposalActionReq;
   images: Image[];
   channelId: string;
   user?: { id: string; name: string };
@@ -27,30 +27,7 @@ export interface Proposal {
 }
 
 export interface CreateProposalReq {
-  body: string;
+  body?: string;
   action: CreateProposalActionReq;
   images: Image[];
-}
-
-export interface CreateProposalActionReq {
-  actionType: ProposalActionType;
-  role?: CreateProposalActionRoleReq;
-}
-
-export interface CreateProposalActionRoleReq {
-  name?: string;
-  color?: string;
-  members?: CreateProposalActionRoleMemberReq[];
-  permissions?: CreateProposalActionRolePermissionReq[];
-  roleToUpdateId?: string;
-}
-
-export interface CreateProposalActionRoleMemberReq {
-  userId: string;
-  changeType: 'add' | 'remove';
-}
-
-export interface CreateProposalActionRolePermissionReq {
-  subject: AbilitySubject;
-  actions: AbilityAction[];
 }

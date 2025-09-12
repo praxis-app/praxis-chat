@@ -26,7 +26,7 @@ export const ServerSettings = () => {
   return (
     <>
       <TopNav
-        header={t('navigation.labels.serverSettings')}
+        header={t('navigation.headers.serverSettings')}
         onBackClick={handleBackClick}
         backBtnIcon={<MdClose className="size-6" />}
         goBackOnEscape

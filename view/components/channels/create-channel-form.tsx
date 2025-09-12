@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
-import { Channel, CreateChannelReq } from '@/types/channel.types';
+import { ChannelRes, CreateChannelReq } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -72,7 +72,7 @@ export const CreateChannelForm = ({
     mutationFn: async (values: CreateChannelReq) => {
       const { channel } = await api.createChannel(values);
 
-      queryClient.setQueryData<{ channels: Channel[] }>(
+      queryClient.setQueryData<{ channels: ChannelRes[] }>(
         ['channels'],
         (oldData) => {
           if (!oldData) {

@@ -22,7 +22,7 @@ export class ChannelMember {
   })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
   @ManyToOne(() => Channel, (channel) => channel.members, {
@@ -30,7 +30,7 @@ export class ChannelMember {
   })
   channel: Channel;
 
-  @Column()
+  @Column({ type: 'uuid' })
   channelId: string;
 
   @CreateDateColumn()

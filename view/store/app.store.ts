@@ -1,3 +1,5 @@
+// TODO: Split into multiple stores for auth and navigation
+
 import { create } from 'zustand';
 import { LocalStorageKeys } from '../constants/shared.constants';
 

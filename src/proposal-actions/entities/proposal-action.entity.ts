@@ -36,7 +36,7 @@ export class ProposalAction {
   @JoinColumn()
   proposal: Proposal;
 
-  @Column()
+  @Column({ type: 'uuid' })
   proposalId: string;
 
   @CreateDateColumn()

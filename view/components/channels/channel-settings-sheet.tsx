@@ -1,4 +1,4 @@
-import { Channel } from '@/types/channel.types';
+import { ChannelRes } from '@/types/channel.types';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,7 +12,7 @@ import {
 import { ChannelSettingsForm } from './channel-settings-form';
 
 interface Props {
-  editChannel: Channel;
+  editChannel: ChannelRes;
   trigger: ReactNode;
 }
 

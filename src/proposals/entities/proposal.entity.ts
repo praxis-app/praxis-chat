@@ -61,7 +61,7 @@ export class Proposal {
   })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
   @ManyToOne(() => Channel, (channel) => channel.proposals, {
@@ -69,7 +69,7 @@ export class Proposal {
   })
   channel: Channel;
 
-  @Column()
+  @Column({ type: 'uuid' })
   channelId: string;
 
   @CreateDateColumn()

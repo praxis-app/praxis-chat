@@ -19,17 +19,17 @@ export class ProposalActionRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   name?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   color?: string;
 
-  @Column({ nullable: true })
-  oldName?: string;
+  @Column({ type: 'varchar', nullable: true })
+  prevName?: string;
 
-  @Column({ nullable: true })
-  oldColor?: string;
+  @Column({ type: 'varchar', nullable: true })
+  prevColor?: string;
 
   @OneToMany(
     () => ProposalActionPermission,
@@ -57,7 +57,7 @@ export class ProposalActionRole {
   @JoinColumn()
   proposalAction: ProposalAction;
 
-  @Column()
+  @Column({ type: 'uuid' })
   proposalActionId: string;
 
   @ManyToOne(() => Role, (role) => role.proposalActionRoles, {
@@ -66,7 +66,7 @@ export class ProposalActionRole {
   })
   role?: Role;
 
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   roleId?: string;
 
   @CreateDateColumn()

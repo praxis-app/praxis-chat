@@ -1,1 +1,1 @@
-export const ROLE_MEMBER_CHANGE_TYPE = ['add', 'remove'] as const;
+export const ROLE_ATTRIBUTE_CHANGE_TYPE = ['add', 'remove'] as const;
