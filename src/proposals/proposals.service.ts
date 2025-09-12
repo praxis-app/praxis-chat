@@ -49,6 +49,7 @@ export const getChannelProposals = async (
     relations: [
       'user',
       'images',
+      'config',
       'action',
       'action.role',
       'action.role.permissions',
@@ -69,6 +70,13 @@ export const getChannelProposals = async (
         id: true,
         filename: true,
         createdAt: true,
+      },
+      config: {
+        decisionMakingModel: true,
+        ratificationThreshold: true,
+        reservationsLimit: true,
+        standAsidesLimit: true,
+        closingAt: true,
       },
       action: {
         actionType: true,
@@ -120,6 +128,7 @@ export const getChannelProposals = async (
       isPlaceholder: !image.filename,
       createdAt: image.createdAt,
     })),
+    config: proposal.config,
     action: proposal.action,
     createdAt: proposal.createdAt,
     myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
