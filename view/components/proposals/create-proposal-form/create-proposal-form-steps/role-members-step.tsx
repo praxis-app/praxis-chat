@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { RoleMemberOption } from '../../../roles/role-member-option';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Input } from '../../../ui/input';
-import { ProposeRoleMemberOption } from '../../proposal-actions/propose-role-member-option';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
@@ -90,11 +90,11 @@ export const RoleMembersStep = () => {
               <CardContent className="space-y-2">
                 <div className="max-h-60 space-y-2 overflow-y-auto">
                   {filteredUsers.map((user) => (
-                    <ProposeRoleMemberOption
+                    <RoleMemberOption
                       key={user.id}
-                      member={user}
-                      selectedMembers={selectedMembers}
-                      setSelectedMembers={handleMemberChange}
+                      user={user}
+                      selectedUserIds={selectedMembers}
+                      setSelectedUserIds={handleMemberChange}
                     />
                   ))}
                   {filteredUsers.length === 0 && (
