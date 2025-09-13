@@ -108,7 +108,10 @@
       "consensusProposal": "Consensus Proposal",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
-      "roleSelection": "Role selection"
+      "roleSelection": "Role selection",
+      "roleChangeProposal": "Role change proposal",
+      "roleProposal": "Role proposal",
+      "proposedSettings": "Settings proposal"
     },
     "headers": {
       "availableRoles": "Available Roles",
