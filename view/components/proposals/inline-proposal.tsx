@@ -1,4 +1,5 @@
 import { timeAgo } from '@/lib/time.utils';
+import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
@@ -8,7 +9,6 @@ import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
-import { ChannelRes } from '@/types/channel.types';
 
 interface InlineProposalProps {
   proposal: ProposalRes;
@@ -18,7 +18,7 @@ interface InlineProposalProps {
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVoteId, myVoteType } = proposal;
+  const { body, user, createdAt, id, myVoteId, myVoteType, action } = proposal;
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
   const formattedDate = timeAgo(createdAt ?? '');
@@ -40,6 +40,57 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
           </div>
 
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
+
+          {/* TODO: Show remaining proposal action data within accordion */}
+
+          {action?.role &&
+            (action.role.name !== action.role.prevName ||
+              action.role.color !== action.role.prevColor) && (
+              <div className="mb-2.5">
+                <div className="space-y-3">
+                  {action.role.name !== action.role.prevName && (
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">
+                        {t('proposals.labels.roleNameChange')}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-muted-foreground text-sm">
+                          {action.role.prevName}
+                        </span>
+                        <span className="text-sm">→</span>
+                        <span className="text-sm font-medium">
+                          {action.role.name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {action.role.color !== action.role.prevColor && (
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">
+                        {t('proposals.labels.roleColorChange')}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="h-4 w-4 rounded-full"
+                          style={{ backgroundColor: action.role.prevColor }}
+                        />
+                        <span className="text-muted-foreground text-sm">
+                          {action.role.prevColor}
+                        </span>
+                        <span className="text-sm">→</span>
+                        <div
+                          className="h-4 w-4 rounded-full"
+                          style={{ backgroundColor: action.role.color }}
+                        />
+                        <span className="text-sm font-medium">
+                          {action.role.color}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
           <CardAction className="flex flex-wrap gap-2">
             <ProposalVoteButtons

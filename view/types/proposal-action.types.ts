@@ -4,6 +4,7 @@ import {
   AbilitySubject,
   RoleAttributeChangeType,
 } from './role.types';
+import { UserRes } from './user.types';
 
 export type ProposalActionType = (typeof PROPOSAL_ACTION_TYPE)[number];
 
@@ -80,9 +81,8 @@ export interface ProposalActionRoleRes {
 }
 
 export interface ProposalActionRoleMemberRes {
-  id: string;
-  userId: string;
   changeType: RoleAttributeChangeType;
+  user: UserRes;
 }
 
 export interface ProposalActionRolePermissionRes {
