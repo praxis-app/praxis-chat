@@ -26,54 +26,56 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
   };
 
   return (
-    <Accordion type="single" className="rounded-md border px-2.5" collapsible>
+    <Accordion
+      type="single"
+      className="mb-2.5 rounded-md border px-2.5"
+      collapsible
+    >
       <AccordionItem value="role-change-proposal">
         <AccordionTrigger className="cursor-pointer hover:no-underline">
           {getAccordionLabel()}
         </AccordionTrigger>
         <AccordionContent>
-          <div className="mb-2.5">
-            {(role.name !== role.prevName || role.color !== role.prevColor) && (
-              <div className="space-y-3">
-                {role.name !== role.prevName && (
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium">
-                      {t('proposals.labels.roleNameChange')}
+          {(role.name !== role.prevName || role.color !== role.prevColor) && (
+            <div className="space-y-3">
+              {role.name !== role.prevName && (
+                <div className="space-y-1">
+                  <span className="text-sm font-medium">
+                    {t('proposals.labels.roleNameChange')}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-muted-foreground text-sm">
+                      {role.prevName}
                     </span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-muted-foreground text-sm">
-                        {role.prevName}
-                      </span>
-                      <span className="text-sm">→</span>
-                      <span className="text-sm font-medium">{role.name}</span>
-                    </div>
+                    <span className="text-sm">→</span>
+                    <span className="text-sm font-medium">{role.name}</span>
                   </div>
-                )}
-                {role.color !== role.prevColor && (
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium">
-                      {t('proposals.labels.roleColorChange')}
+                </div>
+              )}
+              {role.color !== role.prevColor && (
+                <div className="space-y-1">
+                  <span className="text-sm font-medium">
+                    {t('proposals.labels.roleColorChange')}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className="h-4 w-4 rounded-full"
+                      style={{ backgroundColor: role.prevColor }}
+                    />
+                    <span className="text-muted-foreground text-sm">
+                      {role.prevColor}
                     </span>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="h-4 w-4 rounded-full"
-                        style={{ backgroundColor: role.prevColor }}
-                      />
-                      <span className="text-muted-foreground text-sm">
-                        {role.prevColor}
-                      </span>
-                      <span className="text-sm">→</span>
-                      <div
-                        className="h-4 w-4 rounded-full"
-                        style={{ backgroundColor: role.color }}
-                      />
-                      <span className="text-sm font-medium">{role.color}</span>
-                    </div>
+                    <span className="text-sm">→</span>
+                    <div
+                      className="h-4 w-4 rounded-full"
+                      style={{ backgroundColor: role.color }}
+                    />
+                    <span className="text-sm font-medium">{role.color}</span>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
