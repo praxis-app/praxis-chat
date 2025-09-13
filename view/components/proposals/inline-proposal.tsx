@@ -1,5 +1,5 @@
 import { timeAgo } from '@/lib/time.utils';
-import { Proposal } from '@/types/proposal.types';
+import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { FormattedText } from '../shared/formatted-text';
@@ -11,7 +11,7 @@ import { ProposalVoteButtons } from './proposal-vote-buttons';
 import { ChannelRes } from '@/types/channel.types';
 
 interface InlineProposalProps {
-  proposal: Proposal;
+  proposal: ProposalRes;
   channel: ChannelRes;
 }
 

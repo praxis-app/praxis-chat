@@ -3,7 +3,7 @@ import { FormattedText } from '@/components/shared/formatted-text';
 import { UserAvatar } from '@/components/users/user-avatar';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { timeAgo } from '@/lib/time.utils';
-import { Message as MessageType } from '@/types/message.types';
+import { MessageRes as MessageType } from '@/types/message.types';
 import { useTranslation } from 'react-i18next';
 
 interface Props {

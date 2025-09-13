@@ -1,14 +1,14 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { cn } from '@/lib/shared.utils';
-import { Image } from '@/types/image.types';
+import { ImageRes } from '@/types/image.types';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from './lazy-load-image';
 
 interface Props {
-  image: Image;
+  image: ImageRes;
   onImageLoad?(): void;
   className?: string;
 }

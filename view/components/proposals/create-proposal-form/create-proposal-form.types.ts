@@ -1,8 +1,8 @@
 import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { t } from '@/lib/shared.utils';
-import { Role } from '@/types/role.types';
-import { User } from '@/types/user.types';
+import { RoleRes } from '@/types/role.types';
+import { UserRes } from '@/types/user.types';
 import * as zod from 'zod';
 
 const PROPOSAL_BODY_MAX = 6000;
@@ -27,6 +27,6 @@ export type CreateProposalFormSchema = zod.infer<
 >;
 
 export interface CreateProposalWizardContext {
-  selectedRole?: Role;
-  usersEligibleForRole?: User[];
+  selectedRole?: RoleRes;
+  usersEligibleForRole?: UserRes[];
 }

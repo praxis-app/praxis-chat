@@ -3,7 +3,7 @@ import { useDeleteInviteMutation } from '@/hooks/use-delete-invite-mutation';
 import { copyInviteLink } from '@/lib/invite.utils';
 import { truncate } from '@/lib/text.utils';
 import { timeFromNow } from '@/lib/time.utils';
-import { Invite } from '@/types/invite.types';
+import { InviteRes } from '@/types/invite.types';
 import { useTranslation } from 'react-i18next';
 import { MdAssignment } from 'react-icons/md';
 import { toast } from 'sonner';
@@ -19,7 +19,7 @@ import { DropdownMenuItem } from '../ui/dropdown-menu';
 import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
-  invite: Invite;
+  invite: InviteRes;
 }
 
 export const InviteCard = ({

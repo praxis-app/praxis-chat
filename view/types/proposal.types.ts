@@ -2,10 +2,10 @@ import {
   DECISION_MAKING_MODEL,
   PROPOSAL_STAGE,
 } from '../constants/proposal.constants';
-import { Image } from './image.types';
+import { ImageRes } from './image.types';
 import {
   CreateProposalActionReq,
-  ProposalActionReq,
+  ProposalActionRes,
 } from './proposal-action.types';
 import { VoteType } from './vote.types';
 
@@ -13,12 +13,12 @@ export type DecisionMakingModel = (typeof DECISION_MAKING_MODEL)[number];
 
 export type ProposalStage = (typeof PROPOSAL_STAGE)[number];
 
-export interface Proposal {
+export interface ProposalRes {
   id: string;
   body: string;
   stage: ProposalStage;
-  action: ProposalActionReq;
-  images: Image[];
+  action: ProposalActionRes;
+  images: ImageRes[];
   channelId: string;
   user?: { id: string; name: string };
   createdAt: string;
@@ -29,5 +29,5 @@ export interface Proposal {
 export interface CreateProposalReq {
   body?: string;
   action: CreateProposalActionReq;
-  images: Image[];
+  images: ImageRes[];
 }

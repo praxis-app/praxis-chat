@@ -4,7 +4,7 @@ import { useInView } from '@/hooks/use-in-view';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { debounce, throttle } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
-import { ChannelRes, FeedItem } from '@/types/channel.types';
+import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import {
   RefObject,
   UIEvent,
@@ -22,7 +22,7 @@ const IN_VIEW_THRESHOLD = 50;
 
 interface Props {
   channel?: ChannelRes;
-  feed: FeedItem[];
+  feed: FeedItemRes[];
   feedBoxRef: RefObject<HTMLDivElement>;
   isLastPage: boolean;
   onLoadMore: () => void;

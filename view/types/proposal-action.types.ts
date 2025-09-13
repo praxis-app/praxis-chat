@@ -7,6 +7,10 @@ import {
 
 export type ProposalActionType = (typeof PROPOSAL_ACTION_TYPE)[number];
 
+// -------------------------------------------------------------------------
+// Requests
+// -------------------------------------------------------------------------
+
 export interface ProposalActionReq {
   actionType: ProposalActionType;
   role?: ProposalActionRoleReq;
@@ -53,4 +57,37 @@ export interface CreateProposalActionRoleMemberReq {
 export interface CreateProposalActionRolePermissionReq {
   subject: AbilitySubject;
   actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
+}
+
+// -------------------------------------------------------------------------
+// Responses
+// -------------------------------------------------------------------------
+
+export interface ProposalActionRes {
+  id: string;
+  actionType: ProposalActionType;
+  role?: ProposalActionRoleRes;
+}
+
+export interface ProposalActionRoleRes {
+  id: string;
+  name?: string;
+  color?: string;
+  prevName?: string;
+  prevColor?: string;
+  members?: ProposalActionRoleMemberRes[];
+  permissions?: ProposalActionRolePermissionRes[];
+}
+
+export interface ProposalActionRoleMemberRes {
+  id: string;
+  userId: string;
+  changeType: RoleAttributeChangeType;
+}
+
+export interface ProposalActionRolePermissionRes {
+  id: string;
+  subject: AbilitySubject;
+  action: AbilityAction;
+  changeType: RoleAttributeChangeType;
 }

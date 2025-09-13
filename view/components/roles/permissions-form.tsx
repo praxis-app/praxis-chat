@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { PERMISSION_KEYS } from '../../constants/role.constants';
-import { Permission, PermissionKeys, Role } from '../../types/role.types';
+import { Permission, PermissionKeys, RoleRes } from '../../types/role.types';
 import { Button } from '../ui/button';
 import { PermissionToggle } from './permission-toggle';
 
@@ -18,7 +18,7 @@ interface FormValues {
 }
 
 interface Props {
-  role: Role;
+  role: RoleRes;
 }
 
 export const PermissionsForm = ({ role }: Props) => {
@@ -59,12 +59,15 @@ export const PermissionsForm = ({ role }: Props) => {
         permissions,
       });
 
-      queryClient.setQueryData<{ role: Role }>(['role', role.id], (oldData) => {
-        if (!oldData) {
-          return { role };
-        }
-        return { role: { ...oldData.role, permissions } };
-      });
+      queryClient.setQueryData<{ role: RoleRes }>(
+        ['role', role.id],
+        (oldData) => {
+          if (!oldData) {
+            return { role };
+          }
+          return { role: { ...oldData.role, permissions } };
+        },
+      );
       reset({ permissions: getPermissionValues(permissions) });
     },
   });

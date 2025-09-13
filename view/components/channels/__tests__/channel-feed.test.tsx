@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store/app.store';
 import { customRender as render } from '@/test/lib/custom-render';
-import { FeedItem } from '@/types/channel.types';
+import { FeedItemRes } from '@/types/channel.types';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { ChannelFeed } from '../channel-feed';
@@ -51,7 +51,7 @@ vi.mock('@/components/shared/formatted-text', () => ({
 describe('ChannelFeed', () => {
   const mockOnLoadMore = vi.fn();
   const mockFeedBoxRef = { current: document.createElement('div') };
-  const mockFeed: FeedItem[] = [
+  const mockFeed: FeedItemRes[] = [
     {
       type: 'message',
       id: '1',

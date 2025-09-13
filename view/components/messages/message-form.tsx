@@ -4,8 +4,8 @@ import { KeyCodes } from '@/constants/shared.constants';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
-import { FeedItem, FeedQuery } from '@/types/channel.types';
-import { Image } from '@/types/image.types';
+import { FeedItemRes, FeedQuery } from '@/types/channel.types';
+import { ImageRes } from '@/types/image.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -68,7 +68,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       validateImageInput(images);
 
       const { message } = await api.sendMessage(channelId, body, images.length);
-      const messageImages: Image[] = [];
+      const messageImages: ImageRes[] = [];
 
       if (images.length && message.images) {
         for (let i = 0; i < images.length; i++) {
@@ -101,7 +101,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         ? GENERAL_CHANNEL_NAME
         : channelId;
 
-      const newFeedItem: FeedItem = {
+      const newFeedItem: FeedItemRes = {
         ...messageWithImages,
         type: 'message',
       };

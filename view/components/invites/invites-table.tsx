@@ -7,12 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Invite } from '@/types/invite.types';
+import { InviteRes } from '@/types/invite.types';
 import { useTranslation } from 'react-i18next';
 import { InviteTableRow } from './invite-table-row';
 
 interface Props {
-  invites: Invite[];
+  invites: InviteRes[];
 }
 
 export const InvitesTable = ({ invites }: Props) => {

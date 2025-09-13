@@ -1,11 +1,11 @@
-import { User } from '../../types/user.types';
+import { UserRes } from '../../types/user.types';
 import { Checkbox } from '../ui/checkbox';
 import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
   selectedUserIds: string[];
   setSelectedUserIds(selectedUsers: string[]): void;
-  user: User;
+  user: UserRes;
 }
 
 export const RoleMemberOption = ({

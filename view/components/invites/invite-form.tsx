@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { Time } from '@/constants/shared.constants';
-import { Invite } from '@/types/invite.types';
+import { InviteRes } from '@/types/invite.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +51,7 @@ export const InviteForm = () => {
         maxUses: Number(data.maxUses) || undefined,
       });
 
-      queryClient.setQueryData<{ invites: Invite[] }>(
+      queryClient.setQueryData<{ invites: InviteRes[] }>(
         ['invites'],
         (oldData) => {
           if (!oldData) {

@@ -32,7 +32,7 @@ import {
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
-import { Role } from '../../types/role.types';
+import { RoleRes } from '../../types/role.types';
 
 enum EditRoleTabName {
   Permissions = 'permissions',
@@ -110,7 +110,7 @@ export const EditRolePage = () => {
       }
       await api.deleteRole(roleId);
 
-      queryClient.setQueryData<{ roles: Role[] }>(['roles'], (oldData) => {
+      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
         if (!oldData) {
           return { roles: [] };
         }

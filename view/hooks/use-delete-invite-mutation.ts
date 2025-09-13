@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { api } from '../client/api-client';
-import { Invite } from '../types/invite.types';
+import { InviteRes } from '../types/invite.types';
 
 export const useDeleteInviteMutation = (inviteId: string) => {
   const { t } = useTranslation();
@@ -13,7 +13,7 @@ export const useDeleteInviteMutation = (inviteId: string) => {
     mutationFn: async () => {
       await api.deleteInvite(inviteId);
 
-      queryClient.setQueryData<{ invites: Invite[] }>(
+      queryClient.setQueryData<{ invites: InviteRes[] }>(
         ['invites'],
         (oldData) => {
           if (!oldData) {

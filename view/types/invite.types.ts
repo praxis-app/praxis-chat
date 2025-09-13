@@ -1,4 +1,4 @@
-export interface Invite {
+export interface InviteRes {
   id: string;
   token: string;
   uses: number;

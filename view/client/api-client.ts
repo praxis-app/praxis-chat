@@ -1,7 +1,7 @@
 // API client for server endpoints
 
-import { CreateProposalReq, Proposal } from '@/types/proposal.types';
-import { CreateVoteReq, UpdateVoteReq, Vote } from '@/types/vote.types';
+import { CreateProposalReq, ProposalRes } from '@/types/proposal.types';
+import { CreateVoteReq, UpdateVoteReq, VoteRes } from '@/types/vote.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
 import { LocalStorageKeys } from '../constants/shared.constants';
@@ -9,18 +9,18 @@ import { AuthRes, LoginReq, SignUpReq } from '../types/auth.types';
 import {
   ChannelRes,
   CreateChannelReq,
-  FeedItem,
+  FeedItemRes,
   UpdateChannelReq,
 } from '../types/channel.types';
-import { Image } from '../types/image.types';
-import { CreateInviteReq, Invite } from '../types/invite.types';
-import { Message } from '../types/message.types';
+import { ImageRes } from '../types/image.types';
+import { CreateInviteReq, InviteRes } from '../types/invite.types';
+import { MessageRes } from '../types/message.types';
 import {
   CreateRoleReq,
-  Role,
+  RoleRes,
   UpdateRolePermissionsReq,
 } from '../types/role.types';
-import { CurrentUser, User } from '../types/user.types';
+import { CurrentUserRes, UserRes } from '../types/user.types';
 
 class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -72,7 +72,7 @@ class ApiClient {
 
   getCurrentUser = async () => {
     const path = '/users/me';
-    return this.executeRequest<{ user: CurrentUser }>('get', path);
+    return this.executeRequest<{ user: CurrentUserRes }>('get', path);
   };
 
   isFirstUser = async () => {
@@ -104,7 +104,7 @@ class ApiClient {
     limit = MESSAGES_PAGE_SIZE,
   ) => {
     const path = '/channels/general/feed';
-    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
+    return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
       params: { offset, limit },
     });
   };
@@ -115,7 +115,7 @@ class ApiClient {
     limit = MESSAGES_PAGE_SIZE,
   ) => {
     const path = `/channels/${channelId}/feed`;
-    return this.executeRequest<{ feed: FeedItem[] }>('get', path, {
+    return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
       params: { offset, limit },
     });
   };
@@ -141,7 +141,7 @@ class ApiClient {
 
   sendMessage = async (channelId: string, body: string, imageCount: number) => {
     const path = `/channels/${channelId}/messages`;
-    return this.executeRequest<{ message: Message }>('post', path, {
+    return this.executeRequest<{ message: MessageRes }>('post', path, {
       data: { channelId, body, imageCount },
     });
   };
@@ -153,7 +153,7 @@ class ApiClient {
     formData: FormData,
   ) => {
     const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}/upload`;
-    return this.executeRequest<{ image: Image }>('post', path, {
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
       data: formData,
     });
   };
@@ -164,7 +164,7 @@ class ApiClient {
 
   createProposal = async (channelId: string, data: CreateProposalReq) => {
     const path = `/channels/${channelId}/proposals`;
-    return this.executeRequest<{ proposal: Proposal }>('post', path, {
+    return this.executeRequest<{ proposal: ProposalRes }>('post', path, {
       data,
     });
   };
@@ -175,7 +175,7 @@ class ApiClient {
     data: CreateVoteReq,
   ) => {
     const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
-    return this.executeRequest<{ vote: Vote }>('post', path, {
+    return this.executeRequest<{ vote: VoteRes }>('post', path, {
       data,
     });
   };
@@ -187,7 +187,7 @@ class ApiClient {
     data: UpdateVoteReq,
   ) => {
     const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
-    return this.executeRequest<{ vote: Vote }>('put', path, {
+    return this.executeRequest<{ vote: VoteRes }>('put', path, {
       data,
     });
   };
@@ -207,22 +207,22 @@ class ApiClient {
 
   getRole = async (roleId: string) => {
     const path = `/roles/${roleId}`;
-    return this.executeRequest<{ role: Role }>('get', path);
+    return this.executeRequest<{ role: RoleRes }>('get', path);
   };
 
   getRoles = async () => {
     const path = '/roles';
-    return this.executeRequest<{ roles: Role[] }>('get', path);
+    return this.executeRequest<{ roles: RoleRes[] }>('get', path);
   };
 
   getUsersEligibleForRole = async (roleId: string) => {
     const path = `/roles/${roleId}/members/eligible`;
-    return this.executeRequest<{ users: User[] }>('get', path);
+    return this.executeRequest<{ users: UserRes[] }>('get', path);
   };
 
   createRole = async (data: CreateRoleReq) => {
     const path = '/roles';
-    return this.executeRequest<{ role: Role }>('post', path, {
+    return this.executeRequest<{ role: RoleRes }>('post', path, {
       data,
     });
   };
@@ -267,17 +267,17 @@ class ApiClient {
 
   getInvites = async () => {
     const path = '/invites';
-    return this.executeRequest<{ invites: Invite[] }>('get', path);
+    return this.executeRequest<{ invites: InviteRes[] }>('get', path);
   };
 
   getInvite = async (token: string) => {
     const path = `/invites/${token}`;
-    return this.executeRequest<{ invite: Invite }>('get', path);
+    return this.executeRequest<{ invite: InviteRes }>('get', path);
   };
 
   createInvite = async (data: CreateInviteReq) => {
     const path = '/invites';
-    return this.executeRequest<{ invite: Invite }>('post', path, {
+    return this.executeRequest<{ invite: InviteRes }>('post', path, {
       data,
     });
   };

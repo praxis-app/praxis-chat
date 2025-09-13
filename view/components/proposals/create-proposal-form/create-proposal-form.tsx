@@ -2,7 +2,7 @@ import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
-import { FeedItem, FeedQuery } from '@/types/channel.types';
+import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
   CreateProposalActionRoleMemberReq,
   CreateProposalActionRolePermissionReq,
@@ -204,7 +204,7 @@ export const CreateProposalForm = ({
       queryClient.setQueryData<FeedQuery>(
         ['feed', resolvedChannelId],
         (old) => {
-          const newItem: FeedItem = {
+          const newItem: FeedItemRes = {
             ...proposal,
             type: 'proposal',
           };

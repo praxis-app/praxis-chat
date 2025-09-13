@@ -2,7 +2,7 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { VOTE_TYPE } from '@/constants/proposal.constants';
 import { cn } from '@/lib/shared.utils';
-import { ChannelRes, FeedItem } from '@/types/channel.types';
+import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { VoteType } from '@/types/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +46,7 @@ export const ProposalVoteButtons = ({
           cacheKey,
           (
             oldData:
-              | { pages: { feed: FeedItem[] }[]; pageParams: number[] }
+              | { pages: { feed: FeedItemRes[] }[]; pageParams: number[] }
               | undefined,
           ) => {
             if (!oldData) {

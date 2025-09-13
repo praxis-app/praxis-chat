@@ -8,11 +8,11 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
-import { CreateRoleReq, Role } from '../../types/role.types';
+import { CreateRoleReq, RoleRes } from '../../types/role.types';
 import { ColorPicker } from '../shared/color-picker';
 
 interface Props {
-  editRole?: Role;
+  editRole?: RoleRes;
 }
 
 export const RoleForm = ({ editRole }: Props) => {
@@ -34,7 +34,7 @@ export const RoleForm = ({ editRole }: Props) => {
     mutationFn: async (data: CreateRoleReq) => {
       const { role } = await api.createRole(data);
 
-      queryClient.setQueryData<{ roles: Role[] }>(['roles'], (oldData) => {
+      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
         if (!oldData) {
           return { roles: [] };
         }
@@ -55,10 +55,10 @@ export const RoleForm = ({ editRole }: Props) => {
       await api.updateRole(editRole.id, data);
 
       const role = { ...editRole, ...data };
-      queryClient.setQueryData<{ role: Role }>(['role', editRole.id], {
+      queryClient.setQueryData<{ role: RoleRes }>(['role', editRole.id], {
         role,
       });
-      queryClient.setQueryData<{ roles: Role[] }>(['roles'], (oldData) => {
+      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
         if (!oldData) {
           return { roles: [] };
         }

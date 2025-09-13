@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { NavigationPaths } from '../../constants/shared.constants';
-import { Role as RoleType } from '../../types/role.types';
+import { RoleRes as RoleType } from '../../types/role.types';
 
 interface Props {
   role: RoleType;

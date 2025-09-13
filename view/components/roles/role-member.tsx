@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { Role } from '../../types/role.types';
-import { User } from '../../types/user.types';
+import { RoleRes } from '../../types/role.types';
+import { UserRes } from '../../types/user.types';
 import { UserAvatar } from '../users/user-avatar';
 import { Button } from '../ui/button';
 import {
@@ -18,7 +18,7 @@ import { LuX } from 'react-icons/lu';
 
 interface Props {
   roleId: string;
-  roleMember: User;
+  roleMember: UserRes;
 }
 
 export const RoleMember = ({ roleId, roleMember }: Props) => {
@@ -32,13 +32,13 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
       await api.removeRoleMember(roleId, roleMember.id);
       setIsConfirmModalOpen(false);
 
-      queryClient.setQueryData(['role', roleId], (data: { role: Role }) => {
+      queryClient.setQueryData(['role', roleId], (data: { role: RoleRes }) => {
         const filteredMembers = data.role.members.filter(
           (member) => member.id !== roleMember.id,
         );
         return { role: { ...data.role, members: filteredMembers } };
       });
-      queryClient.setQueryData(['roles'], (data: { roles: Role[] }) => ({
+      queryClient.setQueryData(['roles'], (data: { roles: RoleRes[] }) => ({
         roles: data.roles.map((role) => ({
           ...role,
           memberCount: Math.max(0, role.memberCount - 1),
@@ -46,7 +46,7 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
       }));
       queryClient.setQueryData(
         ['role', roleId, 'members', 'eligible'],
-        (data: { users: User[] }) => {
+        (data: { users: UserRes[] }) => {
           return { users: [roleMember, ...data.users] };
         },
       );

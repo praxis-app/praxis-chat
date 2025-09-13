@@ -2,7 +2,7 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
-import { CurrentUser } from '@/types/user.types';
+import { CurrentUserRes } from '@/types/user.types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdAddCircle, MdExpandMore, MdSettings } from 'react-icons/md';
@@ -33,7 +33,7 @@ import {
 import { LeftNavUserMenu } from './left-nav-user-menu';
 
 interface Props {
-  me?: CurrentUser;
+  me?: CurrentUserRes;
 }
 
 export const LeftNavDesktop = ({ me }: Props) => {
