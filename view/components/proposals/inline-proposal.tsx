@@ -9,6 +9,7 @@ import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
+import { ProposalAction } from './proposal-actions/proposal-action';
 
 interface InlineProposalProps {
   proposal: ProposalRes;
@@ -41,56 +42,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
-          {/* TODO: Show remaining proposal action data within accordion */}
-
-          {action?.role &&
-            (action.role.name !== action.role.prevName ||
-              action.role.color !== action.role.prevColor) && (
-              <div className="mb-2.5">
-                <div className="space-y-3">
-                  {action.role.name !== action.role.prevName && (
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium">
-                        {t('proposals.labels.roleNameChange')}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-muted-foreground text-sm">
-                          {action.role.prevName}
-                        </span>
-                        <span className="text-sm">→</span>
-                        <span className="text-sm font-medium">
-                          {action.role.name}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  {action.role.color !== action.role.prevColor && (
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium">
-                        {t('proposals.labels.roleColorChange')}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <div
-                          className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: action.role.prevColor }}
-                        />
-                        <span className="text-muted-foreground text-sm">
-                          {action.role.prevColor}
-                        </span>
-                        <span className="text-sm">→</span>
-                        <div
-                          className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: action.role.color }}
-                        />
-                        <span className="text-sm font-medium">
-                          {action.role.color}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+          {action && <ProposalAction action={action} />}
 
           <CardAction className="flex flex-wrap gap-2">
             <ProposalVoteButtons
