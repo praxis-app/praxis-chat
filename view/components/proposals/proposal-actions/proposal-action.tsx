@@ -6,7 +6,10 @@ interface Props {
 }
 
 export const ProposalAction = ({ action }: Props) => {
-  if (action.actionType === 'change-role' && action.role) {
+  if (
+    action.role &&
+    (action.actionType === 'change-role' || action.actionType === 'create-role')
+  ) {
     return <ProposalActionRole role={action.role} />;
   }
 
