@@ -2,6 +2,7 @@ import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import {
   AbilityAction,
   AbilitySubject,
+  Permission,
   RoleAttributeChangeType,
 } from './role.types';
 import { UserRes } from './user.types';
@@ -78,17 +79,10 @@ export interface ProposalActionRoleRes {
   prevColor?: string;
   roleId: string;
   members?: ProposalActionRoleMemberRes[];
-  permissions?: ProposalActionRolePermissionRes[];
+  permissions?: Permission[];
 }
 
 export interface ProposalActionRoleMemberRes {
   changeType: RoleAttributeChangeType;
   user: UserRes;
-}
-
-export interface ProposalActionRolePermissionRes {
-  id: string;
-  subject: AbilitySubject;
-  action: AbilityAction;
-  changeType: RoleAttributeChangeType;
 }

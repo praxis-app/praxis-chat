@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValues } from '@/lib/role.utils';
 import {
+  ProposalActionRoleMemberRes,
   ProposalActionRoleRes,
   ProposalActionType,
 } from '@/types/proposal-action.types';
@@ -33,6 +34,7 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
     enabled: accordionValue === ACCORDION_ITEM_VALUE,
   });
 
+  // TODO: Ensure actual permission changes are being used
   const permissionChanges = getPermissionValues(
     roleData?.role.permissions || [],
   );
@@ -158,6 +160,41 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
                     </Badge>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {role.members && role.members.length > 0 && (
+            <div className="gap-3 py-5">
+              <div className="text-base">
+                {t('proposals.headers.memberChanges')}
+              </div>
+
+              <div>
+                <div className="space-y-2">
+                  {role.members.map((member: ProposalActionRoleMemberRes) => (
+                    <div
+                      key={member.user.id}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
+                        {member.user.displayName || member.user.name}
+                      </span>
+                      <Badge
+                        variant={
+                          member.changeType === 'add'
+                            ? 'default'
+                            : 'destructive'
+                        }
+                        className="w-16"
+                      >
+                        {member.changeType === 'add'
+                          ? t('actions.add')
+                          : t('actions.remove')}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

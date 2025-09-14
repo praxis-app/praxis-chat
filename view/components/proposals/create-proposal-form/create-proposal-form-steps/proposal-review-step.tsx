@@ -61,6 +61,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
+  // TODO: Refactor to avoid successive calls to find user in both arrays - build once
   const getMemberName = (userId: string) => {
     const user = [
       ...(usersEligibleForRole || []),

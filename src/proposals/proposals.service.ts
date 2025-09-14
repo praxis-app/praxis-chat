@@ -18,6 +18,7 @@ import { ProposalDto } from './dtos/proposal.dto';
 import { ProposalConfig } from './entities/proposal-config.entity';
 import { Proposal } from './entities/proposal.entity';
 import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
+import { buildPermissionRules } from '../roles/roles.service';
 
 const imageRepository = dataSource.getRepository(Image);
 const proposalRepository = dataSource.getRepository(Proposal);
@@ -88,7 +89,6 @@ export const getChannelProposals = async (
           permissions: {
             subject: true,
             action: true,
-            changeType: true,
           },
           members: {
             changeType: true,
@@ -116,25 +116,37 @@ export const getChannelProposals = async (
           where: { proposalId: In(proposalIds), userId: currentUserId },
         })
       : [];
-  const proposalIdToMyVote = new Map(myVotes.map((v) => [v.proposalId, v]));
+  const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
-  return proposals.map((proposal) => ({
-    id: proposal.id,
-    body: proposal.body,
-    stage: proposal.stage,
-    channelId: proposal.channelId,
-    user: proposal.user,
-    images: proposal.images.map((image) => ({
-      id: image.id,
-      isPlaceholder: !image.filename,
-      createdAt: image.createdAt,
-    })),
-    config: proposal.config,
-    action: proposal.action,
-    createdAt: proposal.createdAt,
-    myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
-    myVoteType: proposalIdToMyVote.get(proposal.id)?.voteType,
-  }));
+  return proposals.map((proposal) => {
+    const actionRole = proposal.action.role
+      ? {
+          ...proposal.action.role,
+          permissions: buildPermissionRules([proposal.action.role]),
+        }
+      : undefined;
+
+    return {
+      id: proposal.id,
+      body: proposal.body,
+      stage: proposal.stage,
+      channelId: proposal.channelId,
+      user: proposal.user,
+      images: proposal.images.map((image) => ({
+        id: image.id,
+        isPlaceholder: !image.filename,
+        createdAt: image.createdAt,
+      })),
+      action: {
+        actionType: proposal.action.actionType,
+        role: actionRole,
+      },
+      config: proposal.config,
+      createdAt: proposal.createdAt,
+      myVoteId: myVoteProposalId.get(proposal.id)?.id,
+      myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
+    };
+  });
 };
 
 // TODO: Account for instances with multiple servers / guilds
