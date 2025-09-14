@@ -14,18 +14,20 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+export const ACCORDION_ITEM_VALUE = 'role-change-proposal';
+
 interface Props {
   role: ProposalActionRoleRes;
   actionType: ProposalActionType;
 }
 
 export const ProposalActionRole = ({ role, actionType }: Props) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
   const { data: roleData, isLoading: isRoleLoading } = useQuery({
     queryKey: ['role', role.roleId],
     queryFn: () => api.getRole(role.roleId),
-    enabled: showDetails,
+    enabled: accordionValue === ACCORDION_ITEM_VALUE,
   });
 
   const { t } = useTranslation();
@@ -39,13 +41,13 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
 
   return (
     <Accordion
-      value={showDetails ? 'role-change-proposal' : undefined}
-      onChange={() => setShowDetails(!showDetails)}
       type="single"
+      defaultValue={accordionValue}
+      onValueChange={setAccordionValue}
       className="mb-2.5 rounded-md border px-2.5"
       collapsible
     >
-      <AccordionItem value="role-change-proposal">
+      <AccordionItem value={ACCORDION_ITEM_VALUE}>
         <AccordionTrigger className="cursor-pointer hover:no-underline">
           {getAccordionLabel()}
         </AccordionTrigger>
