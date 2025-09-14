@@ -98,6 +98,7 @@ export const getChannelProposals = async (
               displayName: true,
             },
           },
+          roleId: true,
         },
       },
       createdAt: true,

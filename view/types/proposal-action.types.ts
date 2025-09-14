@@ -76,6 +76,7 @@ export interface ProposalActionRoleRes {
   color?: string;
   prevName?: string;
   prevColor?: string;
+  roleId: string;
   members?: ProposalActionRoleMemberRes[];
   permissions?: ProposalActionRolePermissionRes[];
 }
