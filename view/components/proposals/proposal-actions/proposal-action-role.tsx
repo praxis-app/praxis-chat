@@ -9,9 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValues } from '@/lib/role.utils';
 import {
+  ProposalActionRes,
   ProposalActionRoleMemberRes,
-  ProposalActionRoleRes,
-  ProposalActionType,
 } from '@/types/proposal-action.types';
 import { PermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
@@ -21,28 +20,24 @@ import { useTranslation } from 'react-i18next';
 export const ACCORDION_ITEM_VALUE = 'role-change-proposal';
 
 interface Props {
-  role: ProposalActionRoleRes;
-  actionType: ProposalActionType;
+  action: ProposalActionRes;
 }
 
-export const ProposalActionRole = ({ role, actionType }: Props) => {
+export const ProposalActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
   const { data: roleData, isLoading: isRoleLoading } = useQuery({
-    queryKey: ['role', role.roleId],
-    queryFn: () => api.getRole(role.roleId),
-    enabled: accordionValue === ACCORDION_ITEM_VALUE,
+    queryKey: ['role', action.role?.roleId],
+    queryFn: () => api.getRole(action.role?.roleId!),
+    enabled: accordionValue === ACCORDION_ITEM_VALUE && !!action.role?.roleId,
   });
 
-  // TODO: Ensure actual permission changes are being used
-  const permissionChanges = getPermissionValues(
-    roleData?.role.permissions || [],
-  );
+  const permissionChanges = getPermissionValues(action.role?.permissions || []);
 
   const { t } = useTranslation();
 
   const getAccordionLabel = () => {
-    if (actionType === 'change-role') {
+    if (action.actionType === 'change-role') {
       return t('proposals.labels.roleChangeProposal');
     }
     return t('proposals.labels.roleProposal');
@@ -54,6 +49,10 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
     }
     return t(`permissions.names.${name}`);
   };
+
+  if (!action.role) {
+    return null;
+  }
 
   return (
     <Accordion
@@ -97,22 +96,22 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
             </div>
           )}
 
-          {role.name !== role.prevName && (
+          {action.role.name !== action.role.prevName && (
             <div className="space-y-3">
               <div className="text-sm font-medium">
                 {t('proposals.labels.roleNameChange')}
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-muted-foreground text-sm">
-                  {role.prevName}
+                  {action.role.prevName}
                 </span>
                 <span className="text-sm">→</span>
-                <span className="text-sm font-medium">{role.name}</span>
+                <span className="text-sm font-medium">{action.role.name}</span>
               </div>
             </div>
           )}
 
-          {role.color !== role.prevColor && (
+          {action.role.color !== action.role.prevColor && (
             <div className="space-y-3">
               <div className="text-sm font-medium">
                 {t('proposals.labels.roleColorChange')}
@@ -120,17 +119,17 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
               <div className="flex items-center space-x-2">
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: role.prevColor }}
+                  style={{ backgroundColor: action.role.prevColor }}
                 />
                 <span className="text-muted-foreground text-sm">
-                  {role.prevColor}
+                  {action.role.prevColor}
                 </span>
                 <span className="text-sm">→</span>
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: role.color }}
+                  style={{ backgroundColor: action.role.color }}
                 />
-                <span className="text-sm font-medium">{role.color}</span>
+                <span className="text-sm font-medium">{action.role.color}</span>
               </div>
             </div>
           )}
@@ -164,36 +163,38 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
             </div>
           )}
 
-          {role.members && role.members.length > 0 && (
-            <div className="gap-3 py-5">
-              <div className="text-base">
+          {action.role.members && action.role.members.length > 0 && (
+            <div className="space-y-3">
+              <div className="text-sm font-medium">
                 {t('proposals.headers.memberChanges')}
               </div>
 
               <div>
                 <div className="space-y-2">
-                  {role.members.map((member: ProposalActionRoleMemberRes) => (
-                    <div
-                      key={member.user.id}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
-                        {member.user.displayName || member.user.name}
-                      </span>
-                      <Badge
-                        variant={
-                          member.changeType === 'add'
-                            ? 'default'
-                            : 'destructive'
-                        }
-                        className="w-16"
+                  {action.role.members.map(
+                    (member: ProposalActionRoleMemberRes) => (
+                      <div
+                        key={member.user.id}
+                        className="flex items-center justify-between"
                       >
-                        {member.changeType === 'add'
-                          ? t('actions.add')
-                          : t('actions.remove')}
-                      </Badge>
-                    </div>
-                  ))}
+                        <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
+                          {member.user.displayName || member.user.name}
+                        </span>
+                        <Badge
+                          variant={
+                            member.changeType === 'add'
+                              ? 'default'
+                              : 'destructive'
+                          }
+                          className="w-16"
+                        >
+                          {member.changeType === 'add'
+                            ? t('actions.add')
+                            : t('actions.remove')}
+                        </Badge>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             </div>

@@ -10,9 +10,7 @@ export const ProposalAction = ({ action }: Props) => {
     action.role &&
     (action.actionType === 'change-role' || action.actionType === 'create-role')
   ) {
-    return (
-      <ProposalActionRole role={action.role} actionType={action.actionType} />
-    );
+    return <ProposalActionRole action={action} />;
   }
 
   return null;
