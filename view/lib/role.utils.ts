@@ -60,6 +60,7 @@ export const getPermissionValuesMap = (permissions: Permission[]) =>
     {},
   );
 
+// TODO: Refactor to avoid unneeded code duplication with regard to keys
 export const getPermissionText = (name: PermissionKeys) => {
   const _t: TFunction<Namespace<'translation'>, undefined> = t;
   switch (name) {

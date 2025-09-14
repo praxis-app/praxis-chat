@@ -5,11 +5,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
+import { getPermissionValues } from '@/lib/role.utils';
 import {
   ProposalActionRoleRes,
   ProposalActionType,
 } from '@/types/proposal-action.types';
+import { PermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +33,10 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
     enabled: accordionValue === ACCORDION_ITEM_VALUE,
   });
 
+  const permissionChanges = getPermissionValues(
+    roleData?.role.permissions || [],
+  );
+
   const { t } = useTranslation();
 
   const getAccordionLabel = () => {
@@ -37,6 +44,13 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
       return t('proposals.labels.roleChangeProposal');
     }
     return t('proposals.labels.roleProposal');
+  };
+
+  const getPermissionName = (name: PermissionKeys | '') => {
+    if (!name) {
+      return '';
+    }
+    return t(`permissions.names.${name}`);
   };
 
   return (
@@ -51,7 +65,7 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
         <AccordionTrigger className="cursor-pointer hover:no-underline">
           {getAccordionLabel()}
         </AccordionTrigger>
-        <AccordionContent className="space-y-4">
+        <AccordionContent className="space-y-5">
           {isRoleLoading && (
             <div className="text-muted-foreground p-2 text-sm">
               {t('actions.loading')}
@@ -59,7 +73,7 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
           )}
 
           {roleData && (
-            <div className="space-y-0.5">
+            <div className="space-y-3">
               <div className="text-sm font-medium">
                 {t('proposals.headers.selectedRole')}
               </div>
@@ -81,44 +95,70 @@ export const ProposalActionRole = ({ role, actionType }: Props) => {
             </div>
           )}
 
-          {(role.name !== role.prevName || role.color !== role.prevColor) && (
+          {role.name !== role.prevName && (
             <div className="space-y-3">
-              {role.name !== role.prevName && (
-                <div className="space-y-0.5">
-                  <div className="text-sm font-medium">
-                    {t('proposals.labels.roleNameChange')}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-muted-foreground text-sm">
-                      {role.prevName}
+              <div className="text-sm font-medium">
+                {t('proposals.labels.roleNameChange')}
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-muted-foreground text-sm">
+                  {role.prevName}
+                </span>
+                <span className="text-sm">→</span>
+                <span className="text-sm font-medium">{role.name}</span>
+              </div>
+            </div>
+          )}
+
+          {role.color !== role.prevColor && (
+            <div className="space-y-3">
+              <div className="text-sm font-medium">
+                {t('proposals.labels.roleColorChange')}
+              </div>
+              <div className="flex items-center space-x-2">
+                <div
+                  className="h-4 w-4 rounded-full"
+                  style={{ backgroundColor: role.prevColor }}
+                />
+                <span className="text-muted-foreground text-sm">
+                  {role.prevColor}
+                </span>
+                <span className="text-sm">→</span>
+                <div
+                  className="h-4 w-4 rounded-full"
+                  style={{ backgroundColor: role.color }}
+                />
+                <span className="text-sm font-medium">{role.color}</span>
+              </div>
+            </div>
+          )}
+
+          {permissionChanges.length > 0 && (
+            <div className="space-y-3">
+              <div className="text-sm font-medium">
+                {t('proposals.headers.permissions')}
+              </div>
+
+              <div className="space-y-2">
+                {permissionChanges.map((permission) => (
+                  <div
+                    key={permission.name}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm">
+                      {getPermissionName(permission.name as PermissionKeys)}
                     </span>
-                    <span className="text-sm">→</span>
-                    <span className="text-sm font-medium">{role.name}</span>
+                    <Badge
+                      variant={permission.value ? 'default' : 'destructive'}
+                      className="w-17"
+                    >
+                      {permission.value
+                        ? t('actions.enabled')
+                        : t('actions.disabled')}
+                    </Badge>
                   </div>
-                </div>
-              )}
-              {role.color !== role.prevColor && (
-                <div className="space-y-0.5">
-                  <div className="text-sm font-medium">
-                    {t('proposals.labels.roleColorChange')}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className="h-4 w-4 rounded-full"
-                      style={{ backgroundColor: role.prevColor }}
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      {role.prevColor}
-                    </span>
-                    <span className="text-sm">→</span>
-                    <div
-                      className="h-4 w-4 rounded-full"
-                      style={{ backgroundColor: role.color }}
-                    />
-                    <span className="text-sm font-medium">{role.color}</span>
-                  </div>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
           )}
         </AccordionContent>
