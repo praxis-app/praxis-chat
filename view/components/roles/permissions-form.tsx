@@ -10,6 +10,7 @@ import { PermissionToggle } from './permission-toggle';
 
 // TODO: Add form schema with zod
 
+// TODO: Convert `permissions` to hash map type
 interface FormValues {
   permissions: {
     name: PermissionKeys;
