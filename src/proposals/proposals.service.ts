@@ -44,22 +44,65 @@ export const getChannelProposals = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const proposals = await proposalRepository.find({
-    where: { channelId },
-    relations: [
-      'user',
-      'images',
-      'config',
-      'action',
-      'action.role',
-      'action.role.permissions',
-      'action.role.members',
-      'action.role.members.user',
-    ],
-    order: { createdAt: 'DESC' },
-    skip: offset,
-    take: limit,
-  });
+  const proposals = await proposalRepository
+    .createQueryBuilder('proposal')
+    .select([
+      'proposal.id',
+      'proposal.body',
+      'proposal.stage',
+      'proposal.channelId',
+      'proposal.createdAt',
+      'proposalAction.actionType',
+    ])
+    .addSelect([
+      'proposalConfig.decisionMakingModel',
+      'proposalConfig.ratificationThreshold',
+      'proposalConfig.reservationsLimit',
+      'proposalConfig.standAsidesLimit',
+      'proposalConfig.closingAt',
+    ])
+    .addSelect([
+      'proposalActionRole.id',
+      'proposalActionRole.name',
+      'proposalActionRole.color',
+      'proposalActionRole.prevName',
+      'proposalActionRole.prevColor',
+      'proposalActionRole.roleId',
+    ])
+    .addSelect([
+      'proposalActionPermissions.subject',
+      'proposalActionPermissions.action',
+    ])
+    .addSelect([
+      'proposalActionRoleMembers.id',
+      'proposalActionRoleMembers.changeType',
+      'proposalActionRoleMembersUser.id',
+      'proposalActionRoleMembersUser.name',
+      'proposalActionRoleMembersUser.displayName',
+    ])
+    .addSelect([
+      'proposalUser.id',
+      'proposalUser.name',
+      'proposalUser.displayName',
+    ])
+    .addSelect([
+      'proposalImages.id',
+      'proposalImages.filename',
+      'proposalImages.createdAt',
+    ])
+    .leftJoin('proposal.user', 'proposalUser')
+    .leftJoin('proposal.images', 'proposalImages')
+    .leftJoin('proposal.action', 'proposalAction')
+    .leftJoin('proposal.config', 'proposalConfig')
+    .leftJoin('proposalAction.role', 'proposalActionRole')
+    .leftJoin('proposalActionRole.permissions', 'proposalActionPermissions')
+    .leftJoin('proposalActionRole.members', 'proposalActionRoleMembers')
+    .leftJoin('proposalActionRoleMembers.user', 'proposalActionRoleMembersUser')
+    .where('proposal.channelId = :channelId', { channelId })
+    .orderBy('proposal.createdAt', 'DESC')
+    .skip(offset)
+    .take(limit)
+    .getMany();
 
   // Fetch the current user's votes for these proposals in one query
   const proposalIds = proposals.map((p) => p.id);
@@ -71,7 +114,7 @@ export const getChannelProposals = async (
       : [];
   const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
-  return proposals.map((proposal) => ({
+  const shapedProposals = proposals.map((proposal) => ({
     id: proposal.id,
     body: proposal.body,
     stage: proposal.stage,
@@ -88,6 +131,8 @@ export const getChannelProposals = async (
     myVoteId: myVoteProposalId.get(proposal.id)?.id,
     myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
   }));
+
+  return shapedProposals;
 };
 
 // TODO: Account for instances with multiple servers / guilds
