@@ -49,10 +49,6 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
           .includes(searchTerm.toLowerCase()),
     ) || [];
 
-  const handleNext = () => {
-    onNext();
-  };
-
   if (isLoading) {
     return (
       <div className="text-muted-foreground text-sm">
@@ -122,7 +118,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext}>{t('actions.next')}</Button>
+        <Button onClick={onNext}>{t('actions.next')}</Button>
       </div>
     </div>
   );

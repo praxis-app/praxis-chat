@@ -54,10 +54,6 @@ export const RoleSelectionStep = () => {
     }
   };
 
-  const handleNext = () => {
-    onNext();
-  };
-
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -166,7 +162,7 @@ export const RoleSelectionStep = () => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={handleNext} disabled={!form.watch('selectedRoleId')}>
+        <Button onClick={onNext} disabled={!form.watch('selectedRoleId')}>
           {t('actions.next')}
         </Button>
       </div>
