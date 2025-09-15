@@ -6,8 +6,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValues } from '@/lib/role.utils';
 import {
   ProposalActionRes,
   ProposalActionRoleMemberRes,
@@ -32,7 +32,73 @@ export const ProposalActionRole = ({ action }: Props) => {
     enabled: accordionValue === ACCORDION_ITEM_VALUE && !!action.role?.roleId,
   });
 
-  const permissionChanges = getPermissionValues(action.role?.permissions || []);
+  const permissionChanges = PERMISSION_KEYS.reduce<
+    {
+      name: PermissionKeys;
+      value: boolean;
+    }[]
+  >((result, name) => {
+    if (name === 'manageChannels') {
+      const match = action.role?.permissions?.find(
+        (p) => p.subject === 'Channel' && p.action.includes('manage'),
+      );
+      if (match) {
+        result.push({
+          value: match.changeType === 'add',
+          name,
+        });
+      }
+    }
+    if (name === 'manageSettings') {
+      const match = action.role?.permissions?.find(
+        (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
+      );
+      if (match) {
+        result.push({
+          value: match.changeType === 'add',
+          name,
+        });
+      }
+    }
+    if (name === 'manageRoles') {
+      const match = action.role?.permissions?.find(
+        (p) => p.subject === 'Role' && p.action.includes('manage'),
+      );
+      if (match) {
+        result.push({
+          value: match.changeType === 'add',
+          name,
+        });
+      }
+    }
+    if (name === 'createInvites') {
+      const readMatch = action.role?.permissions?.find(
+        (p) => p.subject === 'Invite' && p.action.includes('read'),
+      );
+      const createMatch = action.role?.permissions?.find(
+        (p) => p.subject === 'Invite' && p.action.includes('create'),
+      );
+      if (readMatch && createMatch) {
+        result.push({
+          value:
+            readMatch.changeType === 'add' && createMatch.changeType === 'add',
+          name,
+        });
+      }
+    }
+    if (name === 'manageInvites') {
+      const match = action.role?.permissions?.find(
+        (p) => p.subject === 'Invite' && p.action.includes('manage'),
+      );
+      if (match) {
+        result.push({
+          value: match.changeType === 'add',
+          name,
+        });
+      }
+    }
+    return result;
+  }, []);
 
   const { t } = useTranslation();
 

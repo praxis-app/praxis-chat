@@ -136,6 +136,10 @@ export const CreateProposalForm = ({
               subject: 'Invite',
               actions: [
                 {
+                  action: 'read',
+                  changeType: permissionValue ? 'add' : 'remove',
+                },
+                {
                   action: 'create',
                   changeType: permissionValue ? 'add' : 'remove',
                 },
