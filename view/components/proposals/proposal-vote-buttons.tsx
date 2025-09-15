@@ -90,13 +90,13 @@ export const ProposalVoteButtons = ({
   });
 
   return (
-    <div className="flex w-full flex-wrap gap-2">
+    <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4">
       {VOTE_TYPE.map((vote) => (
         <Button
           key={vote}
           variant="outline"
           size="sm"
-          className={cn('flex-1', myVoteType === vote && '!bg-primary/15')}
+          className={cn('col-span-1', myVoteType === vote && '!bg-primary/15')}
           onClick={() => castVote(vote)}
           disabled={isPending}
         >

@@ -44,7 +44,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
           {action && <ProposalAction action={action} />}
 
-          <CardAction className="flex flex-wrap gap-2">
+          <CardAction className="flex w-full flex-wrap gap-2">
             <ProposalVoteButtons
               proposalId={id}
               channel={channel}
