@@ -208,7 +208,7 @@ export const createProposal = async (
 
   let proposalActionRole: ProposalActionRole | undefined;
   if (action.role) {
-    await proposalActionsService.createProposalActionRole(
+    proposalActionRole = await proposalActionsService.createProposalActionRole(
       proposal.action.id,
       action.role,
     );

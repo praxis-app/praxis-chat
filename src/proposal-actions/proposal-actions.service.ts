@@ -1,12 +1,15 @@
+import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
+import { User } from '../users/user.entity';
 import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
 import { ProposalActionPermission } from './entities/proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
 
 const rolesRepository = dataSource.getRepository(Role);
+const usersRepository = dataSource.getRepository(User);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
@@ -26,7 +29,7 @@ export const createProposalActionRole = async (
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: roleToUpdateId },
   });
-  const savedRole = await proposalActionRoleRepository.save({
+  let savedRole = await proposalActionRoleRepository.save({
     name: name?.trim(),
     color: color?.trim(),
     roleId: roleToUpdateId,
@@ -46,17 +49,32 @@ export const createProposalActionRole = async (
         });
       }
     }
-    await proposalActionPermissionRepository.save(permissionsToSave);
+    savedRole.permissions =
+      await proposalActionPermissionRepository.save(permissionsToSave);
   }
 
   if (members && members.length > 0) {
-    await proposalActionRoleMemberRepository.save(
+    const actionRoleMembers = await proposalActionRoleMemberRepository.save(
       members.map((member) => ({
         userId: member.userId,
         changeType: member.changeType,
         proposalActionRoleId: savedRole.id,
       })),
     );
+    const users = await usersRepository.find({
+      where: {
+        id: In(actionRoleMembers.map((member) => member.userId)),
+      },
+    });
+    savedRole.members = users.map((user) => {
+      const member = actionRoleMembers.find(
+        (member) => member.userId === user.id,
+      );
+      return {
+        ...member!,
+        user,
+      };
+    });
   }
 
   return savedRole;
