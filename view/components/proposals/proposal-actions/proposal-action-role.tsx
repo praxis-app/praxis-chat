@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import {
@@ -132,7 +133,7 @@ export const ProposalActionRole = ({ action }: Props) => {
         <AccordionTrigger className="cursor-pointer hover:no-underline">
           {getAccordionLabel()}
         </AccordionTrigger>
-        <AccordionContent className="space-y-5">
+        <AccordionContent className="space-y-4">
           {isRoleLoading && (
             <div className="text-muted-foreground p-2 text-sm">
               {t('actions.loading')}
@@ -164,6 +165,7 @@ export const ProposalActionRole = ({ action }: Props) => {
 
           {action.role.name !== action.role.prevName && (
             <div className="space-y-3">
+              <Separator className="mb-4" />
               <div className="text-sm font-medium">
                 {t('proposals.labels.roleNameChange')}
               </div>
@@ -179,6 +181,7 @@ export const ProposalActionRole = ({ action }: Props) => {
 
           {action.role.color !== action.role.prevColor && (
             <div className="space-y-3">
+              <Separator className="mb-4" />
               <div className="text-sm font-medium">
                 {t('proposals.labels.roleColorChange')}
               </div>
@@ -202,10 +205,10 @@ export const ProposalActionRole = ({ action }: Props) => {
 
           {permissionChanges.length > 0 && (
             <div className="space-y-3">
+              <Separator className="mb-4" />
               <div className="text-sm font-medium">
                 {t('proposals.headers.permissions')}
               </div>
-
               <div className="space-y-2">
                 {permissionChanges.map((permission) => (
                   <div
@@ -231,10 +234,10 @@ export const ProposalActionRole = ({ action }: Props) => {
 
           {action.role.members && action.role.members.length > 0 && (
             <div className="space-y-3">
+              <Separator className="mb-4" />
               <div className="text-sm font-medium">
                 {t('proposals.headers.memberChanges')}
               </div>
-
               <div>
                 <div className="space-y-2">
                   {action.role.members.map(
