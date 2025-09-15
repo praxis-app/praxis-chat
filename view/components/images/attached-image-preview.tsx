@@ -3,7 +3,7 @@ import { cn } from '@/lib/shared.utils';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdRemoveCircle } from 'react-icons/md';
-import { Image } from '../../types/image.types';
+import { ImageRes } from '../../types/image.types';
 import { Button } from '../ui/button';
 
 const RemoveButton = ({ onClick }: { onClick(): void }) => {
@@ -29,7 +29,7 @@ const SavedImagePreview = ({
 }: {
   className?: string;
   handleDelete?(id: string): void;
-  savedImage: Image;
+  savedImage: ImageRes;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const src = useImageSrc({
@@ -49,7 +49,7 @@ interface Props {
   handleDelete?: (id: string) => void;
   handleRemove?: (imageName: string) => void;
   imageContainerClassName?: string;
-  savedImages?: Image[];
+  savedImages?: ImageRes[];
   selectedImages: File[];
   className?: string;
 }

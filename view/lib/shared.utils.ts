@@ -14,11 +14,10 @@ export interface Cancelable {
  *
  * Ref: https://github.com/mui/material-ui/blob/master/packages/mui-utils/src/debounce/debounce.ts
  */
-export const debounce = <
-  TThis,
-  TArgs extends unknown[],
-  TReturn,
->(func: (this: TThis, ...args: TArgs) => TReturn, wait = 166) => {
+export const debounce = <TThis, TArgs extends unknown[], TReturn>(
+  func: (this: TThis, ...args: TArgs) => TReturn,
+  wait = 166,
+) => {
   let timeout: ReturnType<typeof setTimeout>;
   function debounced(this: TThis, ...args: TArgs) {
     const later = () => {
@@ -35,11 +34,10 @@ export const debounce = <
   return debounced as ((this: TThis, ...args: TArgs) => TReturn) & Cancelable;
 };
 
-export const throttle = <
-  TThis,
-  TArgs extends unknown[],
-  TReturn,
->(func: (this: TThis, ...args: TArgs) => TReturn, delay: number) => {
+export const throttle = <TThis, TArgs extends unknown[], TReturn>(
+  func: (this: TThis, ...args: TArgs) => TReturn,
+  delay: number,
+) => {
   let timeoutId: NodeJS.Timeout | null = null;
   let lastExecTime = 0;
 

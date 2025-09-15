@@ -1,7 +1,7 @@
-import { AddRoleMemberOption } from '@/components/roles/add-role-member-option';
 import { PermissionsForm } from '@/components/roles/permissions-form';
 import { RoleForm } from '@/components/roles/role-form';
 import { RoleMember } from '@/components/roles/role-member';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
@@ -32,7 +32,7 @@ import {
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
-import { Role } from '../../types/role.types';
+import { RoleRes } from '../../types/role.types';
 
 enum EditRoleTabName {
   Permissions = 'permissions',
@@ -110,7 +110,7 @@ export const EditRolePage = () => {
       }
       await api.deleteRole(roleId);
 
-      queryClient.setQueryData<{ roles: Role[] }>(['roles'], (oldData) => {
+      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
         if (!oldData) {
           return { roles: [] };
         }
@@ -269,7 +269,7 @@ export const EditRolePage = () => {
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
                 </DialogHeader>
                 {eligibleUsersData?.users.map((user) => (
-                  <AddRoleMemberOption
+                  <RoleMemberOption
                     key={user.id}
                     selectedUserIds={selectedUserIds}
                     setSelectedUserIds={setSelectedUserIds}

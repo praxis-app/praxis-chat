@@ -1,5 +1,6 @@
 import { timeAgo } from '@/lib/time.utils';
-import { Proposal } from '@/types/proposal.types';
+import { ChannelRes } from '@/types/channel.types';
+import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { FormattedText } from '../shared/formatted-text';
@@ -8,24 +9,20 @@ import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
-import { Channel } from '@/types/channel.types';
+import { ProposalAction } from './proposal-actions/proposal-action';
 
 interface InlineProposalProps {
-  proposal: Proposal;
-  channel: Channel;
+  proposal: ProposalRes;
+  channel: ChannelRes;
 }
 
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVoteId, myVoteType } = proposal;
+  const { body, user, createdAt, id, myVoteId, myVoteType, action } = proposal;
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
   const formattedDate = timeAgo(createdAt ?? '');
-
-  if (!body) {
-    return null;
-  }
 
   return (
     <div className="flex gap-4 pt-4">
@@ -43,9 +40,11 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
             {t('proposals.labels.consensusProposal')}
           </div>
 
-          <FormattedText text={body} className="pt-1 pb-2" />
+          {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
-          <CardAction className="flex flex-wrap gap-2">
+          {action && <ProposalAction action={action} />}
+
+          <CardAction className="flex w-full flex-wrap gap-2">
             <ProposalVoteButtons
               proposalId={id}
               channel={channel}

@@ -1,14 +1,14 @@
-import { Image } from './image.types';
+import { ImageRes } from './image.types';
 
-export interface Message {
+export interface MessageRes {
   id: string;
   body: string;
-  images?: Image[];
+  images?: ImageRes[];
   user: { id: string; name: string };
   createdAt: string;
 }
 
 export interface MessagesQuery {
-  pages: { messages: Message[] }[];
+  pages: { messages: MessageRes[] }[];
   pageParams: number[];
 }

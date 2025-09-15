@@ -4,6 +4,7 @@ import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
+import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
 import * as proposalActionsService from '../proposal-actions/proposal-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
@@ -43,32 +44,65 @@ export const getChannelProposals = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const proposals = await proposalRepository.find({
-    where: { channelId },
-    relations: ['user', 'images', 'action'],
-    select: {
-      id: true,
-      body: true,
-      stage: true,
-      channelId: true,
-      user: {
-        id: true,
-        name: true,
-      },
-      images: {
-        id: true,
-        filename: true,
-        createdAt: true,
-      },
-      action: {
-        actionType: true,
-      },
-      createdAt: true,
-    },
-    order: { createdAt: 'DESC' },
-    skip: offset,
-    take: limit,
-  });
+  const proposals = await proposalRepository
+    .createQueryBuilder('proposal')
+    .select([
+      'proposal.id',
+      'proposal.body',
+      'proposal.stage',
+      'proposal.channelId',
+      'proposal.createdAt',
+      'proposalAction.actionType',
+    ])
+    .addSelect([
+      'proposalConfig.decisionMakingModel',
+      'proposalConfig.ratificationThreshold',
+      'proposalConfig.reservationsLimit',
+      'proposalConfig.standAsidesLimit',
+      'proposalConfig.closingAt',
+    ])
+    .addSelect([
+      'proposalActionRole.id',
+      'proposalActionRole.name',
+      'proposalActionRole.color',
+      'proposalActionRole.prevName',
+      'proposalActionRole.prevColor',
+      'proposalActionRole.roleId',
+    ])
+    .addSelect([
+      'proposalActionPermissions.subject',
+      'proposalActionPermissions.action',
+    ])
+    .addSelect([
+      'proposalActionRoleMembers.id',
+      'proposalActionRoleMembers.changeType',
+      'proposalActionRoleMembersUser.id',
+      'proposalActionRoleMembersUser.name',
+      'proposalActionRoleMembersUser.displayName',
+    ])
+    .addSelect([
+      'proposalUser.id',
+      'proposalUser.name',
+      'proposalUser.displayName',
+    ])
+    .addSelect([
+      'proposalImages.id',
+      'proposalImages.filename',
+      'proposalImages.createdAt',
+    ])
+    .leftJoin('proposal.user', 'proposalUser')
+    .leftJoin('proposal.images', 'proposalImages')
+    .leftJoin('proposal.action', 'proposalAction')
+    .leftJoin('proposal.config', 'proposalConfig')
+    .leftJoin('proposalAction.role', 'proposalActionRole')
+    .leftJoin('proposalActionRole.permissions', 'proposalActionPermissions')
+    .leftJoin('proposalActionRole.members', 'proposalActionRoleMembers')
+    .leftJoin('proposalActionRoleMembers.user', 'proposalActionRoleMembersUser')
+    .where('proposal.channelId = :channelId', { channelId })
+    .orderBy('proposal.createdAt', 'DESC')
+    .skip(offset)
+    .take(limit)
+    .getMany();
 
   // Fetch the current user's votes for these proposals in one query
   const proposalIds = proposals.map((p) => p.id);
@@ -78,9 +112,9 @@ export const getChannelProposals = async (
           where: { proposalId: In(proposalIds), userId: currentUserId },
         })
       : [];
-  const proposalIdToMyVote = new Map(myVotes.map((v) => [v.proposalId, v]));
+  const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
-  return proposals.map((proposal) => ({
+  const shapedProposals = proposals.map((proposal) => ({
     id: proposal.id,
     body: proposal.body,
     stage: proposal.stage,
@@ -91,11 +125,14 @@ export const getChannelProposals = async (
       isPlaceholder: !image.filename,
       createdAt: image.createdAt,
     })),
-    action: proposal.action?.actionType,
+    action: proposal.action,
+    config: proposal.config,
     createdAt: proposal.createdAt,
-    myVoteId: proposalIdToMyVote.get(proposal.id)?.id,
-    myVoteType: proposalIdToMyVote.get(proposal.id)?.voteType,
+    myVoteId: myVoteProposalId.get(proposal.id)?.id,
+    myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
   }));
+
+  return shapedProposals;
 };
 
 // TODO: Account for instances with multiple servers / guilds
@@ -214,8 +251,9 @@ export const createProposal = async (
     userId,
   });
 
+  let proposalActionRole: ProposalActionRole | undefined;
   if (action.role) {
-    await proposalActionsService.createProposalActionRole(
+    proposalActionRole = await proposalActionsService.createProposalActionRole(
       proposal.action.id,
       action.role,
     );
@@ -227,13 +265,17 @@ export const createProposal = async (
     body: proposal.body,
     stage: proposal.stage,
     channelId: proposal.channelId,
-    images: [],
-    action: proposal.action?.actionType,
-    createdAt: proposal.createdAt,
+    action: {
+      actionType: proposal.action?.actionType,
+      role: proposalActionRole,
+    },
     user: await userRepository.findOne({
       where: { id: userId },
       select: { id: true, name: true },
     }),
+    // TODO: Handle images
+    images: [],
+    createdAt: proposal.createdAt,
   };
 
   // Publish proposal to all other channel members for realtime feed updates

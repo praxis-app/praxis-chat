@@ -32,7 +32,7 @@ export class Permission {
   })
   role: Role;
 
-  @Column()
+  @Column({ type: 'uuid' })
   roleId: string;
 
   @CreateDateColumn()

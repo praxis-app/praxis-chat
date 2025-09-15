@@ -3,10 +3,10 @@ import { AxiosError } from 'axios';
 import { api } from '../client/api-client';
 import { LocalStorageKeys } from '../constants/shared.constants';
 import { useAppStore } from '../store/app.store';
-import { CurrentUser } from '../types/user.types';
+import { CurrentUserRes } from '../types/user.types';
 
 export const useMeQuery = (
-  options?: Omit<UseQueryOptions<{ user: CurrentUser }>, 'queryKey'>,
+  options?: Omit<UseQueryOptions<{ user: CurrentUserRes }>, 'queryKey'>,
 ) => {
   const { setIsAppLoading, setIsLoggedIn } = useAppStore();
 

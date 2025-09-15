@@ -11,7 +11,7 @@
     "typeorm:gen": "npm run typeorm migration:generate -- -p -d ./src/database/data-source.ts",
     "typeorm:run": "npm run typeorm migration:run -- -d ./src/database/data-source.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "check": "npm run types && npm run lint && npm audit && npm run test && npm run test:client",
+    "check": "npm run types && npm run lint && npm run test && npm run test:client && npm audit",
     "types": "tsc -b",
     "test": "vitest run --config vitest.src.config.mts",
     "test:client": "vitest run --config vite.config.mts",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@casl/ability": "^6.7.3",
     "@hookform/resolvers": "^5.1.1",
+    "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.7",
     "@radix-ui/react-checkbox": "^1.2.2",
     "@radix-ui/react-context-menu": "^2.2.15",

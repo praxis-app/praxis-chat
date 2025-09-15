@@ -2,6 +2,7 @@ import { RawRuleOf } from '@casl/ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
+import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../users/user.entity';
 import { AbilityAction, AbilitySubject, AppAbility } from './app-ability';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
@@ -45,25 +46,32 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  return { ...role, permissions, members };
+  return { ...role, permissions, members, memberCount: members.length };
 };
 
 export const getRoles = async () => {
-  const roles = await dataSource
-    .createQueryBuilder()
-    .select('role.id', 'id')
-    .addSelect('role.name', 'name')
-    .addSelect('role.color', 'color')
-    .addSelect('COUNT(member.id)', 'memberCount')
-    .from(Role, 'role')
-    .leftJoin('role.members', 'member')
-    .groupBy('role.id')
-    .orderBy('role.updatedAt', 'DESC')
-    .getRawMany<Role & { memberCount: string }>();
+  const roles = await roleRepository.find({
+    relations: ['members', 'permissions'],
+    select: {
+      id: true,
+      name: true,
+      color: true,
+      members: {
+        id: true,
+        name: true,
+        displayName: true,
+      },
+      permissions: {
+        subject: true,
+        action: true,
+      },
+    },
+  });
 
   return roles.map((role) => ({
     ...role,
-    memberCount: parseInt(role.memberCount),
+    permissions: buildPermissionRules([role]),
+    memberCount: role.members.length,
   }));
 };
 
@@ -229,9 +237,11 @@ export const deleteRole = async (id: string) => {
  * Example output:
  * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
  */
-const buildPermissionRules = (roles: Role[]): RawRuleOf<AppAbility>[] => {
+export const buildPermissionRules = (
+  roles: Role[] | ProposalActionRole[],
+): RawRuleOf<AppAbility>[] => {
   const permissionMap = roles.reduce<PermissionMap>((result, role) => {
-    for (const permission of role.permissions) {
+    for (const permission of role.permissions || []) {
       if (!result[permission.subject]) {
         result[permission.subject] = [];
       }

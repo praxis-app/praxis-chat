@@ -1,37 +1,85 @@
+import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
+import { User } from '../users/user.entity';
 import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
+import { ProposalActionPermission } from './entities/proposal-action-permission.entity';
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
+
+const rolesRepository = dataSource.getRepository(Role);
+const usersRepository = dataSource.getRepository(User);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
 
-const rolesRepository = dataSource.getRepository(Role);
+const proposalActionRoleMemberRepository = dataSource.getRepository(
+  ProposalActionRoleMember,
+);
+
+const proposalActionPermissionRepository = dataSource.getRepository(
+  ProposalActionPermission,
+);
 
 export const createProposalActionRole = async (
   proposalActionId: string,
-  { roleToUpdateId, members, ...role }: ProposalActionRoleDto,
+  { roleToUpdateId, members, permissions, name, color }: ProposalActionRoleDto,
 ) => {
-  const savedRole = await proposalActionRoleRepository.save({
-    ...role,
-    permissions: role.permissions,
+  const roleToUpdate = await rolesRepository.findOneOrFail({
+    where: { id: roleToUpdateId },
+  });
+  let savedRole = await proposalActionRoleRepository.save({
+    name: name?.trim(),
+    color: color?.trim(),
     roleId: roleToUpdateId,
+    prevName: roleToUpdate.name,
+    prevColor: roleToUpdate.color,
     proposalActionId,
   });
 
+  if (permissions && permissions.length > 0) {
+    const permissionsToSave: Partial<ProposalActionPermission>[] = [];
+    for (const permission of permissions) {
+      for (const action of permission.actions) {
+        permissionsToSave.push({
+          ...action,
+          subject: permission.subject,
+          proposalActionRoleId: savedRole.id,
+        });
+      }
+    }
+    savedRole.permissions =
+      await proposalActionPermissionRepository.save(permissionsToSave);
+  }
+
   if (members && members.length > 0) {
-    const proposalActionRoleMemberRepository = dataSource.getRepository(
-      ProposalActionRoleMember,
-    );
-    await proposalActionRoleMemberRepository.save(
+    const actionRoleMembers = await proposalActionRoleMemberRepository.save(
       members.map((member) => ({
         userId: member.userId,
         changeType: member.changeType,
         proposalActionRoleId: savedRole.id,
       })),
     );
+    const users = await usersRepository.find({
+      where: {
+        id: In(actionRoleMembers.map((member) => member.userId)),
+      },
+      select: {
+        id: true,
+        name: true,
+        displayName: true,
+      },
+    });
+    savedRole.members = users.map((user) => {
+      const member = actionRoleMembers.find(
+        (member) => member.userId === user.id,
+      );
+      return {
+        ...member!,
+        user,
+      };
+    });
   }
 
   return savedRole;
@@ -76,8 +124,8 @@ export const implementChangeRole = async (proposalActionId: string) => {
   // Update proposal action role old name and color
   if (actionRole.name || actionRole.color) {
     await proposalActionRoleRepository.update(actionRole.id, {
-      oldName: actionRole.name ? roleToUpdate.name : undefined,
-      oldColor: actionRole.color ? roleToUpdate.color : undefined,
+      prevName: actionRole.name ? roleToUpdate.name : undefined,
+      prevColor: actionRole.color ? roleToUpdate.color : undefined,
     });
   }
 };

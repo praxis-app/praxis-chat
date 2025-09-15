@@ -1,16 +1,15 @@
 import { ForcedSubject, MongoAbility } from '@casl/ability';
-import { PERMISSION_KEYS } from '../constants/role.constants';
-import { User } from './user.types';
+import {
+  ABILITY_ACTIONS,
+  ABILITY_SUBJECTS,
+  PERMISSION_KEYS,
+  ROLE_ATTRIBUTE_CHANGE_TYPE,
+} from '../constants/role.constants';
+import { UserRes } from './user.types';
 
-export type AbilityAction = 'delete' | 'create' | 'read' | 'update' | 'manage';
+export type AbilityAction = (typeof ABILITY_ACTIONS)[number];
 
-export type AbilitySubject =
-  | 'ServerConfig'
-  | 'Channel'
-  | 'Invite'
-  | 'Message'
-  | 'Role'
-  | 'all';
+export type AbilitySubject = (typeof ABILITY_SUBJECTS)[number];
 
 export type Abilities = [
   AbilityAction,
@@ -19,19 +18,19 @@ export type Abilities = [
 
 export type AppAbility = MongoAbility<Abilities>;
 
-export interface Role {
-  id: string;
-  name: string;
-  color: string;
-  permissions: Permission[];
-  memberCount: number;
-  members: User[];
-}
+export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
+
+export type RoleAttributeChangeType =
+  (typeof ROLE_ATTRIBUTE_CHANGE_TYPE)[number];
 
 export interface Permission {
   subject: AbilitySubject;
   action: AbilityAction[];
 }
+
+// -------------------------------------------------------------------------
+// Requests
+// -------------------------------------------------------------------------
 
 export interface CreateRoleReq {
   name: string;
@@ -42,4 +41,15 @@ export interface UpdateRolePermissionsReq {
   permissions: Permission[];
 }
 
-export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
+// -------------------------------------------------------------------------
+// Responses
+// -------------------------------------------------------------------------
+
+export interface RoleRes {
+  id: string;
+  name: string;
+  color: string;
+  permissions: Permission[];
+  memberCount: number;
+  members: UserRes[];
+}

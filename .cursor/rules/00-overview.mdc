@@ -12,3 +12,4 @@ alwaysApply: true
 - Keep code readable and high-verbosity; avoid clever one-liners.
 - For UI strings, always use react-i18next; do not hardcode user-visible text.
 - Use `npm run check` to verify large, multi-file changes.
+- Do not add ESLint ignore comments.

@@ -4,9 +4,9 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
-import { Channel, FeedItem, FeedQuery } from '@/types/channel.types';
-import { Message } from '@/types/message.types';
-import { Proposal } from '@/types/proposal.types';
+import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
+import { MessageRes } from '@/types/message.types';
+import { ProposalRes } from '@/types/proposal.types';
 import { PubSubMessage } from '@/types/shared.types';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -23,12 +23,12 @@ enum MessageType {
 
 interface NewMessagePayload {
   type: MessageType.MESSAGE;
-  message: Message;
+  message: MessageRes;
 }
 
 interface NewProposalPayload {
   type: MessageType.PROPOSAL;
-  proposal: Proposal;
+  proposal: ProposalRes;
 }
 
 interface ImageMessagePayload {
@@ -39,7 +39,7 @@ interface ImageMessagePayload {
 }
 
 interface Props {
-  channel?: Channel;
+  channel?: ChannelRes;
   isGeneralChannel?: boolean;
 }
 
@@ -86,7 +86,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
 
       // Update cache with new message, images are placeholders
       if (body.type === MessageType.MESSAGE) {
-        const newFeedItem: FeedItem = {
+        const newFeedItem: FeedItemRes = {
           ...body.message,
           type: 'message',
         };
@@ -134,7 +134,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
                     ? { ...image, isPlaceholder: false }
                     : image,
                 );
-                return { ...item, images } as FeedItem;
+                return { ...item, images } as FeedItemRes;
               });
               return { feed };
             });
@@ -158,8 +158,8 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         return;
       }
       if (body.type === MessageType.PROPOSAL) {
-        const newFeedItem: FeedItem = {
-          ...(body.proposal as FeedItem & { type: 'proposal' }),
+        const newFeedItem: FeedItemRes = {
+          ...(body.proposal as FeedItemRes & { type: 'proposal' }),
           type: 'proposal',
         };
         queryClient.setQueryData<FeedQuery>(

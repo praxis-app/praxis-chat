@@ -9,9 +9,15 @@
     "delete": "Delete",
     "edit": "Edit",
     "remove": "Remove",
+    "add": "Add",
     "save": "Save",
     "submit": "Submit",
     "goToHome": "Back to home",
+    "next": "Next",
+    "previous": "Previous",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "loading": "Loading...",
     "refresh": "Refresh"
   },
 
@@ -37,10 +43,10 @@
 
   "auth": {
     "labels": {
-      "email": "Email Address",
+      "email": "Email address",
       "password": "Password",
       "username": "Username",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm password"
     },
     "placeholders": {
       "email": "name@example.com",
@@ -66,7 +72,7 @@
       "logOut": "Log out",
       "signUp": "Sign up",
       "signIn": "Sign in",
-      "createAccount": "Create Account"
+      "createAccount": "Create account"
     },
     "descriptions": {
       "confirmLogOut": "Use this dialog to log out of your account."
@@ -95,36 +101,68 @@
 
   "proposals": {
     "labels": {
-      "body": "Proposal",
       "actionType": "Action",
       "active": "Active",
+      "body": "Proposal",
       "closed": "Closed",
-      "consensusProposal": "Consensus Proposal"
+      "consensusProposal": "Consensus Proposal",
+      "roleColorChange": "Role color",
+      "roleNameChange": "Role name",
+      "roleSelection": "Role selection",
+      "roleChangeProposal": "Role change proposal",
+      "roleProposal": "Role proposal",
+      "proposedSettings": "Settings proposal"
     },
     "headers": {
-      "create": "Create a New Proposal"
+      "availableRoles": "Available Roles",
+      "basicInfo": "Basic Information",
+      "create": "Create a New Proposal",
+      "currentRoleInfo": "Current Role Information",
+      "memberChanges": "Member Changes",
+      "permissions": "Permissions",
+      "review": "Review Proposal",
+      "roleAttributes": "Role Attributes",
+      "roleAttributesChanges": "Role Attributes Changes",
+      "roleAttributesTitle": "Role Name and Color",
+      "roleMembers": "Role Members",
+      "rolesPermissions": "Roles and Permissions",
+      "searchMembers": "Search Members",
+      "selectRole": "Select Role",
+      "selectedRole": "Selected Role",
+      "selectedRoleInfo": "Selected Role Information"
     },
     "placeholders": {
       "action": "Select an action type",
-      "body": "Enter your proposal details..."
+      "body": "Enter your proposal details...",
+      "searchPlaceholder": "Search users...",
+      "selectRolePlaceholder": "Select a role..."
     },
     "actions": {
       "abstain": "Abstain",
       "agree": "Agree",
       "block": "Block",
-      "create": "Create Proposal",
+      "create": "Create proposal",
       "disagree": "Disagree"
     },
     "descriptions": {
-      "create": "Submit a proposal for this room to discuss and vote on.",
-      "body": "Enter your proposal"
+      "basicInfoDescription": "Provide the basic details for your proposal",
+      "body": "Enter your proposal",
+      "create": "Submit a proposal to discuss and vote on.",
+      "reviewDescription": "Review your proposal before submitting",
+      "roleAttributesDescription": "Modify the role's name and color",
+      "roleMembersDescription": "Add or remove members from the role",
+      "rolesPermissionsDescription": "Configure the roles and permissions changes",
+      "selectRoleDescription": "Choose the role you want to modify"
     },
     "actionTypes": {
       "change-role": "Change role",
       "change-settings": "Change settings",
       "create-role": "Create role",
       "plan-event": "Plan event",
-      "test": "Test"
+      "test": "QA test"
+    },
+    "prompts": {
+      "noUsersFound": "No users found"
     },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
@@ -163,8 +201,8 @@
 
   "channels": {
     "actions": {
-      "create": "Create Channel",
-      "delete": "Delete Channel"
+      "create": "Create channel",
+      "delete": "Delete channel"
     },
     "form": {
       "name": "Name",
@@ -175,7 +213,8 @@
       "channelSettingsDescription": "Edit the settings for this channel."
     },
     "labels": {
-      "channel": "channel"
+      "channel": "Channel",
+      "channelSettings": "Channel settings"
     },
     "prompts": {
       "createChannel": "Create a new channel",
@@ -206,7 +245,7 @@
     "actions": {
       "add": "Add",
       "addMembers": "Add members",
-      "delete": "Delete Role",
+      "delete": "Delete role",
       "manageRoles": "Manage roles",
       "viewRoles": "View roles"
     },
@@ -230,7 +269,7 @@
     },
     "labels": {
       "members": "Members",
-      "roleMembers": "Role Members",
+      "roleMembers": "Role members",
       "membersCount_one": "{{count}} Member",
       "membersCount_other": "{{count}} Members",
       "serverRoles": "Server roles",
@@ -246,19 +285,19 @@
 
   "permissions": {
     "names": {
-      "createEvents": "Create Events",
-      "createInvites": "Create Invites",
-      "manageChannels": "Manage Channels",
-      "manageEvents": "Manage Events",
-      "manageInvites": "Manage Invites",
-      "managePosts": "Manage Posts",
-      "manageQuestionnaires": "Manage Questionnaires",
-      "manageQuestions": "Manage Questions",
-      "manageRoles": "Manage Roles",
-      "manageRules": "Manage Rules",
-      "manageSettings": "Manage Settings",
-      "removeMembers": "Remove Members",
-      "removeProposals": "Remove Proposals"
+      "createEvents": "Create events",
+      "createInvites": "Create invites",
+      "manageChannels": "Manage channels",
+      "manageEvents": "Manage events",
+      "manageInvites": "Manage invites",
+      "managePosts": "Manage posts",
+      "manageQuestionnaires": "Manage questionnaires",
+      "manageQuestions": "Manage questions",
+      "manageRoles": "Manage roles",
+      "manageRules": "Manage rules",
+      "manageSettings": "Manage settings",
+      "removeMembers": "Remove members",
+      "removeProposals": "Remove proposals"
     },
     "descriptions": {
       "createEvents": "Allows members to create and plan events.",
@@ -272,7 +311,7 @@
       "manageQuestions": "Allows members to create, edit, or delete membership questions.",
       "manageRoles": "Allows members to create new roles as well as edit or delete other roles.",
       "manageRules": "Allows members to create, edit, or delete rules for the server.",
-      "manageServerSettings": "Allows members to make changes to the server's settings.",
+      "manageSettings": "Allows members to make changes to the server's settings.",
       "removeMembers": "Allows members to remove other members from the server.",
       "removeProposals": "Allows members to remove proposals posted by other members."
     },
@@ -284,17 +323,17 @@
       "permissions": "Permissions"
     },
     "headers": {
-      "deniedPermissions": "Denied permissions",
-      "grantedPermissions": "Granted permissions",
-      "membersWithPermission": "Members with permission",
+      "deniedPermissions": "Denied Permissions",
+      "grantedPermissions": "Granted Permissions",
+      "membersWithPermission": "Members with Permission",
       "permission": "Permission",
-      "rolesWithPermission": "Roles with permission"
+      "rolesWithPermission": "Roles with Permission"
     }
   },
 
   "invites": {
     "actions": {
-      "generateLink": "Generate a New Link"
+      "generateLink": "Generate a new link"
     },
     "prompts": {
       "alreadySignedUp": "You've already signed up.",
@@ -324,10 +363,10 @@
       }
     },
     "columnNames": {
-      "code": "CODE",
-      "expires": "EXPIRES",
-      "inviter": "INVITER",
-      "uses": "USES"
+      "code": "Code",
+      "expires": "Expires",
+      "inviter": "Inviter",
+      "uses": "Uses"
     },
     "labels": {
       "usesWithColon": "Uses:"
@@ -345,6 +384,9 @@
   "navigation": {
     "titles": {
       "navDrawer": "Navigation drawer"
+    },
+    "headers": {
+      "serverSettings": "Server Settings"
     },
     "labels": {
       "serverSettings": "Server settings",

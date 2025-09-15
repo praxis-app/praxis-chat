@@ -1,4 +1,4 @@
-export interface Image {
+export interface ImageRes {
   id: string;
   filename: string;
   isPlaceholder?: boolean;

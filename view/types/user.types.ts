@@ -1,13 +1,13 @@
 import { Permission } from './role.types';
 
-export interface CurrentUser {
+export interface CurrentUserRes {
   id: string;
   name: string;
   anonymous: boolean;
   permissions: Permission[];
 }
 
-export interface User {
+export interface UserRes {
   id: string;
   name: string;
   displayName?: string;

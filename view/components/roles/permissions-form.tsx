@@ -1,12 +1,16 @@
+import { getPermissionValues } from '@/lib/role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { PERMISSION_KEYS } from '../../constants/role.constants';
-import { Permission, PermissionKeys, Role } from '../../types/role.types';
+import { Permission, PermissionKeys, RoleRes } from '../../types/role.types';
 import { Button } from '../ui/button';
 import { PermissionToggle } from './permission-toggle';
 
+// TODO: Add form schema with zod
+
+// TODO: Convert `permissions` to hash map type
 interface FormValues {
   permissions: {
     name: PermissionKeys;
@@ -15,56 +19,8 @@ interface FormValues {
 }
 
 interface Props {
-  role: Role;
+  role: RoleRes;
 }
-
-const getPermissionValues = (permissions: Permission[]) =>
-  PERMISSION_KEYS.map((name) => {
-    if (name === 'manageChannels') {
-      return {
-        value: permissions.some(
-          (p) => p.subject === 'Channel' && p.action.includes('manage'),
-        ),
-        name,
-      };
-    }
-    if (name === 'manageSettings') {
-      return {
-        value: permissions.some(
-          (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
-        ),
-        name,
-      };
-    }
-    if (name === 'manageRoles') {
-      return {
-        value: permissions.some(
-          (p) => p.subject === 'Role' && p.action.includes('manage'),
-        ),
-        name,
-      };
-    }
-    if (name === 'createInvites') {
-      return {
-        value: permissions.some(
-          (p) => p.subject === 'Invite' && p.action.includes('create'),
-        ),
-        name,
-      };
-    }
-    if (name === 'manageInvites') {
-      return {
-        value: permissions.some(
-          (p) => p.subject === 'Invite' && p.action.includes('manage'),
-        ),
-        name,
-      };
-    }
-    return {
-      value: false,
-      name,
-    };
-  });
 
 export const PermissionsForm = ({ role }: Props) => {
   const { control, handleSubmit, formState, reset } = useForm({
@@ -104,12 +60,15 @@ export const PermissionsForm = ({ role }: Props) => {
         permissions,
       });
 
-      queryClient.setQueryData<{ role: Role }>(['role', role.id], (oldData) => {
-        if (!oldData) {
-          return { role };
-        }
-        return { role: { ...oldData.role, permissions } };
-      });
+      queryClient.setQueryData<{ role: RoleRes }>(
+        ['role', role.id],
+        (oldData) => {
+          if (!oldData) {
+            return { role };
+          }
+          return { role: { ...oldData.role, permissions } };
+        },
+      );
       reset({ permissions: getPermissionValues(permissions) });
     },
   });

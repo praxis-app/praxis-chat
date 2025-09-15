@@ -44,7 +44,7 @@ export class Vote {
   @ManyToOne(() => User, (user) => user.votes, { onDelete: 'CASCADE' })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
   // TODO: Uncomment when Notification is defined

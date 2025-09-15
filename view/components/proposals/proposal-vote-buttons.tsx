@@ -2,7 +2,7 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { VOTE_TYPE } from '@/constants/proposal.constants';
 import { cn } from '@/lib/shared.utils';
-import { Channel, FeedItem } from '@/types/channel.types';
+import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { VoteType } from '@/types/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { Button } from '../ui/button';
 
 interface Props {
-  channel: Channel;
+  channel: ChannelRes;
   myVoteId?: string;
   myVoteType?: VoteType;
   proposalId: string;
@@ -46,7 +46,7 @@ export const ProposalVoteButtons = ({
           cacheKey,
           (
             oldData:
-              | { pages: { feed: FeedItem[] }[]; pageParams: number[] }
+              | { pages: { feed: FeedItemRes[] }[]; pageParams: number[] }
               | undefined,
           ) => {
             if (!oldData) {
@@ -90,13 +90,13 @@ export const ProposalVoteButtons = ({
   });
 
   return (
-    <div className="flex w-full flex-wrap gap-2">
+    <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4">
       {VOTE_TYPE.map((vote) => (
         <Button
           key={vote}
           variant="outline"
           size="sm"
-          className={cn('flex-1', myVoteType === vote && '!bg-primary/15')}
+          className={cn('col-span-1', myVoteType === vote && '!bg-primary/15')}
           onClick={() => castVote(vote)}
           disabled={isPending}
         >

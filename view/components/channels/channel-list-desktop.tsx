@@ -4,11 +4,11 @@ import { useLocation, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { GENERAL_CHANNEL_NAME } from '../../constants/channel.constants';
 import { NavigationPaths } from '../../constants/shared.constants';
-import { CurrentUser } from '../../types/user.types';
+import { CurrentUserRes } from '../../types/user.types';
 import { ChannelListItemDesktop } from './channel-list-item-desktop';
 
 interface Props {
-  me?: CurrentUser;
+  me?: CurrentUserRes;
 }
 
 /**
