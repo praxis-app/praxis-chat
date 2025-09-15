@@ -27,17 +27,6 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const handleNext = () => {
-    const actionType = form.getValues('action');
-    if (actionType === 'change-role') {
-      // This will be handled by the wizard logic
-      onNext();
-    } else {
-      // For other action types, go to the final step
-      onNext();
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="text-muted-foreground text-sm">
@@ -107,7 +96,7 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
 
       <div className="flex justify-end">
         <Button
-          onClick={handleNext}
+          onClick={onNext}
           disabled={!form.formState.isValid && form.watch('action') === ''}
         >
           {t('actions.next')}
