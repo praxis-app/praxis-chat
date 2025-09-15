@@ -60,35 +60,10 @@ export const getPermissionValuesMap = (permissions: Permission[]) =>
     {},
   );
 
-// TODO: Refactor to avoid unneeded code duplication with regard to keys
 export const getPermissionText = (name: PermissionKeys) => {
   const _t: TFunction<Namespace<'translation'>, undefined> = t;
-  switch (name) {
-    case 'manageChannels':
-      return {
-        displayName: _t('permissions.names.manageChannels'),
-        description: _t('permissions.descriptions.manageChannels'),
-      };
-    case 'manageSettings':
-      return {
-        displayName: _t('permissions.names.manageSettings'),
-        description: _t('permissions.descriptions.manageServerSettings'),
-      };
-    case 'createInvites':
-      return {
-        displayName: _t('permissions.names.createInvites'),
-        description: _t('permissions.descriptions.createInvites'),
-      };
-    case 'manageInvites':
-      return {
-        displayName: _t('permissions.names.manageInvites'),
-        description: _t('permissions.descriptions.manageInvites'),
-      };
-    case 'manageRoles':
-      return {
-        displayName: _t('permissions.names.manageRoles'),
-        description: _t('permissions.descriptions.manageRoles'),
-      };
-  }
-  return { displayName: '', description: '' };
+  return {
+    displayName: _t(`permissions.names.${name}`),
+    description: _t(`permissions.descriptions.${name}`),
+  };
 };
