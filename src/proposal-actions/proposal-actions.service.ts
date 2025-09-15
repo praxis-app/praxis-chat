@@ -65,6 +65,11 @@ export const createProposalActionRole = async (
       where: {
         id: In(actionRoleMembers.map((member) => member.userId)),
       },
+      select: {
+        id: true,
+        name: true,
+        displayName: true,
+      },
     });
     savedRole.members = users.map((user) => {
       const member = actionRoleMembers.find(
