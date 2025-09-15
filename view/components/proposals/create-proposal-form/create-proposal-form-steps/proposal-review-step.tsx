@@ -1,11 +1,9 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
-import {
-  CreateProposalActionRoleMemberReq,
-  ProposalActionType,
-} from '@/types/proposal-action.types';
-import { PermissionKeys } from '@/types/role.types';
+import { ProposalActionType } from '@/types/proposal-action.types';
+import { PermissionKeys, RoleAttributeChangeType } from '@/types/role.types';
+import { UserRes } from '@/types/user.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -45,30 +43,22 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   }, {});
 
   const memberChanges = (() => {
-    const memberChanges: CreateProposalActionRoleMemberReq[] = [];
-    for (const member of selectedRole?.members || []) {
-      if (!roleMembers?.includes(member.id)) {
-        memberChanges.push({ userId: member.id, changeType: 'remove' });
+    const changes: { user: UserRes; changeType: RoleAttributeChangeType }[] =
+      [];
+    for (const user of selectedRole?.members || []) {
+      if (!roleMembers?.includes(user.id)) {
+        changes.push({ user, changeType: 'remove' });
       }
     }
     for (const user of usersEligibleForRole || []) {
       if (roleMembers?.includes(user.id)) {
-        memberChanges.push({ userId: user.id, changeType: 'add' });
+        changes.push({ user, changeType: 'add' });
       }
     }
-    return memberChanges;
+    return changes;
   })();
 
   const { t } = useTranslation();
-
-  // TODO: Refactor to avoid successive calls to find user in both arrays - build once
-  const getMemberName = (userId: string) => {
-    const user = [
-      ...(usersEligibleForRole || []),
-      ...(selectedRole?.members || []),
-    ].find((user) => user.id === userId);
-    return user?.displayName || user?.name;
-  };
 
   const getProposalActionType = (action: ProposalActionType | '') => {
     if (!action) {
@@ -252,33 +242,26 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {memberChanges.map(
-                  (
-                    member: CreateProposalActionRoleMemberReq,
-                    index: number,
-                  ) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
+                {memberChanges.map((member) => (
+                  <div
+                    key={member.user.id}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
+                      {member.user.displayName || member.user.name}
+                    </span>
+                    <Badge
+                      variant={
+                        member.changeType === 'add' ? 'default' : 'destructive'
+                      }
+                      className="w-16"
                     >
-                      <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
-                        {getMemberName(member.userId)}
-                      </span>
-                      <Badge
-                        variant={
-                          member.changeType === 'add'
-                            ? 'default'
-                            : 'destructive'
-                        }
-                        className="w-16"
-                      >
-                        {member.changeType === 'add'
-                          ? t('actions.add')
-                          : t('actions.remove')}
-                      </Badge>
-                    </div>
-                  ),
-                )}
+                      {member.changeType === 'add'
+                        ? t('actions.add')
+                        : t('actions.remove')}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
