@@ -29,7 +29,7 @@ export const createProposalActionRole = async (
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: roleToUpdateId },
   });
-  let savedRole = await proposalActionRoleRepository.save({
+  const savedRole = await proposalActionRoleRepository.save({
     name: name?.trim(),
     color: color?.trim(),
     roleId: roleToUpdateId,
