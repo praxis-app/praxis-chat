@@ -1,3 +1,3 @@
-import { VOTE_TYPE } from './vote.constants';
+import { VOTE_TYPES } from './vote.constants';
 
-export type VoteType = (typeof VOTE_TYPE)[number];
+export type VoteType = (typeof VOTE_TYPES)[number];

@@ -1,1 +1,1 @@
-export const VOTE_TYPE = ['agree', 'disagree', 'abstain', 'block'] as const;
+export const VOTE_TYPES = ['agree', 'disagree', 'abstain', 'block'] as const;

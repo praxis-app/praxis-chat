@@ -1,4 +1,4 @@
-import { VOTE_TYPE } from '@common/votes/vote.constants';
+import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import {
   Column,
@@ -16,7 +16,7 @@ export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: VOTE_TYPE })
+  @Column({ type: 'enum', enum: VOTE_TYPES })
   voteType: VoteType;
 
   @ManyToOne(() => Proposal, (proposal) => proposal.votes, {
