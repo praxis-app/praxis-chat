@@ -1,4 +1,4 @@
-import { FindOptionsWhere, In } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
@@ -29,13 +29,6 @@ export const getProposal = (id: string, relations?: string[]) => {
     where: { id },
     relations,
   });
-};
-
-export const getProposals = (
-  where?: FindOptionsWhere<Proposal>,
-  relations?: string[],
-) => {
-  return proposalRepository.find({ where, relations });
 };
 
 export const getChannelProposals = async (
@@ -310,6 +303,41 @@ export const implementProposal = async (proposalId: string) => {
   }
   if (actionType === 'create-role') {
     await proposalActionsService.implementCreateRole(id);
+  }
+};
+
+export const synchronizeProposal = async (
+  proposal: Proposal,
+): Promise<Proposal> => {
+  const { id, config } = proposal;
+  if (!config.closingAt || Date.now() < Number(config.closingAt)) {
+    return proposal;
+  }
+
+  const isRatifiable = await isProposalRatifiable(id);
+
+  if (!isRatifiable) {
+    await proposalRepository.update(id, { stage: 'closed' });
+    return { ...proposal, stage: 'closed' };
+  }
+
+  await ratifyProposal(id);
+  await implementProposal(id);
+
+  return { ...proposal, stage: 'ratified' };
+};
+
+export const synchronizeProposals = async () => {
+  const proposals = await proposalRepository.find({
+    where: {
+      config: { closingAt: Not(IsNull()) },
+      stage: 'voting',
+    },
+    relations: ['config'],
+  });
+
+  for (const proposal of proposals) {
+    await synchronizeProposal(proposal);
   }
 };
 
