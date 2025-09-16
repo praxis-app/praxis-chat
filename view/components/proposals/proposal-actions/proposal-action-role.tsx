@@ -29,7 +29,12 @@ export const ProposalActionRole = ({ action }: Props) => {
 
   const { data: roleData, isLoading: isRoleLoading } = useQuery({
     queryKey: ['role', action.role?.roleId],
-    queryFn: () => api.getRole(action.role?.roleId!),
+    queryFn: () => {
+      if (!action.role?.roleId) {
+        throw new Error('Role ID is required');
+      }
+      return api.getRole(action.role.roleId);
+    },
     enabled: accordionValue === ACCORDION_ITEM_VALUE && !!action.role?.roleId,
   });
 
