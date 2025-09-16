@@ -1,3 +1,4 @@
+import { PROPOSAL_ACTION_TYPE } from '@common/proposals/proposal.constants';
 import {
   Column,
   CreateDateColumn,
@@ -8,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Proposal } from '../../proposals/entities/proposal.entity';
-import { PROPOSAL_ACTION_TYPE } from '../../proposals/proposal.constants';
 import { ProposalActionType } from '../../proposals/proposal.types';
 import { ProposalActionRole } from './proposal-action-role.entity';
 

@@ -1,9 +1,9 @@
 import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
-import { VOTE_TYPE } from '@/constants/proposal.constants';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { VoteType } from '@/types/vote.types';
+import { PROPOSAL_VOTE_TYPE } from '@common/proposals/proposal.constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -91,7 +91,7 @@ export const ProposalVoteButtons = ({
 
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4">
-      {VOTE_TYPE.map((vote) => (
+      {PROPOSAL_VOTE_TYPE.map((vote) => (
         <Button
           key={vote}
           variant="outline"

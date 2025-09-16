@@ -21,7 +21,7 @@ import { Image } from '../../images/entities/image.entity';
 import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
-import { PROPOSAL_STAGE } from '../proposal.constants';
+import { PROPOSAL_STAGE } from '@common/proposals/proposal.constants';
 import { ProposalStage } from '../proposal.types';
 import { ProposalConfig } from './proposal-config.entity';
 

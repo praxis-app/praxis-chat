@@ -1,7 +1,7 @@
 import {
   DECISION_MAKING_MODEL,
   PROPOSAL_STAGE,
-} from '../constants/proposal.constants';
+} from '@common/proposals/proposal.constants';
 import { ImageRes } from './image.types';
 import {
   CreateProposalActionReq,

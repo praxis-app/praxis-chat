@@ -1,3 +1,4 @@
+import { PROPOSAL_VOTE_TYPE } from '@common/proposals/proposal.constants';
 import {
   Column,
   CreateDateColumn,
@@ -8,7 +9,6 @@ import {
 } from 'typeorm';
 import { Proposal } from '../proposals/entities/proposal.entity';
 import { User } from '../users/user.entity';
-import { VOTE_TYPES } from './vote.constants';
 import { VoteType } from './vote.types';
 
 @Entity()
@@ -16,7 +16,7 @@ export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: VOTE_TYPES })
+  @Column({ type: 'enum', enum: PROPOSAL_VOTE_TYPE })
   voteType: VoteType;
 
   @ManyToOne(() => Proposal, (proposal) => proposal.votes, {

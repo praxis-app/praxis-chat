@@ -1,3 +1,4 @@
+import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { DECISION_MAKING_MODEL } from '../proposal.constants';
 import { DecisionMakingModel } from '../proposal.types';
 import { Proposal } from './proposal.entity';
 

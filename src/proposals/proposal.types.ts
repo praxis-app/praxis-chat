@@ -2,7 +2,7 @@ import {
   DECISION_MAKING_MODEL,
   PROPOSAL_ACTION_TYPE,
   PROPOSAL_STAGE,
-} from './proposal.constants';
+} from '@common/proposals/proposal.constants';
 
 export type DecisionMakingModel = (typeof DECISION_MAKING_MODEL)[number];
 

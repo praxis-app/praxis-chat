@@ -1,4 +1,4 @@
-import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
+import { PROPOSAL_ACTION_TYPE } from '@common/proposals/proposal.constants';
 import {
   AbilityAction,
   AbilitySubject,

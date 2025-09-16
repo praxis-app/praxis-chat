@@ -1,5 +1,3 @@
-export const VOTE_TYPES = ['agree', 'disagree', 'abstain', 'block'] as const;
-
 export enum VotingTimeLimit {
   Unlimited = 0,
   OneMinute = 1,
