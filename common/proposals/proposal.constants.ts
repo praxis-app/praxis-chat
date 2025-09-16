@@ -10,10 +10,3 @@ export const PROPOSAL_STAGE = [
   'revision',
   'closed',
 ] as const;
-
-export const PROPOSAL_VOTE_TYPE = [
-  'agree',
-  'disagree',
-  'abstain',
-  'block',
-] as const;
