@@ -41,7 +41,7 @@ dotenv.config();
   app.use(cors());
 
   // Serve static files and API routes
-  app.use(express.static(join(__dirname, './view')));
+  app.use(express.static(join(__dirname, '../view')));
   app.use('/api', appRouter);
 
   // Add error handling middleware for all routes
