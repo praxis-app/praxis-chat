@@ -2,12 +2,12 @@
   "name": "praxis-chat",
   "version": "0.0.1",
   "scripts": {
-    "start": "ts-node --project ./tsconfig.src.json src/main.ts",
+    "start": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon --config ./nodemon.json",
     "start:client": "vite --host",
     "build": "tsc -b && eslint src --ext ts && tsc --project ./tsconfig.src.json",
     "build:client": "tsc -b && eslint view --ext ts,tsx && vite build --emptyOutDir true",
-    "typeorm": "ts-node --project ./tsconfig.src.json ./node_modules/typeorm/cli.js",
+    "typeorm": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:gen": "npm run typeorm migration:generate -- -p -d ./src/database/data-source.ts",
     "typeorm:run": "npm run typeorm migration:run -- -d ./src/database/data-source.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -110,6 +110,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
     "vite": "^6.3.5"
   }

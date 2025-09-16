@@ -1,6 +1,6 @@
 {
   "watch": ["src"],
-  "exec": "ts-node --project ./tsconfig.src.json src/main.ts",
+  "exec": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register src/main.ts",
   "verbose": false,
   "ext": "ts"
 }
