@@ -67,7 +67,7 @@ dotenv.config();
     webSocket.on('error', console.error);
   });
 
-  server.listen(process.env.SERVER_PORT);
-  const url = `http://localhost:${process.env.SERVER_PORT}`;
-  console.log(`Server running at ${url} 🚀`);
+  server.listen(process.env.VITE_SERVER_PORT);
+  const url = `http://localhost:${process.env.VITE_SERVER_PORT}`;
+  console.info(`Server running at ${url} 🚀`);
 })();
