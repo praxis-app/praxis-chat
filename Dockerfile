@@ -22,6 +22,7 @@ RUN npm ci
 # Build args
 ARG NODE_ENV
 ARG SERVER_PORT
+ARG VITE_SERVER_PORT
 ARG DB_MIGRATIONS
 
 # Build the app

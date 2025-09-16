@@ -9,6 +9,7 @@ services:
       args:
         - NODE_ENV=${NODE_ENV}
         - SERVER_PORT=${SERVER_PORT}
+        - VITE_SERVER_PORT=${VITE_SERVER_PORT}
         - DB_MIGRATIONS=${DB_MIGRATIONS}
     volumes:
       - content:/app/content
