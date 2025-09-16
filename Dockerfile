@@ -36,5 +36,10 @@ RUN rm -rf view
 FROM node:22.11.0-alpine AS runtime_stage
 
 COPY --from=build_stage /app /app
+
+# Verify the build output - remove this later
+RUN ls -la /app/
+RUN ls -la /app/dist/
+
 ENV DB_MIGRATIONS=${DB_MIGRATIONS}
 CMD [ "sh", "/app/start-prod.sh" ]
