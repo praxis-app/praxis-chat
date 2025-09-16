@@ -1,3 +1,5 @@
+import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/proposal-actions/proposal-action.constants';
+import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
@@ -11,8 +13,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AbilityAction, AbilitySubject } from '../../roles/app-ability';
-import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '../proposal-action.constants';
-import { RoleAttributeChangeType } from '../proposal-action.types';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
