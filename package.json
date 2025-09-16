@@ -68,6 +68,7 @@
     "react-router-dom": "^7.7.1",
     "react-use-websocket": "^4.10.0",
     "redis": "^4.7.0",
+    "reflect-metadata": "^0.2.2",
     "sanitize-html": "^2.14.0",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
