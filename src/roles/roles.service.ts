@@ -1,10 +1,14 @@
 import { RawRuleOf } from '@casl/ability';
+import {
+  AbilityAction,
+  AbilitySubject,
+  AppAbility,
+} from '@common/roles/app-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../users/user.entity';
-import { AbilityAction, AbilitySubject, AppAbility } from './app-ability';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';

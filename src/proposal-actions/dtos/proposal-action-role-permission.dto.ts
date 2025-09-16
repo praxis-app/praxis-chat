@@ -1,5 +1,5 @@
 import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
-import { AbilityAction, AbilitySubject } from '../../roles/app-ability';
+import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 
 export interface ProposalActionRolePermissionDto {
   subject: AbilitySubject;

@@ -1,6 +1,8 @@
-import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
-import { ProposalActionType } from '@common/proposal-actions/proposal-action.types';
-import { AbilityAction, AbilitySubject } from './role.types';
+import {
+  ProposalActionType,
+  RoleAttributeChangeType,
+} from '@common/proposal-actions/proposal-action.types';
+import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import { UserRes } from './user.types';
 
 // -------------------------------------------------------------------------
