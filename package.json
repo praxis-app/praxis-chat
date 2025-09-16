@@ -5,7 +5,7 @@
     "start": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon --config ./nodemon.json",
     "start:client": "vite --host",
-    "build": "tsc -b && eslint src --ext ts && tsc --project ./tsconfig.src.json",
+    "build": "tsc -b && eslint src --ext ts && tsc --project ./tsconfig.src.json && tsc-alias -p ./tsconfig.src.json",
     "build:client": "tsc -b && eslint view --ext ts,tsx && vite build --emptyOutDir true",
     "typeorm": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:gen": "npm run typeorm migration:generate -- -p -d ./src/database/data-source.ts",
@@ -111,6 +111,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
     "vite": "^6.3.5"
