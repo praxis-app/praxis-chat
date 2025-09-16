@@ -56,7 +56,7 @@ dotenv.config();
 
   // Catch-all route to serve index.html for SPA routing
   app.get(/(.*)/, (_, res) => {
-    res.sendFile(join(__dirname, './view', 'index.html'));
+    res.sendFile(join(__dirname, '../view', 'index.html'));
   });
 
   // Handle web socket connections with pub-sub service
