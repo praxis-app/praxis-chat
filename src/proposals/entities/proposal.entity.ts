@@ -1,11 +1,11 @@
-// TODO: Add `channelId` column
-
 /**
  * Used for reference:
  * - https://github.com/forrestwilkins/anrcho/blob/master/app/models/proposal.rb
  * - https://github.com/praxis-app/praxis/blob/main/src/proposals/models/proposal.model.ts
  */
 
+import { PROPOSAL_STAGE } from '@common/proposals/proposal.constants';
+import { ProposalStage } from '@common/proposals/proposal.types';
 import {
   Column,
   CreateDateColumn,
@@ -21,8 +21,6 @@ import { Image } from '../../images/entities/image.entity';
 import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
-import { PROPOSAL_STAGE } from '@common/proposals/proposal.constants';
-import { ProposalStage } from '../proposal.types';
 import { ProposalConfig } from './proposal-config.entity';
 
 @Entity()

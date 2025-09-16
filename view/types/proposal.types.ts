@@ -1,17 +1,10 @@
-import {
-  DECISION_MAKING_MODEL,
-  PROPOSAL_STAGE,
-} from '@common/proposals/proposal.constants';
+import { ProposalStage } from '@common/proposals/proposal.types';
 import { ImageRes } from './image.types';
 import {
   CreateProposalActionReq,
   ProposalActionRes,
 } from './proposal-action.types';
 import { VoteType } from './vote.types';
-
-export type DecisionMakingModel = (typeof DECISION_MAKING_MODEL)[number];
-
-export type ProposalStage = (typeof PROPOSAL_STAGE)[number];
 
 export interface ProposalRes {
   id: string;
