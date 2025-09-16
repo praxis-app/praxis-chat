@@ -11,7 +11,7 @@ services:
         - VITE_SERVER_PORT=${VITE_SERVER_PORT}
         - DB_MIGRATIONS=${DB_MIGRATIONS}
     volumes:
-      - content:/app/content
+      - content:/app/dist/content
     ports:
       - ${VITE_SERVER_PORT}:${VITE_SERVER_PORT}
     restart: always
