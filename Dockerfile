@@ -28,7 +28,8 @@ ARG DB_MIGRATIONS
 RUN npm run build
 RUN npm run build:client
 
-# Clean up for runtime image
+# Prep for runtime image
+RUN mv content dist/content
 RUN rm package-lock.json vite.config.mts .eslintrc.cjs
 RUN rm tsconfig.json tsconfig.view.json
 RUN rm -rf view
