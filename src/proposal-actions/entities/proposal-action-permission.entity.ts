@@ -1,4 +1,8 @@
 import {
+  ABILITY_ACTIONS,
+  ABILITY_SUBJECTS,
+} from '@common/roles/role.constants';
+import {
   Column,
   CreateDateColumn,
   Entity,
@@ -6,12 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
-  AbilityAction,
-  AbilitySubject,
-} from '../../roles/app-ability';
+import { AbilityAction, AbilitySubject } from '../../roles/app-ability';
 import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '../proposal-action.constants';
 import { RoleAttributeChangeType } from '../proposal-action.types';
 import { ProposalActionRole } from './proposal-action-role.entity';

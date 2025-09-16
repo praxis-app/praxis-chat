@@ -2,6 +2,8 @@ import { ForcedSubject, MongoAbility } from '@casl/ability';
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
+} from '@common/roles/role.constants';
+import {
   PERMISSION_KEYS,
   ROLE_ATTRIBUTE_CHANGE_TYPE,
 } from '../constants/role.constants';

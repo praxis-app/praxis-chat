@@ -4,23 +4,10 @@ import {
   MongoAbility,
   RawRuleOf,
 } from '@casl/ability';
-
-export const ABILITY_ACTIONS = [
-  'create',
-  'read',
-  'update',
-  'delete',
-  'manage',
-] as const;
-
-export const ABILITY_SUBJECTS = [
-  'ServerConfig',
-  'Channel',
-  'Message',
-  'Invite',
-  'Role',
-  'all',
-] as const;
+import {
+  ABILITY_ACTIONS,
+  ABILITY_SUBJECTS,
+} from '@common/roles/role.constants';
 
 export type AbilityAction = (typeof ABILITY_ACTIONS)[number];
 export type AbilitySubject = (typeof ABILITY_SUBJECTS)[number];
