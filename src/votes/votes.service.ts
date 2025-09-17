@@ -29,10 +29,8 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
-  const proposal = await proposalsService.getProposal(vote.proposalId, [
-    'config',
-  ]);
-  await proposalsService.synchronizeProposal(proposal);
+  // Update proposal to reflect newly created vote
+  await proposalsService.synchronizeProposal(vote.proposalId);
 
   return vote;
 };
@@ -42,10 +40,8 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
   const vote = await getVote(voteId, ['proposal']);
 
   if (vote.proposalId) {
-    const proposal = await proposalsService.getProposal(vote.proposalId, [
-      'config',
-    ]);
-    await proposalsService.synchronizeProposal(proposal);
+    // Update proposal to reflect change in vote
+    await proposalsService.synchronizeProposal(vote.proposalId);
   }
 
   return result;

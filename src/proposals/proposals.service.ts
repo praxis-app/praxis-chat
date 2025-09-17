@@ -306,26 +306,20 @@ export const implementProposal = async (proposalId: string) => {
   }
 };
 
-// TODO: Remove need to pass in entire proposal object
-export const synchronizeProposal = async (
-  proposal: Proposal,
-): Promise<Proposal> => {
-  const { id, config } = proposal;
+export const synchronizeProposal = async (proposalId: string) => {
+  const { config } = await getProposal(proposalId, ['config']);
   if (!config.closingAt || Date.now() < Number(config.closingAt)) {
-    return proposal;
+    return;
   }
 
-  const isRatifiable = await isProposalRatifiable(id);
+  const isRatifiable = await isProposalRatifiable(proposalId);
 
   if (!isRatifiable) {
-    await proposalRepository.update(id, { stage: 'closed' });
-    return { ...proposal, stage: 'closed' };
+    await proposalRepository.update(proposalId, { stage: 'closed' });
   }
 
-  await ratifyProposal(id);
-  await implementProposal(id);
-
-  return { ...proposal, stage: 'ratified' };
+  await ratifyProposal(proposalId);
+  await implementProposal(proposalId);
 };
 
 export const synchronizeProposals = async () => {
@@ -334,11 +328,11 @@ export const synchronizeProposals = async () => {
       config: { closingAt: Not(IsNull()) },
       stage: 'voting',
     },
-    relations: ['config'],
+    select: { id: true },
   });
 
   for (const proposal of proposals) {
-    await synchronizeProposal(proposal);
+    await synchronizeProposal(proposal.id);
   }
 };
 
