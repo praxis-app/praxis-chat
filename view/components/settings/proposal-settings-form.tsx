@@ -114,6 +114,41 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
 
         <FormField
           control={form.control}
+          name="standAsidesLimit"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.names.standAsidesLimit')}</FormLabel>
+              <FormDescription>
+                {t('settings.descriptions.standAsidesLimit')}
+              </FormDescription>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={t('settings.names.standAsidesLimit')}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Array(11)
+                    .fill(0)
+                    .map((_, value) => (
+                      <SelectItem key={value} value={value.toString()}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="votingTimeLimit"
           render={({ field }) => (
             <FormItem>
