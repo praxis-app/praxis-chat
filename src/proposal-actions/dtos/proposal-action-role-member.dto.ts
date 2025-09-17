@@ -1,4 +1,4 @@
-import { RoleAttributeChangeType } from '../proposal-action.types';
+import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
 
 export interface ProposalActionRoleMemberDto {
   userId: string;

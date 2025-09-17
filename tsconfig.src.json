@@ -23,8 +23,15 @@
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Imports */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@common/*": ["./common/*"]
+    }
   },
 
-  "include": ["src"]
+  "include": ["src", "common"]
 }

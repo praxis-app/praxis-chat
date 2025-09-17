@@ -1,3 +1,5 @@
+import { VOTE_TYPES } from '@common/votes/vote.constants';
+import { VoteType } from '@common/votes/vote.types';
 import {
   Column,
   CreateDateColumn,
@@ -8,8 +10,6 @@ import {
 } from 'typeorm';
 import { Proposal } from '../proposals/entities/proposal.entity';
 import { User } from '../users/user.entity';
-import { VOTE_TYPES } from './vote.constants';
-import { VoteType } from './vote.types';
 
 @Entity()
 export class Vote {

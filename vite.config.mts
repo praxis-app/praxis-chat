@@ -24,6 +24,7 @@ export default defineConfig(async () => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './view'),
+        '@common': path.resolve(__dirname, './common'),
       },
     },
     cacheDir: '../node_modules/.vite',

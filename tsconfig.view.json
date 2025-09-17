@@ -26,8 +26,9 @@
     /* shadcn/ui */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./view/*"]
+      "@/*": ["./view/*"],
+      "@common/*": ["./common/*"]
     }
   },
-  "include": ["view", "vite.config.mts"]
+  "include": ["view", "vite.config.mts", "common"]
 }

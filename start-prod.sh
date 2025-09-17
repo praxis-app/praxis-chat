@@ -8,4 +8,4 @@ else
     echo "DB_MIGRATIONS is not set. Skipping migrations."
 fi
 
-node /app/dist/main.js
+node /app/dist/src/main.js
