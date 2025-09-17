@@ -12,19 +12,31 @@ const serverConfigSchema = zod
     votingTimeLimit: zod.number().optional(),
   })
   .refine(
-    (data) =>
-      data.decisionMakingModel === 'majority-vote' &&
-      data.ratificationThreshold !== undefined &&
-      data.ratificationThreshold <= 50,
+    (data) => {
+      if (
+        data.decisionMakingModel === 'majority-vote' &&
+        data.ratificationThreshold !== undefined &&
+        data.ratificationThreshold <= 50
+      ) {
+        return false;
+      }
+      return true;
+    },
     {
       message:
         'Ratification threshold must be greater than 50 for majority vote',
     },
   )
   .refine(
-    (data) =>
-      data.decisionMakingModel === 'consent' &&
-      data.votingTimeLimit === VotingTimeLimit.Unlimited,
+    (data) => {
+      if (
+        data.decisionMakingModel === 'consent' &&
+        data.votingTimeLimit === VotingTimeLimit.Unlimited
+      ) {
+        return false;
+      }
+      return true;
+    },
     {
       message:
         'Voting time limit must be set for consent decision making model',
