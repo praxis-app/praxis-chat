@@ -165,7 +165,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                     .fill(0)
                     .map((_, value) => (
                       <SelectItem key={value} value={value.toString()}>
-                        {value}
+                        {value.toString()}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -200,7 +200,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                     .fill(0)
                     .map((_, value) => (
                       <SelectItem key={value} value={value.toString()}>
-                        {value}
+                        {value.toString()}
                       </SelectItem>
                     ))}
                 </SelectContent>
