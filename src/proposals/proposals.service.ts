@@ -175,15 +175,17 @@ export const hasConsensus = async (
     return false;
   }
 
+  const agreementsNeeded = members.length * (ratificationThreshold * 0.01);
   const { agreements, reservations, standAsides, blocks } =
     sortConsensusVotesByType(votes);
 
-  return (
-    agreements.length >= members.length * (ratificationThreshold * 0.01) &&
+  const isRatifiable =
+    agreements.length >= agreementsNeeded &&
     reservations.length <= reservationsLimit &&
     standAsides.length <= standAsidesLimit &&
-    blocks.length === 0
-  );
+    blocks.length === 0;
+
+  return isRatifiable;
 };
 
 export const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
