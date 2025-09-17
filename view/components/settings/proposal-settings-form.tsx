@@ -33,11 +33,11 @@ interface Props {
 }
 
 const proposalSettingsFormSchema = zod.object({
-  decisionMakingModel: zod.enum(DECISION_MAKING_MODEL),
-  ratificationThreshold: zod.number(),
-  disagreementsLimit: zod.number(),
-  abstainsLimit: zod.number(),
-  votingTimeLimit: zod.number(),
+  decisionMakingModel: zod.enum(DECISION_MAKING_MODEL).optional(),
+  disagreementsLimit: zod.number().min(0).max(10).optional(),
+  abstainsLimit: zod.number().min(0).max(10).optional(),
+  ratificationThreshold: zod.number().min(1).max(100).optional(),
+  votingTimeLimit: zod.number().optional(),
 });
 
 export const ProposalSettingsForm = ({ serverConfig }: Props) => {
@@ -54,17 +54,17 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
       mutationFn: async (data: ServerConfigReq) => {
         await api.updateServerConfig({
           decisionMakingModel: data.decisionMakingModel,
-          ratificationThreshold: +data.ratificationThreshold,
-          disagreementsLimit: +data.disagreementsLimit,
-          abstainsLimit: +data.abstainsLimit,
-          votingTimeLimit: +data.votingTimeLimit,
+          ratificationThreshold: Number(data.ratificationThreshold),
+          disagreementsLimit: Number(data.disagreementsLimit),
+          abstainsLimit: Number(data.abstainsLimit),
+          votingTimeLimit: Number(data.votingTimeLimit),
         });
 
         queryClient.setQueryData<{ serverConfig: ServerConfigRes }>(
           ['serverConfig'],
           (oldData) => {
             if (!oldData) {
-              return { serverConfig: { ...data, updatedAt: new Date() } };
+              throw new Error('Server config not found');
             }
             return {
               serverConfig: {
@@ -157,7 +157,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
               </FormDescription>
               <Select
                 onValueChange={field.onChange}
-                value={field.value.toString()}
+                value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -192,7 +192,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
               </FormDescription>
               <Select
                 onValueChange={field.onChange}
-                value={field.value.toString()}
+                value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -228,7 +228,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
               <div className="flex gap-3">
                 <FormControl>
                   <Slider
-                    value={[field.value]}
+                    value={[field.value ?? 0]}
                     onValueChange={(values) => field.onChange(values[0])}
                     min={1}
                     max={100}
@@ -267,7 +267,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
               </FormDescription>
               <Select
                 onValueChange={field.onChange}
-                value={field.value.toString()}
+                value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger className="w-full">
