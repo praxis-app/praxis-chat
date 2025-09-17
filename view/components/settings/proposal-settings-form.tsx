@@ -168,6 +168,41 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
 
         <FormField
           control={form.control}
+          name="reservationsLimit"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.names.reservationsLimit')}</FormLabel>
+              <FormDescription>
+                {t('settings.descriptions.reservationsLimit')}
+              </FormDescription>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={t('settings.names.reservationsLimit')}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Array(11)
+                    .fill(0)
+                    .map((_, value) => (
+                      <SelectItem key={value} value={value.toString()}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="ratificationThreshold"
           render={({ field }) => (
             <FormItem>
