@@ -1,5 +1,5 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
-import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
+import { PROPOSAL_ACTION_TYPE } from '@common/proposal-actions/proposal-action.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';

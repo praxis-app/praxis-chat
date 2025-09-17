@@ -1,6 +1,6 @@
 import { createMongoAbility } from '@casl/ability';
+import { AppAbility } from '@common/roles/app-ability';
 import { useAppStore } from '../store/app.store';
-import { AppAbility } from '../types/role.types';
 import { useMeQuery } from './use-me-query';
 
 export const useAbility = () => {

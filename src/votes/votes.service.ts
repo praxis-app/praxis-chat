@@ -1,8 +1,8 @@
+import { VoteType } from '@common/votes/vote.types';
 import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import * as proposalsService from '../proposals/proposals.service';
 import { Vote } from './vote.entity';
-import { VoteType } from './vote.types';
 
 interface CreateVoteDto {
   proposalId: string;
