@@ -105,13 +105,16 @@
       "active": "Active",
       "body": "Proposal",
       "closed": "Closed",
+      "consensus": "Consensus",
       "consensusProposal": "Consensus Proposal",
+      "consent": "Consent",
+      "majority": "Majority vote",
+      "proposedSettings": "Settings proposal",
+      "roleChangeProposal": "Role change proposal",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
-      "roleSelection": "Role selection",
-      "roleChangeProposal": "Role change proposal",
       "roleProposal": "Role proposal",
-      "proposedSettings": "Settings proposal"
+      "roleSelection": "Role selection"
     },
     "headers": {
       "availableRoles": "Available Roles",

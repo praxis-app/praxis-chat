@@ -26,9 +26,6 @@ export class ServerConfig {
   @Column({ default: 51 })
   ratificationThreshold: number;
 
-  @Column({ default: 51 })
-  verificationThreshold: number;
-
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
 

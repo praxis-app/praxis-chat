@@ -26,7 +26,6 @@ export const updateServerConfig = async (
       | 'standAsidesLimit'
       | 'reservationsLimit'
       | 'ratificationThreshold'
-      | 'verificationThreshold'
       | 'votingTimeLimit'
     >
   >,
