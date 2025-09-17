@@ -1,10 +1,7 @@
 import { CronJob } from 'cron';
 import { NextFunction, Request, Response } from 'express';
+import { CronExpression } from '../../common/common.constants';
 import * as proposalService from '../proposals.service';
-
-enum CronExpression {
-  EVERY_5_MINUTES = '0 */5 * * * *',
-}
 
 const ONE_HOUR_MS = 1000 * 60 * 60;
 
