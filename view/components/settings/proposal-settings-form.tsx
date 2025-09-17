@@ -1,8 +1,8 @@
 import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
-import { VotingTimeLimit } from '@/constants/proposal.constants';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
+import { VotingTimeLimit } from '@common/votes/vote.constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';

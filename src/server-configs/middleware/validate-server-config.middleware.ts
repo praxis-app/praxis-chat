@@ -1,6 +1,7 @@
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import { NextFunction, Request, Response } from 'express';
 import { ServerConfigDto } from '../server-config.types';
+import { VotingTimeLimit } from '@common/votes/vote.constants';
 
 export const validateServerConfig = (
   req: Request,
@@ -12,6 +13,7 @@ export const validateServerConfig = (
     standAsidesLimit,
     reservationsLimit,
     ratificationThreshold,
+    votingTimeLimit,
   } = req.body as ServerConfigDto;
 
   if (
@@ -46,6 +48,15 @@ export const validateServerConfig = (
     res
       .status(422)
       .send('Ratification threshold must be greater than 50 for majority vote');
+    return;
+  }
+  if (
+    decisionMakingModel === 'consent' &&
+    votingTimeLimit === VotingTimeLimit.Unlimited
+  ) {
+    res
+      .status(422)
+      .send('Voting time limit must be set for consent decision making model');
     return;
   }
   next();
