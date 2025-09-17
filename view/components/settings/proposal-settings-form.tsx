@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
+import { Input } from '../ui/input';
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Slider } from '../ui/slider';
 
 interface Props {
   serverConfig: ServerConfigRes;
@@ -67,6 +69,23 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
         );
       },
     });
+
+  const handleSliderInputBlur = (value?: number | null) => {
+    if (value === undefined || value === null) {
+      return;
+    }
+    if (value < 0) {
+      form.setValue('ratificationThreshold', 0);
+      return;
+    }
+    if (value > 100) {
+      form.setValue('ratificationThreshold', 100);
+      return;
+    }
+    if (!Number.isInteger(value)) {
+      form.setValue('ratificationThreshold', Math.round(value));
+    }
+  };
 
   return (
     <Form {...form}>
@@ -142,6 +161,46 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                     ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="ratificationThreshold"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.names.ratificationThreshold')}</FormLabel>
+              <FormDescription>
+                {t('settings.descriptions.ratificationThreshold')}
+              </FormDescription>
+              <div className="flex gap-3">
+                <FormControl>
+                  <Slider
+                    value={[field.value]}
+                    onValueChange={(values) => field.onChange(values[0])}
+                    min={1}
+                    max={100}
+                    step={1}
+                    className="mb-0 w-full"
+                  />
+                </FormControl>
+                <div className="flex items-center space-x-2">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={field.value}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onBlur={() => handleSliderInputBlur(field.value)}
+                      className="w-20"
+                    />
+                  </FormControl>
+                  <span className="text-muted-foreground text-sm">%</span>
+                </div>
+              </div>
               <FormMessage />
             </FormItem>
           )}
