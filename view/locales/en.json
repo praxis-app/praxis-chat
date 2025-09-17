@@ -338,22 +338,22 @@
     "names": {
       "decisionMakingModel": "Decision making model",
       "ratificationThreshold": "Ratification threshold",
-      "reservationsLimit": "Reservations limit",
-      "standAsidesLimit": "Stand asides limit",
+      "disagreementsLimit": "Disagreements limit",
+      "abstainsLimit": "Abstains limit",
       "votingTimeLimit": "Voting time limit"
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
       "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
-      "reservationsLimit": "Set a limit for the acceptable number of reservations allowed for a proposal to still be able to pass.",
-      "standAsidesLimit": "Set a limit for the acceptable number of stand asides allowed for a proposal to still be able to pass.",
+      "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
+      "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified."
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
       "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to reach consensus.",
-      "reservationsLimit": "The maximum number of reservations allowed for a proposal to still be able to pass.",
-      "standAsidesLimit": "The maximum number of stand asides allowed for a proposal to still be able to pass.",
+      "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
+      "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."
     }
   },

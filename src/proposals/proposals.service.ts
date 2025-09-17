@@ -50,8 +50,8 @@ export const getChannelProposals = async (
     .addSelect([
       'proposalConfig.decisionMakingModel',
       'proposalConfig.ratificationThreshold',
-      'proposalConfig.reservationsLimit',
-      'proposalConfig.standAsidesLimit',
+      'proposalConfig.disagreementsLimit',
+      'proposalConfig.abstainsLimit',
       'proposalConfig.closingAt',
     ])
     .addSelect([
@@ -165,8 +165,8 @@ export const hasConsensus = async (
   votes: Vote[],
   {
     ratificationThreshold,
-    reservationsLimit,
-    standAsidesLimit,
+    disagreementsLimit,
+    abstainsLimit,
     closingAt,
   }: ProposalConfig,
   members: User[],
@@ -176,26 +176,26 @@ export const hasConsensus = async (
   }
 
   const agreementsNeeded = members.length * (ratificationThreshold * 0.01);
-  const { agreements, reservations, standAsides, blocks } =
+  const { agreements, disagreements, abstains, blocks } =
     sortConsensusVotesByType(votes);
 
   const isRatifiable =
     agreements.length >= agreementsNeeded &&
-    reservations.length <= reservationsLimit &&
-    standAsides.length <= standAsidesLimit &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
     blocks.length === 0;
 
   return isRatifiable;
 };
 
 export const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
-  const { reservations, standAsides, blocks } = sortConsensusVotesByType(votes);
-  const { reservationsLimit, standAsidesLimit, closingAt } = proposalConfig;
+  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
+  const { disagreementsLimit, abstainsLimit, closingAt } = proposalConfig;
 
   return (
     Date.now() >= Number(closingAt) &&
-    reservations.length <= reservationsLimit &&
-    standAsides.length <= standAsidesLimit &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
     blocks.length === 0
   );
 };
@@ -230,8 +230,8 @@ export const createProposal = async (
   const proposalConfig: Partial<ProposalConfig> = {
     decisionMakingModel: serverConfig.decisionMakingModel,
     ratificationThreshold: serverConfig.ratificationThreshold,
-    reservationsLimit: serverConfig.reservationsLimit,
-    standAsidesLimit: serverConfig.standAsidesLimit,
+    disagreementsLimit: serverConfig.disagreementsLimit,
+    abstainsLimit: serverConfig.abstainsLimit,
     closingAt: closingAt || configClosingAt,
   };
 

@@ -35,8 +35,8 @@ interface Props {
 const proposalSettingsFormSchema = zod.object({
   decisionMakingModel: zod.enum(DECISION_MAKING_MODEL),
   ratificationThreshold: zod.number(),
-  reservationsLimit: zod.number(),
-  standAsidesLimit: zod.number(),
+  disagreementsLimit: zod.number(),
+  abstainsLimit: zod.number(),
   votingTimeLimit: zod.number(),
 });
 
@@ -142,12 +142,12 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
 
         <FormField
           control={form.control}
-          name="standAsidesLimit"
+          name="disagreementsLimit"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('settings.names.standAsidesLimit')}</FormLabel>
+              <FormLabel>{t('settings.names.disagreementsLimit')}</FormLabel>
               <FormDescription>
-                {t('settings.descriptions.standAsidesLimit')}
+                {t('settings.descriptions.disagreementsLimit')}
               </FormDescription>
               <Select
                 onValueChange={field.onChange}
@@ -156,7 +156,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue
-                      placeholder={t('settings.names.standAsidesLimit')}
+                      placeholder={t('settings.names.disagreementsLimit')}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -177,12 +177,12 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
 
         <FormField
           control={form.control}
-          name="reservationsLimit"
+          name="abstainsLimit"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('settings.names.reservationsLimit')}</FormLabel>
+              <FormLabel>{t('settings.names.abstainsLimit')}</FormLabel>
               <FormDescription>
-                {t('settings.descriptions.reservationsLimit')}
+                {t('settings.descriptions.abstainsLimit')}
               </FormDescription>
               <Select
                 onValueChange={field.onChange}
@@ -191,7 +191,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue
-                      placeholder={t('settings.names.reservationsLimit')}
+                      placeholder={t('settings.names.abstainsLimit')}
                     />
                   </SelectTrigger>
                 </FormControl>

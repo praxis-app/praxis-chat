@@ -10,8 +10,8 @@ export const validateServerConfig = (
 ) => {
   const {
     decisionMakingModel,
-    standAsidesLimit,
-    reservationsLimit,
+    disagreementsLimit,
+    abstainsLimit,
     ratificationThreshold,
     votingTimeLimit,
   } = req.body as ServerConfigDto;
@@ -25,12 +25,15 @@ export const validateServerConfig = (
       .send('Decision making model must be a valid decision making model');
     return;
   }
-  if (standAsidesLimit && (standAsidesLimit < 0 || standAsidesLimit > 10)) {
-    res.status(422).send('Stand asides limit must be between 0 and 10');
+  if (
+    disagreementsLimit &&
+    (disagreementsLimit < 0 || disagreementsLimit > 10)
+  ) {
+    res.status(422).send('Disagreements limit must be between 0 and 10');
     return;
   }
-  if (reservationsLimit && (reservationsLimit < 0 || reservationsLimit > 10)) {
-    res.status(422).send('Reservations limit must be between 0 and 10');
+  if (abstainsLimit && (abstainsLimit < 0 || abstainsLimit > 10)) {
+    res.status(422).send('Abstains limit must be between 0 and 10');
     return;
   }
   if (

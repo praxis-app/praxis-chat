@@ -4,8 +4,8 @@ export type ServerConfigDto = Partial<
   Pick<
     ServerConfig,
     | 'decisionMakingModel'
-    | 'standAsidesLimit'
-    | 'reservationsLimit'
+    | 'disagreementsLimit'
+    | 'abstainsLimit'
     | 'ratificationThreshold'
     | 'votingTimeLimit'
   >

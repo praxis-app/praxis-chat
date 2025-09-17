@@ -18,10 +18,10 @@ export class ServerConfig {
   decisionMakingModel: DecisionMakingModel;
 
   @Column({ default: 2 })
-  standAsidesLimit: number;
+  disagreementsLimit: number;
 
   @Column({ default: 2 })
-  reservationsLimit: number;
+  abstainsLimit: number;
 
   @Column({ default: 51 })
   ratificationThreshold: number;
