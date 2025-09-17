@@ -68,6 +68,9 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
           },
         );
       },
+      onSuccess: () => {
+        form.reset(form.getValues());
+      },
     });
 
   const handleSliderInputBlur = (value?: number | null) => {
@@ -294,7 +297,15 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
         />
 
         <div className="flex justify-end">
-          <Button disabled={isUpdatePending} type="submit" className="w-20">
+          <Button
+            disabled={
+              isUpdatePending ||
+              !form.formState.isValid ||
+              !form.formState.isDirty
+            }
+            type="submit"
+            className="w-20"
+          >
             {t('actions.save')}
           </Button>
         </div>
