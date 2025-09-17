@@ -390,6 +390,7 @@
     },
     "labels": {
       "serverSettings": "Server settings",
+      "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"
     },
