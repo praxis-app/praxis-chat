@@ -1,6 +1,7 @@
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import { VotingTimeLimit } from '@common/votes/vote.constants';
 import * as zod from 'zod';
+import { ServerConfigErrorKeys } from './server-config.constants';
 
 export const serverConfigSchema = zod
   .object({
@@ -18,8 +19,7 @@ export const serverConfigSchema = zod
         data.ratificationThreshold <= 50
       ),
     {
-      message:
-        'Ratification threshold must be greater than 50 for majority vote',
+      message: ServerConfigErrorKeys.MajorityVoteRatificationThreshold,
       path: ['ratificationThreshold'],
     },
   )
@@ -30,8 +30,7 @@ export const serverConfigSchema = zod
         data.votingTimeLimit === VotingTimeLimit.Unlimited
       ),
     {
-      message:
-        'Voting time limit must be set for consent decision making model',
+      message: ServerConfigErrorKeys.ConsentVotingTimeLimitRequired,
       path: ['votingTimeLimit'],
     },
   );

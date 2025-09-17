@@ -355,6 +355,10 @@
       "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."
+    },
+    "errors": {
+      "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
+      "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
     }
   },
 
