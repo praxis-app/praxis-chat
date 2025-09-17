@@ -34,10 +34,10 @@ export const synchronizeProposals = async (
   if (!synchronizeProposalsJob.isActive) {
     synchronizeProposalsJob.start();
   }
-  if (disableTimeout) {
-    resetDisableTimeout();
-  } else {
+  if (disableTimeout === null) {
     addDisableTimeout();
+  } else {
+    resetDisableTimeout();
   }
   next();
 };
