@@ -52,7 +52,13 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
   const { mutate: updateServerConfig, isPending: isUpdatePending } =
     useMutation({
       mutationFn: async (data: ServerConfigReq) => {
-        await api.updateServerConfig(data);
+        await api.updateServerConfig({
+          decisionMakingModel: data.decisionMakingModel,
+          ratificationThreshold: +data.ratificationThreshold,
+          disagreementsLimit: +data.disagreementsLimit,
+          abstainsLimit: +data.abstainsLimit,
+          votingTimeLimit: +data.votingTimeLimit,
+        });
 
         queryClient.setQueryData<{ serverConfig: ServerConfigRes }>(
           ['serverConfig'],
