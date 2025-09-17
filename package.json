@@ -47,6 +47,7 @@
     "color-hash": "^2.0.2",
     "copy-to-clipboard": "^3.3.3",
     "cors": "^2.8.5",
+    "cron": "^4.3.3",
     "crypto-random-string": "^3.3.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
