@@ -3,6 +3,7 @@ import { VotingTimeLimit } from '@common/votes/vote.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 
+// TODO: Determine whether this should be moved to common
 const serverConfigSchema = zod
   .object({
     decisionMakingModel: zod.enum(DECISION_MAKING_MODEL).optional(),
