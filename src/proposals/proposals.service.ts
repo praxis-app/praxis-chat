@@ -143,11 +143,12 @@ export const isProposalRatifiable = async (proposalId: string) => {
     'config',
     'votes',
   ]);
-  const members = await getProposalMembers();
-
   if (stage !== 'voting') {
     return false;
   }
+
+  const members = await getProposalMembers();
+
   if (config.decisionMakingModel === 'consensus') {
     return hasConsensus(votes, config, members);
   }
