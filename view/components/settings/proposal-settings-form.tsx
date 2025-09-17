@@ -4,8 +4,10 @@ import { VotingTimeLimit } from '@/constants/proposal.constants';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import * as zod from 'zod';
 import {
   Form,
@@ -71,6 +73,10 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
       onSuccess: () => {
         form.reset(form.getValues());
       },
+      onError: (error: AxiosError) =>
+        toast(
+          (error.response?.data as string) || t('errors.somethingWentWrong'),
+        ),
     });
 
   const handleSliderInputBlur = (value?: number | null) => {
