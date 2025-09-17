@@ -336,11 +336,11 @@
 
   "settings": {
     "names": {
-      "decisionMakingModel": "Decision Making Model",
-      "ratificationThreshold": "Ratification Threshold",
-      "reservationsLimit": "Reservations Limit",
-      "standAsidesLimit": "Stand Asides Limit",
-      "votingTimeLimit": "Voting Time Limit"
+      "decisionMakingModel": "Decision making model",
+      "ratificationThreshold": "Ratification threshold",
+      "reservationsLimit": "Reservations limit",
+      "standAsidesLimit": "Stand asides limit",
+      "votingTimeLimit": "Voting time limit"
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
@@ -432,6 +432,8 @@
     "daysFull": "{{count}} day",
     "daysFull_plural": "{{count}} days",
     "hours": "{{hours}}h",
+    "hoursFull": "{{count}} hour",
+    "hoursFull_plural": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
@@ -439,9 +441,8 @@
     "minutesFull": "{{count}} minute",
     "minutesFull_plural": "{{count}} minutes",
     "never": "Never",
+    "unlimited": "Unlimited",
     "weeks": "{{count}} week",
-    "weeks_plural": "{{count}} weeks",
-    "hoursFull": "{{count}} hour",
-    "hoursFull_plural": "{{count}} hours"
+    "weeks_plural": "{{count}} weeks"
   }
 }

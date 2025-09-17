@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
+import { VotingTimeLimit } from '@/constants/proposal.constants';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -69,7 +70,10 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((fv) => updateServerConfig(fv))}>
+      <form
+        onSubmit={form.handleSubmit((fv) => updateServerConfig(fv))}
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
           name="decisionMakingModel"
@@ -108,8 +112,60 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="votingTimeLimit"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.names.votingTimeLimit')}</FormLabel>
+              <FormDescription>
+                {t('settings.descriptions.votingTimeLimit')}
+              </FormDescription>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={t('settings.names.votingTimeLimit')}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={VotingTimeLimit.HalfHour.toString()}>
+                    {t('time.minutesFull', { count: 30 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.OneHour.toString()}>
+                    {t('time.hoursFull', { count: 1 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.HalfDay.toString()}>
+                    {t('time.hoursFull', { count: 12 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.OneDay.toString()}>
+                    {t('time.daysFull', { count: 1 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.ThreeDays.toString()}>
+                    {t('time.daysFull', { count: 3 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.OneWeek.toString()}>
+                    {t('time.weeks', { count: 1 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.TwoWeeks.toString()}>
+                    {t('time.weeks', { count: 2 })}
+                  </SelectItem>
+                  <SelectItem value={VotingTimeLimit.Unlimited.toString()}>
+                    {t('time.unlimited')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex justify-end">
-          <Button className="mt-4" disabled={isUpdatePending} type="submit">
+          <Button disabled={isUpdatePending} type="submit" className="w-20">
             {t('actions.save')}
           </Button>
         </div>
