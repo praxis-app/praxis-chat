@@ -307,6 +307,7 @@ export const implementProposal = async (proposalId: string) => {
   }
 };
 
+/** Synchronizes proposals with regard to voting duration and ratifiability */
 export const synchronizeProposal = async (proposalId: string) => {
   const { config } = await getProposal(proposalId, ['config']);
   if (!config.closingAt || Date.now() < Number(config.closingAt)) {
