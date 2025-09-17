@@ -314,7 +314,6 @@ export const synchronizeProposal = async (proposalId: string) => {
   }
 
   const isRatifiable = await isProposalRatifiable(proposalId);
-
   if (!isRatifiable) {
     await proposalRepository.update(proposalId, { stage: 'closed' });
   }
