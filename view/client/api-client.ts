@@ -1,6 +1,7 @@
 // API client for server endpoints
 
 import { CreateProposalReq, ProposalRes } from '@/types/proposal.types';
+import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import { CreateVoteReq, UpdateVoteReq, VoteRes } from '@/types/vote.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
@@ -259,6 +260,22 @@ class ApiClient {
   deleteRole = async (roleId: string) => {
     const path = `/roles/${roleId}`;
     return this.executeRequest<void>('delete', path);
+  };
+
+  // -------------------------------------------------------------------------
+  // Server Configs
+  // -------------------------------------------------------------------------
+
+  getServerConfig = async () => {
+    const path = '/server-configs';
+    return this.executeRequest<{ serverConfig: ServerConfigRes }>('get', path);
+  };
+
+  updateServerConfig = async (data: ServerConfigReq) => {
+    const path = '/server-configs';
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
   };
 
   // -------------------------------------------------------------------------
