@@ -29,13 +29,10 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
-  const isProposalRatifiable = await proposalsService.isProposalRatifiable(
-    vote.proposalId,
-  );
-  if (isProposalRatifiable) {
-    await proposalsService.ratifyProposal(vote.proposalId);
-    await proposalsService.implementProposal(vote.proposalId);
-  }
+  const proposal = await proposalsService.getProposal(vote.proposalId, [
+    'config',
+  ]);
+  await proposalsService.synchronizeProposal(proposal);
 
   return vote;
 };
@@ -45,13 +42,10 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
   const vote = await getVote(voteId, ['proposal']);
 
   if (vote.proposalId) {
-    const isProposalRatifiable = await proposalsService.isProposalRatifiable(
-      vote.proposalId,
-    );
-    if (isProposalRatifiable) {
-      await proposalsService.ratifyProposal(vote.proposalId);
-      await proposalsService.implementProposal(vote.proposalId);
-    }
+    const proposal = await proposalsService.getProposal(vote.proposalId, [
+      'config',
+    ]);
+    await proposalsService.synchronizeProposal(proposal);
   }
 
   return result;

@@ -306,6 +306,7 @@ export const implementProposal = async (proposalId: string) => {
   }
 };
 
+// TODO: Remove need to pass in entire proposal object
 export const synchronizeProposal = async (
   proposal: Proposal,
 ): Promise<Proposal> => {
