@@ -41,7 +41,7 @@ dotenv.config();
   app.use(cors());
 
   // Serve static files and API routes
-  app.use(express.static(join(__dirname, './view')));
+  app.use(express.static(join(__dirname, '../view')));
   app.use('/api', appRouter);
 
   // Add error handling middleware for all routes
@@ -56,7 +56,7 @@ dotenv.config();
 
   // Catch-all route to serve index.html for SPA routing
   app.get(/(.*)/, (_, res) => {
-    res.sendFile(join(__dirname, './view', 'index.html'));
+    res.sendFile(join(__dirname, '../view', 'index.html'));
   });
 
   // Handle web socket connections with pub-sub service
@@ -67,7 +67,7 @@ dotenv.config();
     webSocket.on('error', console.error);
   });
 
-  server.listen(process.env.SERVER_PORT);
-  const url = `http://localhost:${process.env.SERVER_PORT}`;
-  console.log(`Server running at ${url} 🚀`);
+  server.listen(process.env.VITE_SERVER_PORT);
+  const url = `http://localhost:${process.env.VITE_SERVER_PORT}`;
+  console.info(`Server running at ${url} 🚀`);
 })();

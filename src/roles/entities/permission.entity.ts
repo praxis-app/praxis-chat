@@ -1,3 +1,8 @@
+import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
+import {
+  ABILITY_ACTIONS,
+  ABILITY_SUBJECTS,
+} from '@common/roles/role.constants';
 import {
   Column,
   CreateDateColumn,
@@ -7,12 +12,6 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
-  AbilityAction,
-  AbilitySubject,
-} from '../app-ability';
 import { Role } from './role.entity';
 
 @Entity()

@@ -1,12 +1,9 @@
-import { PROPOSAL_ACTION_TYPE } from '@/constants/proposal.constants';
 import {
-  AbilityAction,
-  AbilitySubject,
+  ProposalActionType,
   RoleAttributeChangeType,
-} from './role.types';
+} from '@common/proposal-actions/proposal-action.types';
+import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import { UserRes } from './user.types';
-
-export type ProposalActionType = (typeof PROPOSAL_ACTION_TYPE)[number];
 
 // -------------------------------------------------------------------------
 // Requests

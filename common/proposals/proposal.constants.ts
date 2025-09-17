@@ -4,14 +4,6 @@ export const DECISION_MAKING_MODEL = [
   'majority-vote',
 ] as const;
 
-export const PROPOSAL_ACTION_TYPE = [
-  'change-role',
-  'change-settings',
-  'create-role',
-  'plan-event',
-  'test',
-] as const;
-
 export const PROPOSAL_STAGE = [
   'voting',
   'ratified',

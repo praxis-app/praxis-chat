@@ -1,9 +1,12 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
-import { ProposalActionType } from '@/types/proposal-action.types';
-import { PermissionKeys, RoleAttributeChangeType } from '@/types/role.types';
+import { PermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
+import {
+  ProposalActionType,
+  RoleAttributeChangeType,
+} from '@common/proposal-actions/proposal-action.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';

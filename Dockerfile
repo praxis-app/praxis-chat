@@ -4,6 +4,7 @@ RUN apk add --update python3 build-base
 
 COPY src /app/src
 COPY view /app/view
+COPY common /app/common
 COPY content /app/content
 
 COPY package.json /app
@@ -20,14 +21,15 @@ RUN npm ci
 
 # Build args
 ARG NODE_ENV
-ARG SERVER_PORT
+ARG VITE_SERVER_PORT
 ARG DB_MIGRATIONS
 
 # Build the app
 RUN npm run build
 RUN npm run build:client
 
-# Clean up for runtime image
+# Prep for runtime image
+RUN mv content dist/content
 RUN rm package-lock.json vite.config.mts .eslintrc.cjs
 RUN rm tsconfig.json tsconfig.view.json
 RUN rm -rf view
