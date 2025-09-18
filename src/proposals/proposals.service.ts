@@ -37,7 +37,7 @@ export const getChannelProposals = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const proposals = await proposalRepository
+  const { entities: proposals, raw } = await proposalRepository
     .createQueryBuilder('proposal')
     .select([
       'proposal.id',
@@ -65,6 +65,7 @@ export const getChannelProposals = async (
     .addSelect([
       'proposalActionPermissions.subject',
       'proposalActionPermissions.action',
+      'proposalActionPermissions.changeType',
     ])
     .addSelect([
       'proposalActionRoleMembers.id',
@@ -95,7 +96,7 @@ export const getChannelProposals = async (
     .orderBy('proposal.createdAt', 'DESC')
     .skip(offset)
     .take(limit)
-    .getMany();
+    .getRawAndEntities();
 
   // Fetch the current user's votes for these proposals in one query
   const proposalIds = proposals.map((p) => p.id);
@@ -107,16 +108,35 @@ export const getChannelProposals = async (
       : [];
   const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
-  const shapedProposals = proposals.map((proposal) => ({
-    ...proposal,
-    images: proposal.images.map((image) => ({
-      id: image.id,
-      isPlaceholder: !image.filename,
-      createdAt: image.createdAt,
-    })),
-    myVoteId: myVoteProposalId.get(proposal.id)?.id,
-    myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
-  }));
+  const shapedProposals = proposals.map((proposal) => {
+    const rowsForProposal = raw.filter((r) => r.proposal_id === proposal.id);
+
+    const actionRole = proposal.action.role
+      ? {
+          ...proposal.action?.role,
+          permissions: rowsForProposal.map((r) => ({
+            changeType: r.proposalActionPermissions_changeType,
+            subject: r.proposalActionPermissions_subject,
+            action: r.proposalActionPermissions_action,
+          })),
+        }
+      : undefined;
+
+    return {
+      ...proposal,
+      action: {
+        ...proposal.action,
+        role: actionRole,
+      },
+      images: proposal.images.map((image) => ({
+        id: image.id,
+        isPlaceholder: !image.filename,
+        createdAt: image.createdAt,
+      })),
+      myVoteId: myVoteProposalId.get(proposal.id)?.id,
+      myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
+    };
+  });
 
   return shapedProposals;
 };
