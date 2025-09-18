@@ -63,10 +63,12 @@ export const DeleteChannelForm = ({
         navigate(NavigationPaths.Home);
       }
     },
-    onError(error: AxiosError) {
-      const errorMessage =
-        (error.response?.data as string) || t('errors.somethingWentWrong');
-      toast(errorMessage);
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
     },
   });
 

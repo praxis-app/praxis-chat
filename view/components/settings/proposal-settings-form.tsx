@@ -48,16 +48,12 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
   const { mutate: updateServerConfig, isPending: isUpdatePending } =
     useMutation({
       mutationFn: async (data: ServerConfigReq) => {
-        await api.updateServerConfig({
-          decisionMakingModel: data.decisionMakingModel,
-          ratificationThreshold: Number(data.ratificationThreshold),
-          disagreementsLimit: Number(data.disagreementsLimit),
-          abstainsLimit: Number(data.abstainsLimit),
-          votingTimeLimit: Number(data.votingTimeLimit),
-        });
-
+        await api.updateServerConfig(data);
+        return data;
+      },
+      onSuccess: (data) => {
         queryClient.setQueryData<{ serverConfig: ServerConfigRes }>(
-          ['serverConfig'],
+          ['server-configs'],
           (oldData) => {
             if (!oldData) {
               throw new Error('Server config not found');
@@ -71,14 +67,15 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
             };
           },
         );
-      },
-      onSuccess: () => {
         form.reset(form.getValues());
       },
-      onError: (error: AxiosError) =>
-        toast(
-          (error.response?.data as string) || t('errors.somethingWentWrong'),
-        ),
+      onError: (error: Error) => {
+        if (error instanceof AxiosError && error.response?.data) {
+          toast(error.response?.data);
+          return;
+        }
+        toast(error.message || t('errors.somethingWentWrong'));
+      },
     });
 
   const handleSliderInputBlur = (value?: number | null) => {
@@ -152,7 +149,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                 {t('settings.descriptions.disagreementsLimit')}
               </FormDescription>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -187,7 +184,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                 {t('settings.descriptions.abstainsLimit')}
               </FormDescription>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -268,7 +265,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
                 {t('settings.descriptions.votingTimeLimit')}
               </FormDescription>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value?.toString()}
               >
                 <FormControl>
