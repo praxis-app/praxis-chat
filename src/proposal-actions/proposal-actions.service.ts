@@ -122,7 +122,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
     );
     const toSave: Partial<Permission>[] = [
       ...role.permissions.filter((permission) =>
-        toRemove.some(
+        !toRemove.some(
           (p) =>
             p.action === permission.action && p.subject === permission.subject,
         ),
