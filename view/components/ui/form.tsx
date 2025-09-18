@@ -141,9 +141,8 @@ function FormMessage({
 }: React.ComponentProps<'p'> & { errorOverrides?: { [key: string]: string } }) {
   const { error, formMessageId } = useFormField();
 
-  const errorMessage = props.errorOverrides
-    ? props.errorOverrides[error?.message ?? '']
-    : error?.message;
+  const errorMessageOverride = props.errorOverrides?.[error?.message ?? ''];
+  const errorMessage = errorMessageOverride ?? error?.message;
 
   const body = error ? String(errorMessage ?? '') : props.children;
 
