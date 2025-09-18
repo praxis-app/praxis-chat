@@ -89,7 +89,7 @@ export const createProposalActionRole = async (
 export const implementChangeRole = async (proposalActionId: string) => {
   const actionRole = await proposalActionRoleRepository.findOneOrFail({
     where: { proposalActionId },
-    relations: ['permission', 'members'],
+    relations: ['permissions', 'members'],
   });
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: actionRole.roleId },
@@ -128,6 +128,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
         ),
       ),
       ...toAdd.map(({ action, subject }) => ({
+        roleId: roleToUpdate.id,
         action,
         subject,
       })),
@@ -154,7 +155,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
 export const implementCreateRole = async (proposalActionId: string) => {
   const actionRole = await proposalActionRoleRepository.findOneOrFail({
     where: { proposalActionId },
-    relations: ['permission', 'members'],
+    relations: ['permissions', 'members'],
   });
 
   const { name, color, permissions } = actionRole;
