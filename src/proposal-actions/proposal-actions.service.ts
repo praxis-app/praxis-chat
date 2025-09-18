@@ -93,6 +93,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
   });
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: actionRole.roleId },
+    relations: ['permissions'],
   });
 
   const userIdsToAdd = actionRole.members
@@ -110,10 +111,6 @@ export const implementChangeRole = async (proposalActionId: string) => {
   });
   // Update role permissions
   if (actionRole.permissions) {
-    const role = await rolesRepository.findOneOrFail({
-      where: { id: roleToUpdate.id },
-      relations: ['permissions'],
-    });
     const toAdd = actionRole.permissions.filter(
       (permission) => permission.changeType === 'add',
     );
@@ -121,11 +118,13 @@ export const implementChangeRole = async (proposalActionId: string) => {
       (permission) => permission.changeType === 'remove',
     );
     const toSave: Partial<Permission>[] = [
-      ...role.permissions.filter((permission) =>
-        !toRemove.some(
-          (p) =>
-            p.action === permission.action && p.subject === permission.subject,
-        ),
+      ...roleToUpdate.permissions.filter(
+        (permission) =>
+          !toRemove.some(
+            (p) =>
+              p.action === permission.action &&
+              p.subject === permission.subject,
+          ),
       ),
       ...toAdd.map(({ action, subject }) => ({
         roleId: roleToUpdate.id,
@@ -133,7 +132,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
         subject,
       })),
     ];
-    await rolesRepository.save({ ...role, permissions: toSave });
+    await rolesRepository.save({ ...roleToUpdate, permissions: toSave });
   }
   // Add role members
   if (userIdsToAdd?.length) {
