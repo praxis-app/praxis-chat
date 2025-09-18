@@ -63,16 +63,16 @@ export const getChannelProposals = async (
       'proposalActionRole.roleId',
     ])
     .addSelect([
-      'proposalActionPermissions.subject',
-      'proposalActionPermissions.action',
-      'proposalActionPermissions.changeType',
+      'proposalActionPermission.subject',
+      'proposalActionPermission.action',
+      'proposalActionPermission.changeType',
     ])
     .addSelect([
-      'proposalActionRoleMembers.id',
-      'proposalActionRoleMembers.changeType',
-      'proposalActionRoleMembersUser.id',
-      'proposalActionRoleMembersUser.name',
-      'proposalActionRoleMembersUser.displayName',
+      'proposalActionRoleMember.id',
+      'proposalActionRoleMember.changeType',
+      'proposalActionRoleMemberUser.id',
+      'proposalActionRoleMemberUser.name',
+      'proposalActionRoleMemberUser.displayName',
     ])
     .addSelect([
       'proposalUser.id',
@@ -80,18 +80,18 @@ export const getChannelProposals = async (
       'proposalUser.displayName',
     ])
     .addSelect([
-      'proposalImages.id',
-      'proposalImages.filename',
-      'proposalImages.createdAt',
+      'proposalImage.id',
+      'proposalImage.filename',
+      'proposalImage.createdAt',
     ])
     .leftJoin('proposal.user', 'proposalUser')
-    .leftJoin('proposal.images', 'proposalImages')
+    .leftJoin('proposal.images', 'proposalImage')
     .leftJoin('proposal.action', 'proposalAction')
     .leftJoin('proposal.config', 'proposalConfig')
     .leftJoin('proposalAction.role', 'proposalActionRole')
-    .leftJoin('proposalActionRole.permissions', 'proposalActionPermissions')
-    .leftJoin('proposalActionRole.members', 'proposalActionRoleMembers')
-    .leftJoin('proposalActionRoleMembers.user', 'proposalActionRoleMembersUser')
+    .leftJoin('proposalActionRole.permissions', 'proposalActionPermission')
+    .leftJoin('proposalActionRole.members', 'proposalActionRoleMember')
+    .leftJoin('proposalActionRoleMember.user', 'proposalActionRoleMemberUser')
     .where('proposal.channelId = :channelId', { channelId })
     .orderBy('proposal.createdAt', 'DESC')
     .skip(offset)
@@ -115,9 +115,9 @@ export const getChannelProposals = async (
       ? {
           ...proposal.action?.role,
           permissions: rowsForProposal.map((r) => ({
-            changeType: r.proposalActionPermissions_changeType,
-            subject: r.proposalActionPermissions_subject,
-            action: r.proposalActionPermissions_action,
+            changeType: r.proposalActionPermission_changeType,
+            subject: r.proposalActionPermission_subject,
+            action: r.proposalActionPermission_action,
           })),
         }
       : undefined;
