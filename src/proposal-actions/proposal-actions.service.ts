@@ -120,13 +120,12 @@ export const implementChangeRole = async (proposalActionId: string) => {
     );
     if (toRemove.length > 0) {
       await permissionRepository.remove(
-        roleToUpdate.permissions.filter(
-          (permission) =>
-            !toRemove.some(
-              (p) =>
-                p.action === permission.action &&
-                p.subject === permission.subject,
-            ),
+        roleToUpdate.permissions.filter((permission) =>
+          toRemove.some(
+            (p) =>
+              p.action === permission.action &&
+              p.subject === permission.subject,
+          ),
         ),
       );
     }
