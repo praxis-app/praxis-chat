@@ -9,8 +9,9 @@ import { ProposalActionPermission } from './entities/proposal-action-permission.
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
 
-const rolesRepository = dataSource.getRepository(Role);
 const usersRepository = dataSource.getRepository(User);
+const rolesRepository = dataSource.getRepository(Role);
+const permissionRepository = dataSource.getRepository(Permission);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
@@ -117,22 +118,27 @@ export const implementChangeRole = async (proposalActionId: string) => {
     const toRemove = actionRole.permissions.filter(
       (permission) => permission.changeType === 'remove',
     );
-    const toSave: Partial<Permission>[] = [
-      ...roleToUpdate.permissions.filter(
-        (permission) =>
-          !toRemove.some(
-            (p) =>
-              p.action === permission.action &&
-              p.subject === permission.subject,
-          ),
-      ),
-      ...toAdd.map(({ action, subject }) => ({
-        roleId: roleToUpdate.id,
-        action,
-        subject,
-      })),
-    ];
-    await rolesRepository.save({ ...roleToUpdate, permissions: toSave });
+    if (toRemove.length > 0) {
+      await permissionRepository.remove(
+        roleToUpdate.permissions.filter(
+          (permission) =>
+            !toRemove.some(
+              (p) =>
+                p.action === permission.action &&
+                p.subject === permission.subject,
+            ),
+        ),
+      );
+    }
+    if (toAdd.length > 0) {
+      await permissionRepository.save(
+        toAdd.map(({ action, subject }) => ({
+          roleId: roleToUpdate.id,
+          action,
+          subject,
+        })),
+      );
+    }
   }
   // Add role members
   if (userIdsToAdd?.length) {
