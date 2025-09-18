@@ -120,7 +120,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
     const toRemove = actionRole.permissions.filter(
       (permission) => permission.changeType === 'remove',
     );
-    let toSave: Partial<Permission>[] = [
+    const toSave: Partial<Permission>[] = [
       ...role.permissions.filter((permission) =>
         toRemove.some(
           (p) =>
