@@ -108,19 +108,12 @@ export const getChannelProposals = async (
   const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
   const shapedProposals = proposals.map((proposal) => ({
-    id: proposal.id,
-    body: proposal.body,
-    stage: proposal.stage,
-    channelId: proposal.channelId,
-    user: proposal.user,
+    ...proposal,
     images: proposal.images.map((image) => ({
       id: image.id,
       isPlaceholder: !image.filename,
       createdAt: image.createdAt,
     })),
-    action: proposal.action,
-    config: proposal.config,
-    createdAt: proposal.createdAt,
     myVoteId: myVoteProposalId.get(proposal.id)?.id,
     myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
   }));
