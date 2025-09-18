@@ -1,3 +1,4 @@
+import { Permission } from 'src/roles/entities/permission.entity';
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import { Role } from '../roles/entities/role.entity';
@@ -109,9 +110,29 @@ export const implementChangeRole = async (proposalActionId: string) => {
   });
   // Update role permissions
   if (actionRole.permissions) {
-    await rolesService.updateRolePermissions(roleToUpdate.id, {
-      permissions: actionRole.permissions,
+    const role = await rolesRepository.findOneOrFail({
+      where: { id: roleToUpdate.id },
+      relations: ['permissions'],
     });
+    const toAdd = actionRole.permissions.filter(
+      (permission) => permission.changeType === 'add',
+    );
+    const toRemove = actionRole.permissions.filter(
+      (permission) => permission.changeType === 'remove',
+    );
+    let toSave: Partial<Permission>[] = [
+      ...role.permissions.filter((permission) =>
+        toRemove.some(
+          (p) =>
+            p.action === permission.action && p.subject === permission.subject,
+        ),
+      ),
+      ...toAdd.map(({ action, subject }) => ({
+        action,
+        subject,
+      })),
+    ];
+    await rolesRepository.save({ ...role, permissions: toSave });
   }
   // Add role members
   if (userIdsToAdd?.length) {
