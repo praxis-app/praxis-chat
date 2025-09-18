@@ -1,6 +1,6 @@
-import { Permission } from 'src/roles/entities/permission.entity';
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
+import { Permission } from '../roles/entities/permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
