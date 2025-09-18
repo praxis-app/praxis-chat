@@ -19,7 +19,9 @@ interface InlineProposalProps {
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVoteId, myVoteType, action } = proposal;
+  const { body, user, createdAt, id, myVoteId, myVoteType, action, stage } =
+    proposal;
+
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
   const formattedDate = timeAgo(createdAt ?? '');
@@ -61,7 +63,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
               <div>10/12 voted</div>
               <div>Ends in 2 days</div>
             </div>
-            <Badge variant="outline">{t('proposals.labels.active')}</Badge>
+            <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>
           </div>
         </Card>
       </div>

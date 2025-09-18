@@ -110,10 +110,13 @@
       "consent": "Consent",
       "majority": "Majority vote",
       "proposedSettings": "Settings proposal",
+      "ratified": "Ratified",
+      "revision": "Revision",
       "roleChangeProposal": "Role change proposal",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
+      "voting": "Voting",
       "roleSelection": "Role selection"
     },
     "headers": {
