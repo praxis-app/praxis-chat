@@ -9,6 +9,11 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 
+const proposalActionRoleMemberSchema = zod.object({
+  userId: zod.string(),
+  changeType: zod.enum(ROLE_ATTRIBUTE_CHANGE_TYPE),
+});
+
 const proposalActionPermissionSchema = zod.object({
   subject: zod.enum(ABILITY_SUBJECTS),
   actions: zod.array(
@@ -17,11 +22,6 @@ const proposalActionPermissionSchema = zod.object({
       changeType: zod.enum(ROLE_ATTRIBUTE_CHANGE_TYPE),
     }),
   ),
-});
-
-const proposalActionRoleMemberSchema = zod.object({
-  userId: zod.string(),
-  changeType: zod.enum(ROLE_ATTRIBUTE_CHANGE_TYPE),
 });
 
 const proposalActionRoleSchema = zod.object({
