@@ -37,9 +37,11 @@ export const ProposalVoteButtons = ({
       }
       if (myVote.voteType === voteType) {
         await api.deleteVote(channel.id, proposalId, myVote.id);
-        return { action: 'delete' as const };
+        return { action: 'delete' as const, voteId: myVote.id };
       }
-      await api.updateVote(channel.id, proposalId, myVote.id, { voteType });
+      await api.updateVote(channel.id, proposalId, myVote.id, {
+        voteType,
+      });
       return { action: 'update' as const, voteId: myVote.id, voteType };
     },
     onSuccess: (result) => {

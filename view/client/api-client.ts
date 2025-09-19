@@ -2,7 +2,12 @@
 
 import { CreateProposalReq, ProposalRes } from '@/types/proposal.types';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
-import { CreateVoteReq, UpdateVoteReq, VoteRes } from '@/types/vote.types';
+import {
+  CreateVoteReq,
+  CreateVoteRes,
+  UpdateVoteReq,
+  UpdateVoteRes,
+} from '@/types/vote.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
 import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
 import { LocalStorageKeys } from '../constants/shared.constants';
@@ -176,7 +181,7 @@ class ApiClient {
     data: CreateVoteReq,
   ) => {
     const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
-    return this.executeRequest<{ vote: VoteRes }>('post', path, {
+    return this.executeRequest<{ vote: CreateVoteRes }>('post', path, {
       data,
     });
   };
@@ -188,7 +193,7 @@ class ApiClient {
     data: UpdateVoteReq,
   ) => {
     const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
-    return this.executeRequest<{ vote: VoteRes }>('put', path, {
+    return this.executeRequest<UpdateVoteRes>('put', path, {
       data,
     });
   };
