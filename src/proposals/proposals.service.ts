@@ -112,11 +112,11 @@ export const getInlineProposals = async (
     : {};
 
   // Get users eligible to vote on this proposal
-  const proposalMembers = await getProposalMembers();
+  const proposalMemberCount = await getProposalMemberCount();
 
   const shapedProposals = proposals.map((proposal) => {
     const votesNeededToRatify = Math.ceil(
-      proposalMembers.length * (proposal.config.ratificationThreshold * 0.01),
+      proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
     );
 
     const agreementVoteCount = proposal.votes.filter(
@@ -179,8 +179,8 @@ export const getMyVotesMap = async (
 };
 
 // TODO: Account for instances with multiple servers / guilds
-export const getProposalMembers = async () => {
-  return userRepository.find({
+export const getProposalMemberCount = async () => {
+  return userRepository.count({
     where: {
       anonymous: false,
       locked: false,
@@ -197,16 +197,16 @@ export const isProposalRatifiable = async (proposalId: string) => {
     return false;
   }
 
-  const members = await getProposalMembers();
+  const memberCount = await getProposalMemberCount();
 
   if (config.decisionMakingModel === 'consensus') {
-    return hasConsensus(votes, config, members);
+    return hasConsensus(votes, config, memberCount);
   }
   if (config.decisionMakingModel === 'consent') {
     return hasConsent(votes, config);
   }
   if (config.decisionMakingModel === 'majority-vote') {
-    return hasMajorityVote(votes, config, members);
+    return hasMajorityVote(votes, config, memberCount);
   }
   return false;
 };
@@ -219,13 +219,13 @@ export const hasConsensus = async (
     abstainsLimit,
     closingAt,
   }: ProposalConfig,
-  members: User[],
+  memberCount: number,
 ) => {
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
 
-  const agreementsNeeded = members.length * (ratificationThreshold * 0.01);
+  const agreementsNeeded = memberCount * (ratificationThreshold * 0.01);
   const { agreements, disagreements, abstains, blocks } =
     sortConsensusVotesByType(votes);
 
@@ -253,14 +253,14 @@ export const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
 export const hasMajorityVote = (
   votes: Vote[],
   { ratificationThreshold, closingAt }: ProposalConfig,
-  members: User[],
+  memberCount: number,
 ) => {
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
   const { agreements } = sortMajorityVotesByType(votes);
 
-  return agreements.length >= members.length * (ratificationThreshold * 0.01);
+  return agreements.length >= memberCount * (ratificationThreshold * 0.01);
 };
 
 export const createProposal = async (
@@ -297,6 +297,11 @@ export const createProposal = async (
     userId,
   });
 
+  const proposalMemberCount = await getProposalMemberCount();
+  const votesNeededToRatify = Math.ceil(
+    proposalMemberCount * (serverConfig.ratificationThreshold * 0.01),
+  );
+
   let proposalActionRole: ProposalActionRole | undefined;
   if (action.role) {
     proposalActionRole = await proposalActionsService.createProposalActionRole(
@@ -322,6 +327,8 @@ export const createProposal = async (
     // TODO: Handle images
     images: [],
     createdAt: proposal.createdAt,
+    agreementVoteCount: 0,
+    votesNeededToRatify,
   };
 
   // Publish proposal to all other channel members for realtime feed updates
