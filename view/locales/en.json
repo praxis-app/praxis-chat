@@ -141,7 +141,7 @@
     "placeholders": {
       "action": "Select an action type",
       "body": "Enter your proposal details...",
-      "searchPlaceholder": "Search users...",
+      "searchMembersPlaceholder": "Search members...",
       "selectRolePlaceholder": "Select a role..."
     },
     "actions": {

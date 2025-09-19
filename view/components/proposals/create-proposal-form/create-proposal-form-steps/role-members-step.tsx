@@ -59,7 +59,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
+      <div className="mb-4 space-y-2">
         <h2 className="text-lg font-semibold">
           {t('proposals.headers.roleMembers')}
         </h2>
@@ -71,29 +71,21 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
       <div className="space-y-4">
         {selectedRoleId && (
           <>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  {t('proposals.headers.searchMembers')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Input
-                  placeholder={t('proposals.placeholders.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </CardContent>
-            </Card>
+            <Input
+              placeholder={t('proposals.placeholders.searchMembersPlaceholder')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mb-5"
+            />
 
-            <Card>
+            <Card className="gap-1.5">
               <CardHeader>
                 <CardTitle className="text-base">
                   {t('proposals.headers.memberChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="min-h-48 space-y-2">
+                <div className="min-h-48 space-y-0.5">
                   {filteredUsers.map((user) => (
                     <RoleMemberOption
                       key={user.id}

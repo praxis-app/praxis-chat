@@ -27,7 +27,7 @@ export const RoleMemberOption = ({
 
   return (
     <div
-      className="hover:bg-muted/50 mb-2 flex cursor-pointer items-center justify-between gap-5 rounded-lg p-3 last:mb-0"
+      className="hover:bg-muted/50 flex cursor-pointer items-center justify-between gap-5 rounded-lg py-3"
       onClick={handleChange}
     >
       <div className="flex items-center">
