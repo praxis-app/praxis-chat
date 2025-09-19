@@ -2,6 +2,7 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
+import { ProposalStage } from '@common/proposals/proposal.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,9 +15,15 @@ interface Props {
   channel: ChannelRes;
   myVote?: { id: string; voteType: VoteType };
   proposalId: string;
+  stage: ProposalStage;
 }
 
-export const ProposalVoteButtons = ({ channel, proposalId, myVote }: Props) => {
+export const ProposalVoteButtons = ({
+  channel,
+  proposalId,
+  myVote,
+  stage,
+}: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -85,6 +92,18 @@ export const ProposalVoteButtons = ({ channel, proposalId, myVote }: Props) => {
     },
   });
 
+  const handleVoteBtnClick = (voteType: VoteType) => {
+    if (stage === 'closed') {
+      toast(t('proposals.prompts.noVotingAfterClose'));
+      return;
+    }
+    if (stage === 'ratified') {
+      toast(t('proposals.prompts.noVotingAfterRatification'));
+      return;
+    }
+    castVote(voteType);
+  };
+
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4">
       {VOTE_TYPES.map((vote) => (
@@ -96,7 +115,7 @@ export const ProposalVoteButtons = ({ channel, proposalId, myVote }: Props) => {
             'col-span-1',
             myVote?.voteType === vote && '!bg-primary/15',
           )}
-          onClick={() => castVote(vote)}
+          onClick={() => handleVoteBtnClick(vote)}
           disabled={isPending}
         >
           {t(`proposals.actions.${vote}`)}

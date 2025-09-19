@@ -60,6 +60,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
               proposalId={id}
               channel={channel}
               myVote={myVote}
+              stage={stage}
             />
           </CardAction>
 

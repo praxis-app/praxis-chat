@@ -169,7 +169,9 @@
       "test": "QA test"
     },
     "prompts": {
-      "noUsersFound": "No users found"
+      "noUsersFound": "No users found",
+      "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
+      "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on."
     },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
