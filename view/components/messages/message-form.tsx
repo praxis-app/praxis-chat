@@ -8,6 +8,7 @@ import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -138,8 +139,12 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       onSend?.();
       reset();
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
     },
   });
 

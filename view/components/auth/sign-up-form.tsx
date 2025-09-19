@@ -129,8 +129,12 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
     },
   });
 

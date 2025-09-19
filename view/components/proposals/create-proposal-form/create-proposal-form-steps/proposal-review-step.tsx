@@ -299,7 +299,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
           {t('actions.previous')}
         </Button>
         <Button onClick={handleSubmitBtnClick} disabled={isSubmitting}>
-          {isSubmitting ? t('actions.loading') : t('proposals.actions.create')}
+          {t('proposals.actions.create')}
         </Button>
       </div>
     </div>

@@ -49,11 +49,23 @@ const proposalActionSchema = zod
     },
   );
 
-const proposalSchema = zod.object({
-  body: zod.string().optional(),
-  action: proposalActionSchema,
-  closingAt: zod.date().optional(),
-});
+const proposalSchema = zod
+  .object({
+    body: zod.string().optional(),
+    action: proposalActionSchema,
+    closingAt: zod.date().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.action.actionType === 'test') {
+        return !!data.body;
+      }
+      return true;
+    },
+    {
+      message: 'Body is required for test action',
+    },
+  );
 
 export const validateProposal = async (
   req: Request,
