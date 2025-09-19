@@ -57,17 +57,39 @@ export const ProposalVoteButtons = ({
                 return item;
               }
               if (result.action === 'delete') {
+                const agreementVoteCount =
+                  myVote?.voteType === 'agree'
+                    ? item.agreementVoteCount - 1
+                    : item.agreementVoteCount;
                 return {
                   ...item,
+                  agreementVoteCount,
                   myVote: undefined,
                 };
               }
+
+              let agreementVoteCount = item.agreementVoteCount;
+              if (result.action === 'create' && result.voteType === 'agree') {
+                agreementVoteCount += 1;
+              }
+              if (result.action === 'update') {
+                if (
+                  myVote?.voteType !== 'agree' &&
+                  result.voteType === 'agree'
+                ) {
+                  agreementVoteCount += 1;
+                }
+                if (
+                  myVote?.voteType === 'agree' &&
+                  result.voteType !== 'agree'
+                ) {
+                  agreementVoteCount -= 1;
+                }
+              }
               return {
                 ...item,
-                myVote: {
-                  id: result.voteId,
-                  voteType: result.voteType,
-                },
+                agreementVoteCount,
+                myVote: { id: result.voteId, voteType: result.voteType },
               };
             });
             return { feed };
