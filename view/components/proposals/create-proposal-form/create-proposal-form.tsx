@@ -323,7 +323,6 @@ export const CreateProposalForm = ({
       onPrevious={handlePrevious}
       onSubmit={handleSubmit}
       isSubmitting={isPending}
-      className="space-y-6"
     />
   );
 };
