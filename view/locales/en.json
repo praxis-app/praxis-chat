@@ -176,7 +176,7 @@
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
       "errorCreatingProposal": "Error creating proposal",
-      "changeRoleRequiresChanges": "Proposals to change roles must include changes to the role's name, color, permissions, or members"
+      "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role."
     }
   },
 
