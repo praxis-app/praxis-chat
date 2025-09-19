@@ -269,15 +269,18 @@ export const EditRolePage = () => {
                 <DialogHeader>
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
                 </DialogHeader>
-                {eligibleUsersData?.users.map((user) => (
-                  <RoleMemberOption
-                    key={user.id}
-                    selectedUserIds={selectedUserIds}
-                    setSelectedUserIds={setSelectedUserIds}
-                    user={user}
-                  />
-                ))}
-                <div className="mt-4 flex justify-end">
+                <div className="space-y-0.5">
+                  {eligibleUsersData?.users.map((user) => (
+                    <RoleMemberOption
+                      key={user.id}
+                      selectedUserIds={selectedUserIds}
+                      setSelectedUserIds={setSelectedUserIds}
+                      className="px-3.5"
+                      user={user}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 flex justify-end">
                   <Button onClick={() => addMembers()} className="w-18">
                     {t('roles.actions.add')}
                   </Button>
