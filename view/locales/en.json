@@ -171,18 +171,13 @@
     "prompts": {
       "noUsersFound": "No users found",
       "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
-      "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on."
+      "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on.",
+      "ratifiedSuccess": "This proposal has been ratified! 🎉"
     },
     "errors": {
       "longBody": "Proposal body cannot exceed 6000 characters",
       "errorCreatingProposal": "Error creating proposal",
       "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role."
-    }
-  },
-
-  "votes": {
-    "prompts": {
-      "voteCast": "Vote cast successfully"
     }
   },
 

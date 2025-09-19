@@ -126,7 +126,9 @@ export const ProposalVoteButtons = ({
       }
       applyUpdate(['feed', channel.id]);
 
-      toast(t('votes.prompts.voteCast'));
+      if (result.isRatifyingVote) {
+        toast(t('proposals.prompts.ratifiedSuccess'));
+      }
     },
     onError(error: Error) {
       if (error instanceof AxiosError && error.response?.data) {
