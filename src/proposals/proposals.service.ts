@@ -105,15 +105,11 @@ export const getInlineProposals = async (
     .take(limit)
     .getRawAndEntities();
 
-  // Fetch the current user's votes for these proposals in one query
+  // Fetch the current user's votes
   const proposalIds = proposals.map((p) => p.id);
-  const myVotes =
-    currentUserId && proposalIds.length
-      ? await voteRepository.find({
-          where: { proposalId: In(proposalIds), userId: currentUserId },
-        })
-      : [];
-  const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
+  const myVotesMap = currentUserId
+    ? await getMyVotesMap(proposalIds, currentUserId)
+    : {};
 
   // Get users eligible to vote on this proposal
   const proposalMembers = await getProposalMembers();
@@ -153,14 +149,27 @@ export const getInlineProposals = async (
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
       })),
-      myVoteId: myVoteProposalId.get(proposal.id)?.id,
-      myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
+      myVoteId: myVotesMap[proposal.id]?.id,
+      myVoteType: myVotesMap[proposal.id]?.voteType,
       votesNeededToRatify,
       agreementVoteCount,
     };
   });
 
   return shapedProposals;
+};
+
+export const getMyVotesMap = async (
+  proposalIds: string[],
+  currentUserId: string,
+) => {
+  const myVotes = await voteRepository.find({
+    where: { proposalId: In(proposalIds), userId: currentUserId },
+  });
+  return myVotes.reduce<Record<string, Vote>>((result, vote) => {
+    result[vote.proposalId!] = vote;
+    return result;
+  }, {});
 };
 
 // TODO: Account for instances with multiple servers / guilds
