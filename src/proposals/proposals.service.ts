@@ -123,6 +123,13 @@ export const getInlineProposals = async (
       (vote) => vote.voteType === 'agree',
     ).length;
 
+    const myVote = myVotesMap[proposal.id]
+      ? {
+          id: myVotesMap[proposal.id].id,
+          voteType: myVotesMap[proposal.id].voteType,
+        }
+      : undefined;
+
     const rowsForProposal = raw.filter((r) => {
       return r.proposal_id === proposal.id;
     });
@@ -149,10 +156,9 @@ export const getInlineProposals = async (
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
       })),
-      myVoteId: myVotesMap[proposal.id]?.id,
-      myVoteType: myVotesMap[proposal.id]?.voteType,
       votesNeededToRatify,
       agreementVoteCount,
+      myVote,
     };
   });
 

@@ -15,8 +15,7 @@ export interface ProposalRes {
   channelId: string;
   user?: { id: string; name: string };
   createdAt: string;
-  myVoteId?: string;
-  myVoteType?: VoteType;
+  myVote?: { id: string; voteType: VoteType };
 }
 
 export interface CreateProposalReq {

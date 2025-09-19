@@ -19,8 +19,7 @@ interface InlineProposalProps {
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVoteId, myVoteType, action, stage } =
-    proposal;
+  const { body, user, createdAt, id, myVote, action, stage } = proposal;
 
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
@@ -50,8 +49,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
             <ProposalVoteButtons
               proposalId={id}
               channel={channel}
-              myVoteId={myVoteId}
-              myVoteType={myVoteType}
+              myVote={myVote}
             />
           </CardAction>
 
