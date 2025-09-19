@@ -59,7 +59,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="mb-4 space-y-2">
+      <div className="space-y-2">
         <h2 className="text-lg font-semibold">
           {t('proposals.headers.roleMembers')}
         </h2>
