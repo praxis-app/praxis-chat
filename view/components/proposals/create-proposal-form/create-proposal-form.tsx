@@ -87,6 +87,14 @@ export const CreateProposalForm = ({
         throw new Error('Action is required');
       }
 
+      const nameChange =
+        values.roleName !== roleData?.role?.name ? values.roleName : undefined;
+
+      const colorChange =
+        values.roleColor !== roleData?.role?.color
+          ? values.roleColor
+          : undefined;
+
       const shapedRolePermissions = getPermissionValuesMap(
         roleData?.role?.permissions || [],
       );
@@ -177,8 +185,8 @@ export const CreateProposalForm = ({
       const role =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
-              name: values.roleName,
-              color: values.roleColor,
+              name: nameChange,
+              color: colorChange,
               permissions: permissionChanges,
               members: memberChanges,
               roleToUpdateId: values.selectedRoleId,

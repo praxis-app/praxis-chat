@@ -45,7 +45,28 @@ const proposalActionSchema = zod
       return true;
     },
     {
-      message: 'Role is required for change-role action',
+      message: 'Proposals to change roles must include a role',
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.actionType === 'change-role') {
+        const hasNameChange = data.role?.name !== undefined;
+        const hasColorChange = data.role?.color !== undefined;
+        const hasMembersChange = !!data.role?.members?.length;
+        const hasPermissionsChange = !!data.role?.permissions?.length;
+
+        return (
+          hasNameChange ||
+          hasColorChange ||
+          hasMembersChange ||
+          hasPermissionsChange
+        );
+      }
+      return true;
+    },
+    {
+      message: 'Proposals to change roles must include at least 1 change',
     },
   );
 
@@ -63,7 +84,7 @@ const proposalSchema = zod
       return true;
     },
     {
-      message: 'Body is required for test action',
+      message: 'Test proposals must include a body',
     },
   );
 
