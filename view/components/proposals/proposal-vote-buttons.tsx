@@ -5,6 +5,7 @@ import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
@@ -75,8 +76,12 @@ export const ProposalVoteButtons = ({ channel, proposalId, myVote }: Props) => {
 
       toast(t('votes.prompts.voteCast'));
     },
-    onError: () => {
-      toast(t('errors.somethingWentWrong'));
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
     },
   });
 
