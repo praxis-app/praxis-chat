@@ -3,13 +3,14 @@ import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
+import { LuInfinity } from 'react-icons/lu';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
-import { ProposalVoteButtons } from './proposal-vote-buttons';
 import { ProposalAction } from './proposal-actions/proposal-action';
+import { ProposalVoteButtons } from './proposal-vote-buttons';
 
 interface InlineProposalProps {
   proposal: ProposalRes;
@@ -69,17 +70,19 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
           {/* TODO: Replace with actual proposal data */}
           <div className="flex justify-between">
-            <div className="text-muted-foreground flex gap-3.5 text-sm">
+            <div className="text-muted-foreground flex gap-3 text-sm">
               <div>
                 {t('proposals.labels.voteCount', {
                   agreementVoteCount,
                   votesNeededToRatify,
                 })}
               </div>
-              <div>
-                {config?.closingAt
-                  ? timeFromNow(config.closingAt, true)
-                  : t('proposals.labels.noTimeLimit')}
+              <div className="flex items-center">
+                {config?.closingAt ? (
+                  timeFromNow(config.closingAt, true)
+                ) : (
+                  <LuInfinity className="size-5" />
+                )}
               </div>
             </div>
             <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>
