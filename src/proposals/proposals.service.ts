@@ -31,7 +31,7 @@ export const getProposal = (id: string, relations?: string[]) => {
   });
 };
 
-export const getChannelProposals = async (
+export const getInlineProposals = async (
   channelId: string,
   offset?: number,
   limit?: number,
@@ -46,6 +46,12 @@ export const getChannelProposals = async (
       'proposal.channelId',
       'proposal.createdAt',
       'proposalAction.actionType',
+    ])
+    .addSelect([
+      'proposalVotes.id',
+      'proposalVotes.voteType',
+      'proposalVotes.createdAt',
+      'proposalVotes.updatedAt',
     ])
     .addSelect([
       'proposalConfig.decisionMakingModel',
@@ -85,6 +91,7 @@ export const getChannelProposals = async (
       'proposalImage.createdAt',
     ])
     .leftJoin('proposal.user', 'proposalUser')
+    .leftJoin('proposal.votes', 'proposalVotes')
     .leftJoin('proposal.images', 'proposalImage')
     .leftJoin('proposal.action', 'proposalAction')
     .leftJoin('proposal.config', 'proposalConfig')
@@ -108,12 +115,25 @@ export const getChannelProposals = async (
       : [];
   const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
 
+  // Get users eligible to vote on this proposal
+  const proposalMembers = await getProposalMembers();
+
   const shapedProposals = proposals.map((proposal) => {
-    const rowsForProposal = raw.filter((r) => r.proposal_id === proposal.id);
+    const votesNeededToRatify = Math.ceil(
+      proposalMembers.length * (proposal.config.ratificationThreshold * 0.01),
+    );
+
+    const agreementVoteCount = proposal.votes.filter(
+      (vote) => vote.voteType === 'agree',
+    ).length;
+
+    const rowsForProposal = raw.filter((r) => {
+      return r.proposal_id === proposal.id;
+    });
 
     const actionRole = proposal.action.role
       ? {
-          ...proposal.action?.role,
+          ...proposal.action.role,
           permissions: rowsForProposal.map((r) => ({
             changeType: r.proposalActionPermission_changeType,
             subject: r.proposalActionPermission_subject,
@@ -135,6 +155,8 @@ export const getChannelProposals = async (
       })),
       myVoteId: myVoteProposalId.get(proposal.id)?.id,
       myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
+      votesNeededToRatify,
+      agreementVoteCount,
     };
   });
 
