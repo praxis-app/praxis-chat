@@ -29,20 +29,40 @@ export const ProposalVoteButtons = ({
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
+      // Create vote
       if (!myVote) {
         const { vote } = await api.createVote(channel.id, proposalId, {
           voteType,
         });
-        return { action: 'create' as const, voteId: vote.id, voteType };
+        return {
+          action: 'create' as const,
+          isRatifyingVote: vote.isRatifyingVote,
+          voteId: vote.id,
+          voteType,
+        };
       }
+      // Delete vote
       if (myVote.voteType === voteType) {
         await api.deleteVote(channel.id, proposalId, myVote.id);
-        return { action: 'delete' as const, voteId: myVote.id };
+        return {
+          action: 'delete' as const,
+          isRatifyingVote: false,
+          voteId: myVote.id,
+        };
       }
-      await api.updateVote(channel.id, proposalId, myVote.id, {
+      // Update vote
+      const { isRatifyingVote } = await api.updateVote(
+        channel.id,
+        proposalId,
+        myVote.id,
+        { voteType },
+      );
+      return {
+        action: 'update' as const,
+        isRatifyingVote,
+        voteId: myVote.id,
         voteType,
-      });
-      return { action: 'update' as const, voteId: myVote.id, voteType };
+      };
     },
     onSuccess: (result) => {
       const applyUpdate = (cacheKey: [string, string]) => {
@@ -91,6 +111,7 @@ export const ProposalVoteButtons = ({
               return {
                 ...item,
                 agreementVoteCount,
+                stage: result.isRatifyingVote ? 'ratified' : item.stage,
                 myVote: { id: result.voteId, voteType: result.voteType },
               };
             });
