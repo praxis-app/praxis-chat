@@ -116,8 +116,9 @@
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
-      "voting": "Voting",
-      "roleSelection": "Role selection"
+      "roleSelection": "Role selection",
+      "voteCount": "{{agreementVoteCount}}/{{votesNeededToRatify}} voted",
+      "voting": "Voting"
     },
     "headers": {
       "availableRoles": "Available Roles",

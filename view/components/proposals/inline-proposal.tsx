@@ -19,7 +19,17 @@ interface InlineProposalProps {
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVote, action, stage } = proposal;
+  const {
+    id,
+    body,
+    user,
+    myVote,
+    action,
+    stage,
+    votesNeededToRatify,
+    agreementVoteCount,
+    createdAt,
+  } = proposal;
 
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
@@ -58,7 +68,12 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
           {/* TODO: Replace with actual proposal data */}
           <div className="flex justify-between">
             <div className="text-muted-foreground flex gap-3.5 text-sm">
-              <div>10/12 voted</div>
+              <div>
+                {t('proposals.labels.voteCount', {
+                  agreementVoteCount,
+                  votesNeededToRatify,
+                })}
+              </div>
               <div>Ends in 2 days</div>
             </div>
             <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>

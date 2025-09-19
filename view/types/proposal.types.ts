@@ -16,6 +16,8 @@ export interface ProposalRes {
   user?: { id: string; name: string };
   createdAt: string;
   myVote?: { id: string; voteType: VoteType };
+  votesNeededToRatify: number;
+  agreementVoteCount: number;
 }
 
 export interface CreateProposalReq {
