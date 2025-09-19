@@ -105,6 +105,7 @@
       "active": "Active",
       "body": "Proposal",
       "closed": "Closed",
+      "noTimeLimit": "No deadline",
       "consensus": "Consensus",
       "consensusProposal": "Consensus Proposal",
       "consent": "Consent",
@@ -435,20 +436,28 @@
 
   "time": {
     "days": "{{days}}d",
+    "daysEndsIn": "Ends in {{days}} day",
+    "daysEndsIn_plural": "Ends in {{days}} days",
     "daysFull": "{{count}} day",
     "daysFull_plural": "{{count}} days",
     "hours": "{{hours}}h",
+    "hoursEndsIn": "Ends in {{hours}} hour",
+    "hoursEndsIn_plural": "Ends in {{hours}} hours",
     "hoursFull": "{{count}} hour",
     "hoursFull_plural": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
     "minutes": "{{minutes}}m",
+    "minutesEndsIn": "Ends in {{minutes}} minute",
+    "minutesEndsIn_plural": "Ends in {{minutes}} minutes",
     "minutesFull": "{{count}} minute",
     "minutesFull_plural": "{{count}} minutes",
     "never": "Never",
     "unlimited": "Unlimited",
     "weeks": "{{count}} week",
+    "weeksEndsIn": "Ends in {{weeks}} week",
+    "weeksEndsIn_plural": "Ends in {{weeks}} weeks",
     "weeks_plural": "{{count}} weeks"
   }
 }

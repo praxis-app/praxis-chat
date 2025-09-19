@@ -1,4 +1,4 @@
-import { timeAgo } from '@/lib/time.utils';
+import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
     body,
     user,
     myVote,
+    config,
     action,
     stage,
     votesNeededToRatify,
@@ -75,7 +76,11 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
                   votesNeededToRatify,
                 })}
               </div>
-              <div>Ends in 2 days</div>
+              <div>
+                {config?.closingAt
+                  ? timeFromNow(config.closingAt, true)
+                  : t('proposals.labels.noTimeLimit')}
+              </div>
             </div>
             <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>
           </div>
