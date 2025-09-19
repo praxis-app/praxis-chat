@@ -39,7 +39,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   const permissionChanges = Object.entries(permissions || {}).reduce<
     Record<string, boolean>
   >((result, [permission, value]) => {
-    if (value !== shapedRolePermissions[permission]) {
+    if (value !== undefined && value !== shapedRolePermissions[permission]) {
       result[permission] = value;
     }
     return result;
