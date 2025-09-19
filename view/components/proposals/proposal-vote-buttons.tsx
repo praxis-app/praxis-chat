@@ -56,11 +56,12 @@ export const ProposalVoteButtons = ({
               if (item.type !== 'proposal' || item.id !== proposalId) {
                 return item;
               }
+
+              let agreementVoteCount = item.agreementVoteCount;
               if (result.action === 'delete') {
-                const agreementVoteCount =
-                  myVote?.voteType === 'agree'
-                    ? item.agreementVoteCount - 1
-                    : item.agreementVoteCount;
+                if (myVote?.voteType === 'agree') {
+                  agreementVoteCount -= 1;
+                }
                 return {
                   ...item,
                   agreementVoteCount,
@@ -68,7 +69,6 @@ export const ProposalVoteButtons = ({
                 };
               }
 
-              let agreementVoteCount = item.agreementVoteCount;
               if (result.action === 'create' && result.voteType === 'agree') {
                 agreementVoteCount += 1;
               }
