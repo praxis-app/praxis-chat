@@ -8,7 +8,6 @@ import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +16,7 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
 import { AttachedImagePreview } from '../images/attached-image-preview';
 import { ImageInput } from '../images/image-input';
@@ -140,11 +140,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       reset();
     },
     onError(error: Error) {
-      if (error instanceof AxiosError && error.response?.data) {
-        toast(error.response?.data);
-        return;
-      }
-      toast(error.message || t('errors.somethingWentWrong'));
+      handleError(error);
     },
   });
 

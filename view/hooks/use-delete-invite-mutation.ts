@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { api } from '../client/api-client';
+import { handleError } from '../lib/error.utils';
 import { InviteRes } from '../types/invite.types';
 
 export const useDeleteInviteMutation = (inviteId: string) => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -26,11 +23,7 @@ export const useDeleteInviteMutation = (inviteId: string) => {
       );
     },
     onError(error: Error) {
-      if (error instanceof AxiosError && error.response?.data) {
-        toast(error.response?.data);
-        return;
-      }
-      toast(error.message || t('errors.somethingWentWrong'));
+      handleError(error);
     },
   });
 };

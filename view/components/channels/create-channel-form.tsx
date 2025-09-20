@@ -4,13 +4,12 @@ import { cn } from '@/lib/shared.utils';
 import { ChannelRes, CreateChannelReq } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -87,11 +86,7 @@ export const CreateChannelForm = ({
       navigate(`${NavigationPaths.Channels}/${channel.id}`);
     },
     onError(error: Error) {
-      if (error instanceof AxiosError && error.response?.data) {
-        toast(error.response?.data);
-        return;
-      }
-      toast(error.message || t('errors.somethingWentWrong'));
+      handleError(error);
     },
   });
 

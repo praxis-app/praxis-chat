@@ -7,11 +7,10 @@ import { serverConfigSchema } from '@common/server-configs/server-config.types';
 import { VotingTimeLimit } from '@common/votes/vote.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import {
   Form,
   FormControl,
@@ -70,11 +69,7 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
         form.reset(form.getValues());
       },
       onError: (error: Error) => {
-        if (error instanceof AxiosError && error.response?.data) {
-          toast(error.response?.data);
-          return;
-        }
-        toast(error.message || t('errors.somethingWentWrong'));
+        handleError(error);
       },
     });
 

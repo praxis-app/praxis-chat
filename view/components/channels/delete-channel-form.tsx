@@ -2,12 +2,11 @@ import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { ChannelRes } from '@/types/channel.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdTag } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 
 interface DeleteChannelFormSubmitButtonProps {
@@ -37,7 +36,6 @@ export const DeleteChannelForm = ({
   onSubmit,
 }: DeleteChannelFormProps) => {
   const { channelId } = useParams();
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -64,11 +62,7 @@ export const DeleteChannelForm = ({
       }
     },
     onError(error: Error) {
-      if (error instanceof AxiosError && error.response?.data) {
-        toast(error.response?.data);
-        return;
-      }
-      toast(error.message || t('errors.somethingWentWrong'));
+      handleError(error);
     },
   });
 

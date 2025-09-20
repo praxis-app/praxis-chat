@@ -10,11 +10,9 @@ import {
 import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { handleError } from '../../../lib/error.utils';
 import { Wizard } from '../../shared/wizard/wizard';
 import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
@@ -43,7 +41,6 @@ export const CreateProposalForm = ({
   const [currentStep, setCurrentStep] = useState(0);
 
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
 
   const form = useForm<CreateProposalFormSchema>({
     resolver: zodResolver(createProposalFormSchema),
@@ -243,11 +240,7 @@ export const CreateProposalForm = ({
       onSuccess();
     },
     onError(error: Error) {
-      if (error instanceof AxiosError && error.response?.data) {
-        toast(error.response?.data);
-        return;
-      }
-      toast(error.message || t('proposals.errors.errorCreatingProposal'));
+      handleError(error);
     },
   });
 
