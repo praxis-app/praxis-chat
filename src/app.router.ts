@@ -5,15 +5,11 @@ import { healthRouter } from './health/health.router';
 import { imagesRouter } from './images/images.router';
 import { invitesRouter } from './invites/invites.router';
 import { messagesRouter } from './messages/messages.router';
-import { synchronizeProposals } from './proposals/middleware/synchronize-proposals.middleware';
 import { rolesRouter } from './roles/roles.router';
 import { serverConfigsRouter } from './server-configs/server-configs.router';
 import { usersRouter } from './users/users.router';
 
 export const appRouter = express.Router();
-
-// Apply global middleware
-appRouter.use(synchronizeProposals);
 
 // Register routers
 appRouter.use('/auth', authRouter);
