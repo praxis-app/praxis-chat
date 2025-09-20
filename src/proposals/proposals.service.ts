@@ -264,7 +264,8 @@ export const hasMajorityVote = (
 };
 
 export const createProposal = async (
-  { body, closingAt, action, channelId }: ProposalDto,
+  channelId: string,
+  { body, closingAt, action }: ProposalDto,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);

@@ -9,7 +9,8 @@ export const getProposal = async (req: Request, res: Response) => {
 export const createProposal = async (req: Request, res: Response) => {
   const { channelId } = req.params;
   const proposal = await proposalsService.createProposal(
-    { ...req.body, channelId },
+    channelId,
+    req.body,
     res.locals.user.id,
   );
   res.json({ proposal });
