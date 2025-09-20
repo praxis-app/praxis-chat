@@ -7,7 +7,7 @@ import { CreateProposalFormSchema } from '../create-proposal-form/create-proposa
 
 interface Props {
   permissionName: PermissionKeys;
-  formPermissions: Record<PermissionKeys, boolean>;
+  formPermissions: CreateProposalFormSchema['permissions'];
   setValue: UseFormSetValue<CreateProposalFormSchema>;
 }
 
@@ -17,6 +17,10 @@ export const ProposePermissionToggle = ({
   setValue,
 }: Props) => {
   const { displayName, description } = getPermissionText(permissionName);
+
+  if (!formPermissions) {
+    return null;
+  }
 
   const handleSwitchChange = (checked: boolean) => {
     setValue('permissions', {

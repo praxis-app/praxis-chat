@@ -28,7 +28,6 @@
     /* Imports */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
       "@common/*": ["./common/*"]
     }
   },

@@ -168,7 +168,7 @@ export const ProposalActionRole = ({ action }: Props) => {
             </div>
           )}
 
-          {action.role.name !== action.role.prevName && (
+          {!!action.role.name && (
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
@@ -184,7 +184,7 @@ export const ProposalActionRole = ({ action }: Props) => {
             </div>
           )}
 
-          {action.role.color !== action.role.prevColor && (
+          {!!action.role.color && (
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">

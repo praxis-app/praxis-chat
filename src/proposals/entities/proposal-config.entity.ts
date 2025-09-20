@@ -16,16 +16,16 @@ export class ProposalConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: DECISION_MAKING_MODEL })
+  @Column({ type: 'enum', enum: DECISION_MAKING_MODEL, default: 'consensus' })
   decisionMakingModel: DecisionMakingModel;
 
-  @Column({ type: 'int' })
-  standAsidesLimit: number;
+  @Column({ type: 'int', default: 2 })
+  disagreementsLimit: number;
 
-  @Column({ type: 'int' })
-  reservationsLimit: number;
+  @Column({ type: 'int', default: 2 })
+  abstainsLimit: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 51 })
   ratificationThreshold: number;
 
   @Column({ type: 'timestamp', nullable: true })

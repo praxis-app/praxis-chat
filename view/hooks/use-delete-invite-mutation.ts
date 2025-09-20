@@ -25,7 +25,12 @@ export const useDeleteInviteMutation = (inviteId: string) => {
         },
       );
     },
-    onError: (error: AxiosError) =>
-      toast((error.response?.data as string) || t('errors.somethingWentWrong')),
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
+    },
   });
 };

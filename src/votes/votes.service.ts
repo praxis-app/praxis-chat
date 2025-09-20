@@ -29,6 +29,7 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
+  // Update proposal to reflect newly created vote
   const isProposalRatifiable = await proposalsService.isProposalRatifiable(
     vote.proposalId,
   );
@@ -37,15 +38,17 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     await proposalsService.implementProposal(vote.proposalId);
   }
 
-  return vote;
+  return { ...vote, isRatifyingVote: isProposalRatifiable };
 };
 
 export const updateVote = async (voteId: string, voteType: VoteType) => {
   const result = await voteRepository.update(voteId, { voteType });
   const vote = await getVote(voteId, ['proposal']);
 
+  let isProposalRatifiable = false;
   if (vote.proposalId) {
-    const isProposalRatifiable = await proposalsService.isProposalRatifiable(
+    // Update proposal to reflect change in vote
+    isProposalRatifiable = await proposalsService.isProposalRatifiable(
       vote.proposalId,
     );
     if (isProposalRatifiable) {
@@ -54,7 +57,7 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
     }
   }
 
-  return result;
+  return { ...result, isRatifyingVote: isProposalRatifiable };
 };
 
 export const deleteVote = async (voteId: string) => {

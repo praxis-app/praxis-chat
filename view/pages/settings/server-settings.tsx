@@ -5,7 +5,12 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAppStore } from '@/store/app.store';
 import { useTranslation } from 'react-i18next';
-import { MdAdminPanelSettings, MdClose, MdLink } from 'react-icons/md';
+import {
+  MdAdminPanelSettings,
+  MdClose,
+  MdEmojiPeople,
+  MdLink,
+} from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
 export const ServerSettings = () => {
@@ -33,6 +38,11 @@ export const ServerSettings = () => {
       />
 
       <Container className="flex flex-col gap-4.5">
+        <SettingsNavItem
+          Icon={MdEmojiPeople}
+          label={t('navigation.labels.proposals')}
+          to={NavigationPaths.ProposalSettings}
+        />
         <SettingsNavItem
           Icon={MdLink}
           label={t('navigation.labels.invites')}

@@ -63,6 +63,7 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
                   <SelectContent>
                     {PROPOSAL_ACTION_TYPE.map((action) => (
                       <SelectItem key={action} value={action}>
+                        {/* TODO: This relies on non-standard naming convention - replace with helper function */}
                         {t(`proposals.actionTypes.${action}`)}
                       </SelectItem>
                     ))}

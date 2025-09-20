@@ -10,6 +10,7 @@ import {
 import { PermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -85,6 +86,14 @@ export const CreateProposalForm = ({
       if (!values.action) {
         throw new Error('Action is required');
       }
+
+      const nameChange =
+        values.roleName !== roleData?.role?.name ? values.roleName : undefined;
+
+      const colorChange =
+        values.roleColor !== roleData?.role?.color
+          ? values.roleColor
+          : undefined;
 
       const shapedRolePermissions = getPermissionValuesMap(
         roleData?.role?.permissions || [],
@@ -176,8 +185,8 @@ export const CreateProposalForm = ({
       const role =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
-              name: values.roleName,
-              color: values.roleColor,
+              name: nameChange,
+              color: colorChange,
               permissions: permissionChanges,
               members: memberChanges,
               roleToUpdateId: values.selectedRoleId,
@@ -233,10 +242,12 @@ export const CreateProposalForm = ({
 
       onSuccess();
     },
-    onError: () => {
-      toast(t('proposals.errors.errorCreatingProposal'), {
-        description: t('prompts.tryAgain'),
-      });
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('proposals.errors.errorCreatingProposal'));
     },
   });
 
@@ -280,8 +291,12 @@ export const CreateProposalForm = ({
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
+      const isValid = await form.trigger();
+      if (!isValid) {
+        return;
+      }
       setCurrentStep(currentStep + 1);
       onNavigate();
     }
@@ -311,7 +326,6 @@ export const CreateProposalForm = ({
       onPrevious={handlePrevious}
       onSubmit={handleSubmit}
       isSubmitting={isPending}
-      className="space-y-6"
     />
   );
 };

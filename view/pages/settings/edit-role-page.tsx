@@ -95,11 +95,12 @@ export const EditRolePage = () => {
       setSelectedUserIds([]);
       setIsAddMemberDialogOpen(false);
     },
-    onError(error: AxiosError) {
-      const errorMessage =
-        (error.response?.data as string) || t('errors.somethingWentWrong');
-
-      toast.error(errorMessage);
+    onError(error: Error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        toast(error.response?.data);
+        return;
+      }
+      toast(error.message || t('errors.somethingWentWrong'));
     },
   });
 
@@ -268,15 +269,18 @@ export const EditRolePage = () => {
                 <DialogHeader>
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
                 </DialogHeader>
-                {eligibleUsersData?.users.map((user) => (
-                  <RoleMemberOption
-                    key={user.id}
-                    selectedUserIds={selectedUserIds}
-                    setSelectedUserIds={setSelectedUserIds}
-                    user={user}
-                  />
-                ))}
-                <div className="mt-4 flex justify-end">
+                <div className="space-y-0.5">
+                  {eligibleUsersData?.users.map((user) => (
+                    <RoleMemberOption
+                      key={user.id}
+                      selectedUserIds={selectedUserIds}
+                      setSelectedUserIds={setSelectedUserIds}
+                      className="px-3.5"
+                      user={user}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 flex justify-end">
                   <Button onClick={() => addMembers()} className="w-18">
                     {t('roles.actions.add')}
                   </Button>

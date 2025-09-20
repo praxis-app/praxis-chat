@@ -53,9 +53,9 @@ export const getPermissionValues = (permissions: Permission[]) =>
 
 export const getPermissionValuesMap = (permissions: Permission[]) =>
   getPermissionValues(permissions).reduce<Record<string, boolean>>(
-    (acc, permission) => {
-      acc[permission.name] = permission.value;
-      return acc;
+    (result, permission) => {
+      result[permission.name] = permission.value;
+      return result;
     },
     {},
   );

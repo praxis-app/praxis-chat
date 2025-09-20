@@ -2,8 +2,8 @@ import { Vote } from './vote.entity';
 
 interface SortedConsensusVotes {
   agreements: Vote[];
-  reservations: Vote[];
-  standAsides: Vote[];
+  disagreements: Vote[];
+  abstains: Vote[];
   blocks: Vote[];
 }
 
@@ -14,10 +14,10 @@ export const sortConsensusVotesByType = (votes: Vote[]) =>
         result.agreements.push(vote);
       }
       if (vote.voteType === 'disagree') {
-        result.reservations.push(vote);
+        result.disagreements.push(vote);
       }
       if (vote.voteType === 'abstain') {
-        result.standAsides.push(vote);
+        result.abstains.push(vote);
       }
       if (vote.voteType === 'block') {
         result.blocks.push(vote);
@@ -26,8 +26,8 @@ export const sortConsensusVotesByType = (votes: Vote[]) =>
     },
     {
       agreements: [],
-      reservations: [],
-      standAsides: [],
+      disagreements: [],
+      abstains: [],
       blocks: [],
     },
   );
