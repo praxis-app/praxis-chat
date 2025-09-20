@@ -29,11 +29,11 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
-  // Update proposal to reflect newly created vote
   const isProposalRatifiable = await proposalsService.isProposalRatifiable(
     vote.proposalId,
   );
   if (isProposalRatifiable) {
+    // Update proposal to reflect newly created vote
     await proposalsService.ratifyProposal(vote.proposalId);
     await proposalsService.implementProposal(vote.proposalId);
   }
@@ -47,11 +47,11 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
 
   let isProposalRatifiable = false;
   if (vote.proposalId) {
-    // Update proposal to reflect change in vote
     isProposalRatifiable = await proposalsService.isProposalRatifiable(
       vote.proposalId,
     );
     if (isProposalRatifiable) {
+      // Update proposal to reflect change in vote
       await proposalsService.ratifyProposal(vote.proposalId);
       await proposalsService.implementProposal(vote.proposalId);
     }
