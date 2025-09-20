@@ -317,7 +317,7 @@ export const deleteProposal = async (proposalId: string) => {
 };
 
 // -------------------------------------------------------------------------
-// Private functions
+// Helper functions
 // -------------------------------------------------------------------------
 
 const hasConsensus = async (
