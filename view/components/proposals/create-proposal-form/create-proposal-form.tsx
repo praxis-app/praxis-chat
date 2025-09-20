@@ -239,7 +239,9 @@ export const CreateProposalForm = ({
 
       onSuccess();
     },
-    onError: handleError,
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   // Determine which steps to show based on action type

@@ -61,7 +61,9 @@ export const DeleteChannelForm = ({
         navigate(NavigationPaths.Home);
       }
     },
-    onError: handleError,
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   return (

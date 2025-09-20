@@ -110,7 +110,9 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
-    onError: handleError,
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   const { mutate: upgradeAnon, isPending: isUpgradeAnonPending } = useMutation({
@@ -122,7 +124,9 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },
-    onError: handleError,
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   const isPending = isSignUpPending || isUpgradeAnonPending;

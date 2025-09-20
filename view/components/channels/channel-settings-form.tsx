@@ -68,7 +68,9 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
         );
         onSuccess();
       },
-      onError: handleError,
+      onError(error: Error) {
+        handleError(error);
+      },
     });
 
   return (

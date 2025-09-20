@@ -68,7 +68,9 @@ export const ProposalSettingsForm = ({ serverConfig }: Props) => {
         );
         form.reset(form.getValues());
       },
-      onError: handleError,
+      onError: (error: Error) => {
+        handleError(error);
+      },
     });
 
   const handleSliderInputBlur = (value?: number | null) => {

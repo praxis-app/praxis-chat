@@ -94,7 +94,9 @@ export const EditRolePage = () => {
       setSelectedUserIds([]);
       setIsAddMemberDialogOpen(false);
     },
-    onError: handleError,
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   const { mutate: deleteRole, isPending: isDeletePending } = useMutation({
