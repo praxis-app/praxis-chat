@@ -35,7 +35,11 @@ export const createProposalFormSchema = zod
       path: ['body'],
       message: t('proposals.errors.testProposalRequiresBody'),
     },
-  );
+  )
+  .refine((data) => data.action === 'test' || data.action === 'change-role', {
+    message: t('prompts.inDev'),
+    path: ['action'],
+  });
 
 export type CreateProposalFormSchema = zod.infer<
   typeof createProposalFormSchema
