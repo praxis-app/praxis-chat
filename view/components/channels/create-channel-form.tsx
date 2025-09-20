@@ -85,9 +85,7 @@ export const CreateChannelForm = ({
 
       navigate(`${NavigationPaths.Channels}/${channel.id}`);
     },
-    onError(error: Error) {
-      handleError(error);
-    },
+    onError: handleError,
   });
 
   return (

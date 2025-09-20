@@ -68,9 +68,7 @@ export const LoginForm = () => {
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
-    onError(error: Error) {
-      handleError(error);
-    },
+    onError: handleError,
   });
 
   return (

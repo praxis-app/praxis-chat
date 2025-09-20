@@ -130,9 +130,7 @@ export const ProposalVoteButtons = ({
         toast(t('proposals.prompts.ratifiedSuccess'));
       }
     },
-    onError(error: Error) {
-      handleError(error);
-    },
+    onError: handleError,
   });
 
   const handleVoteBtnClick = (voteType: VoteType) => {

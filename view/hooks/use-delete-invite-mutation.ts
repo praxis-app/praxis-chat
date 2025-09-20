@@ -22,8 +22,6 @@ export const useDeleteInviteMutation = (inviteId: string) => {
         },
       );
     },
-    onError(error: Error) {
-      handleError(error);
-    },
+    onError: handleError,
   });
 };

@@ -139,9 +139,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       onSend?.();
       reset();
     },
-    onError(error: Error) {
-      handleError(error);
-    },
+    onError: handleError,
   });
 
   const { data: isFirstUserData } = useQuery({
