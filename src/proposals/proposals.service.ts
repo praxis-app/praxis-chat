@@ -165,29 +165,6 @@ export const getInlineProposals = async (
   return shapedProposals;
 };
 
-export const getMyVotesMap = async (
-  proposalIds: string[],
-  currentUserId: string,
-) => {
-  const myVotes = await voteRepository.find({
-    where: { proposalId: In(proposalIds), userId: currentUserId },
-  });
-  return myVotes.reduce<Record<string, Vote>>((result, vote) => {
-    result[vote.proposalId!] = vote;
-    return result;
-  }, {});
-};
-
-// TODO: Account for instances with multiple servers / guilds
-export const getProposalMemberCount = async () => {
-  return userRepository.count({
-    where: {
-      anonymous: false,
-      locked: false,
-    },
-  });
-};
-
 export const isProposalRatifiable = async (proposalId: string) => {
   const { votes, stage, config } = await getProposal(proposalId, [
     'config',
@@ -209,58 +186,6 @@ export const isProposalRatifiable = async (proposalId: string) => {
     return hasMajorityVote(votes, config, memberCount);
   }
   return false;
-};
-
-export const hasConsensus = async (
-  votes: Vote[],
-  {
-    ratificationThreshold,
-    disagreementsLimit,
-    abstainsLimit,
-    closingAt,
-  }: ProposalConfig,
-  memberCount: number,
-) => {
-  if (closingAt && Date.now() < Number(closingAt)) {
-    return false;
-  }
-
-  const agreementsNeeded = memberCount * (ratificationThreshold * 0.01);
-  const { agreements, disagreements, abstains, blocks } =
-    sortConsensusVotesByType(votes);
-
-  const isRatifiable =
-    agreements.length >= agreementsNeeded &&
-    disagreements.length <= disagreementsLimit &&
-    abstains.length <= abstainsLimit &&
-    blocks.length === 0;
-
-  return isRatifiable;
-};
-
-export const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
-  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
-  const { disagreementsLimit, abstainsLimit, closingAt } = proposalConfig;
-
-  return (
-    Date.now() >= Number(closingAt) &&
-    disagreements.length <= disagreementsLimit &&
-    abstains.length <= abstainsLimit &&
-    blocks.length === 0
-  );
-};
-
-export const hasMajorityVote = (
-  votes: Vote[],
-  { ratificationThreshold, closingAt }: ProposalConfig,
-  memberCount: number,
-) => {
-  if (closingAt && Date.now() < Number(closingAt)) {
-    return false;
-  }
-  const { agreements } = sortMajorityVotesByType(votes);
-
-  return agreements.length >= memberCount * (ratificationThreshold * 0.01);
 };
 
 export const createProposal = async (
@@ -367,22 +292,6 @@ export const implementProposal = async (proposalId: string) => {
   }
 };
 
-/** Synchronizes proposals with regard to voting duration and ratifiability */
-export const synchronizeProposal = async (proposalId: string) => {
-  const { config } = await getProposal(proposalId, ['config']);
-  if (!config.closingAt || Date.now() < Number(config.closingAt)) {
-    return;
-  }
-
-  const isRatifiable = await isProposalRatifiable(proposalId);
-  if (!isRatifiable) {
-    await proposalRepository.update(proposalId, { stage: 'closed' });
-  }
-
-  await ratifyProposal(proposalId);
-  await implementProposal(proposalId);
-};
-
 export const synchronizeProposals = async () => {
   const proposals = await proposalRepository.find({
     where: {
@@ -393,7 +302,7 @@ export const synchronizeProposals = async () => {
   });
 
   for (const proposal of proposals) {
-    await synchronizeProposal(proposal.id);
+    await synchronizeProposal(proposal);
   }
 };
 
@@ -405,6 +314,100 @@ export const deleteProposal = async (proposalId: string) => {
     }
   }
   return proposalRepository.delete(proposalId);
+};
+
+// -------------------------------------------------------------------------
+// Private functions
+// -------------------------------------------------------------------------
+
+const hasConsensus = async (
+  votes: Vote[],
+  {
+    ratificationThreshold,
+    disagreementsLimit,
+    abstainsLimit,
+    closingAt,
+  }: ProposalConfig,
+  memberCount: number,
+) => {
+  if (closingAt && Date.now() < Number(closingAt)) {
+    return false;
+  }
+
+  const agreementsNeeded = memberCount * (ratificationThreshold * 0.01);
+  const { agreements, disagreements, abstains, blocks } =
+    sortConsensusVotesByType(votes);
+
+  const isRatifiable =
+    agreements.length >= agreementsNeeded &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
+    blocks.length === 0;
+
+  return isRatifiable;
+};
+
+const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
+  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
+  const { disagreementsLimit, abstainsLimit, closingAt } = proposalConfig;
+
+  return (
+    Date.now() >= Number(closingAt) &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
+    blocks.length === 0
+  );
+};
+
+const hasMajorityVote = (
+  votes: Vote[],
+  { ratificationThreshold, closingAt }: ProposalConfig,
+  memberCount: number,
+) => {
+  if (closingAt && Date.now() < Number(closingAt)) {
+    return false;
+  }
+  const { agreements } = sortMajorityVotesByType(votes);
+
+  return agreements.length >= memberCount * (ratificationThreshold * 0.01);
+};
+
+/** Synchronizes proposals with regard to voting duration and ratifiability */
+const synchronizeProposal = async (proposal: Proposal) => {
+  if (
+    !proposal.config.closingAt ||
+    Date.now() < Number(proposal.config.closingAt)
+  ) {
+    return;
+  }
+
+  const isRatifiable = await isProposalRatifiable(proposal.id);
+  if (!isRatifiable) {
+    await proposalRepository.update(proposal.id, { stage: 'closed' });
+  }
+
+  await ratifyProposal(proposal.id);
+  await implementProposal(proposal.id);
+};
+
+const getMyVotesMap = async (proposalIds: string[], currentUserId: string) => {
+  const myVotes = await voteRepository.find({
+    where: { proposalId: In(proposalIds), userId: currentUserId },
+  });
+  return myVotes.reduce<Record<string, Vote>>((result, vote) => {
+    result[vote.proposalId!] = vote;
+    return result;
+  }, {});
+};
+
+// TODO: Account for instances with multiple servers / guilds
+const getProposalMemberCount = async () => {
+  return userRepository.count({
+    where: {
+      anonymous: false,
+      locked: false,
+    },
+  });
 };
 
 const getNewProposalKey = (channelId: string, userId: string) => {
