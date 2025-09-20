@@ -3,7 +3,6 @@ import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
-import { LuInfinity } from 'react-icons/lu';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
@@ -68,10 +67,9 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
           <Separator className="my-1" />
 
-          {/* TODO: Replace with actual proposal data */}
           <div className="flex justify-between">
             <div className="text-muted-foreground flex gap-3 text-sm">
-              <div>
+              <div className="flex items-center">
                 {t('proposals.labels.voteCount', {
                   agreementVoteCount,
                   votesNeededToRatify,
@@ -81,7 +79,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
                 {config?.closingAt ? (
                   timeFromNow(config.closingAt, true)
                 ) : (
-                  <LuInfinity className="size-5" />
+                  <span className="text-lg">{t('time.infinity')}</span>
                 )}
               </div>
             </div>
