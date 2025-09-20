@@ -175,9 +175,10 @@
       "ratifiedSuccess": "This proposal has been ratified! 🎉"
     },
     "errors": {
-      "longBody": "Proposal body cannot exceed 6000 characters",
+      "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role.",
       "errorCreatingProposal": "Error creating proposal",
-      "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role."
+      "longBody": "Proposal body cannot exceed 6000 characters",
+      "testProposalRequiresBody": "Test proposals must include a body"
     }
   },
 

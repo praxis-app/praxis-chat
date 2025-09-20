@@ -291,10 +291,13 @@ export const CreateProposalForm = ({
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
+      const isValid = await form.trigger();
+      if (!isValid) {
+        return;
+      }
       setCurrentStep(currentStep + 1);
-      form.trigger();
       onNavigate();
     }
   };
