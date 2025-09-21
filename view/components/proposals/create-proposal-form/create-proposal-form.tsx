@@ -199,9 +199,6 @@ export const CreateProposalForm = ({
           actionType: values.action,
           role,
         },
-
-        // TODO: Handle images
-        images: [],
       });
     },
     onSuccess: ({ proposal }) => {

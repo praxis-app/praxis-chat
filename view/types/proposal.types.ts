@@ -35,7 +35,4 @@ export interface ProposalConfigRes {
 export interface CreateProposalReq {
   body?: string;
   action: CreateProposalActionReq;
-
-  // FIXME: Incorrect type for requests
-  images: ImageRes[];
 }
