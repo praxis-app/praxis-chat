@@ -66,11 +66,23 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const getProposalActionType = (action: ProposalActionType | '') => {
-    if (!action) {
-      return '';
+  const getProposalActionLabel = (action: ProposalActionType | '') => {
+    if (action === 'change-role') {
+      return t('proposals.actionTypes.changeRole');
     }
-    return t(`proposals.actionTypes.${action}`);
+    if (action === 'change-settings') {
+      return t('proposals.actionTypes.changeSettings');
+    }
+    if (action === 'create-role') {
+      return t('proposals.actionTypes.createRole');
+    }
+    if (action === 'plan-event') {
+      return t('proposals.actionTypes.planEvent');
+    }
+    if (action === 'test') {
+      return t('proposals.actionTypes.test');
+    }
+    return '';
   };
 
   const getPermissionName = (name: PermissionKeys | '') => {
@@ -135,7 +147,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">{getProposalActionType(action)}</p>
+            <p className="text-sm">{getProposalActionLabel(action)}</p>
           </CardContent>
         </Card>
 

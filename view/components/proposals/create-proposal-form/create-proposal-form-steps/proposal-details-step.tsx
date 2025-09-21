@@ -2,6 +2,7 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { PROPOSAL_ACTION_TYPE } from '@common/proposal-actions/proposal-action.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { ProposalActionType } from '../../../../../common/proposal-actions/proposal-action.types';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import {
@@ -26,6 +27,25 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
   const { onNext } = useWizardContext();
 
   const { t } = useTranslation();
+
+  const getProposalActionLabel = (action: ProposalActionType | '') => {
+    if (action === 'change-role') {
+      return t('proposals.actionTypes.changeRole');
+    }
+    if (action === 'change-settings') {
+      return t('proposals.actionTypes.changeSettings');
+    }
+    if (action === 'create-role') {
+      return t('proposals.actionTypes.createRole');
+    }
+    if (action === 'plan-event') {
+      return t('proposals.actionTypes.planEvent');
+    }
+    if (action === 'test') {
+      return t('proposals.actionTypes.test');
+    }
+    return '';
+  };
 
   if (isLoading) {
     return (
@@ -63,8 +83,7 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
                   <SelectContent>
                     {PROPOSAL_ACTION_TYPE.map((action) => (
                       <SelectItem key={action} value={action}>
-                        {/* TODO: This relies on non-standard naming convention - replace with helper function */}
-                        {t(`proposals.actionTypes.${action}`)}
+                        {getProposalActionLabel(action)}
                       </SelectItem>
                     ))}
                   </SelectContent>

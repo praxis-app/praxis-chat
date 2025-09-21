@@ -162,10 +162,10 @@
       "selectRoleDescription": "Choose the role you want to modify"
     },
     "actionTypes": {
-      "change-role": "Change role",
-      "change-settings": "Change settings",
-      "create-role": "Create role",
-      "plan-event": "Plan event",
+      "changeRole": "Change role",
+      "changeSettings": "Change settings",
+      "createRole": "Create role",
+      "planEvent": "Plan event",
       "test": "QA test"
     },
     "prompts": {
