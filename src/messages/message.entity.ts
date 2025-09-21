@@ -20,6 +20,15 @@ export class Message {
   @Column({ nullable: true, type: 'varchar' })
   body: string | null;
 
+  @Column({ type: 'bytea', nullable: true })
+  ciphertext: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  iv: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  tag: Buffer | null;
+
   @OneToMany(() => Image, (image) => image.message)
   images: Image[];
 

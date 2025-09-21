@@ -82,7 +82,7 @@ export const createAnonSession = async (inviteToken?: string) => {
 
 export const verifyAccessToken = (token: string) => {
   try {
-    const secret = process.env.TOKEN_SECRET as string;
+    const secret = process.env.AUTH_TOKEN_SECRET as string;
     const { sub } = jwt.verify(token, secret) as { sub: string };
     return sub;
   } catch {
@@ -112,7 +112,7 @@ export const getAuthedUser = async (userId: string, includePerms = true) => {
 
 export const generateAccessToken = (userId: string) => {
   const payload = { sub: userId };
-  return jwt.sign(payload, process.env.TOKEN_SECRET || '', {
+  return jwt.sign(payload, process.env.AUTH_TOKEN_SECRET || '', {
     expiresIn: ACCESS_TOKEN_EXPIRES_IN,
   });
 };
