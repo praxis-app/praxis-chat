@@ -2,79 +2,123 @@ import { api } from '@/client/api-client';
 import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
+import { ProposalStage } from '@common/proposals/proposal.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 
 interface Props {
   channel: ChannelRes;
-  myVoteId?: string;
-  myVoteType?: VoteType;
+  myVote?: { id: string; voteType: VoteType };
   proposalId: string;
+  stage: ProposalStage;
 }
 
 export const ProposalVoteButtons = ({
   channel,
   proposalId,
-  myVoteId,
-  myVoteType,
+  myVote,
+  stage,
 }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
-      if (!myVoteId) {
+      // Create vote
+      if (!myVote) {
         const { vote } = await api.createVote(channel.id, proposalId, {
           voteType,
         });
-        return { action: 'create' as const, voteId: vote.id, voteType };
+        return {
+          action: 'create' as const,
+          isRatifyingVote: vote.isRatifyingVote,
+          voteId: vote.id,
+          voteType,
+        };
       }
-      if (myVoteType === voteType) {
-        await api.deleteVote(channel.id, proposalId, myVoteId);
-        return { action: 'delete' as const };
+      // Delete vote
+      if (myVote.voteType === voteType) {
+        await api.deleteVote(channel.id, proposalId, myVote.id);
+        return {
+          action: 'delete' as const,
+          isRatifyingVote: false,
+          voteId: myVote.id,
+        };
       }
-      await api.updateVote(channel.id, proposalId, myVoteId, { voteType });
-      return { action: 'update' as const, voteId: myVoteId, voteType };
+      // Update vote
+      const { isRatifyingVote } = await api.updateVote(
+        channel.id,
+        proposalId,
+        myVote.id,
+        { voteType },
+      );
+      return {
+        action: 'update' as const,
+        isRatifyingVote,
+        voteId: myVote.id,
+        voteType,
+      };
     },
     onSuccess: (result) => {
-      const applyUpdate = (cacheKey: [string, string | undefined]) => {
-        queryClient.setQueryData(
-          cacheKey,
-          (
-            oldData:
-              | { pages: { feed: FeedItemRes[] }[]; pageParams: number[] }
-              | undefined,
-          ) => {
-            if (!oldData) {
-              return oldData;
-            }
-            const pages = oldData.pages.map((page) => {
-              const feed = page.feed.map((item) => {
-                if (item.type !== 'proposal' || item.id !== proposalId) {
-                  return item;
-                }
-                if (result.action === 'delete') {
-                  return {
-                    ...item,
-                    myVoteId: undefined,
-                    myVoteType: undefined,
-                  };
+      const applyUpdate = (cacheKey: [string, string]) => {
+        queryClient.setQueryData<{
+          pages: { feed: FeedItemRes[] }[];
+          pageParams: number[];
+        }>(cacheKey, (oldData) => {
+          if (!oldData) {
+            return oldData;
+          }
+          const pages = oldData.pages.map((page) => {
+            const feed = page.feed.map((item) => {
+              if (item.type !== 'proposal' || item.id !== proposalId) {
+                return item;
+              }
+
+              let agreementVoteCount = item.agreementVoteCount;
+              if (result.action === 'delete') {
+                if (myVote?.voteType === 'agree') {
+                  agreementVoteCount -= 1;
                 }
                 return {
                   ...item,
-                  myVoteId: result.voteId,
-                  myVoteType: result.voteType,
+                  agreementVoteCount,
+                  myVote: undefined,
                 };
-              });
-              return { feed };
+              }
+
+              if (result.action === 'create' && result.voteType === 'agree') {
+                agreementVoteCount += 1;
+              }
+              if (result.action === 'update') {
+                if (
+                  myVote?.voteType !== 'agree' &&
+                  result.voteType === 'agree'
+                ) {
+                  agreementVoteCount += 1;
+                }
+                if (
+                  myVote?.voteType === 'agree' &&
+                  result.voteType !== 'agree'
+                ) {
+                  agreementVoteCount -= 1;
+                }
+              }
+              return {
+                ...item,
+                agreementVoteCount,
+                stage: result.isRatifyingVote ? 'ratified' : item.stage,
+                myVote: { id: result.voteId, voteType: result.voteType },
+              };
             });
-            return { pages, pageParams: oldData.pageParams };
-          },
-        );
+            return { feed };
+          });
+          return { pages, pageParams: oldData.pageParams };
+        });
       };
 
       if (channel.name === GENERAL_CHANNEL_NAME) {
@@ -82,12 +126,26 @@ export const ProposalVoteButtons = ({
       }
       applyUpdate(['feed', channel.id]);
 
-      toast(t('votes.prompts.voteCast'));
+      if (result.isRatifyingVote) {
+        toast(t('proposals.prompts.ratifiedSuccess'));
+      }
     },
-    onError: () => {
-      toast(t('errors.somethingWentWrong'));
+    onError(error: Error) {
+      handleError(error);
     },
   });
+
+  const handleVoteBtnClick = (voteType: VoteType) => {
+    if (stage === 'closed') {
+      toast(t('proposals.prompts.noVotingAfterClose'));
+      return;
+    }
+    if (stage === 'ratified') {
+      toast(t('proposals.prompts.noVotingAfterRatification'));
+      return;
+    }
+    castVote(voteType);
+  };
 
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4">
@@ -96,8 +154,11 @@ export const ProposalVoteButtons = ({
           key={vote}
           variant="outline"
           size="sm"
-          className={cn('col-span-1', myVoteType === vote && '!bg-primary/15')}
-          onClick={() => castVote(vote)}
+          className={cn(
+            'col-span-1',
+            myVote?.voteType === vote && '!bg-primary/15',
+          )}
+          onClick={() => handleVoteBtnClick(vote)}
           disabled={isPending}
         >
           {t(`proposals.actions.${vote}`)}

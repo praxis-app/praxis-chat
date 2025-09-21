@@ -5,6 +5,7 @@ import { authenticateOptional } from '../auth/middleware/authenticate-optional.m
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { messagesRouter } from '../messages/messages.router';
+import { synchronizeProposals } from '../proposals/middleware/synchronize-proposals.middleware';
 import { proposalsRouter } from '../proposals/proposals.router';
 import { can } from '../roles/middleware/can.middleware';
 import {
@@ -29,7 +30,7 @@ channelsRouter
 
 // Protected routes
 channelsRouter
-  .use(authenticate)
+  .use(authenticate, synchronizeProposals)
   .get('/', isRegistered, getChannels)
   .get('/:channelId', isRegistered, isChannelMember, getChannel)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)

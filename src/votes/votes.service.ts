@@ -33,28 +33,31 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     vote.proposalId,
   );
   if (isProposalRatifiable) {
+    // Update proposal to reflect newly created vote
     await proposalsService.ratifyProposal(vote.proposalId);
     await proposalsService.implementProposal(vote.proposalId);
   }
 
-  return vote;
+  return { ...vote, isRatifyingVote: isProposalRatifiable };
 };
 
 export const updateVote = async (voteId: string, voteType: VoteType) => {
   const result = await voteRepository.update(voteId, { voteType });
   const vote = await getVote(voteId, ['proposal']);
 
+  let isProposalRatifiable = false;
   if (vote.proposalId) {
-    const isProposalRatifiable = await proposalsService.isProposalRatifiable(
+    isProposalRatifiable = await proposalsService.isProposalRatifiable(
       vote.proposalId,
     );
     if (isProposalRatifiable) {
+      // Update proposal to reflect change in vote
       await proposalsService.ratifyProposal(vote.proposalId);
       await proposalsService.implementProposal(vote.proposalId);
     }
   }
 
-  return result;
+  return { ...result, isRatifyingVote: isProposalRatifiable };
 };
 
 export const deleteVote = async (voteId: string) => {

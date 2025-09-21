@@ -4,5 +4,4 @@ export interface ProposalDto {
   body: string;
   closingAt?: Date;
   action: ProposalActionDto;
-  channelId: string;
 }

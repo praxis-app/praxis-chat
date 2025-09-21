@@ -32,17 +32,20 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   const { action, body, permissions, roleMembers, roleName, roleColor } =
     formValues;
 
+  const nameChanged = roleName !== selectedRole?.name;
+  const colorChanged = roleColor !== selectedRole?.color;
+
   const shapedRolePermissions = getPermissionValuesMap(
     selectedRole?.permissions || [],
   );
 
   const permissionChanges = Object.entries(permissions || {}).reduce<
     Record<string, boolean>
-  >((acc, [permission, value]) => {
-    if (value !== shapedRolePermissions[permission]) {
-      acc[permission] = value;
+  >((result, [permission, value]) => {
+    if (value !== undefined && value !== shapedRolePermissions[permission]) {
+      result[permission] = value;
     }
-    return acc;
+    return result;
   }, {});
 
   const memberChanges = (() => {
@@ -63,11 +66,23 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const getProposalActionType = (action: ProposalActionType | '') => {
-    if (!action) {
-      return '';
+  const getProposalActionLabel = (action: ProposalActionType | '') => {
+    if (action === 'change-role') {
+      return t('proposals.actionTypes.changeRole');
     }
-    return t(`proposals.actionTypes.${action}`);
+    if (action === 'change-settings') {
+      return t('proposals.actionTypes.changeSettings');
+    }
+    if (action === 'create-role') {
+      return t('proposals.actionTypes.createRole');
+    }
+    if (action === 'plan-event') {
+      return t('proposals.actionTypes.planEvent');
+    }
+    if (action === 'test') {
+      return t('proposals.actionTypes.test');
+    }
+    return '';
   };
 
   const getPermissionName = (name: PermissionKeys | '') => {
@@ -75,6 +90,21 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
       return '';
     }
     return t(`permissions.names.${name}`);
+  };
+
+  const handleSubmitBtnClick = () => {
+    if (
+      !nameChanged &&
+      !colorChanged &&
+      !memberChanges.length &&
+      !Object.keys(permissionChanges).length
+    ) {
+      form.setError('root', {
+        message: t('proposals.errors.changeRoleRequiresChanges'),
+      });
+      return;
+    }
+    onSubmit();
   };
 
   if (isLoading) {
@@ -117,7 +147,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">{getProposalActionType(action)}</p>
+            <p className="text-sm">{getProposalActionLabel(action)}</p>
           </CardContent>
         </Card>
 
@@ -150,8 +180,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
         {action === 'change-role' &&
           selectedRole &&
-          (roleName !== selectedRole.name ||
-            roleColor !== selectedRole.color) && (
+          (nameChanged || colorChanged) && (
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -160,7 +189,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {roleName !== selectedRole.name && (
+                  {nameChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
                         {t('proposals.labels.roleNameChange')}
@@ -174,7 +203,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
                       </div>
                     </div>
                   )}
-                  {roleColor !== selectedRole.color && (
+                  {colorChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
                         {t('proposals.labels.roleColorChange')}
@@ -271,12 +300,18 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
         )}
       </div>
 
+      {form.formState.errors.root && (
+        <p className="text-destructive text-sm">
+          {form.formState.errors.root.message}
+        </p>
+      )}
+
       <div className="flex justify-between">
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={onSubmit} disabled={isSubmitting}>
-          {isSubmitting ? t('actions.submit') : t('proposals.actions.create')}
+        <Button onClick={handleSubmitBtnClick} disabled={isSubmitting}>
+          {t('proposals.actions.create')}
         </Button>
       </div>
     </div>

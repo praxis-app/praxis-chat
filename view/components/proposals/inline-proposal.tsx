@@ -1,4 +1,4 @@
-import { timeAgo } from '@/lib/time.utils';
+import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +8,8 @@ import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
-import { ProposalVoteButtons } from './proposal-vote-buttons';
 import { ProposalAction } from './proposal-actions/proposal-action';
+import { ProposalVoteButtons } from './proposal-vote-buttons';
 
 interface InlineProposalProps {
   proposal: ProposalRes;
@@ -19,7 +19,19 @@ interface InlineProposalProps {
 export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
   const { t } = useTranslation();
 
-  const { body, user, createdAt, id, myVoteId, myVoteType, action } = proposal;
+  const {
+    id,
+    body,
+    user,
+    myVote,
+    config,
+    action,
+    stage,
+    votesNeededToRatify,
+    agreementVoteCount,
+    createdAt,
+  } = proposal;
+
   const name = user?.name ?? '';
   const userId = user?.id ?? '';
   const formattedDate = timeAgo(createdAt ?? '');
@@ -48,20 +60,30 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
             <ProposalVoteButtons
               proposalId={id}
               channel={channel}
-              myVoteId={myVoteId}
-              myVoteType={myVoteType}
+              myVote={myVote}
+              stage={stage}
             />
           </CardAction>
 
           <Separator className="my-1" />
 
-          {/* TODO: Replace with actual proposal data */}
           <div className="flex justify-between">
-            <div className="text-muted-foreground flex gap-3.5 text-sm">
-              <div>10/12 voted</div>
-              <div>Ends in 2 days</div>
+            <div className="text-muted-foreground flex gap-3 text-sm">
+              <div className="flex items-center">
+                {t('proposals.labels.voteCount', {
+                  agreementVoteCount,
+                  votesNeededToRatify,
+                })}
+              </div>
+              <div className="flex items-center">
+                {config?.closingAt ? (
+                  timeFromNow(config.closingAt, true)
+                ) : (
+                  <span className="text-lg">{t('time.infinity')}</span>
+                )}
+              </div>
             </div>
-            <Badge variant="outline">{t('proposals.labels.active')}</Badge>
+            <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>
           </div>
         </Card>
       </div>

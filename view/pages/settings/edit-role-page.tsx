@@ -6,12 +6,10 @@ import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuChevronRight, LuPlus } from 'react-icons/lu';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
 import { api } from '../../client/api-client';
 import { TopNav } from '../../components/nav/top-nav';
 import { Button } from '../../components/ui/button';
@@ -32,6 +30,7 @@ import {
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
+import { handleError } from '../../lib/error.utils';
 import { RoleRes } from '../../types/role.types';
 
 enum EditRoleTabName {
@@ -95,11 +94,8 @@ export const EditRolePage = () => {
       setSelectedUserIds([]);
       setIsAddMemberDialogOpen(false);
     },
-    onError(error: AxiosError) {
-      const errorMessage =
-        (error.response?.data as string) || t('errors.somethingWentWrong');
-
-      toast.error(errorMessage);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 
@@ -268,15 +264,18 @@ export const EditRolePage = () => {
                 <DialogHeader>
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
                 </DialogHeader>
-                {eligibleUsersData?.users.map((user) => (
-                  <RoleMemberOption
-                    key={user.id}
-                    selectedUserIds={selectedUserIds}
-                    setSelectedUserIds={setSelectedUserIds}
-                    user={user}
-                  />
-                ))}
-                <div className="mt-4 flex justify-end">
+                <div className="space-y-0.5">
+                  {eligibleUsersData?.users.map((user) => (
+                    <RoleMemberOption
+                      key={user.id}
+                      selectedUserIds={selectedUserIds}
+                      setSelectedUserIds={setSelectedUserIds}
+                      className="px-3.5"
+                      user={user}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 flex justify-end">
                   <Button onClick={() => addMembers()} className="w-18">
                     {t('roles.actions.add')}
                   </Button>

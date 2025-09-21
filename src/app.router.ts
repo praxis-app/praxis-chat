@@ -11,6 +11,7 @@ import { usersRouter } from './users/users.router';
 
 export const appRouter = express.Router();
 
+// Register routers
 appRouter.use('/auth', authRouter);
 appRouter.use('/users', usersRouter);
 appRouter.use('/roles', rolesRouter);

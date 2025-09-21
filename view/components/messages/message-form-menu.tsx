@@ -73,7 +73,7 @@ export const MessageFormMenu = ({
         <DialogHeader>
           <DialogTitle>{t('proposals.headers.create')}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
+        <DialogDescription className="text-center md:text-left">
           {t('proposals.descriptions.create')}
         </DialogDescription>
 

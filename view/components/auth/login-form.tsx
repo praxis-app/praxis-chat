@@ -9,12 +9,11 @@ import { t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -69,8 +68,9 @@ export const LoginForm = () => {
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
-    onError: (error: AxiosError) =>
-      toast((error.response?.data as string) || t('errors.somethingWentWrong')),
+    onError(error: Error) {
+      handleError(error);
+    },
   });
 
   return (

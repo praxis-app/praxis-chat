@@ -16,6 +16,7 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
 import { AttachedImagePreview } from '../images/attached-image-preview';
 import { ImageInput } from '../images/image-input';
@@ -138,8 +139,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       onSend?.();
       reset();
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 

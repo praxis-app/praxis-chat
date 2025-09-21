@@ -3,11 +3,10 @@ import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { ChannelRes } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
 import { Input } from '../ui/input';
@@ -69,11 +68,8 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
         );
         onSuccess();
       },
-      onError(error: AxiosError) {
-        const errorMessage =
-          (error.response?.data as string) || t('errors.somethingWentWrong');
-
-        toast(errorMessage);
+      onError(error: Error) {
+        handleError(error);
       },
     });
 

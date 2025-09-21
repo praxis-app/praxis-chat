@@ -30,6 +30,7 @@ export const Container = ({
   return (
     <div
       className={cn(
+        'pb-12',
         fixed ? 'w-full' : 'mx-auto w-full',
         'pt-5 md:pt-12',
         maxWidthClass,

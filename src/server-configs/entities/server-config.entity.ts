@@ -1,5 +1,6 @@
 import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
 import { DecisionMakingModel } from '@common/proposals/proposal.types';
+import { VotingTimeLimit } from '@common/votes/vote.constants';
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { VotingTimeLimit } from '../../votes/vote.constants';
 
 @Entity()
 export class ServerConfig {
@@ -18,16 +18,13 @@ export class ServerConfig {
   decisionMakingModel: DecisionMakingModel;
 
   @Column({ default: 2 })
-  standAsidesLimit: number;
+  disagreementsLimit: number;
 
   @Column({ default: 2 })
-  reservationsLimit: number;
+  abstainsLimit: number;
 
   @Column({ default: 51 })
   ratificationThreshold: number;
-
-  @Column({ default: 51 })
-  verificationThreshold: number;
 
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;

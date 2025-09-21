@@ -1,3 +1,4 @@
+import { cn } from '@/lib/shared.utils';
 import { UserRes } from '../../types/user.types';
 import { Checkbox } from '../ui/checkbox';
 import { UserAvatar } from '../users/user-avatar';
@@ -5,12 +6,14 @@ import { UserAvatar } from '../users/user-avatar';
 interface Props {
   selectedUserIds: string[];
   setSelectedUserIds(selectedUsers: string[]): void;
+  className?: string;
   user: UserRes;
 }
 
 export const RoleMemberOption = ({
   selectedUserIds,
   setSelectedUserIds,
+  className,
   user,
 }: Props) => {
   const isSelected = selectedUserIds.some((userId) => userId === user.id);
@@ -27,7 +30,10 @@ export const RoleMemberOption = ({
 
   return (
     <div
-      className="hover:bg-muted/50 mb-2 flex cursor-pointer items-center justify-between gap-5 rounded-lg p-3 last:mb-0"
+      className={cn(
+        'hover:bg-muted/50 flex cursor-pointer items-center justify-between gap-5 rounded-lg py-3',
+        className,
+      )}
       onClick={handleChange}
     >
       <div className="flex items-center">

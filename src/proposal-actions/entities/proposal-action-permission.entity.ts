@@ -11,11 +11,13 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { ProposalActionRole } from './proposal-action-role.entity';
 
 @Entity()
+@Unique(['proposalActionRoleId', 'action', 'subject'])
 export class ProposalActionPermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;

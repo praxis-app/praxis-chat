@@ -1,5 +1,6 @@
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
+import { Permission } from '../roles/entities/permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
@@ -8,8 +9,9 @@ import { ProposalActionPermission } from './entities/proposal-action-permission.
 import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
 import { ProposalActionRole } from './entities/proposal-action-role.entity';
 
-const rolesRepository = dataSource.getRepository(Role);
 const usersRepository = dataSource.getRepository(User);
+const rolesRepository = dataSource.getRepository(Role);
+const permissionRepository = dataSource.getRepository(Permission);
 
 const proposalActionRoleRepository =
   dataSource.getRepository(ProposalActionRole);
@@ -24,17 +26,23 @@ const proposalActionPermissionRepository = dataSource.getRepository(
 
 export const createProposalActionRole = async (
   proposalActionId: string,
-  { roleToUpdateId, members, permissions, name, color }: ProposalActionRoleDto,
+  { roleToUpdateId, members, permissions, ...role }: ProposalActionRoleDto,
 ) => {
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: roleToUpdateId },
   });
+
+  const name = role.name?.trim();
+  const color = role.color?.trim();
+  const prevName = name ? roleToUpdate.name : undefined;
+  const prevColor = color ? roleToUpdate.color : undefined;
+
   const savedRole = await proposalActionRoleRepository.save({
-    name: name?.trim(),
-    color: color?.trim(),
     roleId: roleToUpdateId,
-    prevName: roleToUpdate.name,
-    prevColor: roleToUpdate.color,
+    name,
+    color,
+    prevName,
+    prevColor,
     proposalActionId,
   });
 
@@ -88,10 +96,11 @@ export const createProposalActionRole = async (
 export const implementChangeRole = async (proposalActionId: string) => {
   const actionRole = await proposalActionRoleRepository.findOneOrFail({
     where: { proposalActionId },
-    relations: ['permission', 'members'],
+    relations: ['permissions', 'members'],
   });
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: actionRole.roleId },
+    relations: ['permissions'],
   });
 
   const userIdsToAdd = actionRole.members
@@ -109,9 +118,32 @@ export const implementChangeRole = async (proposalActionId: string) => {
   });
   // Update role permissions
   if (actionRole.permissions) {
-    await rolesService.updateRolePermissions(roleToUpdate.id, {
-      permissions: actionRole.permissions,
-    });
+    const toAdd = actionRole.permissions.filter(
+      (permission) => permission.changeType === 'add',
+    );
+    const toRemove = actionRole.permissions.filter(
+      (permission) => permission.changeType === 'remove',
+    );
+    if (toRemove.length > 0) {
+      await permissionRepository.remove(
+        roleToUpdate.permissions.filter((permission) =>
+          toRemove.some(
+            (p) =>
+              p.action === permission.action &&
+              p.subject === permission.subject,
+          ),
+        ),
+      );
+    }
+    if (toAdd.length > 0) {
+      await permissionRepository.save(
+        toAdd.map(({ action, subject }) => ({
+          roleId: roleToUpdate.id,
+          action,
+          subject,
+        })),
+      );
+    }
   }
   // Add role members
   if (userIdsToAdd?.length) {
@@ -133,7 +165,7 @@ export const implementChangeRole = async (proposalActionId: string) => {
 export const implementCreateRole = async (proposalActionId: string) => {
   const actionRole = await proposalActionRoleRepository.findOneOrFail({
     where: { proposalActionId },
-    relations: ['permission', 'members'],
+    relations: ['permissions', 'members'],
   });
 
   const { name, color, permissions } = actionRole;

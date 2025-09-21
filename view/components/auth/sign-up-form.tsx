@@ -7,14 +7,14 @@ import {
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { t } from '@/lib/shared.utils';
+import { useAppStore } from '@/store/app.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -25,7 +25,6 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import { useAppStore } from '@/store/app.store';
 
 const EMAIL_MAX_LENGTH = 254;
 
@@ -111,11 +110,8 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
-    onError(error: AxiosError) {
-      const errorMessage =
-        (error.response?.data as string) || t('errors.somethingWentWrong');
-
-      toast(errorMessage);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 
@@ -128,8 +124,8 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 

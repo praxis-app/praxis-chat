@@ -60,7 +60,7 @@ export const getChannelFeed = async (
 ) => {
   const [messages, proposals] = await Promise.all([
     messagesService.getMessages(channelId, offset, limit),
-    proposalsService.getChannelProposals(
+    proposalsService.getInlineProposals(
       channelId,
       offset,
       limit,

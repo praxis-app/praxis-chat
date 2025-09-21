@@ -1,4 +1,4 @@
-import { FindOptionsWhere, In } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
@@ -31,20 +31,13 @@ export const getProposal = (id: string, relations?: string[]) => {
   });
 };
 
-export const getProposals = (
-  where?: FindOptionsWhere<Proposal>,
-  relations?: string[],
-) => {
-  return proposalRepository.find({ where, relations });
-};
-
-export const getChannelProposals = async (
+export const getInlineProposals = async (
   channelId: string,
   offset?: number,
   limit?: number,
   currentUserId?: string,
 ) => {
-  const proposals = await proposalRepository
+  const { entities: proposals, raw } = await proposalRepository
     .createQueryBuilder('proposal')
     .select([
       'proposal.id',
@@ -55,10 +48,16 @@ export const getChannelProposals = async (
       'proposalAction.actionType',
     ])
     .addSelect([
+      'proposalVotes.id',
+      'proposalVotes.voteType',
+      'proposalVotes.createdAt',
+      'proposalVotes.updatedAt',
+    ])
+    .addSelect([
       'proposalConfig.decisionMakingModel',
       'proposalConfig.ratificationThreshold',
-      'proposalConfig.reservationsLimit',
-      'proposalConfig.standAsidesLimit',
+      'proposalConfig.disagreementsLimit',
+      'proposalConfig.abstainsLimit',
       'proposalConfig.closingAt',
     ])
     .addSelect([
@@ -70,15 +69,16 @@ export const getChannelProposals = async (
       'proposalActionRole.roleId',
     ])
     .addSelect([
-      'proposalActionPermissions.subject',
-      'proposalActionPermissions.action',
+      'proposalActionPermission.subject',
+      'proposalActionPermission.action',
+      'proposalActionPermission.changeType',
     ])
     .addSelect([
-      'proposalActionRoleMembers.id',
-      'proposalActionRoleMembers.changeType',
-      'proposalActionRoleMembersUser.id',
-      'proposalActionRoleMembersUser.name',
-      'proposalActionRoleMembersUser.displayName',
+      'proposalActionRoleMember.id',
+      'proposalActionRoleMember.changeType',
+      'proposalActionRoleMemberUser.id',
+      'proposalActionRoleMemberUser.name',
+      'proposalActionRoleMemberUser.displayName',
     ])
     .addSelect([
       'proposalUser.id',
@@ -86,63 +86,83 @@ export const getChannelProposals = async (
       'proposalUser.displayName',
     ])
     .addSelect([
-      'proposalImages.id',
-      'proposalImages.filename',
-      'proposalImages.createdAt',
+      'proposalImage.id',
+      'proposalImage.filename',
+      'proposalImage.createdAt',
     ])
     .leftJoin('proposal.user', 'proposalUser')
-    .leftJoin('proposal.images', 'proposalImages')
+    .leftJoin('proposal.votes', 'proposalVotes')
+    .leftJoin('proposal.images', 'proposalImage')
     .leftJoin('proposal.action', 'proposalAction')
     .leftJoin('proposal.config', 'proposalConfig')
     .leftJoin('proposalAction.role', 'proposalActionRole')
-    .leftJoin('proposalActionRole.permissions', 'proposalActionPermissions')
-    .leftJoin('proposalActionRole.members', 'proposalActionRoleMembers')
-    .leftJoin('proposalActionRoleMembers.user', 'proposalActionRoleMembersUser')
+    .leftJoin('proposalActionRole.permissions', 'proposalActionPermission')
+    .leftJoin('proposalActionRole.members', 'proposalActionRoleMember')
+    .leftJoin('proposalActionRoleMember.user', 'proposalActionRoleMemberUser')
     .where('proposal.channelId = :channelId', { channelId })
     .orderBy('proposal.createdAt', 'DESC')
     .skip(offset)
     .take(limit)
-    .getMany();
+    .getRawAndEntities();
 
-  // Fetch the current user's votes for these proposals in one query
+  // Fetch the current user's votes
   const proposalIds = proposals.map((p) => p.id);
-  const myVotes =
-    currentUserId && proposalIds.length
-      ? await voteRepository.find({
-          where: { proposalId: In(proposalIds), userId: currentUserId },
-        })
-      : [];
-  const myVoteProposalId = new Map(myVotes.map((v) => [v.proposalId, v]));
+  const myVotesMap = currentUserId
+    ? await getMyVotesMap(proposalIds, currentUserId)
+    : {};
 
-  const shapedProposals = proposals.map((proposal) => ({
-    id: proposal.id,
-    body: proposal.body,
-    stage: proposal.stage,
-    channelId: proposal.channelId,
-    user: proposal.user,
-    images: proposal.images.map((image) => ({
-      id: image.id,
-      isPlaceholder: !image.filename,
-      createdAt: image.createdAt,
-    })),
-    action: proposal.action,
-    config: proposal.config,
-    createdAt: proposal.createdAt,
-    myVoteId: myVoteProposalId.get(proposal.id)?.id,
-    myVoteType: myVoteProposalId.get(proposal.id)?.voteType,
-  }));
+  // Get users eligible to vote on this proposal
+  const proposalMemberCount = await getProposalMemberCount();
+
+  const shapedProposals = proposals.map((proposal) => {
+    const votesNeededToRatify = Math.ceil(
+      proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
+    );
+
+    const agreementVoteCount = proposal.votes.filter(
+      (vote) => vote.voteType === 'agree',
+    ).length;
+
+    const myVote = myVotesMap[proposal.id]
+      ? {
+          id: myVotesMap[proposal.id].id,
+          voteType: myVotesMap[proposal.id].voteType,
+        }
+      : undefined;
+
+    const rowsForProposal = raw.filter((r) => {
+      return r.proposal_id === proposal.id;
+    });
+
+    const actionRole = proposal.action.role
+      ? {
+          ...proposal.action.role,
+          permissions: rowsForProposal.map((r) => ({
+            changeType: r.proposalActionPermission_changeType,
+            subject: r.proposalActionPermission_subject,
+            action: r.proposalActionPermission_action,
+          })),
+        }
+      : undefined;
+
+    return {
+      ...proposal,
+      action: {
+        ...proposal.action,
+        role: actionRole,
+      },
+      images: proposal.images.map((image) => ({
+        id: image.id,
+        isPlaceholder: !image.filename,
+        createdAt: image.createdAt,
+      })),
+      votesNeededToRatify,
+      agreementVoteCount,
+      myVote,
+    };
+  });
 
   return shapedProposals;
-};
-
-// TODO: Account for instances with multiple servers / guilds
-export const getProposalMembers = async () => {
-  return userRepository.find({
-    where: {
-      anonymous: false,
-      locked: false,
-    },
-  });
 };
 
 export const isProposalRatifiable = async (proposalId: string) => {
@@ -150,75 +170,27 @@ export const isProposalRatifiable = async (proposalId: string) => {
     'config',
     'votes',
   ]);
-  const members = await getProposalMembers();
-
   if (stage !== 'voting') {
     return false;
   }
+
+  const memberCount = await getProposalMemberCount();
+
   if (config.decisionMakingModel === 'consensus') {
-    return hasConsensus(votes, config, members);
+    return hasConsensus(votes, config, memberCount);
   }
   if (config.decisionMakingModel === 'consent') {
     return hasConsent(votes, config);
   }
   if (config.decisionMakingModel === 'majority-vote') {
-    return hasMajorityVote(votes, config, members);
+    return hasMajorityVote(votes, config, memberCount);
   }
   return false;
 };
 
-export const hasConsensus = async (
-  votes: Vote[],
-  {
-    ratificationThreshold,
-    reservationsLimit,
-    standAsidesLimit,
-    closingAt,
-  }: ProposalConfig,
-  members: User[],
-) => {
-  if (closingAt && Date.now() < Number(closingAt)) {
-    return false;
-  }
-
-  const { agreements, reservations, standAsides, blocks } =
-    sortConsensusVotesByType(votes);
-
-  return (
-    agreements.length >= members.length * (ratificationThreshold * 0.01) &&
-    reservations.length <= reservationsLimit &&
-    standAsides.length <= standAsidesLimit &&
-    blocks.length === 0
-  );
-};
-
-export const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
-  const { reservations, standAsides, blocks } = sortConsensusVotesByType(votes);
-  const { reservationsLimit, standAsidesLimit, closingAt } = proposalConfig;
-
-  return (
-    Date.now() >= Number(closingAt) &&
-    reservations.length <= reservationsLimit &&
-    standAsides.length <= standAsidesLimit &&
-    blocks.length === 0
-  );
-};
-
-export const hasMajorityVote = (
-  votes: Vote[],
-  { ratificationThreshold, closingAt }: ProposalConfig,
-  members: User[],
-) => {
-  if (closingAt && Date.now() < Number(closingAt)) {
-    return false;
-  }
-  const { agreements } = sortMajorityVotesByType(votes);
-
-  return agreements.length >= members.length * (ratificationThreshold * 0.01);
-};
-
 export const createProposal = async (
-  { body, closingAt, action, channelId }: ProposalDto,
+  channelId: string,
+  { body, closingAt, action }: ProposalDto,
   userId: string,
 ) => {
   const sanitizedBody = sanitizeText(body);
@@ -234,8 +206,8 @@ export const createProposal = async (
   const proposalConfig: Partial<ProposalConfig> = {
     decisionMakingModel: serverConfig.decisionMakingModel,
     ratificationThreshold: serverConfig.ratificationThreshold,
-    reservationsLimit: serverConfig.reservationsLimit,
-    standAsidesLimit: serverConfig.standAsidesLimit,
+    disagreementsLimit: serverConfig.disagreementsLimit,
+    abstainsLimit: serverConfig.abstainsLimit,
     closingAt: closingAt || configClosingAt,
   };
 
@@ -250,6 +222,11 @@ export const createProposal = async (
     channelId,
     userId,
   });
+
+  const proposalMemberCount = await getProposalMemberCount();
+  const votesNeededToRatify = Math.ceil(
+    proposalMemberCount * (serverConfig.ratificationThreshold * 0.01),
+  );
 
   let proposalActionRole: ProposalActionRole | undefined;
   if (action.role) {
@@ -276,6 +253,8 @@ export const createProposal = async (
     // TODO: Handle images
     images: [],
     createdAt: proposal.createdAt,
+    agreementVoteCount: 0,
+    votesNeededToRatify,
   };
 
   // Publish proposal to all other channel members for realtime feed updates
@@ -313,6 +292,20 @@ export const implementProposal = async (proposalId: string) => {
   }
 };
 
+export const synchronizeProposals = async () => {
+  const proposals = await proposalRepository.find({
+    where: {
+      config: { closingAt: Not(IsNull()) },
+      stage: 'voting',
+    },
+    select: { id: true },
+  });
+
+  for (const proposal of proposals) {
+    await synchronizeProposal(proposal);
+  }
+};
+
 export const deleteProposal = async (proposalId: string) => {
   const images = await imageRepository.find({ where: { proposalId } });
   for (const { filename } of images) {
@@ -321,6 +314,100 @@ export const deleteProposal = async (proposalId: string) => {
     }
   }
   return proposalRepository.delete(proposalId);
+};
+
+// -------------------------------------------------------------------------
+// Helper functions
+// -------------------------------------------------------------------------
+
+const hasConsensus = async (
+  votes: Vote[],
+  {
+    ratificationThreshold,
+    disagreementsLimit,
+    abstainsLimit,
+    closingAt,
+  }: ProposalConfig,
+  memberCount: number,
+) => {
+  if (closingAt && Date.now() < Number(closingAt)) {
+    return false;
+  }
+
+  const agreementsNeeded = memberCount * (ratificationThreshold * 0.01);
+  const { agreements, disagreements, abstains, blocks } =
+    sortConsensusVotesByType(votes);
+
+  const isRatifiable =
+    agreements.length >= agreementsNeeded &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
+    blocks.length === 0;
+
+  return isRatifiable;
+};
+
+const hasConsent = (votes: Vote[], proposalConfig: ProposalConfig) => {
+  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
+  const { disagreementsLimit, abstainsLimit, closingAt } = proposalConfig;
+
+  return (
+    Date.now() >= Number(closingAt) &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
+    blocks.length === 0
+  );
+};
+
+const hasMajorityVote = (
+  votes: Vote[],
+  { ratificationThreshold, closingAt }: ProposalConfig,
+  memberCount: number,
+) => {
+  if (closingAt && Date.now() < Number(closingAt)) {
+    return false;
+  }
+  const { agreements } = sortMajorityVotesByType(votes);
+
+  return agreements.length >= memberCount * (ratificationThreshold * 0.01);
+};
+
+/** Synchronizes proposals with regard to voting duration and ratifiability */
+const synchronizeProposal = async (proposal: Proposal) => {
+  if (
+    !proposal.config.closingAt ||
+    Date.now() < Number(proposal.config.closingAt)
+  ) {
+    return;
+  }
+
+  const isRatifiable = await isProposalRatifiable(proposal.id);
+  if (!isRatifiable) {
+    await proposalRepository.update(proposal.id, { stage: 'closed' });
+  }
+
+  await ratifyProposal(proposal.id);
+  await implementProposal(proposal.id);
+};
+
+const getMyVotesMap = async (proposalIds: string[], currentUserId: string) => {
+  const myVotes = await voteRepository.find({
+    where: { proposalId: In(proposalIds), userId: currentUserId },
+  });
+  return myVotes.reduce<Record<string, Vote>>((result, vote) => {
+    result[vote.proposalId!] = vote;
+    return result;
+  }, {});
+};
+
+// TODO: Account for instances with multiple servers / guilds
+const getProposalMemberCount = async () => {
+  return userRepository.count({
+    where: {
+      anonymous: false,
+      locked: false,
+    },
+  });
 };
 
 const getNewProposalKey = (channelId: string, userId: string) => {
