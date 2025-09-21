@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
 import { User } from '../users/user.entity';
@@ -29,6 +30,12 @@ export class Message {
 
   @Column()
   userId: string;
+
+  @ManyToOne(() => ChannelKey, (key) => key.messages)
+  key: ChannelKey;
+
+  @Column()
+  keyId: string;
 
   @ManyToOne(() => Channel, (channel) => channel.messages, {
     onDelete: 'CASCADE',

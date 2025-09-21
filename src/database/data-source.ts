@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
+import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
@@ -30,6 +31,7 @@ export const dataSource = new DataSource({
   synchronize: process.env.NODE_ENV === 'development',
   entities: [
     Channel,
+    ChannelKey,
     ChannelMember,
     Image,
     Invite,
