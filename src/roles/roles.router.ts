@@ -16,8 +16,10 @@ export const rolesRouter = express.Router();
 rolesRouter.use(authenticate);
 
 rolesRouter
-  .get('/:roleId', can('read', 'Role'), getRole)
-  .get('/', can('read', 'Role'), getRoles)
+  // All authenticated users can read roles
+  .get('/:roleId', getRole)
+  .get('/', getRoles)
+  // Only users with permission can make direct changes
   .post('/', can('create', 'Role'), createRole)
   .put('/:roleId', can('update', 'Role'), updateRole)
   .delete('/:roleId', can('delete', 'Role'), deleteRole);
