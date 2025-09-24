@@ -157,22 +157,32 @@ const generateChannelKey = () => {
 };
 
 export const getUnwrappedChannelKey = async (channelId: string) => {
-  const channelKey = await channelKeyRepository.findOneOrFail({
+  const channelKey = await getActiveChannelKey(channelId);
+  const unwrappedKey = unwrapChannelKey(
+    channelKey.wrappedKey,
+    channelKey.tag,
+    channelKey.iv,
+  );
+  return { ...channelKey, unwrappedKey };
+};
+
+export const getActiveChannelKey = async (channelId: string) => {
+  return channelKeyRepository.findOneOrFail({
     where: { channelId, active: true },
   });
+};
+
+export const unwrapChannelKey = (
+  wrappedKey: Buffer,
+  tag: Buffer,
+  iv: Buffer,
+) => {
   const masterKey = getChannelKeyMaster();
-
-  // TODO: Check if `Buffer.from` is necessary here
-  const iv = Buffer.from(channelKey.iv);
-  const ciphertext = Buffer.from(channelKey.wrappedKey);
-  const authTag = Buffer.from(channelKey.tag);
-
-  // TODO: Add constant for algorithm
   const decipher = crypto.createDecipheriv('aes-256-gcm', masterKey, iv);
-  decipher.setAuthTag(authTag);
+  decipher.setAuthTag(tag);
 
   const unwrappedKey = Buffer.concat([
-    decipher.update(ciphertext),
+    decipher.update(wrappedKey),
     decipher.final(),
   ]);
 

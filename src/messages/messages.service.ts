@@ -52,7 +52,9 @@ export const getMessages = async (
     take: limit,
   });
 
-  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
+  const { unwrappedKey } =
+    await channelsService.getUnwrappedChannelKey(channelId);
+
   const decryptedMessages = messages.map((message) => {
     let body: string | null = null;
 
@@ -61,7 +63,7 @@ export const getMessages = async (
         message.ciphertext,
         message.tag,
         message.iv,
-        channelKey,
+        unwrappedKey,
       );
     }
     return {
@@ -85,11 +87,14 @@ export const createMessage = async (
   { body, imageCount }: CreateMessageDto,
   user: User,
 ) => {
+  const { unwrappedKey, ...channelKey } =
+    await channelsService.getUnwrappedChannelKey(channelId);
+
   const plaintext = sanitizeText(body);
-  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
-  const { ciphertext, tag, iv } = encryptMessage(plaintext, channelKey);
+  const { ciphertext, tag, iv } = encryptMessage(plaintext, unwrappedKey);
 
   const message = await messageRepository.save({
+    keyId: channelKey.id,
     userId: user.id,
     channelId,
     ciphertext,
