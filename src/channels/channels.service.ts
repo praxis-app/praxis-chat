@@ -146,7 +146,7 @@ const generateChannelKey = () => {
   const channelKey = crypto.randomBytes(32);
 
   // Wrap it with the master key
-  const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
+  const masterKey = getChannelKeyMaster();
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', masterKey, iv);
 
@@ -160,8 +160,7 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   const channelKey = await channelKeyRepository.findOneOrFail({
     where: { channelId, active: true },
   });
-
-  const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
+  const masterKey = getChannelKeyMaster();
 
   // TODO: Check if `Buffer.from` is necessary here
   const iv = Buffer.from(channelKey.iv);
@@ -196,6 +195,14 @@ export const updateChannel = async (
 
 export const deleteChannel = async (channelId: string) => {
   return channelRepository.delete(channelId);
+};
+
+const getChannelKeyMaster = () => {
+  const channelKeyMaster = process.env.CHANNEL_KEY_MASTER;
+  if (!channelKeyMaster) {
+    throw new Error('CHANNEL_KEY_MASTER is not set');
+  }
+  return Buffer.from(channelKeyMaster, 'base64');
 };
 
 const initializeGeneralChannel = () => {
