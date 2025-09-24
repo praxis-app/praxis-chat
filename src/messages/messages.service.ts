@@ -96,8 +96,8 @@ export const createMessage = async (
     tag,
     iv,
   });
-  let images: Image[] = [];
 
+  let images: Image[] = [];
   if (imageCount) {
     const imagePlaceholders = Array.from({ length: imageCount }).map(() => {
       return imageRepository.create({ messageId: message.id });
