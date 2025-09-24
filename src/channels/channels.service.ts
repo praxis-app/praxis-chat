@@ -5,6 +5,7 @@ import * as messagesService from '../messages/messages.service';
 import * as proposalsService from '../proposals/proposals.service';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
+import { ChannelKey } from './entities/channel-key.entity';
 
 export interface CreateChannelDto {
   name: string;
@@ -20,6 +21,7 @@ const GENERAL_CHANNEL_NAME = 'general';
 
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const channelKeyRepository = dataSource.getRepository(ChannelKey);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -129,6 +131,11 @@ export const createChannel = async (
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
+  // TODO: Remove when no longer needed for testing
+  console.log('⭐️ TEST - Wrapped key - generateChannelKey:', wrappedKey);
+  console.log('⭐️ TEST - Tag - generateChannelKey:', tag);
+  console.log('⭐️ TEST - IV - generateChannelKey:', iv);
+
   const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
@@ -136,12 +143,19 @@ export const createChannel = async (
     keys: [{ wrappedKey, tag, iv }],
   });
 
+  // TODO: Remove when no longer needed for testing
+  const test = await getUnwrappedChannelKey(channel.id);
+  console.log('⭐️ TEST - Unwrapped key - getUnwrappedChannelKey:', test);
+
   return channel;
 };
 
 const generateChannelKey = () => {
   // Generate per-channel key
   const channelKey = crypto.randomBytes(32);
+
+  // TODO: Remove when no longer needed for testing
+  console.log('⭐️ TEST - Channel key - generateChannelKey:', channelKey);
 
   // Wrap it with the master key
   const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
@@ -152,6 +166,27 @@ const generateChannelKey = () => {
   const tag = cipher.getAuthTag();
 
   return { wrappedKey, tag, iv };
+};
+
+export const getUnwrappedChannelKey = async (channelId: string) => {
+  const channelKey = await channelKeyRepository.findOneOrFail({
+    where: { channelId },
+  });
+
+  const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
+  const iv = Buffer.from(channelKey.iv);
+  const ciphertext = Buffer.from(channelKey.wrappedKey);
+  const authTag = Buffer.from(channelKey.tag);
+
+  const decipher = crypto.createDecipheriv('aes-256-gcm', masterKey, iv);
+  decipher.setAuthTag(authTag);
+
+  const unwrappedKey = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ]);
+
+  return unwrappedKey;
 };
 
 export const updateChannel = async (
