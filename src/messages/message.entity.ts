@@ -17,9 +17,6 @@ export class Message {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  body: string | null;
-
   @Column({ type: 'bytea', nullable: true })
   ciphertext: Buffer | null;
 

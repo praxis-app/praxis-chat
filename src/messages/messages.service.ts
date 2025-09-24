@@ -31,7 +31,9 @@ export const getMessages = async (
     relations: ['user', 'images'],
     select: {
       id: true,
-      body: true,
+      ciphertext: true,
+      tag: true,
+      iv: true,
       user: {
         id: true,
         name: true,
