@@ -158,7 +158,7 @@ const generateChannelKey = () => {
 
 export const getUnwrappedChannelKey = async (channelId: string) => {
   const channelKey = await channelKeyRepository.findOneOrFail({
-    where: { channelId },
+    where: { channelId, active: true },
   });
 
   const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
@@ -168,6 +168,7 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   const ciphertext = Buffer.from(channelKey.wrappedKey);
   const authTag = Buffer.from(channelKey.tag);
 
+  // TODO: Add constant for algorithm
   const decipher = crypto.createDecipheriv('aes-256-gcm', masterKey, iv);
   decipher.setAuthTag(authTag);
 
