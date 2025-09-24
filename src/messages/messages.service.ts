@@ -84,10 +84,9 @@ export const createMessage = async (
   user: User,
 ) => {
   const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
-  const { ciphertext, tag, iv } = encryptMessage(
-    sanitizeText(body),
-    channelKey,
-  );
+
+  const plaintext = sanitizeText(body);
+  const { ciphertext, tag, iv } = encryptMessage(plaintext, channelKey);
 
   const message = await messageRepository.save({
     userId: user.id,
@@ -111,6 +110,7 @@ export const createMessage = async (
   }));
   const messagePayload = {
     ...message,
+    body: plaintext,
     images: shapedImages,
     user: { id: user.id, name: user.name },
   };
