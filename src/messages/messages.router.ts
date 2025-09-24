@@ -3,11 +3,7 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
-import {
-  createMessage,
-  getMessages,
-  uploadMessageImage,
-} from './messages.controller';
+import { createMessage, uploadMessageImage } from './messages.controller';
 import { validateMessage } from './middleware/validate-message.middleware';
 
 const IMAGE_ROUTE = '/:messageId/images/:imageId';
@@ -18,6 +14,5 @@ export const messagesRouter = express.Router({
 
 messagesRouter
   .use(authenticate)
-  .get('/', getMessages)
   .post('/', validateMessage, createMessage)
   .post(`${IMAGE_ROUTE}/upload`, uploadImage, uploadMessageImage);

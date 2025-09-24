@@ -162,6 +162,8 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   });
 
   const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
+
+  // TODO: Check if `Buffer.from` is necessary here
   const iv = Buffer.from(channelKey.iv);
   const ciphertext = Buffer.from(channelKey.wrappedKey);
   const authTag = Buffer.from(channelKey.tag);

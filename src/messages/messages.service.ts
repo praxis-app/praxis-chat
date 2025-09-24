@@ -25,6 +25,7 @@ export const getMessages = async (
   offset?: number,
   limit?: number,
 ) => {
+  // TODO: Ensure relations are loaded correctly
   const messages = await messageRepository.find({
     where: { channelId },
     relations: ['user', 'images'],
@@ -49,16 +50,32 @@ export const getMessages = async (
     take: limit,
   });
 
-  return messages.map((message) => ({
-    ...message,
-    images: message.images.map((image) => {
-      return {
-        id: image.id,
-        isPlaceholder: !image.filename,
-        createdAt: image.createdAt,
-      };
-    }),
-  }));
+  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
+  const decryptedMessages = messages.map((message) => {
+    let body: string | null = null;
+
+    if (message.ciphertext && message.tag && message.iv) {
+      body = decryptMessage(
+        message.ciphertext,
+        message.tag,
+        message.iv,
+        channelKey,
+      );
+    }
+    return {
+      ...message,
+      images: message.images.map((image) => {
+        ({
+          id: image.id,
+          isPlaceholder: !image.filename,
+          createdAt: image.createdAt,
+        });
+      }),
+      body,
+    };
+  });
+
+  return decryptedMessages;
 };
 
 export const createMessage = async (
@@ -120,6 +137,23 @@ const encryptMessage = (message: string, channelKey: Buffer) => {
   const tag = cipher.getAuthTag();
 
   return { ciphertext, tag, iv };
+};
+
+const decryptMessage = (
+  ciphertext: Buffer,
+  tag: Buffer,
+  iv: Buffer,
+  channelKey: Buffer,
+) => {
+  const decipher = crypto.createDecipheriv('aes-256-gcm', channelKey, iv);
+  decipher.setAuthTag(tag);
+
+  const plaintext = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ]);
+
+  return plaintext.toString();
 };
 
 export const saveMessageImage = async (
