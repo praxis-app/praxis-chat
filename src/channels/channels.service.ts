@@ -1,7 +1,9 @@
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
+import * as crypto from 'crypto';
 import * as proposalsService from '../proposals/proposals.service';
+import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
 
@@ -19,6 +21,7 @@ const GENERAL_CHANNEL_NAME = 'general';
 
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const channelKeyRepository = dataSource.getRepository(ChannelKey);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -117,7 +120,7 @@ export const addMemberToAllChannels = async (userId: string) => {
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = (
+export const createChannel = async (
   { name, description }: CreateChannelDto,
   currentUserId: string,
 ) => {
@@ -125,11 +128,32 @@ export const createChannel = (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
-  return channelRepository.save({
+  const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
     members: [{ userId: currentUserId }],
   });
+
+  // Generate per-channel key
+  const channelKey = crypto.randomBytes(32);
+
+  // Wrap it with the master key
+  const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', masterKey, iv);
+
+  const wrappedKey = Buffer.concat([cipher.update(channelKey), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  // Save channel key
+  await channelKeyRepository.save({
+    channelId: channel.id,
+    wrappedKey,
+    tag,
+    iv,
+  });
+
+  return channel;
 };
 
 export const updateChannel = async (

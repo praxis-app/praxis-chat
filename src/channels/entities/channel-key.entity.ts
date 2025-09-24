@@ -18,6 +18,12 @@ export class ChannelKey {
   @Column({ type: 'bytea' })
   wrappedKey: Buffer;
 
+  @Column({ type: 'bytea' })
+  iv: Buffer;
+
+  @Column({ type: 'bytea' })
+  tag: Buffer;
+
   @Column({ type: 'boolean', default: true })
   active: boolean;
 
