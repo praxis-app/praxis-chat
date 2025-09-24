@@ -35,7 +35,7 @@ export class ChannelKey {
   })
   channel: Channel;
 
-  @Column()
+  @Column({ type: 'uuid' })
   channelId: string;
 
   @CreateDateColumn()
