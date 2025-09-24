@@ -202,7 +202,11 @@ describe('Messages Service', () => {
         } as any,
       ]);
 
-      const result = await messagesService.createMessage(messageData, mockUser);
+      const result = await messagesService.createMessage(
+        'channel-1',
+        messageData,
+        mockUser,
+      );
 
       expect(sanitizeText).toHaveBeenCalledWith('  Test message  ');
       expect(mockMessageRepository.save).toHaveBeenCalledWith({

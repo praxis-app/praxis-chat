@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
@@ -13,7 +14,6 @@ enum MessageType {
 
 export interface CreateMessageDto {
   body?: string;
-  channelId: string;
   imageCount: number;
 }
 
@@ -62,13 +62,22 @@ export const getMessages = async (
 };
 
 export const createMessage = async (
-  { body, imageCount, ...messageData }: CreateMessageDto,
+  channelId: string,
+  { body, imageCount }: CreateMessageDto,
   user: User,
 ) => {
+  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
+  const { ciphertext, tag, iv } = encryptMessage(
+    sanitizeText(body),
+    channelKey,
+  );
+
   const message = await messageRepository.save({
-    body: sanitizeText(body),
     userId: user.id,
-    ...messageData,
+    channelId,
+    ciphertext,
+    tag,
+    iv,
   });
   let images: Image[] = [];
 
@@ -89,7 +98,6 @@ export const createMessage = async (
     user: { id: user.id, name: user.name },
   };
 
-  const { channelId } = messageData;
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
     if (member.userId === user.id) {
@@ -102,6 +110,16 @@ export const createMessage = async (
   }
 
   return messagePayload;
+};
+
+const encryptMessage = (message: string, channelKey: Buffer) => {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', channelKey, iv);
+
+  const ciphertext = Buffer.concat([cipher.update(message), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  return { ciphertext, tag, iv };
 };
 
 export const saveMessageImage = async (

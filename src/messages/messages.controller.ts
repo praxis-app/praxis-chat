@@ -12,6 +12,7 @@ export const getMessages = async (req: Request, res: Response) => {
 
 export const createMessage = async (req: Request, res: Response) => {
   const message = await messagesService.createMessage(
+    req.params.channelId,
     req.body,
     res.locals.user,
   );
