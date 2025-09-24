@@ -85,9 +85,8 @@ export const createMessage = async (
   { body, imageCount }: CreateMessageDto,
   user: User,
 ) => {
-  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
-
   const plaintext = sanitizeText(body);
+  const channelKey = await channelsService.getUnwrappedChannelKey(channelId);
   const { ciphertext, tag, iv } = encryptMessage(plaintext, channelKey);
 
   const message = await messageRepository.save({
