@@ -1,3 +1,6 @@
+export const AES_256_GCM_ALGORITHM = 'aes-256-gcm';
+export const AES_256_GCM_IV_LENGTH = 12;
+
 export enum CronExpression {
   EVERY_SECOND = '* * * * * *',
   EVERY_5_SECONDS = '*/5 * * * * *',

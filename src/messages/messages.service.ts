@@ -1,5 +1,9 @@
 import * as crypto from 'crypto';
 import * as channelsService from '../channels/channels.service';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
@@ -140,8 +144,8 @@ export const createMessage = async (
 };
 
 const encryptMessage = (message: string, channelKey: Buffer) => {
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv('aes-256-gcm', channelKey, iv);
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, channelKey, iv);
 
   const ciphertext = Buffer.concat([cipher.update(message), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -155,7 +159,11 @@ const decryptMessage = (
   iv: Buffer,
   channelKey: Buffer,
 ) => {
-  const decipher = crypto.createDecipheriv('aes-256-gcm', channelKey, iv);
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    channelKey,
+    iv,
+  );
   decipher.setAuthTag(tag);
 
   const plaintext = Buffer.concat([

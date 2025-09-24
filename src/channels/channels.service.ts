@@ -1,5 +1,9 @@
 import * as crypto from 'crypto';
 import { In } from 'typeorm';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
@@ -148,8 +152,8 @@ const generateChannelKey = () => {
 
   // Wrap it with the master key
   const masterKey = getChannelKeyMaster();
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv('aes-256-gcm', masterKey, iv);
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, masterKey, iv);
 
   const wrappedKey = Buffer.concat([cipher.update(channelKey), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -165,22 +169,14 @@ export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
   });
 
   return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
-    result[channelKey.id] = unwrapChannelKey(
-      channelKey.wrappedKey,
-      channelKey.tag,
-      channelKey.iv,
-    );
+    result[channelKey.id] = unwrapChannelKey(channelKey);
     return result;
   }, {});
 };
 
 export const getUnwrappedChannelKey = async (channelId: string) => {
   const channelKey = await getActiveChannelKey(channelId);
-  const unwrappedKey = unwrapChannelKey(
-    channelKey.wrappedKey,
-    channelKey.tag,
-    channelKey.iv,
-  );
+  const unwrappedKey = unwrapChannelKey(channelKey);
   return { ...channelKey, unwrappedKey };
 };
 
@@ -190,13 +186,13 @@ export const getActiveChannelKey = async (channelId: string) => {
   });
 };
 
-export const unwrapChannelKey = (
-  wrappedKey: Buffer,
-  tag: Buffer,
-  iv: Buffer,
-) => {
+export const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
   const masterKey = getChannelKeyMaster();
-  const decipher = crypto.createDecipheriv('aes-256-gcm', masterKey, iv);
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    masterKey,
+    iv,
+  );
   decipher.setAuthTag(tag);
 
   const unwrappedKey = Buffer.concat([
