@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
+import { In } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as proposalsService from '../proposals/proposals.service';
+import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
-import { ChannelKey } from './entities/channel-key.entity';
 
 export interface CreateChannelDto {
   name: string;
@@ -154,6 +155,23 @@ const generateChannelKey = () => {
   const tag = cipher.getAuthTag();
 
   return { wrappedKey, tag, iv };
+};
+
+/** Returns a map of unwrapped channel keys that are keyed by channel key ID */
+export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
+  const channelKeys = await channelKeyRepository.find({
+    where: { id: In(channelKeyIds) },
+    select: ['id', 'wrappedKey', 'tag', 'iv'],
+  });
+
+  return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
+    result[channelKey.id] = unwrapChannelKey(
+      channelKey.wrappedKey,
+      channelKey.tag,
+      channelKey.iv,
+    );
+    return result;
+  }, {});
 };
 
 export const getUnwrappedChannelKey = async (channelId: string) => {

@@ -32,6 +32,7 @@ export const getMessages = async (
     select: {
       id: true,
       ciphertext: true,
+      keyId: true,
       tag: true,
       iv: true,
       user: {
@@ -52,13 +53,16 @@ export const getMessages = async (
     take: limit,
   });
 
-  const { unwrappedKey } =
-    await channelsService.getUnwrappedChannelKey(channelId);
+  const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
+    messages.map((message) => message.keyId),
+  );
 
   const decryptedMessages = messages.map((message) => {
     let body: string | null = null;
 
     if (message.ciphertext && message.tag && message.iv) {
+      const unwrappedKey = unwrappedKeyMap[message.keyId];
+
       body = decryptMessage(
         message.ciphertext,
         message.tag,
