@@ -1,9 +1,8 @@
+import * as crypto from 'crypto';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
-import * as crypto from 'crypto';
 import * as proposalsService from '../proposals/proposals.service';
-import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
 
@@ -21,7 +20,6 @@ const GENERAL_CHANNEL_NAME = 'general';
 
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
-const channelKeyRepository = dataSource.getRepository(ChannelKey);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -128,12 +126,20 @@ export const createChannel = async (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
+  // Generate per-channel key
+  const { wrappedKey, tag, iv } = generateChannelKey();
+
   const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
     members: [{ userId: currentUserId }],
+    keys: [{ wrappedKey, tag, iv }],
   });
 
+  return channel;
+};
+
+const generateChannelKey = () => {
   // Generate per-channel key
   const channelKey = crypto.randomBytes(32);
 
@@ -145,15 +151,7 @@ export const createChannel = async (
   const wrappedKey = Buffer.concat([cipher.update(channelKey), cipher.final()]);
   const tag = cipher.getAuthTag();
 
-  // Save channel key
-  await channelKeyRepository.save({
-    channelId: channel.id,
-    wrappedKey,
-    tag,
-    iv,
-  });
-
-  return channel;
+  return { wrappedKey, tag, iv };
 };
 
 export const updateChannel = async (
