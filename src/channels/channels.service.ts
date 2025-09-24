@@ -131,11 +131,6 @@ export const createChannel = async (
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
-  // TODO: Remove when no longer needed for testing
-  console.log('⭐️ TEST - Wrapped key - generateChannelKey:', wrappedKey);
-  console.log('⭐️ TEST - Tag - generateChannelKey:', tag);
-  console.log('⭐️ TEST - IV - generateChannelKey:', iv);
-
   const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
@@ -143,19 +138,12 @@ export const createChannel = async (
     keys: [{ wrappedKey, tag, iv }],
   });
 
-  // TODO: Remove when no longer needed for testing
-  const test = await getUnwrappedChannelKey(channel.id);
-  console.log('⭐️ TEST - Unwrapped key - getUnwrappedChannelKey:', test);
-
   return channel;
 };
 
 const generateChannelKey = () => {
   // Generate per-channel key
   const channelKey = crypto.randomBytes(32);
-
-  // TODO: Remove when no longer needed for testing
-  console.log('⭐️ TEST - Channel key - generateChannelKey:', channelKey);
 
   // Wrap it with the master key
   const masterKey = Buffer.from(process.env.CHANNEL_KEY_MASTER!, 'base64');
