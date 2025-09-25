@@ -108,6 +108,28 @@ export const isChannelMember = async (channelId: string, userId: string) => {
   });
 };
 
+/** Returns a map of unwrapped channel keys that are keyed by channel key ID */
+export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
+  const channelKeys = await channelKeyRepository.find({
+    where: { id: In(channelKeyIds) },
+    select: ['id', 'wrappedKey', 'tag', 'iv'],
+  });
+
+  return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
+    result[channelKey.id] = unwrapChannelKey(channelKey);
+    return result;
+  }, {});
+};
+
+export const getUnwrappedChannelKey = async (channelId: string) => {
+  const channelKey = await channelKeyRepository.findOneOrFail({
+    where: { channelId },
+    order: { createdAt: 'DESC' },
+  });
+  const unwrappedKey = unwrapChannelKey(channelKey);
+  return { ...channelKey, unwrappedKey };
+};
+
 export const addMemberToGeneralChannel = async (userId: string) => {
   const generalChannel = await getGeneralChannel();
   await channelMemberRepository.save({
@@ -159,28 +181,6 @@ export const generateChannelKey = () => {
   const tag = cipher.getAuthTag();
 
   return { wrappedKey, tag, iv };
-};
-
-/** Returns a map of unwrapped channel keys that are keyed by channel key ID */
-export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
-  const channelKeys = await channelKeyRepository.find({
-    where: { id: In(channelKeyIds) },
-    select: ['id', 'wrappedKey', 'tag', 'iv'],
-  });
-
-  return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
-    result[channelKey.id] = unwrapChannelKey(channelKey);
-    return result;
-  }, {});
-};
-
-export const getUnwrappedChannelKey = async (channelId: string) => {
-  const channelKey = await channelKeyRepository.findOneOrFail({
-    where: { channelId },
-    order: { createdAt: 'DESC' },
-  });
-  const unwrappedKey = unwrapChannelKey(channelKey);
-  return { ...channelKey, unwrappedKey };
 };
 
 export const updateChannel = async (
