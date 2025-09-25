@@ -10,15 +10,11 @@ import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
 import { Message } from './message.entity';
+import { CreateMessageDto } from './message.types';
 
 enum MessageType {
   MESSAGE = 'message',
   IMAGE = 'image',
-}
-
-export interface CreateMessageDto {
-  body?: string;
-  imageCount: number;
 }
 
 const messageRepository = dataSource.getRepository(Message);
