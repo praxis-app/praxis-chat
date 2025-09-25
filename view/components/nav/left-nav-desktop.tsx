@@ -9,6 +9,7 @@ import { MdAddCircle, MdExpandMore, MdSettings } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import appIconImg from '../../assets/images/app-icon.png';
+import { useAbility } from '../../hooks/use-ability';
 import { ChannelListDesktop } from '../channels/channel-list-desktop';
 import {
   CreateChannelForm,
@@ -43,6 +44,11 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const { signUpPath } = useAuthData();
   const { t } = useTranslation();
 
+  const ability = useAbility();
+  const canManageChannels = ability.can('manage', 'Channel');
+  const canManageSettings = ability.can('manage', 'ServerConfig');
+  const isServerMenuBtnDisabled = !canManageSettings && !canManageChannels;
+
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
       <Dialog open={showRoomFormDialog} onOpenChange={setShowRoomFormDialog}>
@@ -50,10 +56,10 @@ export const LeftNavDesktop = ({ me }: Props) => {
           <DropdownMenuTrigger
             className={cn(
               'flex h-[55px] w-full justify-between border-b border-[--color-border] pr-3 pl-4 select-none focus:outline-none',
-              isLoggedIn &&
+              !isServerMenuBtnDisabled &&
                 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 cursor-pointer',
             )}
-            disabled={!isLoggedIn}
+            disabled={isServerMenuBtnDisabled}
           >
             <div className="flex items-center gap-2">
               <img
@@ -66,7 +72,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </div>
             </div>
 
-            {isLoggedIn && (
+            {!isServerMenuBtnDisabled && (
               <MdExpandMore className="size-[1.4rem] self-center" />
             )}
           </DropdownMenuTrigger>
