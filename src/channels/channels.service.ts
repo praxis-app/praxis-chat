@@ -175,7 +175,10 @@ export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
 };
 
 export const getUnwrappedChannelKey = async (channelId: string) => {
-  const channelKey = await getActiveChannelKey(channelId);
+  const channelKey = await channelKeyRepository.findOneOrFail({
+    where: { channelId },
+    order: { createdAt: 'DESC' },
+  });
   const unwrappedKey = unwrapChannelKey(channelKey);
   return { ...channelKey, unwrappedKey };
 };
@@ -201,13 +204,6 @@ export const deleteChannel = async (channelId: string) => {
 // -------------------------------------------------------------------------
 // Helper functions
 // -------------------------------------------------------------------------
-
-const getActiveChannelKey = async (channelId: string) => {
-  return channelKeyRepository.findOneOrFail({
-    where: { channelId },
-    order: { createdAt: 'DESC' },
-  });
-};
 
 const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
   const masterKey = getChannelKeyMaster();
