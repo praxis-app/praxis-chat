@@ -146,7 +146,7 @@ export const createChannel = async (
   return channel;
 };
 
-const generateChannelKey = () => {
+export const generateChannelKey = () => {
   // Generate per-channel key
   const channelKey = crypto.randomBytes(32);
 

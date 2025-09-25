@@ -1,7 +1,7 @@
 import { CronJob } from 'cron';
 import { NextFunction, Request, Response } from 'express';
 import { CronExpression } from '../../common/common.constants';
-import * as proposalService from '../proposals.service';
+import * as proposalsService from '../proposals.service';
 
 const ONE_HOUR_MS = 1000 * 60 * 60;
 
@@ -10,7 +10,7 @@ let disableTimeout: NodeJS.Timeout | null = null;
 const synchronizeProposalsJob = new CronJob(
   CronExpression.EVERY_5_MINUTES,
   async () => {
-    await proposalService.synchronizeProposals();
+    await proposalsService.synchronizeProposals();
   },
 );
 
