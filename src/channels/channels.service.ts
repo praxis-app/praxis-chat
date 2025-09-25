@@ -1,7 +1,14 @@
+import * as crypto from 'crypto';
+import { In } from 'typeorm';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as proposalsService from '../proposals/proposals.service';
+import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
 
@@ -19,6 +26,7 @@ const GENERAL_CHANNEL_NAME = 'general';
 
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const channelKeyRepository = dataSource.getRepository(ChannelKey);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -100,6 +108,28 @@ export const isChannelMember = async (channelId: string, userId: string) => {
   });
 };
 
+/** Returns a map of unwrapped channel keys that are keyed by channel key ID */
+export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
+  const channelKeys = await channelKeyRepository.find({
+    where: { id: In(channelKeyIds) },
+    select: ['id', 'wrappedKey', 'tag', 'iv'],
+  });
+
+  return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
+    result[channelKey.id] = unwrapChannelKey(channelKey);
+    return result;
+  }, {});
+};
+
+export const getUnwrappedChannelKey = async (channelId: string) => {
+  const channelKey = await channelKeyRepository.findOneOrFail({
+    where: { channelId },
+    order: { createdAt: 'DESC' },
+  });
+  const unwrappedKey = unwrapChannelKey(channelKey);
+  return { ...channelKey, unwrappedKey };
+};
+
 export const addMemberToGeneralChannel = async (userId: string) => {
   const generalChannel = await getGeneralChannel();
   await channelMemberRepository.save({
@@ -117,7 +147,7 @@ export const addMemberToAllChannels = async (userId: string) => {
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = (
+export const createChannel = async (
   { name, description }: CreateChannelDto,
   currentUserId: string,
 ) => {
@@ -125,11 +155,32 @@ export const createChannel = (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
-  return channelRepository.save({
+  // Generate per-channel key
+  const { wrappedKey, tag, iv } = generateChannelKey();
+
+  const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
     members: [{ userId: currentUserId }],
+    keys: [{ wrappedKey, tag, iv }],
   });
+
+  return channel;
+};
+
+export const generateChannelKey = () => {
+  // Generate per-channel key
+  const channelKey = crypto.randomBytes(32);
+
+  // Wrap it with the master key
+  const masterKey = getChannelKeyMaster();
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, masterKey, iv);
+
+  const wrappedKey = Buffer.concat([cipher.update(channelKey), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  return { wrappedKey, tag, iv };
 };
 
 export const updateChannel = async (
@@ -148,6 +199,35 @@ export const updateChannel = async (
 
 export const deleteChannel = async (channelId: string) => {
   return channelRepository.delete(channelId);
+};
+
+// -------------------------------------------------------------------------
+// Helper functions
+// -------------------------------------------------------------------------
+
+const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
+  const masterKey = getChannelKeyMaster();
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    masterKey,
+    iv,
+  );
+  decipher.setAuthTag(tag);
+
+  const unwrappedKey = Buffer.concat([
+    decipher.update(wrappedKey),
+    decipher.final(),
+  ]);
+
+  return unwrappedKey;
+};
+
+const getChannelKeyMaster = () => {
+  const channelKeyMaster = process.env.CHANNEL_KEY_MASTER;
+  if (!channelKeyMaster) {
+    throw new Error('CHANNEL_KEY_MASTER is not set');
+  }
+  return Buffer.from(channelKeyMaster, 'base64');
 };
 
 const initializeGeneralChannel = () => {

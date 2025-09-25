@@ -29,6 +29,7 @@ export class User {
   @Column({ type: 'varchar', nullable: true, unique: true })
   email: string | null;
 
+  // TODO: Set `select: false` to avoid accidental password exposure
   @Column({ type: 'varchar', nullable: true })
   password: string | null;
 

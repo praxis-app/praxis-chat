@@ -31,6 +31,8 @@ vi.mock('../../database/data-source', () => {
 vi.mock('../../channels/channels.service', () => ({
   getGeneralChannel: vi.fn(),
   getChannelMembers: vi.fn(),
+  getUnwrappedChannelKeyMap: vi.fn(),
+  getUnwrappedChannelKey: vi.fn(),
 }));
 
 vi.mock('../../pub-sub/pub-sub.service', () => ({
@@ -122,6 +124,9 @@ describe('Messages Service', () => {
       ];
 
       mockMessageRepository.find.mockResolvedValue(mockMessages);
+      vi.mocked(channelsService.getUnwrappedChannelKeyMap).mockResolvedValue(
+        {},
+      );
 
       const result = await messagesService.getMessages('channel-1', 10, 20);
 
@@ -130,10 +135,13 @@ describe('Messages Service', () => {
         relations: ['user', 'images'],
         select: {
           id: true,
-          body: true,
+          ciphertext: true,
           user: { id: true, name: true },
           images: { id: true, filename: true, createdAt: true },
           createdAt: true,
+          iv: true,
+          keyId: true,
+          tag: true,
         },
         order: { createdAt: 'DESC' },
         skip: 10,
@@ -179,6 +187,18 @@ describe('Messages Service', () => {
       }));
       mockImageRepository.save.mockResolvedValue(mockImagePlaceholders);
       vi.mocked(sanitizeText).mockReturnValue('Test message');
+      vi.mocked(channelsService.getUnwrappedChannelKey).mockResolvedValue({
+        id: 'key-1',
+        channelId: 'channel-1',
+        wrappedKey: Buffer.alloc(32),
+        tag: Buffer.alloc(16),
+        iv: Buffer.alloc(12),
+        unwrappedKey: Buffer.alloc(32),
+        messages: [],
+        channel: {} as any,
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      });
       vi.mocked(channelsService.getChannelMembers).mockResolvedValue([
         {
           id: 'member-1',
@@ -202,14 +222,23 @@ describe('Messages Service', () => {
         } as any,
       ]);
 
-      const result = await messagesService.createMessage(messageData, mockUser);
+      const result = await messagesService.createMessage(
+        'channel-1',
+        messageData,
+        mockUser,
+      );
 
       expect(sanitizeText).toHaveBeenCalledWith('  Test message  ');
-      expect(mockMessageRepository.save).toHaveBeenCalledWith({
-        body: 'Test message',
-        userId: 'user-1',
-        channelId: 'channel-1',
-      });
+      expect(mockMessageRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-1',
+          channelId: 'channel-1',
+          keyId: 'key-1',
+          ciphertext: expect.any(Buffer),
+          iv: expect.any(Buffer),
+          tag: expect.any(Buffer),
+        }),
+      );
 
       expect(mockImageRepository.create).toHaveBeenCalledTimes(2);
       expect(result.images).toHaveLength(2);

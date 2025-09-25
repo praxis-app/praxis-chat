@@ -1,20 +1,20 @@
+import * as crypto from 'crypto';
 import * as channelsService from '../channels/channels.service';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
 import { Message } from './message.entity';
+import { CreateMessageDto } from './message.types';
 
 enum MessageType {
   MESSAGE = 'message',
   IMAGE = 'image',
-}
-
-export interface CreateMessageDto {
-  body?: string;
-  channelId: string;
-  imageCount: number;
 }
 
 const messageRepository = dataSource.getRepository(Message);
@@ -25,12 +25,16 @@ export const getMessages = async (
   offset?: number,
   limit?: number,
 ) => {
+  // TODO: Ensure relations are loaded correctly
   const messages = await messageRepository.find({
     where: { channelId },
     relations: ['user', 'images'],
     select: {
       id: true,
-      body: true,
+      ciphertext: true,
+      keyId: true,
+      tag: true,
+      iv: true,
       user: {
         id: true,
         name: true,
@@ -49,29 +53,68 @@ export const getMessages = async (
     take: limit,
   });
 
-  return messages.map((message) => ({
-    ...message,
-    images: message.images.map((image) => {
-      return {
+  const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
+    messages
+      .filter((message) => message.keyId)
+      .map((message) => message.keyId!),
+  );
+
+  const decryptedMessages = messages.map((message) => {
+    let body: string | null = null;
+
+    if (message.ciphertext && message.tag && message.iv && message.keyId) {
+      const unwrappedKey = unwrappedKeyMap[message.keyId];
+
+      body = decryptMessage(
+        message.ciphertext,
+        message.tag,
+        message.iv,
+        unwrappedKey,
+      );
+    }
+    return {
+      ...message,
+      images: message.images.map((image) => ({
         id: image.id,
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
-      };
-    }),
-  }));
+      })),
+      body,
+    };
+  });
+
+  return decryptedMessages;
 };
 
 export const createMessage = async (
-  { body, imageCount, ...messageData }: CreateMessageDto,
+  channelId: string,
+  { body, imageCount }: CreateMessageDto,
   user: User,
 ) => {
-  const message = await messageRepository.save({
-    body: sanitizeText(body),
+  let messageData: Partial<Message> = {
     userId: user.id,
-    ...messageData,
-  });
-  let images: Image[] = [];
+    channelId,
+  };
 
+  const plaintext = sanitizeText(body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(channelId);
+
+    const { ciphertext, tag, iv } = encryptMessage(plaintext, unwrappedKey);
+
+    messageData = {
+      ...messageData,
+      keyId: channelKey.id,
+      ciphertext,
+      tag,
+      iv,
+    };
+  }
+
+  const message = await messageRepository.save(messageData);
+
+  let images: Image[] = [];
   if (imageCount) {
     const imagePlaceholders = Array.from({ length: imageCount }).map(() => {
       return imageRepository.create({ messageId: message.id });
@@ -85,11 +128,11 @@ export const createMessage = async (
   }));
   const messagePayload = {
     ...message,
+    body: plaintext,
     images: shapedImages,
     user: { id: user.id, name: user.name },
   };
 
-  const { channelId } = messageData;
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
     if (member.userId === user.id) {
@@ -102,6 +145,37 @@ export const createMessage = async (
   }
 
   return messagePayload;
+};
+
+const encryptMessage = (message: string, channelKey: Buffer) => {
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, channelKey, iv);
+
+  const ciphertext = Buffer.concat([cipher.update(message), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  return { ciphertext, tag, iv };
+};
+
+const decryptMessage = (
+  ciphertext: Buffer,
+  tag: Buffer,
+  iv: Buffer,
+  channelKey: Buffer,
+) => {
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    channelKey,
+    iv,
+  );
+  decipher.setAuthTag(tag);
+
+  const plaintext = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ]);
+
+  return plaintext.toString();
 };
 
 export const saveMessageImage = async (

@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
 import { User } from '../users/user.entity';
@@ -16,8 +17,14 @@ export class Message {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  body: string | null;
+  @Column({ type: 'bytea', nullable: true })
+  ciphertext: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  iv: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  tag: Buffer | null;
 
   @OneToMany(() => Image, (image) => image.message)
   images: Image[];
@@ -29,6 +36,12 @@ export class Message {
 
   @Column()
   userId: string;
+
+  @ManyToOne(() => ChannelKey, (key) => key.messages)
+  key?: ChannelKey;
+
+  @Column({ type: 'uuid', nullable: true })
+  keyId: string | null;
 
   @ManyToOne(() => Channel, (channel) => channel.messages, {
     onDelete: 'CASCADE',

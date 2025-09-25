@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
 import { Proposal } from '../../proposals/entities/proposal.entity';
+import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
 @Entity()
@@ -33,6 +34,11 @@ export class Channel {
     cascade: true,
   })
   proposals: Proposal[];
+
+  @OneToMany(() => ChannelKey, (key) => key.channel, {
+    cascade: true,
+  })
+  keys: ChannelKey[];
 
   @CreateDateColumn()
   createdAt: Date;
