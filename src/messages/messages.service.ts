@@ -58,13 +58,15 @@ export const getMessages = async (
   });
 
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
-    messages.map((message) => message.keyId),
+    messages
+      .filter((message) => message.keyId)
+      .map((message) => message.keyId!),
   );
 
   const decryptedMessages = messages.map((message) => {
     let body: string | null = null;
 
-    if (message.ciphertext && message.tag && message.iv) {
+    if (message.ciphertext && message.tag && message.iv && message.keyId) {
       const unwrappedKey = unwrappedKeyMap[message.keyId];
 
       body = decryptMessage(

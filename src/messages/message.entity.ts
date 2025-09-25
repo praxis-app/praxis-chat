@@ -38,10 +38,10 @@ export class Message {
   userId: string;
 
   @ManyToOne(() => ChannelKey, (key) => key.messages)
-  key: ChannelKey;
+  key?: ChannelKey;
 
-  @Column()
-  keyId: string;
+  @Column({ type: 'uuid', nullable: true })
+  keyId: string | null;
 
   @ManyToOne(() => Channel, (channel) => channel.messages, {
     onDelete: 'CASCADE',
