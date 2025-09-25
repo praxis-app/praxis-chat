@@ -78,13 +78,11 @@ export const getMessages = async (
     }
     return {
       ...message,
-      images: message.images.map((image) => {
-        ({
-          id: image.id,
-          isPlaceholder: !image.filename,
-          createdAt: image.createdAt,
-        });
-      }),
+      images: message.images.map((image) => ({
+        id: image.id,
+        isPlaceholder: !image.filename,
+        createdAt: image.createdAt,
+      })),
       body,
     };
   });
