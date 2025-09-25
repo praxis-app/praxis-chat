@@ -180,30 +180,6 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   return { ...channelKey, unwrappedKey };
 };
 
-export const getActiveChannelKey = async (channelId: string) => {
-  return channelKeyRepository.findOneOrFail({
-    where: { channelId },
-    order: { createdAt: 'DESC' },
-  });
-};
-
-export const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
-  const masterKey = getChannelKeyMaster();
-  const decipher = crypto.createDecipheriv(
-    AES_256_GCM_ALGORITHM,
-    masterKey,
-    iv,
-  );
-  decipher.setAuthTag(tag);
-
-  const unwrappedKey = Buffer.concat([
-    decipher.update(wrappedKey),
-    decipher.final(),
-  ]);
-
-  return unwrappedKey;
-};
-
 export const updateChannel = async (
   channelId: string,
   { name, description }: UpdateChannelDto,
@@ -220,6 +196,34 @@ export const updateChannel = async (
 
 export const deleteChannel = async (channelId: string) => {
   return channelRepository.delete(channelId);
+};
+
+// -------------------------------------------------------------------------
+// Helper functions
+// -------------------------------------------------------------------------
+
+const getActiveChannelKey = async (channelId: string) => {
+  return channelKeyRepository.findOneOrFail({
+    where: { channelId },
+    order: { createdAt: 'DESC' },
+  });
+};
+
+const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
+  const masterKey = getChannelKeyMaster();
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    masterKey,
+    iv,
+  );
+  decipher.setAuthTag(tag);
+
+  const unwrappedKey = Buffer.concat([
+    decipher.update(wrappedKey),
+    decipher.final(),
+  ]);
+
+  return unwrappedKey;
 };
 
 const getChannelKeyMaster = () => {
