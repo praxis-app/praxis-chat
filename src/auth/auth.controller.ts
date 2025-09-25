@@ -1,3 +1,5 @@
+// TODO: Add error handling to all endpoints
+
 import { Request, Response } from 'express';
 import * as authService from './auth.service';
 

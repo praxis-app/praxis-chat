@@ -24,6 +24,7 @@ export interface LoginDto {
 
 const userRepository = dataSource.getRepository(User);
 
+// TODO: Move validation to middleware with zod
 export const login = async ({ email, password }: LoginDto) => {
   if (!email) {
     throw new Error('Email is required');
