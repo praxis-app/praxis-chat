@@ -24,9 +24,6 @@ export class ChannelKey {
   @Column({ type: 'bytea' })
   tag: Buffer;
 
-  @Column({ type: 'boolean', default: true })
-  active: boolean;
-
   @OneToMany(() => Message, (message) => message.key)
   messages: Message[];
 

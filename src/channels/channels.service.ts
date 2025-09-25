@@ -182,7 +182,8 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
 
 export const getActiveChannelKey = async (channelId: string) => {
   return channelKeyRepository.findOneOrFail({
-    where: { channelId, active: true },
+    where: { channelId },
+    order: { createdAt: 'DESC' },
   });
 };
 
