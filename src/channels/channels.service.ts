@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { In } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 import {
   AES_256_GCM_ALGORITHM,
   AES_256_GCM_IV_LENGTH,
@@ -34,13 +34,26 @@ export const getChannel = (channelId: string) => {
   });
 };
 
-export const getChannels = async () => {
+export const getChannels = async (options?: FindManyOptions<Channel>) => {
+  return channelRepository.find({
+    order: { createdAt: 'ASC', ...options?.order },
+    ...options,
+  });
+};
+
+export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
   const channelCount = await channelRepository.count();
   if (channelCount === 0) {
     await initializeGeneralChannel();
   }
-  return channelRepository.find({
-    order: { createdAt: 'ASC' },
+  return getChannels(options);
+};
+
+export const getJoinedChannels = async (userId: string) => {
+  return getChannelsSafely({
+    where: {
+      members: { userId },
+    },
   });
 };
 
@@ -140,7 +153,7 @@ export const addMemberToGeneralChannel = async (userId: string) => {
 
 // TODO: Reconsider how new users are added to channels
 export const addMemberToAllChannels = async (userId: string) => {
-  const channels = await getChannels();
+  const channels = await getChannelsSafely();
   const channelMembers = channels.map((channel) => ({
     channelId: channel.id,
     userId,

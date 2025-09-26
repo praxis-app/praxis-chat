@@ -16,6 +16,7 @@ import {
   getChannels,
   getGeneralChannel,
   getGeneralChannelFeed,
+  getJoinedChannels,
   updateChannel,
 } from './channels.controller';
 import { isChannelMember } from './middleware/is-channel-member.middleware';
@@ -32,6 +33,7 @@ channelsRouter
 channelsRouter
   .use(authenticate, synchronizeProposals)
   .get('/', isRegistered, getChannels)
+  .get('/joined', isRegistered, getJoinedChannels)
   .get('/:channelId', isRegistered, isChannelMember, getChannel)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)

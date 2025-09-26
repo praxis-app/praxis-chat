@@ -7,7 +7,12 @@ export const getChannel = async (req: Request, res: Response) => {
 };
 
 export const getChannels = async (_: Request, res: Response) => {
-  const channels = await channelsService.getChannels();
+  const channels = await channelsService.getChannelsSafely();
+  res.json({ channels });
+};
+
+export const getJoinedChannels = async (_: Request, res: Response) => {
+  const channels = await channelsService.getJoinedChannels(res.locals.user.id);
   res.json({ channels });
 };
 

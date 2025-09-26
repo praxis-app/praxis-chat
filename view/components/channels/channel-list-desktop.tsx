@@ -24,7 +24,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
     queryKey: ['channels'],
-    queryFn: api.getChannels,
+    queryFn: api.getJoinedChannels,
     enabled: isRegistered,
   });
 
