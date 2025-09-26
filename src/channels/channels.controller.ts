@@ -6,6 +6,7 @@ export const getChannel = async (req: Request, res: Response) => {
   res.json({ channel });
 };
 
+// TODO: This is currently unused on the FE - consider removing
 export const getChannels = async (_: Request, res: Response) => {
   const channels = await channelsService.getChannelsSafely();
   res.json({ channels });
