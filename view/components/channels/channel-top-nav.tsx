@@ -1,13 +1,8 @@
-import {
-  BrowserEvents,
-  KeyCodes,
-  MIDDOT_WITH_SPACES,
-} from '@/constants/shared.constants';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { truncate } from '@/lib/text.utils';
 import { useAppStore } from '@/store/app.store';
 import { ChannelRes } from '@/types/channel.types';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
 import { MdChevronRight, MdSearch, MdTag } from 'react-icons/md';
@@ -22,7 +17,7 @@ interface Props {
 }
 
 export const ChannelTopNav = ({ channel }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen, isAppLoading } = useAppStore();
+  const { isAppLoading } = useAppStore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
@@ -34,22 +29,6 @@ export const ChannelTopNav = ({ channel }: Props) => {
     channel?.name ?? '',
     isDesktop ? 23 : 25,
   );
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === KeyCodes.Escape) {
-        if (isNavSheetOpen) {
-          setIsNavSheetOpen(false);
-        } else {
-          setIsNavSheetOpen(true);
-        }
-      }
-    };
-    window.addEventListener(BrowserEvents.Keydown, handleKeyDown);
-    return () => {
-      window.removeEventListener(BrowserEvents.Keydown, handleKeyDown);
-    };
-  }, [isNavSheetOpen, setIsNavSheetOpen]);
 
   return (
     <header className="flex h-[55px] items-center justify-between border-b border-[--color-border] px-2 md:pl-6">
