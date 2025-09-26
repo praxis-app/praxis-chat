@@ -72,7 +72,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
 
     const resolvedSrc = src || srcFromImageId;
     const elementType = isPlaceholder || !resolvedSrc || failed ? 'div' : 'img';
-    const showFileMissing = elementType === 'div' && !isPlaceholder;
+    const showFileMissing = failed && elementType === 'div' && !isPlaceholder;
 
     return (
       <>
