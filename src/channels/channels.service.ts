@@ -146,7 +146,23 @@ export const addMemberToGeneralChannel = async (userId: string) => {
 
 // TODO: Reconsider how new users are added to channels
 export const addMemberToAllChannels = async (userId: string) => {
-  const channels = await getChannelsSafely();
+  const channelCount = await channelRepository.count();
+  if (channelCount === 0) {
+    await initializeGeneralChannel();
+  }
+
+  const channels = await channelRepository
+    .createQueryBuilder('channel')
+    .leftJoin('channel.members', 'member', 'member.userId = :userId', {
+      userId,
+    })
+    .where('member.id IS NULL')
+    .getMany();
+
+  if (channels.length === 0) {
+    return;
+  }
+
   const channelMembers = channels.map((channel) => ({
     channelId: channel.id,
     userId,
