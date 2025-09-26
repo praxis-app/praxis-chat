@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { cn } from '@/lib/shared.utils';
 import { ImageRes } from '@/types/image.types';
@@ -18,7 +18,7 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
   const previouslyLoaded = queryClient.getQueryData(['image', image.id]);
 
   const [isLoaded, setIsLoaded] = useState(previouslyLoaded);
-  const [isEnlarged, setIsEnlarged] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const { t } = useTranslation();
@@ -44,34 +44,34 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
 
   const handleClick = () => {
     if (isLoaded) {
-      setIsEnlarged(true);
+      setIsDialogOpen(true);
     }
   };
 
   return (
-    <>
-      <Dialog open={isEnlarged} onOpenChange={setIsEnlarged}>
-        <DialogContent className="flex h-full w-full flex-col justify-center border-none bg-black/90 p-0">
-          {isEnlarged && (
-            <LazyLoadImage
-              alt={t('images.labels.attachedImage')}
-              className={enlargedImageClassName}
-              imageId={image.id}
-              onError={() => setIsError(true)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <LazyLoadImage
+          imageId={image.id}
+          alt={t('images.labels.attachedImage')}
+          className={imageClassName}
+          isPlaceholder={image.isPlaceholder}
+          onClick={handleClick}
+          onError={() => setIsError(true)}
+          onLoad={handleLoad}
+        />
+      </DialogTrigger>
 
-      <LazyLoadImage
-        imageId={image.id}
-        alt={t('images.labels.attachedImage')}
-        className={imageClassName}
-        isPlaceholder={image.isPlaceholder}
-        onClick={handleClick}
-        onError={() => setIsError(true)}
-        onLoad={handleLoad}
-      />
-    </>
+      <DialogContent className="flex h-full w-full flex-col justify-center border-none bg-black/90 p-0">
+        {isDialogOpen && (
+          <LazyLoadImage
+            alt={t('images.labels.attachedImage')}
+            className={enlargedImageClassName}
+            imageId={image.id}
+            onError={() => setIsError(true)}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
