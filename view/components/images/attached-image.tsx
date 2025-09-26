@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { cn } from '@/lib/shared.utils';
 import { ImageRes } from '@/types/image.types';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,19 +21,13 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
   const [isError, setIsError] = useState(false);
 
   const { t } = useTranslation();
-  const isDesktop = useIsDesktop();
 
   const imageClassName = cn(
     'w-full',
     isLoaded
       ? 'cursor-pointer h-auto'
-      : `cursor-default ${isError ? 'h-2' : isDesktop ? 'h-[400px]' : 'h-[300px]'}`,
+      : `cursor-default ${isError ? 'h-2' : 'h-[300px] md:h-[400px]'}`,
     className,
-  );
-
-  const enlargedImageClassName = cn(
-    'object-contain max-w-full max-h-[80%]',
-    isDesktop ? 'rounded' : '',
   );
 
   const handleLoad = () => {
@@ -62,11 +55,11 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
         />
       </DialogTrigger>
 
-      <DialogContent className="flex h-full w-full flex-col justify-center border-none bg-black/90 p-0">
+      <DialogContent className="flex h-full w-full flex-col justify-center border-none bg-black/90 p-0 md:h-full md:px-5">
         {isDialogOpen && (
           <LazyLoadImage
             alt={t('images.labels.attachedImage')}
-            className={enlargedImageClassName}
+            className="max-h-[80%] max-w-full object-contain md:self-center md:rounded"
             imageId={image.id}
             onError={() => setIsError(true)}
           />
