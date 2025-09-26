@@ -4,12 +4,14 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Channel } from './channel.entity';
 import { User } from '../../users/user.entity';
+import { Channel } from './channel.entity';
 
 @Entity()
+@Unique(['userId', 'channelId'])
 export class ChannelMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;

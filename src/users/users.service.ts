@@ -66,7 +66,8 @@ export const upgradeAnonUser = async (
     name: name?.trim(),
     password,
   });
-  return;
+
+  await channelsService.addMemberToAllChannels(user.id);
 };
 
 export const createAnonUser = async () => {
