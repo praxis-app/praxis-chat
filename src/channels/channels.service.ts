@@ -138,6 +138,7 @@ export const addMemberToGeneralChannel = async (userId: string) => {
   });
 };
 
+// TODO: Reconsider how new users are added to channels
 export const addMemberToAllChannels = async (userId: string) => {
   const channels = await getChannels();
   const channelMembers = channels.map((channel) => ({
