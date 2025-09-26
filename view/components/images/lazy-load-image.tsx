@@ -50,9 +50,9 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
 
     const srcFromImageId = useImageSrc({
       enabled: !isPlaceholder,
+      ref: internalRef,
       imageId,
       onError,
-      ref: internalRef,
     });
     const [loaded, setLoaded] = useState(!!srcFromImageId);
     const [failed, setFailed] = useState(false);
