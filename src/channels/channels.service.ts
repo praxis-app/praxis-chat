@@ -34,19 +34,12 @@ export const getChannel = (channelId: string) => {
   });
 };
 
-export const getChannels = async (options?: FindManyOptions<Channel>) => {
-  return channelRepository.find({
-    order: { createdAt: 'ASC', ...options?.order },
-    ...options,
-  });
-};
-
 export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
   const channelCount = await channelRepository.count();
   if (channelCount === 0) {
     await initializeGeneralChannel();
   }
-  return getChannels(options);
+  return channelRepository.find(options);
 };
 
 export const getJoinedChannels = async (userId: string) => {
