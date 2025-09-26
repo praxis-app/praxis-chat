@@ -20,6 +20,18 @@ interface Props extends ComponentProps<'img'> {
   onError?: () => void;
 }
 
+/**
+ * LazyLoadImage component with ref forwarding support.
+ *
+ * Uses dual ref system:
+ * - internalRef: For useImageSrc/useInView intersection observer (needs stable RefObject)
+ * - forwardedRef: For parent components like DialogTrigger (needs DOM element access)
+ *
+ * This is necessary because:
+ * 1. IntersectionObserver requires a stable RefObject<HTMLElement>
+ * 2. DialogTrigger with asChild needs a ref to the DOM element for accessibility/focus
+ * 3. ForwardedRef can be null or a function, which breaks IntersectionObserver
+ */
 export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
   (
     {
