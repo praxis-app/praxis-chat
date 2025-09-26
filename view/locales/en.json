@@ -58,7 +58,7 @@
       "alreadyLoggedIn": "You're already signed in.",
       "alreadyRegistered": "You have already created an account.",
       "authenticated": "You are authenticated.",
-      "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer?",
+      "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer to do?",
       "createAccount": "Create an account",
       "createPassword": "Create a strong password",
       "dontHaveAccount": "Don't have an account?",
