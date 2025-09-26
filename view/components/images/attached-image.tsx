@@ -34,7 +34,7 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
     'w-full',
     isLoaded
       ? 'cursor-pointer h-auto'
-      : `cursor-default ${isError ? 'h-2' : 'h-[300px] md:h-[400px]'}`,
+      : `cursor-default ${isError ? 'h-2' : 'h-[300px]'}`,
     className,
   );
 
