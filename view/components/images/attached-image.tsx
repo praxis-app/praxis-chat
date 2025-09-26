@@ -1,6 +1,14 @@
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/shared.utils';
 import { ImageRes } from '@/types/image.types';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,6 +64,15 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
       </DialogTrigger>
 
       <DialogContent className="flex h-full w-full flex-col justify-center border-none bg-black/90 p-0 md:h-full md:px-5">
+        <VisuallyHidden>
+          <DialogHeader>
+            <DialogTitle>{t('images.labels.attachedImage')}</DialogTitle>
+            <DialogDescription>
+              {t('images.descriptions.attachedImage')}
+            </DialogDescription>
+          </DialogHeader>
+        </VisuallyHidden>
+
         {isDialogOpen && (
           <LazyLoadImage
             alt={t('images.labels.attachedImage')}
