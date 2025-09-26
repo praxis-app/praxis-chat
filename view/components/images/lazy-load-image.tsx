@@ -42,9 +42,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       if (typeof forwardedRef === 'function') {
         forwardedRef(node);
       } else if (forwardedRef) {
-        (
-          forwardedRef as React.MutableRefObject<HTMLDivElement | null>
-        ).current = node;
+        forwardedRef.current = node;
       }
     };
 
