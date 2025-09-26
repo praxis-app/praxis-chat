@@ -24,7 +24,7 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
   const queryClient = useQueryClient();
   const previouslyLoaded = queryClient.getQueryData(['image', image.id]);
 
-  const [isLoaded, setIsLoaded] = useState(previouslyLoaded);
+  const [isLoaded, setIsLoaded] = useState(!!previouslyLoaded);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isError, setIsError] = useState(false);
 
