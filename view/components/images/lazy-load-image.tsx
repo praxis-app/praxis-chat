@@ -5,7 +5,6 @@ import {
   ComponentProps,
   SyntheticEvent,
   forwardRef,
-  useCallback,
   useRef,
   useState,
 } from 'react';
@@ -38,17 +37,16 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
   ) => {
     const internalRef = useRef<HTMLDivElement | null>(null);
 
-    const refCallback = useCallback(
-      (node: HTMLDivElement | null) => {
-        internalRef.current = node;
-        if (typeof forwardedRef === 'function') {
-          forwardedRef(node);
-        } else if (forwardedRef) {
-          Object.assign(forwardedRef, { current: node });
-        }
-      },
-      [forwardedRef],
-    );
+    const setRef = (node: HTMLDivElement | null) => {
+      internalRef.current = node;
+      if (typeof forwardedRef === 'function') {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        (
+          forwardedRef as React.MutableRefObject<HTMLDivElement | null>
+        ).current = node;
+      }
+    };
 
     const srcFromImageId = useImageSrc({
       enabled: !isPlaceholder,
@@ -79,7 +77,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
     return (
       <>
         <Box
-          ref={refCallback}
+          ref={setRef}
           alt={alt}
           as={elementType}
           loading={resolvedSrc ? 'lazy' : undefined}
