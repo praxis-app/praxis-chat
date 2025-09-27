@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { normalizeText } from '../../common/common.utils';
 import { getValidInvite } from '../../invites/invites.service';
+import {
+  MAX_NAME_LENGTH,
+  MAX_PASSWORD_LENGTH,
+  MIN_NAME_LENGTH,
+  MIN_PASSWORD_LENGTH,
+  VALID_NAME_REGEX,
+} from '../../users/users.constants';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
 
 const VALID_EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 const EMAIL_MAX_LENGTH = 254;
-
-const VALID_NAME_REGEX = /^[A-Za-z0-9 ]+$/;
-const MIN_NAME_LENGTH = 3;
-const MAX_NAME_LENGTH = 15;
-
-const MIN_PASSWORD_LENGTH = 8;
-const MAX_PASSWORD_LENGTH = 64;
 
 export const validateSignUp = async (
   req: Request,

@@ -7,7 +7,7 @@ import {
   uniqueNamesGenerator,
 } from 'unique-names-generator';
 import * as channelsService from '../channels/channels.service';
-import { normalizeText } from '../common/common.utils';
+import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { createAdminRole } from '../roles/roles.service';
 import { User } from './user.entity';
@@ -44,6 +44,33 @@ export const createUser = async (
   await channelsService.addMemberToAllChannels(user.id);
 
   return user;
+};
+
+export const updateUser = async (currentUser: User, input: any) => {
+  const { name, displayName, bio } = input;
+
+  const sanitizedName = sanitizeText(name);
+  const sanitizedDisplayName = sanitizeText(displayName);
+  const sanitizedBio = sanitizeText(bio);
+
+  // TODO: Move to validation middleware
+  const usersWithNameCount = await getUserCount({ where: { name } });
+  if (currentUser.name !== name && usersWithNameCount > 0) {
+    throw new Error('Username is already in use');
+  }
+
+  await userRepository.update(currentUser.id, {
+    displayName: sanitizedDisplayName,
+    name: sanitizedName,
+    bio: sanitizedBio,
+  });
+
+  // if (profilePicture) {
+  //   await saveProfilePicture(currentUser.id, profilePicture);
+  // }
+  // if (coverPhoto) {
+  //   await saveCoverPhoto(currentUser.id, coverPhoto);
+  // }
 };
 
 export const upgradeAnonUser = async (
