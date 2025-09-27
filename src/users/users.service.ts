@@ -10,6 +10,7 @@ import * as channelsService from '../channels/channels.service';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { createAdminRole } from '../roles/roles.service';
+import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
 import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 
@@ -46,9 +47,10 @@ export const createUser = async (
   return user;
 };
 
-export const updateUser = async (currentUser: User, input: any) => {
-  const { name, displayName, bio } = input;
-
+export const updateUserProfile = async (
+  { name, displayName, bio }: UserProfileDto,
+  currentUser: User,
+) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedDisplayName = sanitizeText(displayName);
   const sanitizedBio = sanitizeText(bio);
