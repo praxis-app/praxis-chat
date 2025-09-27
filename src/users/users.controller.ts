@@ -10,3 +10,8 @@ export const isFirstUser = async (_req: Request, res: Response) => {
   const isFirstUser = await usersService.isFirstUser();
   res.json({ isFirstUser });
 };
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+  const user = await usersService.updateUserProfile(req.body, res.locals.user);
+  res.json({ user });
+};
