@@ -117,7 +117,10 @@ export const createMessage = async (
   let images: Image[] = [];
   if (imageCount) {
     const imagePlaceholders = Array.from({ length: imageCount }).map(() => {
-      return imageRepository.create({ messageId: message.id });
+      return imageRepository.create({
+        messageId: message.id,
+        imageType: 'message',
+      });
     });
     images = await imageRepository.save(imagePlaceholders);
   }
