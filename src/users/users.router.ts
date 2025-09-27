@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
+import { validateUserProfile } from './middleware/validate-user-profile.middleware';
 import {
   getCurrentUser,
   isFirstUser,
@@ -15,4 +16,4 @@ usersRouter.get('/is-first', isFirstUser);
 usersRouter
   .use(authenticate)
   .get('/me', getCurrentUser)
-  .put('/profile', updateUserProfile);
+  .put('/profile', validateUserProfile, updateUserProfile);
