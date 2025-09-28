@@ -26,7 +26,11 @@ import {
   RoleRes,
   UpdateRolePermissionsReq,
 } from '../types/role.types';
-import { CurrentUserRes, UserRes } from '../types/user.types';
+import {
+  CurrentUserRes,
+  UpdateUserProfileReq,
+  UserRes,
+} from '../types/user.types';
 
 class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -84,6 +88,13 @@ class ApiClient {
   isFirstUser = async () => {
     const path = '/users/is-first';
     return this.executeRequest<{ isFirstUser: boolean }>('get', path);
+  };
+
+  updateUserProfile = async (data: UpdateUserProfileReq) => {
+    const path = '/users/profile';
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
   };
 
   // -------------------------------------------------------------------------

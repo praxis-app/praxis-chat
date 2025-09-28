@@ -12,3 +12,9 @@ export interface UserRes {
   name: string;
   displayName?: string;
 }
+
+export interface UpdateUserProfileReq {
+  name?: string;
+  displayName?: string;
+  bio?: string;
+}
