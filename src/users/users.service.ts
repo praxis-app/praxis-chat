@@ -9,12 +9,14 @@ import {
 import * as channelsService from '../channels/channels.service';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
+import { Image } from '../images/entities/image.entity';
 import { createAdminRole } from '../roles/roles.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
 import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 
 const userRepository = dataSource.getRepository(User);
+const imageRepository = dataSource.getRepository(Image);
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
@@ -60,13 +62,6 @@ export const updateUserProfile = async (
     name: sanitizedName,
     bio: sanitizedBio,
   });
-
-  // if (profilePicture) {
-  //   await saveProfilePicture(currentUser.id, profilePicture);
-  // }
-  // if (coverPhoto) {
-  //   await saveCoverPhoto(currentUser.id, coverPhoto);
-  // }
 };
 
 export const upgradeAnonUser = async (
@@ -108,6 +103,25 @@ export const createAnonUser = async () => {
   }
 
   return user;
+};
+
+export const getUserProfilePicture = async (userId: string) => {
+  return imageRepository.findOne({
+    where: { userId, imageType: 'profile-picture' },
+    order: { createdAt: 'DESC' },
+  });
+};
+
+export const uploadUserProfilePicture = async (
+  filename: string,
+  userId: string,
+) => {
+  const image = await imageRepository.save({
+    filename,
+    imageType: 'profile-picture',
+    userId,
+  });
+  return image;
 };
 
 const generateName = () => {

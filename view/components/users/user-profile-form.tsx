@@ -9,12 +9,13 @@ import {
   VALID_NAME_REGEX,
 } from '@common/users/users.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
 import { t } from '../../lib/shared.utils';
+import { ProfilePictureUpload } from './profile-picture-upload';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -66,12 +67,18 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
+  const { data: profilePictureData } = useQuery({
+    queryKey: ['profile-picture', currentUser.id],
+    queryFn: () => api.getUserProfilePicture(currentUser.id),
+    enabled: !!currentUser.id,
+  });
+
   const form = useForm<zod.infer<typeof userProfileSchema>>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
       name: currentUser.name,
-      displayName: currentUser.displayName,
-      bio: currentUser.bio,
+      displayName: currentUser.displayName || '',
+      bio: currentUser.bio || '',
     },
     mode: 'onChange',
   });
@@ -115,12 +122,28 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     },
   );
 
+  const handleProfilePictureChange = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['profile-picture', currentUser.id],
+    });
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((v) => updateUserProfile(v))}
         className="flex flex-col gap-4"
       >
+        <div className="flex justify-center">
+          <ProfilePictureUpload
+            name={currentUser.name}
+            userId={currentUser.id}
+            profilePictureId={profilePictureData?.image?.id}
+            onImageUploaded={handleProfilePictureChange}
+            disabled={isUpdatePending}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="name"

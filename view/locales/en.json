@@ -99,17 +99,22 @@
     },
     "actions": {
       "editProfile": "Edit profile",
-      "save": "Save changes"
+      "save": "Save changes",
+      "changePicture": "Change picture",
+      "uploading": "Uploading...",
+      "profilePictureUpdated": "Profile picture updated successfully"
     },
     "form": {
       "name": "Username",
       "displayName": "Display name",
-      "bio": "Bio"
+      "bio": "Bio",
+      "profilePicture": "Profile picture"
     },
     "placeholders": {
       "name": "Enter your username",
       "displayName": "Enter your display name",
-      "bio": "Tell us about yourself..."
+      "bio": "Tell us about yourself...",
+      "profilePicture": "Upload a profile picture"
     },
     "errors": {
       "shortName": "Username must be at least 3 characters",

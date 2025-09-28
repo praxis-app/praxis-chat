@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
 import { Proposal } from '../../proposals/entities/proposal.entity';
+import { User } from '../../users/user.entity';
 import { IMAGE_TYPES } from '../image.constants';
 import { ImageType } from '../image.types';
 
@@ -37,6 +38,14 @@ export class Image {
 
   @Column({ type: 'varchar', nullable: true })
   proposalId: string | null;
+
+  @ManyToOne(() => User, (user) => user.images, {
+    onDelete: 'CASCADE',
+  })
+  user?: User;
+
+  @Column({ type: 'varchar', nullable: true })
+  userId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -16,3 +16,28 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   const user = await usersService.updateUserProfile(req.body, res.locals.user);
   res.json({ user });
 };
+
+export const getUserProfilePicture = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const image = await usersService.getUserProfilePicture(userId);
+
+  if (!image) {
+    res.json({ image: null });
+    return;
+  }
+
+  res.json({ image });
+};
+
+export const uploadUserProfilePicture = async (req: Request, res: Response) => {
+  if (!req.file) {
+    res.status(422).send('No image uploaded');
+    return;
+  }
+
+  const { filename } = req.file as Express.Multer.File;
+  const { user } = res.locals;
+  const image = await usersService.uploadUserProfilePicture(filename, user.id);
+
+  res.status(201).json({ image });
+};
