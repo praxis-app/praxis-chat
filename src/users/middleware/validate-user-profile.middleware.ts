@@ -1,5 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
-import * as zod from 'zod';
 import {
   MAX_BIO_LENGTH,
   MAX_DISPLAY_NAME_LENGTH,
@@ -7,7 +5,9 @@ import {
   MIN_DISPLAY_NAME_LENGTH,
   MIN_NAME_LENGTH,
   VALID_NAME_REGEX,
-} from '../users.constants';
+} from '@common/users/users.constants';
+import { NextFunction, Request, Response } from 'express';
+import * as zod from 'zod';
 import { getUserCount } from '../users.service';
 
 const userProfileSchema = zod.object({

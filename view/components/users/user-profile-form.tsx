@@ -1,5 +1,13 @@
 import { api } from '@/client/api-client';
 import { CurrentUserRes, UpdateUserProfileReq } from '@/types/user.types';
+import {
+  MAX_BIO_LENGTH,
+  MAX_DISPLAY_NAME_LENGTH,
+  MAX_NAME_LENGTH,
+  MIN_DISPLAY_NAME_LENGTH,
+  MIN_NAME_LENGTH,
+  VALID_NAME_REGEX,
+} from '@common/users/users.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -18,13 +26,6 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-
-const VALID_NAME_REGEX = /^[A-Za-z0-9 ]+$/;
-const MIN_NAME_LENGTH = 3;
-const MAX_NAME_LENGTH = 15;
-const MIN_DISPLAY_NAME_LENGTH = 4;
-const MAX_DISPLAY_NAME_LENGTH = 30;
-const MAX_BIO_LENGTH = 500;
 
 const userProfileSchema = zod.object({
   name: zod

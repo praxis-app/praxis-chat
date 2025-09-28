@@ -1,12 +1,14 @@
+import {
+  MAX_NAME_LENGTH,
+  MIN_NAME_LENGTH,
+  VALID_NAME_REGEX,
+} from '@common/users/users.constants';
 import { NextFunction, Request, Response } from 'express';
 import { normalizeText } from '../../common/common.utils';
 import { getValidInvite } from '../../invites/invites.service';
 import {
-  MAX_NAME_LENGTH,
   MAX_PASSWORD_LENGTH,
-  MIN_NAME_LENGTH,
   MIN_PASSWORD_LENGTH,
-  VALID_NAME_REGEX,
 } from '../../users/users.constants';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
