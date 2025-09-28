@@ -8,6 +8,7 @@ import {
   MIN_NAME_LENGTH,
   VALID_NAME_REGEX,
 } from '../users.constants';
+import { getUserCount } from '../users.service';
 
 const userProfileSchema = zod.object({
   name: zod
@@ -17,9 +18,10 @@ const userProfileSchema = zod.object({
     .regex(VALID_NAME_REGEX)
     .optional(),
   displayName: zod
-    .string()
-    .min(MIN_DISPLAY_NAME_LENGTH)
-    .max(MAX_DISPLAY_NAME_LENGTH)
+    .union([
+      zod.string().min(MIN_DISPLAY_NAME_LENGTH).max(MAX_DISPLAY_NAME_LENGTH),
+      zod.literal(''),
+    ])
     .optional(),
   bio: zod.string().max(MAX_BIO_LENGTH).optional(),
 });
@@ -31,6 +33,17 @@ export const validateUserProfile = async (
 ) => {
   try {
     userProfileSchema.parse(req.body);
+
+    const { name } = req.body;
+    if (name) {
+      const usersWithNameCount = await getUserCount({
+        where: { name },
+      });
+      if (res.locals.user.name !== name && usersWithNameCount > 0) {
+        throw new Error('Username is already in use');
+      }
+    }
+
     next();
   } catch (error) {
     if (error instanceof zod.ZodError) {

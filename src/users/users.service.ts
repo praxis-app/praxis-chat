@@ -55,12 +55,6 @@ export const updateUserProfile = async (
   const sanitizedDisplayName = sanitizeText(displayName);
   const sanitizedBio = sanitizeText(bio);
 
-  // TODO: Move to validation middleware
-  const usersWithNameCount = await getUserCount({ where: { name } });
-  if (currentUser.name !== name && usersWithNameCount > 0) {
-    throw new Error('Username is already in use');
-  }
-
   await userRepository.update(currentUser.id, {
     displayName: sanitizedDisplayName,
     name: sanitizedName,
