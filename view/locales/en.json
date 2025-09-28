@@ -101,8 +101,8 @@
       "editProfile": "Edit profile",
       "save": "Save changes",
       "changePicture": "Change picture",
-      "uploading": "Uploading...",
-      "profilePictureUpdated": "Profile picture updated successfully"
+      "selectPicture": "Select picture",
+      "profileUpdated": "Profile updated successfully"
     },
     "form": {
       "name": "Username",
@@ -127,6 +127,9 @@
     "headers": {
       "editProfile": "Edit Profile",
       "editProfileDescription": "Update your profile information."
+    },
+    "prompts": {
+      "pictureWillBeUpdated": "Picture will be updated when you save"
     }
   },
 

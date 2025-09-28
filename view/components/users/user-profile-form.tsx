@@ -8,14 +8,18 @@ import {
   MIN_NAME_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/users.constants';
+import { validateImageInput } from '@/lib/image.utilts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
 import { t } from '../../lib/shared.utils';
-import { ProfilePictureUpload } from './profile-picture-upload';
+import { ImageInput } from '../images/image-input';
+import { UserAvatar } from './user-avatar';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -57,6 +61,7 @@ const userProfileSchema = zod.object({
     })
     .optional()
     .or(zod.literal('')),
+  profilePicture: zod.instanceof(File).optional(),
 });
 
 interface Props {
@@ -66,6 +71,7 @@ interface Props {
 export const UserProfileForm = ({ currentUser }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const { data: profilePictureData } = useQuery({
     queryKey: ['profile-picture', currentUser.id],
@@ -85,9 +91,28 @@ export const UserProfileForm = ({ currentUser }: Props) => {
 
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
-      mutationFn: async (data: UpdateUserProfileReq) => {
-        await api.updateUserProfile(data);
-        return data;
+      mutationFn: async (
+        data: UpdateUserProfileReq & { profilePicture?: File },
+      ) => {
+        // Upload profile picture first if one is selected
+        if (data.profilePicture) {
+          try {
+            validateImageInput(data.profilePicture);
+            await api.uploadUserProfilePicture(data.profilePicture);
+            // Invalidate profile picture query to refresh the image
+            queryClient.invalidateQueries({
+              queryKey: ['profile-picture', currentUser.id],
+            });
+          } catch (error) {
+            handleError(error as Error);
+            throw error;
+          }
+        }
+
+        // Update user profile
+        const { profilePicture: _profilePicture, ...profileData } = data;
+        await api.updateUserProfile(profileData);
+        return profileData;
       },
       onSuccess: (data) => {
         queryClient.setQueryData<{ user: CurrentUserRes }>(
@@ -115,6 +140,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           },
         );
         form.reset(form.getValues());
+        setSelectedImage(null);
+        toast(t('users.actions.profileUpdated'));
       },
       onError: (error: Error) => {
         handleError(error);
@@ -122,26 +149,65 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     },
   );
 
-  const handleProfilePictureChange = () => {
-    queryClient.invalidateQueries({
-      queryKey: ['profile-picture', currentUser.id],
-    });
+  const handleImageChange = (files: File[]) => {
+    if (files.length === 0) {
+      setSelectedImage(null);
+      return;
+    }
+    setSelectedImage(files[0]);
+  };
+
+  const getImageSrc = () => {
+    if (selectedImage) {
+      return URL.createObjectURL(selectedImage);
+    }
+    if (profilePictureData?.image?.id) {
+      return `/api/images/${profilePictureData.image.id}`;
+    }
+    return undefined;
   };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((v) => updateUserProfile(v))}
+        onSubmit={form.handleSubmit((v) =>
+          updateUserProfile({
+            ...v,
+            profilePicture: selectedImage || undefined,
+          }),
+        )}
         className="flex flex-col gap-4"
       >
-        <div className="flex justify-center">
-          <ProfilePictureUpload
+        <div className="flex flex-col items-center gap-2">
+          <UserAvatar
             name={currentUser.name}
             userId={currentUser.id}
-            profilePictureId={profilePictureData?.image?.id}
-            onImageUploaded={handleProfilePictureChange}
-            disabled={isUpdatePending}
+            imageSrc={getImageSrc()}
+            className="size-20"
+            fallbackClassName="text-2xl"
           />
+
+          <ImageInput
+            onChange={handleImageChange}
+            disabled={isUpdatePending}
+            iconClassName="text-muted-foreground size-5"
+          >
+            <button
+              type="button"
+              disabled={isUpdatePending}
+              className="text-muted-foreground hover:text-foreground text-sm disabled:opacity-50"
+            >
+              {selectedImage
+                ? t('users.actions.changePicture')
+                : t('users.actions.selectPicture')}
+            </button>
+          </ImageInput>
+
+          {selectedImage && (
+            <p className="text-muted-foreground text-xs">
+              {t('users.prompts.pictureWillBeUpdated')}
+            </p>
+          )}
         </div>
 
         <FormField
@@ -198,7 +264,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           disabled={
             isUpdatePending ||
             !form.formState.isValid ||
-            !form.formState.isDirty
+            (!form.formState.isDirty && !selectedImage)
           }
         >
           {t('users.actions.save')}
