@@ -11,13 +11,14 @@ import {
 import { validateImageInput } from '@/lib/image.utilts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
 import { t } from '../../lib/shared.utils';
+import { useImageSrc } from '../../hooks/use-image-src';
 import { ImageInput } from '../images/image-input';
 import { UserAvatar } from './user-avatar';
 import { Button } from '../ui/button';
@@ -69,15 +70,11 @@ interface Props {
 }
 
 export const UserProfileForm = ({ currentUser }: Props) => {
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
-  const { data: profilePictureData } = useQuery({
-    queryKey: ['profile-picture', currentUser.id],
-    queryFn: () => api.getUserProfilePicture(currentUser.id),
-    enabled: !!currentUser.id,
-  });
 
   const form = useForm<zod.infer<typeof userProfileSchema>>({
     resolver: zodResolver(userProfileSchema),
@@ -87,6 +84,18 @@ export const UserProfileForm = ({ currentUser }: Props) => {
       bio: currentUser.bio || '',
     },
     mode: 'onChange',
+  });
+
+  const { data: profilePictureData } = useQuery({
+    queryKey: ['profile-picture', currentUser.id],
+    queryFn: () => api.getUserProfilePicture(currentUser.id),
+    enabled: !!currentUser.id,
+  });
+
+  const profilePictureSrc = useImageSrc({
+    imageId: profilePictureData?.image?.id,
+    enabled: !!profilePictureData?.image?.id,
+    ref: avatarRef,
   });
 
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
@@ -161,10 +170,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     if (selectedImage) {
       return URL.createObjectURL(selectedImage);
     }
-    if (profilePictureData?.image?.id) {
-      return `/api/images/${profilePictureData.image.id}`;
-    }
-    return undefined;
+    return profilePictureSrc;
   };
 
   return (
@@ -179,13 +185,15 @@ export const UserProfileForm = ({ currentUser }: Props) => {
         className="flex flex-col gap-4"
       >
         <div className="flex flex-col items-center gap-2">
-          <UserAvatar
-            name={currentUser.name}
-            userId={currentUser.id}
-            imageSrc={getImageSrc()}
-            className="size-20"
-            fallbackClassName="text-2xl"
-          />
+          <div ref={avatarRef}>
+            <UserAvatar
+              name={currentUser.name}
+              userId={currentUser.id}
+              imageSrc={getImageSrc()}
+              className="size-20"
+              fallbackClassName="text-2xl"
+            />
+          </div>
 
           <ImageInput
             onChange={handleImageChange}
