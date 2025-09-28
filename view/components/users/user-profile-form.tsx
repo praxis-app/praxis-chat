@@ -89,14 +89,25 @@ export const UserProfileForm = ({ currentUser }: Props) => {
             if (!oldData) {
               throw new Error('User data not found');
             }
+
+            const nameChanged = oldData.user.name !== data.name;
+            const bioChanged = oldData.user.bio !== data.bio;
+            const displayNameChanged =
+              oldData.user.displayName !== data.displayName;
+
             return {
               user: {
                 ...oldData.user,
-                ...data,
+                name: nameChanged ? String(data.name) : oldData.user.name,
+                bio: bioChanged ? data.bio : oldData.user.bio,
+                displayName: displayNameChanged
+                  ? data.displayName
+                  : oldData.user.displayName,
               },
             };
           },
         );
+        form.reset(form.getValues());
       },
       onError: (error: Error) => {
         handleError(error);
@@ -163,8 +174,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           type="submit"
           disabled={
             isUpdatePending ||
-            form.formState.isSubmitting ||
-            !form.formState.isValid
+            !form.formState.isValid ||
+            !form.formState.isDirty
           }
         >
           {t('users.actions.save')}
