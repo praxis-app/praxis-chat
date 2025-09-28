@@ -87,20 +87,21 @@ export const LeftNavUserMenu = () => {
             />
             {truncatedUsername}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-md"
-            onClick={() => navigate(NavigationPaths.UsersEdit)}
-          >
-            <MdPerson className="text-foreground size-5" />
-            {t('users.actions.editProfile')}
-          </DropdownMenuItem>
-          {me.anonymous && (
+          {me.anonymous ? (
             <DropdownMenuItem
               className="text-md"
               onClick={() => navigate(signUpPath)}
             >
               <MdPersonAdd className="text-foreground size-5" />
               {t('auth.actions.signUp')}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              className="text-md"
+              onClick={() => navigate(NavigationPaths.UsersEdit)}
+            >
+              <MdPerson className="text-foreground size-5" />
+              {t('users.actions.editProfile')}
             </DropdownMenuItem>
           )}
           <DialogTrigger asChild>

@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/app.store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdExitToApp } from 'react-icons/md';
+import { MdExitToApp, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
@@ -73,6 +73,16 @@ export const NavDropdown = ({ trigger }: Props) => {
             />
             {truncatedUsername}
           </DropdownMenuItem>
+
+          {!me.anonymous && (
+            <DropdownMenuItem
+              onClick={() => navigate(NavigationPaths.UsersEdit)}
+              className="text-md"
+            >
+              <MdPerson className="text-foreground size-5" />
+              {t('users.actions.editProfile')}
+            </DropdownMenuItem>
+          )}
 
           <DialogTrigger asChild>
             <DropdownMenuItem className="text-md">
