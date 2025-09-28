@@ -127,9 +127,6 @@
     "headers": {
       "editProfile": "Edit Profile",
       "editProfileDescription": "Update your profile information."
-    },
-    "prompts": {
-      "pictureWillBeUpdated": "Picture will be updated when you save"
     }
   },
 

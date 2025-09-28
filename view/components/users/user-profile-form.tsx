@@ -202,12 +202,6 @@ export const UserProfileForm = ({ currentUser }: Props) => {
                 : t('users.actions.selectPicture')}
             </button>
           </ImageInput>
-
-          {selectedImage && (
-            <p className="text-muted-foreground text-xs">
-              {t('users.prompts.pictureWillBeUpdated')}
-            </p>
-          )}
         </div>
 
         <FormField
