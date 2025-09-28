@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
+import { t } from '../../lib/shared.utils';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -29,28 +30,28 @@ const userProfileSchema = zod.object({
   name: zod
     .string()
     .min(MIN_NAME_LENGTH, {
-      message: 'users.errors.shortName',
+      message: t('users.errors.shortName'),
     })
     .max(MAX_NAME_LENGTH, {
-      message: 'users.errors.longName',
+      message: t('users.errors.longName'),
     })
     .regex(VALID_NAME_REGEX, {
-      message: 'users.errors.invalidName',
+      message: t('users.errors.invalidName'),
     }),
   displayName: zod
     .string()
     .min(MIN_DISPLAY_NAME_LENGTH, {
-      message: 'users.errors.shortDisplayName',
+      message: t('users.errors.shortDisplayName'),
     })
     .max(MAX_DISPLAY_NAME_LENGTH, {
-      message: 'users.errors.longDisplayName',
+      message: t('users.errors.longDisplayName'),
     })
     .optional()
     .or(zod.literal('')),
   bio: zod
     .string()
     .max(MAX_BIO_LENGTH, {
-      message: 'users.errors.longBio',
+      message: t('users.errors.longBio'),
     })
     .optional()
     .or(zod.literal('')),
