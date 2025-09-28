@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/app.store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdExitToApp, MdPersonAdd } from 'react-icons/md';
+import { MdExitToApp, MdPerson, MdPersonAdd } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
@@ -86,6 +86,13 @@ export const LeftNavUserMenu = () => {
               isOnline={true}
             />
             {truncatedUsername}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-md"
+            onClick={() => navigate(NavigationPaths.UsersEdit)}
+          >
+            <MdPerson className="text-foreground size-5" />
+            {t('users.actions.editProfile')}
           </DropdownMenuItem>
           {me.anonymous && (
             <DropdownMenuItem

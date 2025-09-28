@@ -96,6 +96,9 @@
     "presence": {
       "online": "Online",
       "offline": "Offline"
+    },
+    "actions": {
+      "editProfile": "Edit profile"
     }
   },
 
