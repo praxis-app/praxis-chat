@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LuX } from 'react-icons/lu';
 import { api } from '../../client/api-client';
+import { truncate } from '../../lib/text.utils';
 import { RoleRes } from '../../types/role.types';
 import { UserRes } from '../../types/user.types';
-import { UserAvatar } from '../users/user-avatar';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -14,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { LuX } from 'react-icons/lu';
+import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
   roleId: string;
@@ -53,17 +54,14 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
     },
   });
 
-  const roleMemberName = roleMember.displayName || roleMember.name;
+  const name = roleMember.displayName || roleMember.name;
+  const truncatedName = truncate(name, 18);
 
   return (
     <div className="mb-4 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
-        <UserAvatar
-          userId={roleMember.id}
-          name={roleMember.name}
-          className="mr-4"
-        />
-        <span className="max-w-48 truncate">{roleMemberName}</span>
+        <UserAvatar userId={roleMember.id} name={name} className="mr-4" />
+        <span className="max-w-48 truncate">{truncatedName}</span>
       </div>
 
       <Button
@@ -83,9 +81,7 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
             </DialogTitle>
           </DialogHeader>
 
-          <DialogDescription className="pb-3">
-            {roleMemberName}
-          </DialogDescription>
+          <DialogDescription className="pb-3">{name}</DialogDescription>
 
           <DialogFooter className="flex flex-row justify-end gap-2">
             <Button

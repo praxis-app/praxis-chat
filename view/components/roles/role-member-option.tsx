@@ -1,4 +1,5 @@
 import { cn } from '@/lib/shared.utils';
+import { truncate } from '../../lib/text.utils';
 import { UserRes } from '../../types/user.types';
 import { Checkbox } from '../ui/checkbox';
 import { UserAvatar } from '../users/user-avatar';
@@ -28,6 +29,9 @@ export const RoleMemberOption = ({
     setSelectedUserIds([...selectedUserIds, user.id]);
   };
 
+  const name = user.displayName || user.name;
+  const truncatedName = truncate(name, 18);
+
   return (
     <div
       className={cn(
@@ -37,10 +41,8 @@ export const RoleMemberOption = ({
       onClick={handleChange}
     >
       <div className="flex items-center">
-        <UserAvatar userId={user.id} name={user.name} className="mr-3" />
-        <span className="max-w-48 truncate select-none">
-          {user.displayName || user.name}
-        </span>
+        <UserAvatar userId={user.id} name={name} className="mr-3" />
+        <span className="max-w-48 truncate select-none">{truncatedName}</span>
       </div>
 
       <Checkbox checked={isSelected} defaultChecked={isSelected} />

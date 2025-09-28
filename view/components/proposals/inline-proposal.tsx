@@ -3,6 +3,7 @@ import { ChannelRes } from '@/types/channel.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
+import { truncate } from '../../lib/text.utils';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
@@ -32,17 +33,17 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
     createdAt,
   } = proposal;
 
-  const name = user?.name ?? '';
-  const userId = user?.id ?? '';
-  const formattedDate = timeAgo(createdAt ?? '');
+  const name = user.displayName || user.name;
+  const truncatedName = truncate(name, 18);
+  const formattedDate = timeAgo(createdAt);
 
   return (
     <div className="flex gap-4 pt-4">
-      <UserAvatar name={name} userId={userId} className="mt-0.5" />
+      <UserAvatar name={name} userId={user.id} className="mt-0.5" />
 
       <div className="w-full">
         <div className="flex items-center gap-1.5 pb-1">
-          <div className="font-medium">{name}</div>
+          <div className="font-medium">{truncatedName}</div>
           <div className="text-muted-foreground text-sm">{formattedDate}</div>
         </div>
 

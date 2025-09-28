@@ -14,10 +14,10 @@ export interface ProposalRes {
   body: string;
   stage: ProposalStage;
   action?: ProposalActionRes;
-  config?: ProposalConfigRes;
+  config: ProposalConfigRes;
   images: ImageRes[];
   channelId: string;
-  user?: { id: string; name: string };
+  user: { id: string; name: string; displayName?: string };
   createdAt: string;
   myVote?: { id: string; voteType: VoteType };
   votesNeededToRatify: number;
