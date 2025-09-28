@@ -52,6 +52,8 @@ export const NavSheet = ({ trigger }: Props) => {
     enabled: !isMeLoading && !isRegistered,
   });
 
+  const name = me?.displayName || me?.name;
+
   return (
     <Sheet open={isNavSheetOpen} onOpenChange={setIsNavSheetOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
@@ -82,7 +84,7 @@ export const NavSheet = ({ trigger }: Props) => {
               <NavDropdown
                 trigger={
                   <UserAvatar
-                    name={me.name}
+                    name={name ?? ''}
                     userId={me.id}
                     className="size-9"
                     fallbackClassName="text-[1.05rem]"
