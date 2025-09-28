@@ -5,6 +5,7 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { timeAgo } from '@/lib/time.utils';
 import { MessageRes as MessageType } from '@/types/message.types';
 import { useTranslation } from 'react-i18next';
+import { truncate } from '../../lib/text.utils';
 
 interface Props {
   message: MessageType;
@@ -19,13 +20,16 @@ export const Message = ({
   const formattedDate = timeAgo(createdAt);
   const showImages = !!images?.length;
 
+  const name = user.displayName || user.name;
+  const truncatedUsername = truncate(name, 18);
+
   return (
     <div className="flex gap-4">
-      <UserAvatar name={user.name} userId={user.id} className="mt-0.5" />
+      <UserAvatar name={name} userId={user.id} className="mt-0.5" />
 
       <div>
         <div className="mb-[-0.1rem] flex items-center gap-1.5">
-          <div className="font-medium">{user.name}</div>
+          <div className="font-medium">{truncatedUsername}</div>
           <div className="text-muted-foreground text-sm font-light">
             {formattedDate}
           </div>

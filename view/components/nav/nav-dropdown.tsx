@@ -51,7 +51,8 @@ export const NavDropdown = ({ trigger }: Props) => {
   }
 
   const me = meData.user;
-  const truncatedUsername = truncate(me.name, 22);
+  const name = me.displayName || me.name;
+  const truncatedUsername = truncate(name, 22);
 
   return (
     <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
@@ -66,7 +67,7 @@ export const NavDropdown = ({ trigger }: Props) => {
             onClick={() => toast(t('prompts.inDev'))}
           >
             <UserAvatar
-              name={me.name}
+              name={name}
               userId={me.id}
               className="size-5"
               fallbackClassName="text-[0.7rem]"

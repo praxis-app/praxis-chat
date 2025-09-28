@@ -32,7 +32,8 @@ export const InviteTableRow = ({
     toast(t('invites.prompts.copiedToClipboard'));
   };
 
-  const truncatedUsername = truncate(user.name, 18);
+  const name = user.displayName || user.name;
+  const truncatedUsername = truncate(name, 18);
 
   const deleteInvitePrompt = t('prompts.deleteItem', {
     itemType: 'invite link',

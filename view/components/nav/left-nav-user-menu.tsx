@@ -42,7 +42,9 @@ export const LeftNavUserMenu = () => {
   if (!me) {
     return null;
   }
-  const truncatedUsername = truncate(me.name, 18);
+
+  const name = me.displayName || me.name;
+  const truncatedUsername = truncate(name, 18);
 
   return (
     <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
@@ -54,7 +56,7 @@ export const LeftNavUserMenu = () => {
           <UserAvatar
             className="size-8"
             fallbackClassName="text-sm"
-            name={me.name}
+            name={name}
             userId={me.id}
             isOnline={true}
             showOnlineStatus

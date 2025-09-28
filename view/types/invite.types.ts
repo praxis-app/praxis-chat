@@ -6,6 +6,7 @@ export interface InviteRes {
   user: {
     id: string;
     name: string;
+    displayName?: string;
   };
   expiresAt?: string;
   createdAt: string;

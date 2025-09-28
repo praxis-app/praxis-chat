@@ -4,7 +4,7 @@ export interface MessageRes {
   id: string;
   body: string;
   images?: ImageRes[];
-  user: { id: string; name: string };
+  user: { id: string; name: string; displayName?: string };
   createdAt: string;
 }
 

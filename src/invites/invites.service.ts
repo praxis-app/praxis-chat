@@ -38,6 +38,7 @@ export const getValidInvites = async () => {
       'invite.expiresAt',
       'user.id',
       'user.name',
+      'user.displayName',
     ])
     .orderBy('invite.createdAt', 'DESC')
     .getMany();

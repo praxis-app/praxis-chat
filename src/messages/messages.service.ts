@@ -38,6 +38,7 @@ export const getMessages = async (
       user: {
         id: true,
         name: true,
+        displayName: true,
       },
       images: {
         id: true,
@@ -133,7 +134,7 @@ export const createMessage = async (
     ...message,
     body: plaintext,
     images: shapedImages,
-    user: { id: user.id, name: user.name },
+    user: { id: user.id, name: user.name, displayName: user.displayName },
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
