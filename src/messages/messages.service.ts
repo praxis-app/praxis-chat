@@ -124,6 +124,7 @@ export const createMessage = async (
   }
 
   const message = await messageRepository.save(messageData);
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
 
   let images: Image[] = [];
   if (imageCount) {
@@ -135,16 +136,23 @@ export const createMessage = async (
     });
     images = await imageRepository.save(imagePlaceholders);
   }
-  const shapedImages = images.map((image) => ({
+  const attachedImages = images.map((image) => ({
     id: image.id,
     isPlaceholder: true,
     createdAt: image.createdAt,
   }));
+
+  // TODO: Include cover photo id
   const messagePayload = {
     ...message,
     body: plaintext,
-    images: shapedImages,
-    user: { id: user.id, name: user.name, displayName: user.displayName },
+    images: attachedImages,
+    user: {
+      id: user.id,
+      name: user.name,
+      displayName: user.displayName,
+      profilePictureId: profilePicture?.id,
+    },
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
