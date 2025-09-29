@@ -1,7 +1,8 @@
 import WebSocket from 'ws';
 import * as authService from '../auth/auth.service';
 import * as cacheService from '../cache/cache.service';
-import { canAccessChannel } from '../roles/roles.service';
+import * as rolesService from '../roles/roles.service';
+import * as usersService from '../users/users.service';
 import {
   PubSubRequest,
   PubSubResponse,
@@ -20,7 +21,7 @@ export const handleMessage = async (
   );
 
   const sub = authService.verifyAccessToken(token);
-  const user = await authService.getAuthedUser(sub, false);
+  const user = await usersService.getCurrentUser(sub, false);
 
   if (!user) {
     const response: PubSubResponse = {
@@ -32,7 +33,7 @@ export const handleMessage = async (
     return;
   }
 
-  const canAccess = canAccessChannel(channel, user);
+  const canAccess = rolesService.canAccessChannel(channel, user);
   if (!canAccess) {
     const response: PubSubResponse = {
       error: { code: 'FORBIDDEN', message: 'Forbidden' },

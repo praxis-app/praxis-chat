@@ -10,6 +10,7 @@ import * as channelsService from '../channels/channels.service';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
+import * as rolesService from '../roles/roles.service';
 import { createAdminRole } from '../roles/roles.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
@@ -17,6 +18,27 @@ import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 
 const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
+
+export const getCurrentUser = async (userId: string, includePerms = true) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is missing or invalid');
+    }
+    const user = await userRepository.findOneOrFail({
+      select: ['id', 'name', 'displayName', 'bio', 'anonymous'],
+      where: { id: userId },
+    });
+    if (!includePerms) {
+      return user;
+    }
+
+    const permissions = await rolesService.getUserPermissions(userId);
+    return { ...user, permissions };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
