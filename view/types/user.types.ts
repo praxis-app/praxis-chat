@@ -22,3 +22,11 @@ export interface UpdateUserProfileReq {
   displayName?: string;
   bio?: string;
 }
+
+export interface CurrentUser extends CurrentUserRes {
+  profilePicture:
+    | (ImageRes & {
+        url: string;
+      })
+    | null;
+}

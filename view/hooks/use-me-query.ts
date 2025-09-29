@@ -3,16 +3,7 @@ import { AxiosError } from 'axios';
 import { api } from '../client/api-client';
 import { LocalStorageKeys } from '../constants/shared.constants';
 import { useAppStore } from '../store/app.store';
-import { ImageRes } from '../types/image.types';
-import { CurrentUserRes } from '../types/user.types';
-
-interface ProfilePicture extends ImageRes {
-  url: string;
-}
-
-interface CurrentUser extends CurrentUserRes {
-  profilePicture: ProfilePicture | null;
-}
+import { CurrentUser } from '../types/user.types';
 
 export const useMeQuery = (
   options?: Omit<UseQueryOptions<{ user: CurrentUser }>, 'queryKey'>,
@@ -33,7 +24,7 @@ export const useMeQuery = (
         const me = await api.getCurrentUser();
         setIsLoggedIn(true);
 
-        let profilePicture: ProfilePicture | null = null;
+        let profilePicture: CurrentUser['profilePicture'] = null;
         if (me.user.profilePicture) {
           const result = await api.getImage(me.user.profilePicture.id);
           profilePicture = {

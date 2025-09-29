@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const EditUserProfile = () => {
   const { setIsNavSheetOpen } = useAppStore();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
