@@ -33,7 +33,13 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
     }
 
     const permissions = await rolesService.getUserPermissions(userId);
-    return { ...user, permissions };
+    const profilePicture = await getUserProfilePicture(userId);
+
+    return {
+      ...user,
+      permissions,
+      profilePicture,
+    };
   } catch (error) {
     console.error(error);
     return null;
@@ -129,6 +135,7 @@ export const createAnonUser = async () => {
 
 export const getUserProfilePicture = async (userId: string) => {
   return imageRepository.findOne({
+    select: ['id', 'createdAt'],
     where: { userId, imageType: 'profile-picture' },
     order: { createdAt: 'DESC' },
   });

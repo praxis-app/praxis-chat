@@ -1,3 +1,4 @@
+import { ImageRes } from './image.types';
 import { Permission } from './role.types';
 
 export interface CurrentUserRes {
@@ -7,6 +8,7 @@ export interface CurrentUserRes {
   bio?: string;
   anonymous: boolean;
   permissions: Permission[];
+  profilePicture: ImageRes | null;
 }
 
 export interface UserRes {

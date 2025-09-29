@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import * as usersService from './users.service';
 
 export const getCurrentUser = async (_req: Request, res: Response) => {
-  const { id, name, displayName, bio, anonymous, permissions } =
-    res.locals.user;
-  res.json({ user: { id, name, displayName, bio, anonymous, permissions } });
+  res.json({ user: res.locals.user });
 };
 
 export const isFirstUser = async (_req: Request, res: Response) => {
@@ -17,6 +15,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   res.json({ user });
 };
 
+// TODO: Remove this handler
 export const getUserProfilePicture = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const image = await usersService.getUserProfilePicture(userId);
