@@ -15,19 +15,6 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   res.json({ user });
 };
 
-// TODO: Remove this handler
-export const getUserProfilePicture = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const image = await usersService.getUserProfilePicture(userId);
-
-  if (!image) {
-    res.json({ image: null });
-    return;
-  }
-
-  res.json({ image });
-};
-
 export const uploadUserProfilePicture = async (req: Request, res: Response) => {
   if (!req.file) {
     res.status(422).send('No image uploaded');

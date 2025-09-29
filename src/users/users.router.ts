@@ -4,7 +4,6 @@ import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
 import {
   getCurrentUser,
-  getUserProfilePicture,
   isFirstUser,
   updateUserProfile,
   uploadUserProfilePicture,
@@ -19,6 +18,5 @@ usersRouter.get('/is-first', isFirstUser);
 usersRouter
   .use(authenticate)
   .get('/me', getCurrentUser)
-  .get('/:userId/profile-picture', getUserProfilePicture)
   .post('/profile-picture', uploadImage, uploadUserProfilePicture)
   .put('/profile', validateUserProfile, updateUserProfile);

@@ -359,11 +359,6 @@ class ApiClient {
     }
   };
 
-  getUserProfilePicture = async (userId: string) => {
-    const path = `/users/${userId}/profile-picture`;
-    return this.executeRequest<{ image: ImageRes | null }>('get', path);
-  };
-
   getHealth = async () => {
     return this.executeRequest<{ timestamp: string }>('get', '/health');
   };
