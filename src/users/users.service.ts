@@ -141,6 +141,14 @@ export const getUserProfilePicture = async (userId: string) => {
   });
 };
 
+export const getUserCoverPhoto = async (userId: string) => {
+  return imageRepository.findOne({
+    select: ['id', 'createdAt'],
+    where: { userId, imageType: 'cover-photo' },
+    order: { createdAt: 'DESC' },
+  });
+};
+
 export const getUserImagesMap = async (userIds: string[]) => {
   if (userIds.length === 0) {
     return {};

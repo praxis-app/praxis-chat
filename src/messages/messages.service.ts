@@ -125,6 +125,7 @@ export const createMessage = async (
 
   const message = await messageRepository.save(messageData);
   const profilePicture = await usersService.getUserProfilePicture(user.id);
+  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
 
   let images: Image[] = [];
   if (imageCount) {
@@ -142,7 +143,6 @@ export const createMessage = async (
     createdAt: image.createdAt,
   }));
 
-  // TODO: Include cover photo id
   const messagePayload = {
     ...message,
     body: plaintext,
@@ -152,6 +152,7 @@ export const createMessage = async (
       name: user.name,
       displayName: user.displayName,
       profilePictureId: profilePicture?.id,
+      coverPhotoId: coverPhoto?.id,
     },
   };
 
