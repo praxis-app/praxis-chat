@@ -1,4 +1,4 @@
-import { ImageRes } from './image.types';
+import { ImageRes, ProfilePicture } from './image.types';
 import { Permission } from './role.types';
 
 export interface CurrentUserRes {
@@ -24,9 +24,5 @@ export interface UpdateUserProfileReq {
 }
 
 export interface CurrentUser extends CurrentUserRes {
-  profilePicture:
-    | (ImageRes & {
-        url: string;
-      })
-    | null;
+  profilePicture: ProfilePicture | null;
 }

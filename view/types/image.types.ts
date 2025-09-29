@@ -3,3 +3,7 @@ export interface ImageRes {
   isPlaceholder?: boolean;
   createdAt: string;
 }
+
+export interface ProfilePicture extends ImageRes {
+  url: string;
+}

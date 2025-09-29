@@ -1,10 +1,6 @@
 import { api } from '@/client/api-client';
 import { validateImageInput } from '@/lib/image.utilts';
-import {
-  CurrentUser,
-  CurrentUserRes,
-  UpdateUserProfileReq,
-} from '@/types/user.types';
+import { CurrentUser, UpdateUserProfileReq } from '@/types/user.types';
 import {
   MAX_BIO_LENGTH,
   MAX_DISPLAY_NAME_LENGTH,
@@ -92,41 +88,46 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
       mutationFn: async (data: UpdateUserProfileReq) => {
+        let profilePicture: CurrentUser['profilePicture'] = null;
+
         if (selectedImage) {
           validateImageInput(selectedImage);
           const formData = new FormData();
           formData.append('file', selectedImage);
-          await api.uploadUserProfilePicture(formData);
+          const { image } = await api.uploadUserProfilePicture(formData);
+          const url = URL.createObjectURL(selectedImage);
+          profilePicture = { ...image, url };
         }
-
         await api.updateUserProfile(data);
-        return data;
+
+        return { ...data, profilePicture };
       },
       onSuccess: (data) => {
-        queryClient.setQueryData<{ user: CurrentUserRes }>(
-          ['me'],
-          (oldData) => {
-            if (!oldData) {
-              throw new Error('User data not found');
-            }
+        queryClient.setQueryData<{ user: CurrentUser }>(['me'], (oldData) => {
+          if (!oldData) {
+            throw new Error('User data not found');
+          }
 
-            const nameChanged = oldData.user.name !== data.name;
-            const bioChanged = oldData.user.bio !== data.bio;
-            const displayNameChanged =
-              oldData.user.displayName !== data.displayName;
+          const nameChanged = oldData.user.name !== data.name;
+          const displayChanged = oldData.user.displayName !== data.displayName;
+          const bioChanged = oldData.user.bio !== data.bio;
+          const profilePictureChanged =
+            oldData.user.profilePicture?.id !== data.profilePicture?.id;
 
-            return {
-              user: {
-                ...oldData.user,
-                name: nameChanged ? String(data.name) : oldData.user.name,
-                bio: bioChanged ? data.bio : oldData.user.bio,
-                displayName: displayNameChanged
-                  ? data.displayName
-                  : oldData.user.displayName,
-              },
-            };
-          },
-        );
+          return {
+            user: {
+              ...oldData.user,
+              name: nameChanged ? String(data.name) : oldData.user.name,
+              displayName: displayChanged
+                ? data.displayName
+                : oldData.user.displayName,
+              bio: bioChanged ? data.bio : oldData.user.bio,
+              profilePicture: profilePictureChanged
+                ? data.profilePicture
+                : oldData.user.profilePicture,
+            },
+          };
+        });
         form.reset(form.getValues());
         setSelectedImage(null);
         toast(t('users.actions.profileUpdated'));
