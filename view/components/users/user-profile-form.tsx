@@ -91,30 +91,16 @@ export const UserProfileForm = ({ currentUser }: Props) => {
 
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
-      mutationFn: async (
-        data: UpdateUserProfileReq & { profilePicture?: File },
-      ) => {
-        // Upload profile picture first if one is selected
-        if (data.profilePicture) {
-          try {
-            validateImageInput(data.profilePicture);
-            const formData = new FormData();
-            formData.append('file', data.profilePicture);
-            await api.uploadUserProfilePicture(formData);
-            // Invalidate profile picture query to refresh the image
-            queryClient.invalidateQueries({
-              queryKey: ['profile-picture', currentUser.id],
-            });
-          } catch (error) {
-            handleError(error as Error);
-            throw error;
-          }
+      mutationFn: async (data: UpdateUserProfileReq) => {
+        if (selectedImage) {
+          validateImageInput(selectedImage);
+          const formData = new FormData();
+          formData.append('file', selectedImage);
+          await api.uploadUserProfilePicture(formData);
         }
 
-        // Update user profile
-        const { profilePicture: _profilePicture, ...profileData } = data;
-        await api.updateUserProfile(profileData);
-        return profileData;
+        await api.updateUserProfile(data);
+        return data;
       },
       onSuccess: (data) => {
         queryClient.setQueryData<{ user: CurrentUserRes }>(
@@ -169,12 +155,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((v) =>
-          updateUserProfile({
-            ...v,
-            profilePicture: selectedImage || undefined,
-          }),
-        )}
+        onSubmit={form.handleSubmit((v) => updateUserProfile(v))}
         className="flex flex-col gap-4"
       >
         <div className="flex flex-col items-center gap-2">
