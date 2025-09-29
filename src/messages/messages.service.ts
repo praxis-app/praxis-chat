@@ -43,18 +43,11 @@ export const getMessages = async (
       'messageUser.displayName',
     ])
     .addSelect([
-      'messageUserImage.id',
-      'messageUserImage.filename',
-      'messageUserImage.imageType',
-      'messageUserImage.createdAt',
-    ])
-    .addSelect([
       'messageImage.id',
       'messageImage.filename',
       'messageImage.createdAt',
     ])
     .leftJoin('message.user', 'messageUser')
-    .leftJoin('messageUser.images', 'messageUserImage')
     .leftJoin('message.images', 'messageImage')
     .where('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
@@ -71,7 +64,6 @@ export const getMessages = async (
   const userImagesMap = await usersService.getUserImagesMap(
     messages.map((message) => message.user.id),
   );
-  console.log('userImagesMap ⭐️⭐️⭐️', userImagesMap);
 
   const decryptedMessages = messages.map(
     ({ ciphertext, tag, iv, keyId, ...message }) => {
@@ -82,13 +74,8 @@ export const getMessages = async (
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
 
-      const { images: userImages, ...user } = message.user;
-      const profilePicture = userImages.find(
-        (image) => image.imageType === 'profile-picture',
-      );
-      const coverPhoto = userImages.find(
-        (image) => image.imageType === 'cover-photo',
-      );
+      const profilePictureId = userImagesMap[message.user.id].profilePictureId;
+      const coverPhotoId = userImagesMap[message.user.id].coverPhotoId;
 
       return {
         ...message,
@@ -98,9 +85,9 @@ export const getMessages = async (
           createdAt: image.createdAt,
         })),
         user: {
-          ...user,
-          profilePictureId: profilePicture?.id,
-          coverPhotoId: coverPhoto?.id,
+          ...message.user,
+          profilePictureId,
+          coverPhotoId,
         },
         body,
       };

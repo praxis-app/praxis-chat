@@ -141,7 +141,6 @@ export const getUserProfilePicture = async (userId: string) => {
   });
 };
 
-// TODO: Implement - is currently a WIP
 export const getUserImagesMap = async (userIds: string[]) => {
   if (userIds.length === 0) {
     return {};
