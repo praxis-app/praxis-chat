@@ -20,6 +20,7 @@ enum MessageType {
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
 
+// TODO: Return `resolvedName` field for users
 export const getMessages = async (
   channelId: string,
   offset?: number,
@@ -72,9 +73,17 @@ export const getMessages = async (
 
       if (ciphertext && tag && iv && keyId) {
         const unwrappedKey = unwrappedKeyMap[keyId];
-
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
+
+      const { images: userImages, ...user } = message.user;
+      const profilePicture = userImages.find(
+        (image) => image.imageType === 'profile-picture',
+      );
+      const coverPhoto = userImages.find(
+        (image) => image.imageType === 'cover-photo',
+      );
+
       return {
         ...message,
         images: message.images.map((image) => ({
@@ -82,6 +91,11 @@ export const getMessages = async (
           isPlaceholder: !image.filename,
           createdAt: image.createdAt,
         })),
+        user: {
+          ...user,
+          profilePictureId: profilePicture?.id,
+          coverPhotoId: coverPhoto?.id,
+        },
         body,
       };
     },
