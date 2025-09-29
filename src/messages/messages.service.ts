@@ -25,34 +25,33 @@ export const getMessages = async (
   offset?: number,
   limit?: number,
 ) => {
-  // TODO: Ensure relations are loaded correctly
-  const messages = await messageRepository.find({
-    where: { channelId },
-    relations: ['user', 'images'],
-    select: {
-      id: true,
-      ciphertext: true,
-      keyId: true,
-      tag: true,
-      iv: true,
-      user: {
-        id: true,
-        name: true,
-        displayName: true,
-      },
-      images: {
-        id: true,
-        filename: true,
-        createdAt: true,
-      },
-      createdAt: true,
-    },
-    order: {
-      createdAt: 'DESC',
-    },
-    skip: offset,
-    take: limit,
-  });
+  const messages = await messageRepository
+    .createQueryBuilder('message')
+    .select([
+      'message.id',
+      'message.ciphertext',
+      'message.keyId',
+      'message.tag',
+      'message.iv',
+      'message.createdAt',
+    ])
+    .addSelect([
+      'messageUser.id',
+      'messageUser.name',
+      'messageUser.displayName',
+    ])
+    .addSelect([
+      'messageImage.id',
+      'messageImage.filename',
+      'messageImage.createdAt',
+    ])
+    .leftJoin('message.user', 'messageUser')
+    .leftJoin('message.images', 'messageImage')
+    .where('message.channelId = :channelId', { channelId })
+    .orderBy('message.createdAt', 'DESC')
+    .skip(offset)
+    .take(limit)
+    .getMany();
 
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
     messages
