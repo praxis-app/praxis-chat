@@ -1,5 +1,10 @@
 import { api } from '@/client/api-client';
-import { CurrentUserRes, UpdateUserProfileReq } from '@/types/user.types';
+import { validateImageInput } from '@/lib/image.utilts';
+import {
+  CurrentUser,
+  CurrentUserRes,
+  UpdateUserProfileReq,
+} from '@/types/user.types';
 import {
   MAX_BIO_LENGTH,
   MAX_DISPLAY_NAME_LENGTH,
@@ -8,9 +13,8 @@ import {
   MIN_NAME_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/users.constants';
-import { validateImageInput } from '@/lib/image.utilts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +22,7 @@ import { toast } from 'sonner';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
 import { t } from '../../lib/shared.utils';
-import { useImageSrc } from '../../hooks/use-image-src';
 import { ImageInput } from '../images/image-input';
-import { UserAvatar } from './user-avatar';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -32,6 +34,7 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
+import { UserAvatar } from './user-avatar';
 
 const userProfileSchema = zod.object({
   name: zod
@@ -66,7 +69,7 @@ const userProfileSchema = zod.object({
 });
 
 interface Props {
-  currentUser: CurrentUserRes;
+  currentUser: CurrentUser;
 }
 
 export const UserProfileForm = ({ currentUser }: Props) => {
@@ -84,18 +87,6 @@ export const UserProfileForm = ({ currentUser }: Props) => {
       bio: currentUser.bio || '',
     },
     mode: 'onChange',
-  });
-
-  const { data: profilePictureData } = useQuery({
-    queryKey: ['profile-picture', currentUser.id],
-    queryFn: () => api.getUserProfilePicture(currentUser.id),
-    enabled: !!currentUser.id,
-  });
-
-  const profilePictureSrc = useImageSrc({
-    imageId: profilePictureData?.image?.id,
-    enabled: !!profilePictureData?.image?.id,
-    ref: avatarRef,
   });
 
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
@@ -170,7 +161,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     if (selectedImage) {
       return URL.createObjectURL(selectedImage);
     }
-    return profilePictureSrc;
+    return currentUser.profilePicture?.url;
   };
 
   return (
