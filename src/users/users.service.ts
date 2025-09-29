@@ -157,16 +157,11 @@ export const getUserImagesMap = async (userIds: string[]) => {
     order: { userId: 'ASC', imageType: 'ASC', createdAt: 'DESC' },
   });
 
-  // Initialize map with null values for all requested user IDs
+  // Initialize map for all requested user IDs
   const imagesMap: Record<
     string,
-    { profilePictureId: string | null; coverPhotoId: string | null }
+    { profilePictureId?: string; coverPhotoId?: string }
   > = {};
-
-  for (let i = 0; i < userIds.length; i++) {
-    const userId = userIds[i];
-    imagesMap[userId] = { profilePictureId: null, coverPhotoId: null };
-  }
 
   // Process images and keep only the latest of each type per user
   // Since images are ordered by createdAt DESC, the first occurrence of each user+type combination is the latest
@@ -181,9 +176,13 @@ export const getUserImagesMap = async (userIds: string[]) => {
     if (!processedKeys.has(key)) {
       processedKeys.add(key);
 
+      if (!imagesMap[userId]) {
+        imagesMap[userId] = {};
+      }
       if (image.imageType === 'profile-picture') {
         imagesMap[userId].profilePictureId = image.id;
-      } else if (image.imageType === 'cover-photo') {
+      }
+      if (image.imageType === 'cover-photo') {
         imagesMap[userId].coverPhotoId = image.id;
       }
     }
