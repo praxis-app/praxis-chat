@@ -336,27 +336,11 @@ class ApiClient {
     });
   };
 
-  uploadUserProfilePicture = async (file: File) => {
+  uploadUserProfilePicture = async (formData: FormData) => {
     const path = '/users/profile-picture';
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const token = localStorage.getItem(LocalStorageKeys.AccessToken);
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-      const response = await this.axiosInstance.request<{ image: ImageRes }>({
-        method: 'post',
-        url: path,
-        data: formData,
-        headers,
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error(`API request error: ${error}`);
-      throw error;
-    }
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
+      data: formData,
+    });
   };
 
   getHealth = async () => {

@@ -98,7 +98,9 @@ export const UserProfileForm = ({ currentUser }: Props) => {
         if (data.profilePicture) {
           try {
             validateImageInput(data.profilePicture);
-            await api.uploadUserProfilePicture(data.profilePicture);
+            const formData = new FormData();
+            formData.append('file', data.profilePicture);
+            await api.uploadUserProfilePicture(formData);
             // Invalidate profile picture query to refresh the image
             queryClient.invalidateQueries({
               queryKey: ['profile-picture', currentUser.id],
