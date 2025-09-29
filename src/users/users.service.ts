@@ -1,6 +1,6 @@
 // TODO: Add support for user updates with validation
 
-import { FindManyOptions } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -139,6 +139,56 @@ export const getUserProfilePicture = async (userId: string) => {
     where: { userId, imageType: 'profile-picture' },
     order: { createdAt: 'DESC' },
   });
+};
+
+// TODO: Implement - is currently a WIP
+export const getUserImagesMap = async (userIds: string[]) => {
+  if (userIds.length === 0) {
+    return {};
+  }
+
+  // Fetch all profile pictures and cover photos for the given user IDs
+  const images = await imageRepository.find({
+    select: ['id', 'userId', 'imageType', 'createdAt'],
+    where: [
+      { userId: In(userIds), imageType: 'profile-picture' },
+      { userId: In(userIds), imageType: 'cover-photo' },
+    ],
+    order: { userId: 'ASC', imageType: 'ASC', createdAt: 'DESC' },
+  });
+
+  // Initialize map with null values for all requested user IDs
+  const imagesMap: Record<
+    string,
+    { profilePictureId: string | null; coverPhotoId: string | null }
+  > = {};
+
+  userIds.forEach((userId) => {
+    imagesMap[userId] = { profilePictureId: null, coverPhotoId: null };
+  });
+
+  // Process images and keep only the latest of each type per user
+  // Since images are ordered by createdAt DESC, the first occurrence of each user+type combination is the latest
+  const processedKeys = new Set<string>();
+
+  images.forEach((image) => {
+    if (!image.userId) return; // Skip images without userId
+
+    const key = `${image.userId}-${image.imageType}`;
+
+    // Only process the first occurrence (latest) of each user+type combination
+    if (!processedKeys.has(key)) {
+      processedKeys.add(key);
+
+      if (image.imageType === 'profile-picture') {
+        imagesMap[image.userId].profilePictureId = image.id;
+      } else if (image.imageType === 'cover-photo') {
+        imagesMap[image.userId].coverPhotoId = image.id;
+      }
+    }
+  });
+
+  return imagesMap;
 };
 
 export const uploadUserProfilePicture = async (

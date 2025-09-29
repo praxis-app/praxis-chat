@@ -9,6 +9,7 @@ import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
 
@@ -66,6 +67,11 @@ export const getMessages = async (
       .filter((message) => message.keyId)
       .map((message) => message.keyId!),
   );
+
+  const userImagesMap = await usersService.getUserImagesMap(
+    messages.map((message) => message.user.id),
+  );
+  console.log('userImagesMap ⭐️⭐️⭐️', userImagesMap);
 
   const decryptedMessages = messages.map(
     ({ ciphertext, tag, iv, keyId, ...message }) => {
