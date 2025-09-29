@@ -147,24 +147,30 @@ export const getUserImagesMap = async (userIds: string[]) => {
     return {};
   }
 
-  // Fetch all profile pictures and cover photos for the given user IDs
   const images = await imageRepository.find({
     select: ['id', 'userId', 'imageType', 'createdAt'],
     where: [
-      { userId: In(userIds), imageType: 'profile-picture' },
-      { userId: In(userIds), imageType: 'cover-photo' },
+      {
+        userId: In(userIds),
+        imageType: 'profile-picture',
+      },
+      {
+        userId: In(userIds),
+        imageType: 'cover-photo',
+      },
     ],
-    order: { userId: 'ASC', imageType: 'ASC', createdAt: 'DESC' },
+    order: {
+      userId: 'ASC',
+      imageType: 'ASC',
+      createdAt: 'DESC',
+    },
   });
 
-  // Initialize map for all requested user IDs
   const imagesMap: Record<
     string,
     { profilePictureId?: string; coverPhotoId?: string }
   > = {};
 
-  // Process images and keep only the latest of each type per user
-  // Since images are ordered by createdAt DESC, the first occurrence of each user+type combination is the latest
   const processedKeys = new Set<string>();
 
   for (let i = 0; i < images.length; i++) {
@@ -172,7 +178,7 @@ export const getUserImagesMap = async (userIds: string[]) => {
     const userId = image.userId as string;
     const key = `${userId}-${image.imageType}`;
 
-    // Only process the first occurrence (latest) of each user+type combination
+    // Only process the first occurrence
     if (!processedKeys.has(key)) {
       processedKeys.add(key);
 
