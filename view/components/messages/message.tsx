@@ -3,12 +3,12 @@ import { FormattedText } from '@/components/shared/formatted-text';
 import { UserAvatar } from '@/components/users/user-avatar';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { timeAgo } from '@/lib/time.utils';
-import { MessageRes as MessageType } from '@/types/message.types';
+import { MessageRes } from '@/types/message.types';
 import { useTranslation } from 'react-i18next';
 import { truncate } from '../../lib/text.utils';
 
 interface Props {
-  message: MessageType;
+  message: MessageRes;
 }
 
 export const Message = ({
