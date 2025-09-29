@@ -41,11 +41,18 @@ export const getMessages = async (
       'messageUser.displayName',
     ])
     .addSelect([
+      'messageUserImage.id',
+      'messageUserImage.filename',
+      'messageUserImage.imageType',
+      'messageUserImage.createdAt',
+    ])
+    .addSelect([
       'messageImage.id',
       'messageImage.filename',
       'messageImage.createdAt',
     ])
     .leftJoin('message.user', 'messageUser')
+    .leftJoin('messageUser.images', 'messageUserImage')
     .leftJoin('message.images', 'messageImage')
     .where('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
@@ -59,29 +66,26 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const decryptedMessages = messages.map((message) => {
-    let body: string | null = null;
+  const decryptedMessages = messages.map(
+    ({ ciphertext, tag, iv, keyId, ...message }) => {
+      let body: string | null = null;
 
-    if (message.ciphertext && message.tag && message.iv && message.keyId) {
-      const unwrappedKey = unwrappedKeyMap[message.keyId];
+      if (ciphertext && tag && iv && keyId) {
+        const unwrappedKey = unwrappedKeyMap[keyId];
 
-      body = decryptMessage(
-        message.ciphertext,
-        message.tag,
-        message.iv,
-        unwrappedKey,
-      );
-    }
-    return {
-      ...message,
-      images: message.images.map((image) => ({
-        id: image.id,
-        isPlaceholder: !image.filename,
-        createdAt: image.createdAt,
-      })),
-      body,
-    };
-  });
+        body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
+      }
+      return {
+        ...message,
+        images: message.images.map((image) => ({
+          id: image.id,
+          isPlaceholder: !image.filename,
+          createdAt: image.createdAt,
+        })),
+        body,
+      };
+    },
+  );
 
   return decryptedMessages;
 };
