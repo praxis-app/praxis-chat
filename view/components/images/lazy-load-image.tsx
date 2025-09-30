@@ -67,6 +67,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       },
       imageId,
     });
+
     const [loaded, setLoaded] = useState(!!srcFromImageId);
     const [failed, setFailed] = useState(false);
     const { t } = useTranslation();
