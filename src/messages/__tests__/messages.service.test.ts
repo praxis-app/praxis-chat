@@ -12,6 +12,7 @@ vi.mock('../../database/data-source', () => {
   const mockImageRepository = {
     create: vi.fn(),
     save: vi.fn(),
+    findOne: vi.fn(),
   };
 
   return {
@@ -44,6 +45,12 @@ vi.mock('../../common/common.utils', () => ({
   sanitizeText: vi.fn((text?: string) => text?.trim() || ''),
 }));
 
+vi.mock('../../users/users.service', () => ({
+  getUserImagesMap: vi.fn(),
+  getUserProfilePicture: vi.fn(),
+  getUserCoverPhoto: vi.fn(),
+}));
+
 vi.mock('../message.entity', () => ({
   Message: function Message() {},
 }));
@@ -61,6 +68,7 @@ import * as channelsService from '../../channels/channels.service';
 import { sanitizeText } from '../../common/common.utils';
 import { dataSource } from '../../database/data-source';
 import * as pubSubService from '../../pub-sub/pub-sub.service';
+import * as usersService from '../../users/users.service';
 import * as messagesService from '../messages.service';
 
 // Mock data constants
@@ -133,16 +141,16 @@ describe('Messages Service', () => {
         orderBy: vi.fn().mockReturnThis(),
         skip: vi.fn().mockReturnThis(),
         take: vi.fn().mockReturnThis(),
-        getRawAndEntities: vi.fn().mockResolvedValue({
-          entities: mockMessages,
-          raw: [],
-        }),
+        getMany: vi.fn().mockResolvedValue(mockMessages),
       };
 
       mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
       vi.mocked(channelsService.getUnwrappedChannelKeyMap).mockResolvedValue(
         {},
       );
+      vi.mocked(usersService.getUserImagesMap).mockResolvedValue({
+        'user-1': { profilePictureId: 'profile-1', coverPhotoId: 'cover-1' },
+      });
 
       const result = await messagesService.getMessages('channel-1', 10, 20);
 
@@ -211,6 +219,26 @@ describe('Messages Service', () => {
       }));
       mockImageRepository.save.mockResolvedValue(mockImagePlaceholders);
       vi.mocked(sanitizeText).mockReturnValue('Test message');
+      vi.mocked(usersService.getUserProfilePicture).mockResolvedValue({ 
+        id: 'profile-1',
+        filename: 'profile.jpg',
+        imageType: 'profile-picture',
+        messageId: null,
+        proposalId: null,
+        userId: 'user-1',
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      } as any);
+      vi.mocked(usersService.getUserCoverPhoto).mockResolvedValue({ 
+        id: 'cover-1',
+        filename: 'cover.jpg',
+        imageType: 'cover-photo',
+        messageId: null,
+        proposalId: null,
+        userId: 'user-1',
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      } as any);
       vi.mocked(channelsService.getUnwrappedChannelKey).mockResolvedValue({
         id: 'key-1',
         channelId: 'channel-1',
@@ -274,7 +302,25 @@ describe('Messages Service', () => {
           type: 'message',
           message: expect.objectContaining({
             body: 'Test message',
-            user: { id: 'user-1', name: 'Test User', displayName: 'Test User' },
+            userId: 'user-1',
+            channelId: 'channel-1',
+            user: { 
+              id: 'user-1', 
+              name: 'Test User', 
+              displayName: 'Test User',
+              profilePictureId: 'profile-1',
+              coverPhotoId: 'cover-1',
+            },
+            images: expect.arrayContaining([
+              expect.objectContaining({
+                id: 'image-1',
+                isPlaceholder: true,
+              }),
+              expect.objectContaining({
+                id: 'image-2',
+                isPlaceholder: true,
+              }),
+            ]),
           }),
         },
       );

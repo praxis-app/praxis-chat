@@ -1,11 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { UserAvatar } from '../user-avatar';
 import { vi, describe, it, expect } from 'vitest';
 import React from 'react';
 
 // Mock the LazyLoadImage component to control its behavior
 vi.mock('../../images/lazy-load-image', () => ({
-  LazyLoadImage: ({ src, imageId, alt, onLoad, onLoadingStatusChange }: any) => {
+  LazyLoadImage: React.forwardRef(({ src, imageId, alt, onLoad, onLoadingStatusChange, className, ...props }: any, ref: any) => {
     // Simulate image loading behavior
     React.useEffect(() => {
       if (src || imageId) {
@@ -24,13 +23,18 @@ vi.mock('../../images/lazy-load-image', () => ({
 
     return (
       <img
+        ref={ref}
         src={src || 'mocked-image-src'}
         alt={alt}
+        className={className}
         data-testid="lazy-load-image"
+        {...props}
       />
     );
-  },
+  }),
 }));
+
+import { UserAvatar } from '../user-avatar';
 
 describe('UserAvatar', () => {
   it('should show fallback initially and then show image when loaded', async () => {
