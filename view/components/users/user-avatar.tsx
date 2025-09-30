@@ -14,6 +14,7 @@ interface Props {
   isOnline?: boolean;
   showOnlineStatus?: boolean;
   animateOnlineStatus?: boolean;
+  skipLoadAnimation?: boolean;
 }
 
 export const UserAvatar = ({
@@ -24,8 +25,9 @@ export const UserAvatar = ({
   fallbackClassName,
   imageId,
   isOnline,
-  showOnlineStatus,
-  animateOnlineStatus,
+  showOnlineStatus = false,
+  animateOnlineStatus = false,
+  skipLoadAnimation = false,
 }: Props) => {
   const getStringAvatarProps = () => {
     const colorHash = new ColorHash();
@@ -44,6 +46,7 @@ export const UserAvatar = ({
         alt={name}
         imageId={imageId}
         src={imageSrc}
+        skipAnimation={skipLoadAnimation}
         className={cn(
           (imageId || imageSrc) && 'min-h-full min-w-full rounded-full',
         )}
