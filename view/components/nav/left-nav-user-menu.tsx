@@ -84,6 +84,7 @@ export const LeftNavUserMenu = () => {
             <UserAvatar
               name={me.name}
               userId={me.id}
+              imageId={me.profilePicture?.id}
               className="size-5"
               fallbackClassName="text-[0.65rem]"
               isOnline={true}
