@@ -58,6 +58,7 @@ export const LeftNavUserMenu = () => {
             fallbackClassName="text-sm"
             name={name}
             userId={me.id}
+            imageId={me.profilePicture?.id}
             isOnline={true}
             showOnlineStatus
           />

@@ -1,7 +1,8 @@
 import cryptoRandomString from 'crypto-random-string';
 import { dataSource } from '../database/data-source';
-import { Invite } from './invite.entity';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
+import { Invite } from './invite.entity';
 
 const INVITES_PAGE_SIZE = 20;
 
@@ -43,12 +44,31 @@ export const getValidInvites = async () => {
     .orderBy('invite.createdAt', 'DESC')
     .getMany();
 
+  // TOOD: Move filtering logic to query
   const validInvites = invites.filter((invite) => {
     return validateInvite(invite);
   });
 
+  const userImagesMap = await usersService.getUserImagesMap(
+    validInvites.map((invite) => invite.user.id),
+  );
+
+  const shapedInvites = validInvites.map((invite) => {
+    const profilePictureId = userImagesMap[invite.user.id].profilePictureId;
+    const coverPhotoId = userImagesMap[invite.user.id].coverPhotoId;
+
+    return {
+      ...invite,
+      user: {
+        ...invite.user,
+        profilePictureId,
+        coverPhotoId,
+      },
+    };
+  });
+
   // TODO: Update once pagination has been implemented
-  return validInvites.slice(0, INVITES_PAGE_SIZE);
+  return shapedInvites.slice(0, INVITES_PAGE_SIZE);
 };
 
 export const createInvite = async (inviteData: CreateInviteDto, user: User) => {

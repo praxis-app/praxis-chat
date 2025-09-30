@@ -7,6 +7,7 @@ export interface InviteRes {
     id: string;
     name: string;
     displayName?: string;
+    profilePictureId?: string;
   };
   expiresAt?: string;
   createdAt: string;

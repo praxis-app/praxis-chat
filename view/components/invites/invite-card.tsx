@@ -78,6 +78,7 @@ export const InviteCard = ({
           <UserAvatar
             name={user.name}
             userId={user.id}
+            imageId={user.profilePictureId}
             className="size-7"
             fallbackClassName="text-[0.8rem]"
           />

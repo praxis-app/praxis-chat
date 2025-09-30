@@ -46,6 +46,7 @@ export const InviteTableRow = ({
           <UserAvatar
             userId={user.id}
             name={user.name}
+            imageId={user.profilePictureId}
             className="size-6"
             fallbackClassName="text-[0.7rem]"
           />
