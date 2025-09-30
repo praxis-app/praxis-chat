@@ -7,6 +7,7 @@ import {
   forwardRef,
   useRef,
   useState,
+  useEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +19,7 @@ interface Props extends ComponentProps<'img'> {
   src?: string;
   className?: string;
   onError?: () => void;
+  onLoadingStatusChange?: (status: 'idle' | 'loading' | 'loaded' | 'error') => void;
 }
 
 /**
@@ -43,6 +45,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       src,
       className,
       onError,
+      onLoadingStatusChange,
       ...imgProps
     },
     forwardedRef,
@@ -70,6 +73,33 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
     const [loaded, setLoaded] = useState(!!srcFromImageId);
     const [failed, setFailed] = useState(false);
     const { t } = useTranslation();
+
+    // Communicate loading status to Avatar context
+    useEffect(() => {
+      if (!onLoadingStatusChange) {
+        return;
+      }
+
+      const resolvedSrc = src || srcFromImageId;
+      
+      if (!resolvedSrc) {
+        onLoadingStatusChange('idle');
+        return;
+      }
+
+      if (failed) {
+        onLoadingStatusChange('error');
+        return;
+      }
+
+      if (loaded) {
+        onLoadingStatusChange('loaded');
+        return;
+      }
+
+      // If we have a source but haven't loaded yet, we're loading
+      onLoadingStatusChange('loading');
+    }, [src, srcFromImageId, loaded, failed, onLoadingStatusChange]);
 
     const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
       onLoad && onLoad(event);

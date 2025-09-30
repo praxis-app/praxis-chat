@@ -25,7 +25,12 @@ export const Message = ({
 
   return (
     <div className="flex gap-4">
-      <UserAvatar name={name} userId={user.id} className="mt-0.5" />
+      <UserAvatar
+        name={name}
+        userId={user.id}
+        imageId={user.profilePictureId}
+        className="mt-0.5"
+      />
 
       <div>
         <div className="mb-[-0.1rem] flex items-center gap-1.5">
