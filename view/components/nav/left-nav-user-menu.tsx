@@ -58,7 +58,7 @@ export const LeftNavUserMenu = () => {
             fallbackClassName="text-sm"
             name={name}
             userId={me.id}
-            imageId={me.profilePicture?.id}
+            imageSrc={me.profilePicture?.url}
             isOnline={true}
             showOnlineStatus
           />
@@ -84,7 +84,7 @@ export const LeftNavUserMenu = () => {
             <UserAvatar
               name={me.name}
               userId={me.id}
-              imageId={me.profilePicture?.id}
+              imageSrc={me.profilePicture?.url}
               className="size-5"
               fallbackClassName="text-[0.65rem]"
               isOnline={true}

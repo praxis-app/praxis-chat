@@ -69,7 +69,7 @@ export const NavDropdown = ({ trigger }: Props) => {
             <UserAvatar
               name={name}
               userId={me.id}
-              imageId={me.profilePicture?.id}
+              imageSrc={me.profilePicture?.url}
               className="size-5"
               fallbackClassName="text-[0.7rem]"
             />
