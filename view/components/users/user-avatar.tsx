@@ -1,7 +1,8 @@
 import { cn } from '@/lib/shared.utils';
 import chroma from 'chroma-js';
 import ColorHash from 'color-hash';
-import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { LazyLoadImage } from '../images/lazy-load-image';
+import { Avatar, AvatarBadge, AvatarFallback } from '../ui/avatar';
 
 interface Props {
   name: string;
@@ -9,6 +10,7 @@ interface Props {
   className?: string;
   fallbackClassName?: string;
   imageSrc?: string;
+  imageId?: string;
   isOnline?: boolean;
   showOnlineStatus?: boolean;
   animateOnlineStatus?: boolean;
@@ -20,6 +22,7 @@ export const UserAvatar = ({
   className,
   imageSrc,
   fallbackClassName,
+  imageId,
   isOnline,
   showOnlineStatus,
   animateOnlineStatus,
@@ -36,15 +39,27 @@ export const UserAvatar = ({
   };
 
   return (
-    <Avatar className={cn(className)} title={name}>
-      <AvatarImage src={imageSrc} alt={name} />
+    <Avatar className={className} title={name}>
+      <LazyLoadImage
+        alt={name}
+        imageId={imageId}
+        src={imageSrc}
+        className={cn(
+          (imageId || imageSrc) && 'min-h-full min-w-full rounded-full',
+        )}
+      />
 
-      <AvatarFallback
-        className={cn('text-lg font-light', fallbackClassName)}
-        {...getStringAvatarProps()}
-      >
-        {name[0].toUpperCase()}
-      </AvatarFallback>
+      {!imageSrc && !imageId && (
+        <AvatarFallback
+          className={cn(
+            'min-h-full min-w-full rounded-full text-lg font-light',
+            fallbackClassName,
+          )}
+          {...getStringAvatarProps()}
+        >
+          {name[0].toUpperCase()}
+        </AvatarFallback>
+      )}
 
       {showOnlineStatus && isOnline && (
         <AvatarBadge

@@ -74,7 +74,8 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
     const { t } = useTranslation();
 
     const resolvedSrc = src || srcFromImageId;
-    const elementType = isPlaceholder || !resolvedSrc || failed ? 'div' : 'img';
+    const showImage = resolvedSrc && !isPlaceholder && !failed;
+    const elementType = showImage ? 'img' : 'div';
     const showFileMissing = failed && elementType === 'div' && !isPlaceholder;
 
     const imageClassName = cn(
