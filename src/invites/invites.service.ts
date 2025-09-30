@@ -54,8 +54,8 @@ export const getValidInvites = async () => {
   );
 
   const shapedInvites = validInvites.map((invite) => {
-    const profilePictureId = userImagesMap[invite.user.id].profilePictureId;
-    const coverPhotoId = userImagesMap[invite.user.id].coverPhotoId;
+    const profilePictureId = userImagesMap[invite.user.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[invite.user.id]?.coverPhotoId;
 
     return {
       ...invite,

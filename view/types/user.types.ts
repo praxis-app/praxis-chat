@@ -15,6 +15,8 @@ export interface UserRes {
   id: string;
   name: string;
   displayName?: string;
+  profilePictureId?: string;
+  coverPhotoId?: string;
 }
 
 export interface UpdateUserProfileReq {

@@ -150,8 +150,8 @@ export const getInlineProposals = async (
         }
       : undefined;
 
-    const profilePictureId = userImagesMap[proposal.user.id].profilePictureId;
-    const coverPhotoId = userImagesMap[proposal.user.id].coverPhotoId;
+    const profilePictureId = userImagesMap[proposal.user.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[proposal.user.id]?.coverPhotoId;
 
     return {
       ...proposal,

@@ -9,6 +9,7 @@ import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
@@ -50,7 +51,21 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  return { ...role, permissions, members, memberCount: members.length };
+  const userImagesMap = await usersService.getUserImagesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => {
+    const profilePictureId = userImagesMap[member.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
+    return { ...member, profilePictureId, coverPhotoId };
+  });
+
+  return {
+    ...role,
+    permissions,
+    members: shapedMembers,
+    memberCount: members.length,
+  };
 };
 
 export const getRoles = async () => {
@@ -72,8 +87,17 @@ export const getRoles = async () => {
     },
   });
 
+  const userImagesMap = await usersService.getUserImagesMap(
+    roles.flatMap((role) => role.members.map((member) => member.id)),
+  );
+
   return roles.map((role) => ({
     ...role,
+    members: role.members.map((member) => {
+      const profilePictureId = userImagesMap[member.id]?.profilePictureId;
+      const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
+      return { ...member, profilePictureId, coverPhotoId };
+    }),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
   }));
@@ -102,8 +126,9 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   if (!role) {
     throw new Error('Role not found');
   }
+
   const userIds = role.members.map(({ id }) => id);
-  return userRepository.find({
+  const users = await userRepository.find({
     where: {
       id: Not(In(userIds)),
       anonymous: false,
@@ -111,6 +136,25 @@ export const getUsersEligibleForRole = async (roleId: string) => {
     },
     select: ['id', 'name', 'displayName'],
   });
+  if (users.length === 0) {
+    return [];
+  }
+
+  const userImagesMap = await usersService.getUserImagesMap(
+    users.map((user) => user.id),
+  );
+  const shapedUsers = users.map((user) => {
+    const profilePictureId = userImagesMap[user.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[user.id]?.coverPhotoId;
+
+    return {
+      ...user,
+      profilePictureId,
+      coverPhotoId,
+    };
+  });
+
+  return shapedUsers;
 };
 
 export const createRole = async ({ name, color }: CreateRoleDto) => {

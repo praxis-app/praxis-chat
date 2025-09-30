@@ -74,8 +74,8 @@ export const getMessages = async (
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
 
-      const profilePictureId = userImagesMap[message.user.id].profilePictureId;
-      const coverPhotoId = userImagesMap[message.user.id].coverPhotoId;
+      const profilePictureId = userImagesMap[message.user.id]?.profilePictureId;
+      const coverPhotoId = userImagesMap[message.user.id]?.coverPhotoId;
 
       return {
         ...message,
