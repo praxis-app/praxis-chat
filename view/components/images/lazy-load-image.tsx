@@ -70,6 +70,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
 
     const [loaded, setLoaded] = useState(!!srcFromImageId);
     const [failed, setFailed] = useState(false);
+
     const { t } = useTranslation();
 
     const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
