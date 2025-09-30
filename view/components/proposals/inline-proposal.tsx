@@ -39,7 +39,12 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
   return (
     <div className="flex gap-4 pt-4">
-      <UserAvatar name={name} userId={user.id} className="mt-0.5" />
+      <UserAvatar
+        name={name}
+        userId={user.id}
+        imageId={user.profilePictureId}
+        className="mt-0.5"
+      />
 
       <div className="w-full">
         <div className="flex items-center gap-1.5 pb-1">
