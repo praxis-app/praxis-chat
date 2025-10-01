@@ -69,7 +69,9 @@ interface Props {
 }
 
 export const UserProfileForm = ({ currentUser }: Props) => {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedProfilePicture, setSelectedProfilePicture] =
+    useState<File | null>(null);
+
   const avatarRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
@@ -90,12 +92,12 @@ export const UserProfileForm = ({ currentUser }: Props) => {
       mutationFn: async (data: UpdateUserProfileReq) => {
         let profilePicture = currentUser.profilePicture;
 
-        if (selectedImage) {
-          validateImageInput(selectedImage);
+        if (selectedProfilePicture) {
+          validateImageInput(selectedProfilePicture);
           const formData = new FormData();
-          formData.append('file', selectedImage);
+          formData.append('file', selectedProfilePicture);
           const { image } = await api.uploadUserProfilePicture(formData);
-          const url = URL.createObjectURL(selectedImage);
+          const url = URL.createObjectURL(selectedProfilePicture);
           profilePicture = { ...image, url };
         }
         await api.updateUserProfile(data);
@@ -129,7 +131,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           };
         });
         form.reset(form.getValues());
-        setSelectedImage(null);
+        setSelectedProfilePicture(null);
         toast(t('users.actions.profileUpdated'));
       },
       onError: (error: Error) => {
@@ -140,15 +142,15 @@ export const UserProfileForm = ({ currentUser }: Props) => {
 
   const handleImageChange = (files: File[]) => {
     if (files.length === 0) {
-      setSelectedImage(null);
+      setSelectedProfilePicture(null);
       return;
     }
-    setSelectedImage(files[0]);
+    setSelectedProfilePicture(files[0]);
   };
 
   const getImageSrc = () => {
-    if (selectedImage) {
-      return URL.createObjectURL(selectedImage);
+    if (selectedProfilePicture) {
+      return URL.createObjectURL(selectedProfilePicture);
     }
     return currentUser.profilePicture?.url;
   };
@@ -180,7 +182,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
               disabled={isUpdatePending}
               className="text-muted-foreground hover:text-foreground text-sm disabled:opacity-50"
             >
-              {selectedImage
+              {selectedProfilePicture
                 ? t('users.actions.changePicture')
                 : t('users.actions.selectPicture')}
             </button>
@@ -241,7 +243,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           disabled={
             isUpdatePending ||
             !form.formState.isValid ||
-            (!form.formState.isDirty && !selectedImage)
+            (!form.formState.isDirty && !selectedProfilePicture)
           }
         >
           {t('users.actions.save')}
