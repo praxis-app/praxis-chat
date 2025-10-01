@@ -69,8 +69,7 @@ interface Props {
 }
 
 export const UserProfileForm = ({ currentUser }: Props) => {
-  const [selectedProfilePicture, setSelectedProfilePicture] =
-    useState<File | null>(null);
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
 
   const avatarRef = useRef<HTMLDivElement>(null);
 
@@ -131,7 +130,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           };
         });
         form.reset(form.getValues());
-        setSelectedProfilePicture(null);
+        setSelectedProfilePicture(undefined);
         toast(t('users.actions.profileUpdated'));
       },
       onError: (error: Error) => {
@@ -142,7 +141,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
 
   const handleImageChange = (files: File[]) => {
     if (files.length === 0) {
-      setSelectedProfilePicture(null);
+      setSelectedProfilePicture(undefined);
       return;
     }
     setSelectedProfilePicture(files[0]);
