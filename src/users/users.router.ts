@@ -3,10 +3,11 @@ import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
 import {
+  createUserCoverPhoto,
+  createUserProfilePicture,
   getCurrentUser,
   isFirstUser,
   updateUserProfile,
-  uploadUserProfilePicture,
 } from './users.controller';
 
 export const usersRouter = express.Router();
@@ -18,5 +19,6 @@ usersRouter.get('/is-first', isFirstUser);
 usersRouter
   .use(authenticate)
   .get('/me', getCurrentUser)
-  .post('/profile-picture', uploadImage, uploadUserProfilePicture)
+  .post('/profile-picture', uploadImage, createUserProfilePicture)
+  .post('/cover-photo', uploadImage, createUserCoverPhoto)
   .put('/profile', validateUserProfile, updateUserProfile);

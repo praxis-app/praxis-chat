@@ -104,6 +104,13 @@ class ApiClient {
     });
   };
 
+  uploadUserCoverPhoto = async (formData: FormData) => {
+    const path = '/users/cover-photo';
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
+      data: formData,
+    });
+  };
+
   // -------------------------------------------------------------------------
   // Channels & Messages
   // -------------------------------------------------------------------------

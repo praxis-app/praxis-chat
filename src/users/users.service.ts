@@ -204,13 +204,25 @@ export const getUserImagesMap = async (userIds: string[]) => {
   return imagesMap;
 };
 
-export const uploadUserProfilePicture = async (
+export const createUserProfilePicture = async (
   filename: string,
   userId: string,
 ) => {
   const image = await imageRepository.save({
-    filename,
     imageType: 'profile-picture',
+    filename,
+    userId,
+  });
+  return image;
+};
+
+export const createUserCoverPhoto = async (
+  filename: string,
+  userId: string,
+) => {
+  const image = await imageRepository.save({
+    imageType: 'cover-photo',
+    filename,
     userId,
   });
   return image;

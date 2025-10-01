@@ -15,15 +15,32 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   res.json({ user });
 };
 
-export const uploadUserProfilePicture = async (req: Request, res: Response) => {
+export const createUserProfilePicture = async (req: Request, res: Response) => {
+  // TODO: Move validation to middleware
   if (!req.file) {
     res.status(422).send('No image uploaded');
     return;
   }
 
-  const { filename } = req.file as Express.Multer.File;
-  const { user } = res.locals;
-  const image = await usersService.uploadUserProfilePicture(filename, user.id);
+  const image = await usersService.createUserProfilePicture(
+    req.file.filename,
+    res.locals.user.id,
+  );
+
+  res.status(201).json({ image });
+};
+
+export const createUserCoverPhoto = async (req: Request, res: Response) => {
+  // TODO: Move validation to middleware
+  if (!req.file) {
+    res.status(422).send('No image uploaded');
+    return;
+  }
+
+  const image = await usersService.createUserCoverPhoto(
+    req.file.filename,
+    res.locals.user.id,
+  );
 
   res.status(201).json({ image });
 };
