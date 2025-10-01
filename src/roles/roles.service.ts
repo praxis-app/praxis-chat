@@ -259,9 +259,20 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
       locked: false,
     },
   });
+
+  const members = [...role.members, ...newMembers];
+  const userImagesMap = await usersService.getUserImagesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => {
+    const profilePictureId = userImagesMap[member.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
+    return { ...member, profilePictureId, coverPhotoId };
+  });
+
   return roleRepository.save({
     ...role,
-    members: [...role.members, ...newMembers],
+    members: shapedMembers,
   });
 };
 
