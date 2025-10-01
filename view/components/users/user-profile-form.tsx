@@ -30,6 +30,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
 import { UserAvatar } from './user-avatar';
 
@@ -193,31 +194,33 @@ export const UserProfileForm = ({ currentUser }: Props) => {
         onSubmit={form.handleSubmit((v) => updateUserProfile(v))}
         className="flex flex-col gap-4"
       >
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <FormLabel>{t('users.form.profilePicture')}</FormLabel>
+            <ImageInput
+              onChange={handleImageChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="text-foreground cursor-pointer text-sm uppercase disabled:opacity-50"
+              >
+                {t('actions.edit')}
+              </button>
+            </ImageInput>
+          </div>
           <UserAvatar
             name={currentUser.name}
             userId={currentUser.id}
             imageSrc={getImageSrc()}
-            className="size-20"
+            className="size-34 self-center"
             fallbackClassName="text-2xl"
           />
-
-          <ImageInput
-            onChange={handleImageChange}
-            disabled={isUpdatePending}
-            iconClassName="text-muted-foreground size-5"
-          >
-            <button
-              type="button"
-              disabled={isUpdatePending}
-              className="text-muted-foreground hover:text-foreground text-sm disabled:opacity-50"
-            >
-              {selectedProfilePicture
-                ? t('users.actions.changePicture')
-                : t('users.actions.selectPicture')}
-            </button>
-          </ImageInput>
         </div>
+
+        <Separator className="my-1" />
 
         <div className="flex flex-col gap-2">
           <FormLabel>{t('users.form.coverPhoto')}</FormLabel>
@@ -245,7 +248,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
               <button
                 type="button"
                 disabled={isUpdatePending}
-                className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
+                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-lg bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
               >
                 {getCoverPhotoSrc()
                   ? t('users.actions.changeCoverPhoto')
@@ -254,6 +257,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
             </ImageInput>
           </div>
         </div>
+
+        <Separator className="my-1" />
 
         <FormField
           control={form.control}
