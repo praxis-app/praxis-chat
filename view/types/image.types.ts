@@ -7,3 +7,7 @@ export interface ImageRes {
 export interface ProfilePicture extends ImageRes {
   url: string;
 }
+
+export interface CoverPhoto extends ImageRes {
+  url: string;
+}

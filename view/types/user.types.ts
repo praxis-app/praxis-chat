@@ -1,4 +1,4 @@
-import { ImageRes, ProfilePicture } from './image.types';
+import { ImageRes, ProfilePicture, CoverPhoto } from './image.types';
 import { Permission } from './role.types';
 
 export interface CurrentUserRes {
@@ -9,6 +9,7 @@ export interface CurrentUserRes {
   anonymous: boolean;
   permissions: Permission[];
   profilePicture: ImageRes | null;
+  coverPhoto: ImageRes | null;
 }
 
 export interface UserRes {
@@ -27,4 +28,5 @@ export interface UpdateUserProfileReq {
 
 export interface CurrentUser extends CurrentUserRes {
   profilePicture: ProfilePicture | null;
+  coverPhoto: CoverPhoto | null;
 }

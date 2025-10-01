@@ -34,11 +34,13 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
 
     const permissions = await rolesService.getUserPermissions(userId);
     const profilePicture = await getUserProfilePicture(userId);
+    const coverPhoto = await getUserCoverPhoto(userId);
 
     return {
       ...user,
       permissions,
       profilePicture,
+      coverPhoto,
     };
   } catch (error) {
     console.error(error);

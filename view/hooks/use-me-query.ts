@@ -33,10 +33,20 @@ export const useMeQuery = (
           };
         }
 
+        let coverPhoto: CurrentUser['coverPhoto'] = null;
+        if (me.user.coverPhoto) {
+          const result = await api.getImage(me.user.coverPhoto.id);
+          coverPhoto = {
+            ...me.user.coverPhoto,
+            url: URL.createObjectURL(result),
+          };
+        }
+
         return {
           user: {
             ...me.user,
             profilePicture,
+            coverPhoto,
           },
         };
       } catch (error) {
