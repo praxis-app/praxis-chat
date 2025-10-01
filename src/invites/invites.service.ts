@@ -78,7 +78,18 @@ export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
     userId: user.id,
     token,
   });
-  return { ...invite, user };
+
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
+
+  return {
+    ...invite,
+    user: {
+      ...user,
+      profilePictureId: profilePicture?.id,
+      coverPhotoId: coverPhoto?.id,
+    },
+  };
 };
 
 export const redeemInvite = async (token: string) => {
