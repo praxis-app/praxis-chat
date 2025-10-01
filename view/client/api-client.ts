@@ -97,6 +97,13 @@ class ApiClient {
     });
   };
 
+  uploadUserProfilePicture = async (formData: FormData) => {
+    const path = '/users/profile-picture';
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
+      data: formData,
+    });
+  };
+
   // -------------------------------------------------------------------------
   // Channels & Messages
   // -------------------------------------------------------------------------
@@ -333,13 +340,6 @@ class ApiClient {
     const path = `/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, {
       responseType: 'blob',
-    });
-  };
-
-  uploadUserProfilePicture = async (formData: FormData) => {
-    const path = '/users/profile-picture';
-    return this.executeRequest<{ image: ImageRes }>('post', path, {
-      data: formData,
     });
   };
 
