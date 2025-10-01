@@ -11,7 +11,7 @@ import {
 } from '@common/users/users.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -73,8 +73,6 @@ interface Props {
 export const UserProfileForm = ({ currentUser }: Props) => {
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
   const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File>();
-
-  const avatarRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -196,15 +194,13 @@ export const UserProfileForm = ({ currentUser }: Props) => {
         className="flex flex-col gap-4"
       >
         <div className="flex flex-col items-center gap-2">
-          <div ref={avatarRef}>
-            <UserAvatar
-              name={currentUser.name}
-              userId={currentUser.id}
-              imageSrc={getImageSrc()}
-              className="size-20"
-              fallbackClassName="text-2xl"
-            />
-          </div>
+          <UserAvatar
+            name={currentUser.name}
+            userId={currentUser.id}
+            imageSrc={getImageSrc()}
+            className="size-20"
+            fallbackClassName="text-2xl"
+          />
 
           <ImageInput
             onChange={handleImageChange}
@@ -223,7 +219,6 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           </ImageInput>
         </div>
 
-        {/* Cover Photo Section */}
         <div className="flex flex-col gap-2">
           <FormLabel>{t('users.form.coverPhoto')}</FormLabel>
           <div className="relative">
