@@ -88,7 +88,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
       mutationFn: async (data: UpdateUserProfileReq) => {
-        let profilePicture: CurrentUser['profilePicture'] = null;
+        let profilePicture = currentUser.profilePicture;
 
         if (selectedImage) {
           validateImageInput(selectedImage);
