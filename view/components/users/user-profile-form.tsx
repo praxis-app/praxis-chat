@@ -211,13 +211,30 @@ export const UserProfileForm = ({ currentUser }: Props) => {
               </button>
             </ImageInput>
           </div>
-          <UserAvatar
-            name={currentUser.name}
-            userId={currentUser.id}
-            imageSrc={getImageSrc()}
-            className="size-34 self-center"
-            fallbackClassName="text-2xl"
-          />
+          <div className="relative self-center">
+            <UserAvatar
+              name={currentUser.name}
+              userId={currentUser.id}
+              imageSrc={getImageSrc()}
+              className="size-34"
+              fallbackClassName="text-2xl"
+            />
+            <ImageInput
+              onChange={handleImageChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
+              >
+                {getImageSrc()
+                  ? t('users.actions.changePicture')
+                  : t('users.actions.selectPicture')}
+              </button>
+            </ImageInput>
+          </div>
         </div>
 
         <Separator className="my-1" />
