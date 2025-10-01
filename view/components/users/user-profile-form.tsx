@@ -223,7 +223,22 @@ export const UserProfileForm = ({ currentUser }: Props) => {
         <Separator className="my-1" />
 
         <div className="flex flex-col gap-2">
-          <FormLabel>{t('users.form.coverPhoto')}</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>{t('users.form.coverPhoto')}</FormLabel>
+            <ImageInput
+              onChange={handleCoverPhotoChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="text-foreground cursor-pointer text-sm uppercase disabled:opacity-50"
+              >
+                {t('actions.edit')}
+              </button>
+            </ImageInput>
+          </div>
           <div className="relative">
             {getCoverPhotoSrc() && (
               <LazyLoadImage
