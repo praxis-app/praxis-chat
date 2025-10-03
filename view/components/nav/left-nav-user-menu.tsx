@@ -78,6 +78,7 @@ export const LeftNavUserMenu = () => {
         >
           <DropdownMenuItem
             className="text-md"
+            // TODO: Remove onClick prop and add additional dialog for showing user profile
             onClick={() => toast(t('prompts.inDev'))}
             title={me.name}
           >
