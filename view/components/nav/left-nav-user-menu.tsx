@@ -101,7 +101,7 @@ export const LeftNavUserMenu = () => {
               {truncatedUsername}
             </DropdownMenuItem>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="p-0">
             <VisuallyHidden>
               <DialogHeader>
                 <DialogTitle>{truncatedUsername}</DialogTitle>
