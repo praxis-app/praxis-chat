@@ -5,6 +5,7 @@ import { MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { NavigationPaths } from '../../constants/shared.constants';
+import { cn } from '../../lib/shared.utils';
 import { truncate } from '../../lib/text.utils';
 import { LazyLoadImage } from '../images/lazy-load-image';
 import { Button } from '../ui/button';
@@ -24,6 +25,7 @@ interface Props {
   user?: CurrentUser;
   userId?: string;
   me?: CurrentUser;
+  className?: string;
 }
 
 export const UserProfile = (props: Props) => {
@@ -59,7 +61,7 @@ export const UserProfile = (props: Props) => {
     : undefined;
 
   return (
-    <div className="flex flex-col gap-4 md:min-w-lg">
+    <div className={cn('flex flex-col gap-4 md:min-w-lg', props.className)}>
       <div className="relative">
         {coverPhotoUrl ? (
           <LazyLoadImage

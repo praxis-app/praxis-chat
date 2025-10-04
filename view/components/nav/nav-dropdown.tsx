@@ -3,7 +3,6 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { truncate } from '@/lib/text.utils';
 import { useAppStore } from '@/store/app.store';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,10 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
 import {
@@ -25,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { UserAvatar } from '../users/user-avatar';
-import { UserProfile } from '../users/user-profile';
+import { UserProfileDrawer } from '../users/user-profile-drawer';
 
 interface Props {
   trigger: ReactNode;
@@ -69,8 +64,9 @@ export const NavDropdown = ({ trigger }: Props) => {
         sideOffset={12}
         className="mr-2.5 flex flex-col gap-2 p-3"
       >
-        <Dialog>
-          <DialogTrigger asChild>
+        <UserProfileDrawer
+          user={me}
+          trigger={
             <DropdownMenuItem
               className="text-md"
               onSelect={(e) => e.preventDefault()}
@@ -84,19 +80,8 @@ export const NavDropdown = ({ trigger }: Props) => {
               />
               {truncatedUsername}
             </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogContent className="p-0">
-            <VisuallyHidden>
-              <DialogHeader>
-                <DialogTitle>{truncatedUsername}</DialogTitle>
-                <DialogDescription>
-                  {t('users.prompts.viewProfile', { name: truncatedUsername })}
-                </DialogDescription>
-              </DialogHeader>
-            </VisuallyHidden>
-            <UserProfile user={me} />
-          </DialogContent>
-        </Dialog>
+          }
+        />
 
         {!me.anonymous && (
           <DropdownMenuItem

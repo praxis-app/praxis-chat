@@ -1,22 +1,13 @@
 import { AttachedImageList } from '@/components/images/attached-image-list';
 import { FormattedText } from '@/components/shared/formatted-text';
 import { UserAvatar } from '@/components/users/user-avatar';
-import { UserProfile } from '@/components/users/user-profile';
+import { UserProfileDrawer } from '@/components/users/user-profile-drawer';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { timeAgo } from '@/lib/time.utils';
 import { MessageRes } from '@/types/message.types';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useTranslation } from 'react-i18next';
 import { truncate } from '../../lib/text.utils';
 import { CurrentUser } from '../../types/user.types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog';
 
 interface Props {
   message: MessageRes;
@@ -37,10 +28,12 @@ export const Message = ({
   const truncatedUsername = truncate(name, 18);
 
   return (
-    <Dialog>
-      <div className="flex gap-4">
-        <DialogTrigger asChild>
-          <button className="flex-shrink-0 cursor-pointer">
+    <div className="flex gap-4">
+      <UserProfileDrawer
+        userId={user.id}
+        me={me}
+        trigger={
+          <button className="flex-shrink-0 cursor-pointer self-start">
             <UserAvatar
               name={name}
               userId={user.id}
@@ -48,51 +41,43 @@ export const Message = ({
               imageId={user.profilePictureId}
             />
           </button>
-        </DialogTrigger>
+        }
+      />
 
-        <div>
-          <div className="mb-[-0.1rem] flex items-center gap-1.5">
-            <DialogTrigger asChild>
+      <div>
+        <div className="mb-[-0.1rem] flex items-center gap-1.5">
+          <UserProfileDrawer
+            userId={user.id}
+            me={me}
+            trigger={
               <button className="cursor-pointer font-medium">
                 {truncatedUsername}
               </button>
-            </DialogTrigger>
-            <div className="text-muted-foreground text-sm font-light">
-              {formattedDate}
-            </div>
+            }
+          />
+          <div className="text-muted-foreground text-sm font-light">
+            {formattedDate}
           </div>
-
-          {/* TODO: Truncate message body if it exceeds a certain length */}
-          {body && <FormattedText text={body} />}
-
-          {/* TODO: Enable navigation between images in modal */}
-          {showImages && (
-            <AttachedImageList
-              images={images}
-              imageClassName="rounded-lg"
-              className={`pt-1.5 ${isDesktop ? 'w-[350px]' : 'w-full'}`}
-            />
-          )}
-
-          {!body && !showImages && (
-            <div className="text-muted-foreground text-sm">
-              {t('prompts.noContent')}
-            </div>
-          )}
         </div>
-      </div>
 
-      <DialogContent className="p-0">
-        <VisuallyHidden>
-          <DialogHeader>
-            <DialogTitle>{truncatedUsername}</DialogTitle>
-            <DialogDescription>
-              {t('users.prompts.viewProfile', { name: truncatedUsername })}
-            </DialogDescription>
-          </DialogHeader>
-        </VisuallyHidden>
-        <UserProfile userId={user.id} me={me} />
-      </DialogContent>
-    </Dialog>
+        {/* TODO: Truncate message body if it exceeds a certain length */}
+        {body && <FormattedText text={body} />}
+
+        {/* TODO: Enable navigation between images in modal */}
+        {showImages && (
+          <AttachedImageList
+            images={images}
+            imageClassName="rounded-lg"
+            className={`pt-1.5 ${isDesktop ? 'w-[350px]' : 'w-full'}`}
+          />
+        )}
+
+        {!body && !showImages && (
+          <div className="text-muted-foreground text-sm">
+            {t('prompts.noContent')}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
