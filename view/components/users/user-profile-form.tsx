@@ -82,8 +82,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
       name: currentUser.name,
-      displayName: currentUser.displayName,
-      bio: currentUser.bio,
+      displayName: currentUser.displayName || '',
+      bio: currentUser.bio || '',
     },
     mode: 'onChange',
   });
