@@ -9,10 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MdExitToApp, MdPerson, MdPersonAdd } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
-import {
-  Dialog,
-  DialogTrigger,
-} from '../ui/dialog';
+import { Dialog, DialogTrigger } from '../ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,6 +94,7 @@ export const LeftNavUserMenu = () => {
               {truncatedUsername}
             </DropdownMenuItem>
           }
+          name={truncatedUsername}
         />
 
         {me.anonymous ? (

@@ -1,11 +1,8 @@
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { truncate } from '@/lib/text.utils';
-import { CurrentUser, UserProfileRes } from '@/types/user.types';
+import { CurrentUser } from '@/types/user.types';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../client/api-client';
 import {
   Dialog,
   DialogContent,
@@ -29,27 +26,18 @@ interface Props {
   user?: CurrentUser;
   userId?: string;
   me?: CurrentUser;
+  name: string;
 }
 
-export const UserProfileDrawer = ({ trigger, user, userId, me }: Props) => {
+export const UserProfileDrawer = ({
+  trigger,
+  user,
+  userId,
+  me,
+  name,
+}: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
-
-  // TODO: Refactor - this query is used in multiple places
-  const { data: profileData } = useQuery({
-    queryKey: ['users', userId, 'profile'],
-    queryFn: () => api.getUserProfile(userId || ''),
-    enabled: !!userId && !user,
-  });
-  const profileUser: CurrentUser | UserProfileRes | undefined =
-    user || profileData?.user;
-
-  if (!profileUser) {
-    return trigger;
-  }
-
-  const name = profileUser.displayName || profileUser.name;
-  const truncatedUsername = truncate(name, 18);
 
   if (isDesktop) {
     return (
@@ -58,9 +46,9 @@ export const UserProfileDrawer = ({ trigger, user, userId, me }: Props) => {
         <DialogContent className="p-0">
           <VisuallyHidden>
             <DialogHeader>
-              <DialogTitle>{truncatedUsername}</DialogTitle>
+              <DialogTitle>{name}</DialogTitle>
               <DialogDescription>
-                {t('users.prompts.viewProfile', { name: truncatedUsername })}
+                {t('users.prompts.viewProfile', { name })}
               </DialogDescription>
             </DialogHeader>
           </VisuallyHidden>
@@ -78,9 +66,9 @@ export const UserProfileDrawer = ({ trigger, user, userId, me }: Props) => {
       <DrawerContent className="flex min-h-[calc(100%-3.5rem)] w-full flex-col items-start rounded-t-2xl border-0">
         <VisuallyHidden>
           <DrawerHeader>
-            <DrawerTitle>{truncatedUsername}</DrawerTitle>
+            <DrawerTitle>{name}</DrawerTitle>
             <DrawerDescription>
-              {t('users.prompts.viewProfile', { name: truncatedUsername })}
+              {t('users.prompts.viewProfile', { name })}
             </DrawerDescription>
           </DrawerHeader>
         </VisuallyHidden>

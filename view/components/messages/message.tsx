@@ -30,6 +30,7 @@ export const Message = ({
   return (
     <div className="flex gap-4">
       <UserProfileDrawer
+        name={truncatedUsername}
         userId={user.id}
         me={me}
         trigger={
@@ -47,6 +48,7 @@ export const Message = ({
       <div>
         <div className="mb-[-0.1rem] flex items-center gap-1.5">
           <UserProfileDrawer
+            name={truncatedUsername}
             userId={user.id}
             me={me}
             trigger={

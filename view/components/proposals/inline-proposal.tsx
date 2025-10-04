@@ -43,6 +43,7 @@ export const InlineProposal = ({ proposal, channel, me }: Props) => {
   return (
     <div className="flex gap-4 pt-4">
       <UserProfileDrawer
+        name={truncatedName}
         userId={user.id}
         me={me}
         trigger={
@@ -60,6 +61,7 @@ export const InlineProposal = ({ proposal, channel, me }: Props) => {
       <div className="w-full">
         <div className="flex items-center gap-1.5 pb-1">
           <UserProfileDrawer
+            name={truncatedName}
             userId={user.id}
             me={me}
             trigger={
