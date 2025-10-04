@@ -83,7 +83,9 @@ export const Message = ({
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>{truncatedUsername}</DialogTitle>
-            <DialogDescription>{name}</DialogDescription>
+            <DialogDescription>
+              {t('users.prompts.viewProfile', { name: truncatedUsername })}
+            </DialogDescription>
           </DialogHeader>
         </VisuallyHidden>
         <UserProfile userId={user.id} />

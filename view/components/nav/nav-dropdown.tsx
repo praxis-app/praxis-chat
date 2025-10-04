@@ -89,7 +89,9 @@ export const NavDropdown = ({ trigger }: Props) => {
             <VisuallyHidden>
               <DialogHeader>
                 <DialogTitle>{truncatedUsername}</DialogTitle>
-                <DialogDescription>{me.bio}</DialogDescription>
+                <DialogDescription>
+                  {t('users.prompts.viewProfile', { name: truncatedUsername })}
+                </DialogDescription>
               </DialogHeader>
             </VisuallyHidden>
             <UserProfile user={me} />

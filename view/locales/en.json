@@ -131,6 +131,9 @@
     "headers": {
       "editProfile": "Edit Profile",
       "editProfileDescription": "Update your profile information."
+    },
+    "prompts": {
+      "viewProfile": "View profile for {{name}}"
     }
   },
 

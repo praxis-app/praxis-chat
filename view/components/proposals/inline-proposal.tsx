@@ -118,7 +118,9 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>{truncatedName}</DialogTitle>
-            <DialogDescription>{name}</DialogDescription>
+            <DialogDescription>
+              {t('users.prompts.viewProfile', { name: truncatedName })}
+            </DialogDescription>
           </DialogHeader>
         </VisuallyHidden>
         <UserProfile userId={user.id} />
