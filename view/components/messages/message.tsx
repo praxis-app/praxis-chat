@@ -8,6 +8,7 @@ import { MessageRes } from '@/types/message.types';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useTranslation } from 'react-i18next';
 import { truncate } from '../../lib/text.utils';
+import { CurrentUser } from '../../types/user.types';
 import {
   Dialog,
   DialogContent,
@@ -19,10 +20,12 @@ import {
 
 interface Props {
   message: MessageRes;
+  me?: CurrentUser;
 }
 
 export const Message = ({
   message: { body, images, user, createdAt },
+  me,
 }: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
@@ -88,7 +91,7 @@ export const Message = ({
             </DialogDescription>
           </DialogHeader>
         </VisuallyHidden>
-        <UserProfile userId={user.id} />
+        <UserProfile userId={user.id} me={me} />
       </DialogContent>
     </Dialog>
   );

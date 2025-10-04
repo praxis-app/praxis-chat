@@ -5,6 +5,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { truncate } from '../../lib/text.utils';
+import { CurrentUser } from '../../types/user.types';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
@@ -22,12 +23,13 @@ import { UserProfile } from '../users/user-profile';
 import { ProposalAction } from './proposal-actions/proposal-action';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
 
-interface InlineProposalProps {
+interface Props {
   proposal: ProposalRes;
   channel: ChannelRes;
+  me?: CurrentUser;
 }
 
-export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
+export const InlineProposal = ({ proposal, channel, me }: Props) => {
   const { t } = useTranslation();
 
   const {
@@ -123,7 +125,7 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
             </DialogDescription>
           </DialogHeader>
         </VisuallyHidden>
-        <UserProfile userId={user.id} />
+        <UserProfile userId={user.id} me={me} />
       </DialogContent>
     </Dialog>
   );
