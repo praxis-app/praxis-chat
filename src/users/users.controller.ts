@@ -5,6 +5,18 @@ export const getCurrentUser = async (_req: Request, res: Response) => {
   res.json({ user: res.locals.user });
 };
 
+export const getUserProfile = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const user = await usersService.getUserProfile(userId);
+
+  if (!user) {
+    res.status(404).send('User not found');
+    return;
+  }
+
+  res.json({ user });
+};
+
 export const isFirstUser = async (_req: Request, res: Response) => {
   const isFirstUser = await usersService.isFirstUser();
   res.json({ isFirstUser });

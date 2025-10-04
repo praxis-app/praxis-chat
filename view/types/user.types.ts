@@ -20,6 +20,15 @@ export interface UserRes {
   coverPhotoId?: string;
 }
 
+export interface UserProfileRes {
+  id: string;
+  name: string;
+  displayName?: string;
+  bio?: string;
+  profilePicture: ImageRes | null;
+  coverPhoto: ImageRes | null;
+}
+
 export interface UpdateUserProfileReq {
   name?: string;
   displayName?: string;

@@ -1,25 +1,71 @@
-import { CurrentUser } from '@/types/user.types';
+import { useUserProfileQuery } from '@/hooks/use-user-profile-query';
+import { CurrentUser, UserProfileRes } from '@/types/user.types';
 import { useTranslation } from 'react-i18next';
 import { truncate } from '../../lib/text.utils';
 import { LazyLoadImage } from '../images/lazy-load-image';
 import { UserAvatar } from './user-avatar';
 
-interface Props {
+interface PropsWithUser {
   user: CurrentUser;
+  userId?: never;
 }
 
-export const UserProfile = ({ user }: Props) => {
+interface PropsWithUserId {
+  user?: never;
+  userId: string;
+}
+
+// TODO: Clean up prop types for this component
+type Props = PropsWithUser | PropsWithUserId;
+
+export const UserProfile = (props: Props) => {
   const { t } = useTranslation();
+
+  // Fetch profile data if only userId is provided
+  const { data: profileData } = useUserProfileQuery({
+    userId: props.userId || '',
+
+    // TODO: Don't fetch profile data if user is provided - make condition more specific
+    enabled: !!props.userId,
+  });
+
+  // Use provided user or fetched profile
+  const user: CurrentUser | UserProfileRes | undefined =
+    props.user || profileData?.user;
+
+  if (!user) {
+    return null;
+  }
 
   const name = user.displayName || user.name;
   const truncatedUsername = truncate(name, 18);
 
+  const isCurrentUser = (u: CurrentUser | UserProfileRes): u is CurrentUser => {
+    return 'permissions' in u;
+  };
+
+  const profilePictureUrl = isCurrentUser(user)
+    ? user.profilePicture?.url
+    : undefined;
+  const profilePictureId = !isCurrentUser(user)
+    ? user.profilePicture?.id
+    : undefined;
+  const coverPhotoUrl = isCurrentUser(user) ? user.coverPhoto?.url : undefined;
+  const coverPhotoId = !isCurrentUser(user) ? user.coverPhoto?.id : undefined;
+
   return (
     <div className="flex flex-col gap-4 md:min-w-lg">
       <div className="relative">
-        {user.coverPhoto?.url ? (
+        {coverPhotoUrl ? (
           <LazyLoadImage
-            src={user.coverPhoto.url}
+            src={coverPhotoUrl}
+            alt={t('users.form.coverPhoto')}
+            className="h-32 w-full rounded-b-none object-cover"
+            skipAnimation={true}
+          />
+        ) : coverPhotoId ? (
+          <LazyLoadImage
+            imageId={coverPhotoId}
             alt={t('users.form.coverPhoto')}
             className="h-32 w-full rounded-b-none object-cover"
             skipAnimation={true}
@@ -37,7 +83,8 @@ export const UserProfile = ({ user }: Props) => {
         <UserAvatar
           name={user.name}
           userId={user.id}
-          imageSrc={user.profilePicture?.url}
+          imageSrc={profilePictureUrl}
+          imageId={profilePictureId}
           className="border-background size-24 border-4"
           fallbackClassName="text-xl"
         />

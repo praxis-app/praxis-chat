@@ -29,6 +29,7 @@ import {
 import {
   CurrentUserRes,
   UpdateUserProfileReq,
+  UserProfileRes,
   UserRes,
 } from '../types/user.types';
 
@@ -83,6 +84,11 @@ class ApiClient {
   getCurrentUser = async () => {
     const path = '/users/me';
     return this.executeRequest<{ user: CurrentUserRes }>('get', path);
+  };
+
+  getUserProfile = async (userId: string) => {
+    const path = `/users/${userId}/profile`;
+    return this.executeRequest<{ user: UserProfileRes }>('get', path);
   };
 
   isFirstUser = async () => {
