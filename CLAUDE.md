@@ -133,22 +133,6 @@ Examples:
 - `src/messages/messages.controller.ts`
 - `src/users/middleware/validate-user.middleware.ts`
 
-#### Searching the Backend Codebase
-
-```bash
-# Find all controller files
-find src/ -name '*controller.ts'
-
-# Find a specific controller by name
-find src/ -name '*messages*controller.ts'
-
-# Search file contents for a function name
-grep -r 'functionName' src/
-
-# Search for imports of a specific module
-grep -r "from '@/users" src/
-```
-
 ### Frontend Architecture (view/)
 
 #### Core Structure
@@ -197,28 +181,6 @@ Examples:
 - `view/routes/channels.router.tsx`
 - `view/store/auth.store.ts`
 
-#### Searching the Frontend Codebase
-
-```bash
-# Find all components
-find view/components/ -name '*.tsx'
-
-# Find a specific component by name
-find view/ -name '*message*.tsx'
-
-# Find all custom hooks
-find view/hooks/ -name 'use-*.ts'
-
-# Find all Zustand stores
-find view/store/ -name '*.store.ts'
-
-# Search file contents for a function or component
-grep -r 'LoginForm' view/
-
-# Search for a specific hook usage
-grep -r 'useIsDesktop' view/
-```
-
 ### Path Aliases
 
 ```typescript
@@ -251,13 +213,6 @@ When to run:
 - Always before considering work complete and ready for review
 - Skip only for very small changes (a few lines in a single file)
 - When in doubt, run the check
-
-### Git Safety
-
-VCS operations that modify history or remote state are prohibited. This includes:
-
-- `git add`, `git commit`, `git push`, `git tag`, `git rebase`, `git merge`, `git cherry-pick`, `git reset --hard`
-- `gh pr create`, `gh pr merge`, `gh release *`, `gh repo *`
 
 ## TypeScript Configuration
 
