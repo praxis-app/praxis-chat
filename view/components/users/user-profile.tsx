@@ -5,31 +5,28 @@ import { truncate } from '../../lib/text.utils';
 import { LazyLoadImage } from '../images/lazy-load-image';
 import { UserAvatar } from './user-avatar';
 
-interface PropsWithUser {
-  user: CurrentUser;
-  userId?: never;
-}
+const isCurrentUser = (
+  user: CurrentUser | UserProfileRes,
+): user is CurrentUser => {
+  return (
+    'permissions' in user &&
+    (user.profilePicture === null || 'url' in user.profilePicture) &&
+    (user.coverPhoto === null || 'url' in user.coverPhoto)
+  );
+};
 
-interface PropsWithUserId {
-  user?: never;
-  userId: string;
+interface Props {
+  user?: CurrentUser;
+  userId?: string;
 }
-
-// TODO: Clean up prop types for this component
-type Props = PropsWithUser | PropsWithUserId;
 
 export const UserProfile = (props: Props) => {
   const { t } = useTranslation();
 
-  // Fetch profile data if only userId is provided
   const { data: profileData } = useUserProfileQuery({
     userId: props.userId || '',
-
-    // TODO: Don't fetch profile data if user is provided - make condition more specific
-    enabled: !!props.userId,
+    enabled: !!props.userId && !props.user,
   });
-
-  // Use provided user or fetched profile
   const user: CurrentUser | UserProfileRes | undefined =
     props.user || profileData?.user;
 
@@ -39,10 +36,6 @@ export const UserProfile = (props: Props) => {
 
   const name = user.displayName || user.name;
   const truncatedUsername = truncate(name, 18);
-
-  const isCurrentUser = (u: CurrentUser | UserProfileRes): u is CurrentUser => {
-    return 'permissions' in u;
-  };
 
   const profilePictureUrl = isCurrentUser(user)
     ? user.profilePicture?.url
