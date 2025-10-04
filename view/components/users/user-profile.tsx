@@ -66,11 +66,7 @@ export const UserProfile = (props: Props) => {
             skipAnimation={true}
           />
         ) : (
-          <div className="bg-muted flex h-32 w-full items-center justify-center">
-            <span className="text-muted-foreground text-sm">
-              {t('users.placeholders.coverPhoto')}
-            </span>
-          </div>
+          <div className="bg-muted flex h-32 w-full" />
         )}
       </div>
 
