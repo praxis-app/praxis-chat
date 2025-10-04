@@ -1,6 +1,7 @@
-import { useUserProfileQuery } from '@/hooks/use-user-profile-query';
 import { CurrentUser, UserProfileRes } from '@/types/user.types';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../client/api-client';
 import { truncate } from '../../lib/text.utils';
 import { LazyLoadImage } from '../images/lazy-load-image';
 import { UserAvatar } from './user-avatar';
@@ -23,8 +24,9 @@ interface Props {
 export const UserProfile = (props: Props) => {
   const { t } = useTranslation();
 
-  const { data: profileData } = useUserProfileQuery({
-    userId: props.userId || '',
+  const { data: profileData } = useQuery({
+    queryKey: ['users', props.userId, 'profile'],
+    queryFn: () => api.getUserProfile(props.userId || ''),
     enabled: !!props.userId && !props.user,
   });
   const user: CurrentUser | UserProfileRes | undefined =
