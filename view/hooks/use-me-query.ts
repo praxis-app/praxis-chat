@@ -3,20 +3,52 @@ import { AxiosError } from 'axios';
 import { api } from '../client/api-client';
 import { LocalStorageKeys } from '../constants/shared.constants';
 import { useAppStore } from '../store/app.store';
-import { CurrentUserRes } from '../types/user.types';
+import { CurrentUser } from '../types/user.types';
 
 export const useMeQuery = (
-  options?: Omit<UseQueryOptions<{ user: CurrentUserRes }>, 'queryKey'>,
+  options?: Omit<UseQueryOptions<{ user: CurrentUser }>, 'queryKey'>,
 ) => {
   const { setIsAppLoading, setIsLoggedIn } = useAppStore();
 
-  return useQuery({
+  const defaultOptions = {
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  };
+
+  const result = useQuery({
     queryKey: ['me'],
     queryFn: async () => {
       try {
         const me = await api.getCurrentUser();
         setIsLoggedIn(true);
-        return me;
+
+        let profilePicture: CurrentUser['profilePicture'] = null;
+        if (me.user.profilePicture) {
+          const result = await api.getImage(me.user.profilePicture.id);
+          profilePicture = {
+            ...me.user.profilePicture,
+            url: URL.createObjectURL(result),
+          };
+        }
+
+        let coverPhoto: CurrentUser['coverPhoto'] = null;
+        if (me.user.coverPhoto) {
+          const result = await api.getImage(me.user.coverPhoto.id);
+          coverPhoto = {
+            ...me.user.coverPhoto,
+            url: URL.createObjectURL(result),
+          };
+        }
+
+        return {
+          user: {
+            ...me.user,
+            profilePicture,
+            coverPhoto,
+          },
+        };
       } catch (error) {
         if ((error as AxiosError).response?.status === 401) {
           localStorage.removeItem(LocalStorageKeys.AccessToken);
@@ -27,10 +59,9 @@ export const useMeQuery = (
         setIsAppLoading(false);
       }
     },
-    staleTime: 1000 * 60 * 30,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 2,
+    ...defaultOptions,
     ...options,
   });
+
+  return result;
 };

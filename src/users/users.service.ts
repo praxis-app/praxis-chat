@@ -1,6 +1,6 @@
 // TODO: Add support for user updates with validation
 
-import { FindManyOptions } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -9,12 +9,64 @@ import {
 import * as channelsService from '../channels/channels.service';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
+import { Image } from '../images/entities/image.entity';
+import * as rolesService from '../roles/roles.service';
 import { createAdminRole } from '../roles/roles.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
 import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 
 const userRepository = dataSource.getRepository(User);
+const imageRepository = dataSource.getRepository(Image);
+
+export const getCurrentUser = async (userId: string, includePerms = true) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is missing or invalid');
+    }
+    const user = await userRepository.findOneOrFail({
+      select: ['id', 'name', 'displayName', 'bio', 'anonymous'],
+      where: { id: userId },
+    });
+    if (!includePerms) {
+      return user;
+    }
+
+    const permissions = await rolesService.getUserPermissions(userId);
+    const profilePicture = await getUserProfilePicture(userId);
+    const coverPhoto = await getUserCoverPhoto(userId);
+
+    return {
+      ...user,
+      permissions,
+      profilePicture,
+      coverPhoto,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getUserProfile = async (userId: string) => {
+  const user = await userRepository.findOne({
+    select: ['id', 'name', 'displayName', 'bio'],
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  const profilePicture = await getUserProfilePicture(userId);
+  const coverPhoto = await getUserCoverPhoto(userId);
+
+  return {
+    ...user,
+    profilePicture,
+    coverPhoto,
+  };
+};
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
@@ -60,13 +112,6 @@ export const updateUserProfile = async (
     name: sanitizedName,
     bio: sanitizedBio,
   });
-
-  // if (profilePicture) {
-  //   await saveProfilePicture(currentUser.id, profilePicture);
-  // }
-  // if (coverPhoto) {
-  //   await saveCoverPhoto(currentUser.id, coverPhoto);
-  // }
 };
 
 export const upgradeAnonUser = async (
@@ -108,6 +153,101 @@ export const createAnonUser = async () => {
   }
 
   return user;
+};
+
+export const getUserProfilePicture = async (userId: string) => {
+  return imageRepository.findOne({
+    select: ['id', 'createdAt'],
+    where: { userId, imageType: 'profile-picture' },
+    order: { createdAt: 'DESC' },
+  });
+};
+
+export const getUserCoverPhoto = async (userId: string) => {
+  return imageRepository.findOne({
+    select: ['id', 'createdAt'],
+    where: { userId, imageType: 'cover-photo' },
+    order: { createdAt: 'DESC' },
+  });
+};
+
+export const getUserImagesMap = async (userIds: string[]) => {
+  if (userIds.length === 0) {
+    return {};
+  }
+
+  const images = await imageRepository.find({
+    select: ['id', 'userId', 'imageType', 'createdAt'],
+    where: [
+      {
+        userId: In(userIds),
+        imageType: 'profile-picture',
+      },
+      {
+        userId: In(userIds),
+        imageType: 'cover-photo',
+      },
+    ],
+    order: {
+      userId: 'ASC',
+      imageType: 'ASC',
+      createdAt: 'DESC',
+    },
+  });
+
+  const imagesMap: Record<
+    string,
+    { profilePictureId?: string; coverPhotoId?: string }
+  > = {};
+
+  const processedKeys = new Set<string>();
+
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    const userId = image.userId as string;
+    const key = `${userId}-${image.imageType}`;
+
+    // Only process the first occurrence
+    if (!processedKeys.has(key)) {
+      processedKeys.add(key);
+
+      if (!imagesMap[userId]) {
+        imagesMap[userId] = {};
+      }
+      if (image.imageType === 'profile-picture') {
+        imagesMap[userId].profilePictureId = image.id;
+      }
+      if (image.imageType === 'cover-photo') {
+        imagesMap[userId].coverPhotoId = image.id;
+      }
+    }
+  }
+
+  return imagesMap;
+};
+
+export const createUserProfilePicture = async (
+  filename: string,
+  userId: string,
+) => {
+  const image = await imageRepository.save({
+    imageType: 'profile-picture',
+    filename,
+    userId,
+  });
+  return image;
+};
+
+export const createUserCoverPhoto = async (
+  filename: string,
+  userId: string,
+) => {
+  const image = await imageRepository.save({
+    imageType: 'cover-photo',
+    filename,
+    userId,
+  });
+  return image;
 };
 
 const generateName = () => {

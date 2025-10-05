@@ -4,20 +4,23 @@ import { ProposalRes } from '@/types/proposal.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { truncate } from '../../lib/text.utils';
+import { CurrentUser } from '../../types/user.types';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
+import { UserProfileDrawer } from '../users/user-profile-drawer';
 import { ProposalAction } from './proposal-actions/proposal-action';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
 
-interface InlineProposalProps {
+interface Props {
   proposal: ProposalRes;
   channel: ChannelRes;
+  me?: CurrentUser;
 }
 
-export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
+export const InlineProposal = ({ proposal, channel, me }: Props) => {
   const { t } = useTranslation();
 
   const {
@@ -39,11 +42,34 @@ export const InlineProposal = ({ proposal, channel }: InlineProposalProps) => {
 
   return (
     <div className="flex gap-4 pt-4">
-      <UserAvatar name={name} userId={user.id} className="mt-0.5" />
+      <UserProfileDrawer
+        name={truncatedName}
+        userId={user.id}
+        me={me}
+        trigger={
+          <button className="flex-shrink-0 cursor-pointer self-start">
+            <UserAvatar
+              name={name}
+              userId={user.id}
+              imageId={user.profilePictureId}
+              className="mt-0.5"
+            />
+          </button>
+        }
+      />
 
       <div className="w-full">
         <div className="flex items-center gap-1.5 pb-1">
-          <div className="font-medium">{truncatedName}</div>
+          <UserProfileDrawer
+            name={truncatedName}
+            userId={user.id}
+            me={me}
+            trigger={
+              <button className="cursor-pointer font-medium">
+                {truncatedName}
+              </button>
+            }
+          />
           <div className="text-muted-foreground text-sm">{formattedDate}</div>
         </div>
 

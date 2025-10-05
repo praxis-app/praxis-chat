@@ -9,6 +9,7 @@ import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
 
@@ -20,39 +21,39 @@ enum MessageType {
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
 
+// TODO: Return `resolvedName` field for users
 export const getMessages = async (
   channelId: string,
   offset?: number,
   limit?: number,
 ) => {
-  // TODO: Ensure relations are loaded correctly
-  const messages = await messageRepository.find({
-    where: { channelId },
-    relations: ['user', 'images'],
-    select: {
-      id: true,
-      ciphertext: true,
-      keyId: true,
-      tag: true,
-      iv: true,
-      user: {
-        id: true,
-        name: true,
-        displayName: true,
-      },
-      images: {
-        id: true,
-        filename: true,
-        createdAt: true,
-      },
-      createdAt: true,
-    },
-    order: {
-      createdAt: 'DESC',
-    },
-    skip: offset,
-    take: limit,
-  });
+  const messages = await messageRepository
+    .createQueryBuilder('message')
+    .select([
+      'message.id',
+      'message.ciphertext',
+      'message.keyId',
+      'message.tag',
+      'message.iv',
+      'message.createdAt',
+    ])
+    .addSelect([
+      'messageUser.id',
+      'messageUser.name',
+      'messageUser.displayName',
+    ])
+    .addSelect([
+      'messageImage.id',
+      'messageImage.filename',
+      'messageImage.createdAt',
+    ])
+    .leftJoin('message.user', 'messageUser')
+    .leftJoin('message.images', 'messageImage')
+    .where('message.channelId = :channelId', { channelId })
+    .orderBy('message.createdAt', 'DESC')
+    .skip(offset)
+    .take(limit)
+    .getMany();
 
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
     messages
@@ -60,29 +61,38 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const decryptedMessages = messages.map((message) => {
-    let body: string | null = null;
+  const userImagesMap = await usersService.getUserImagesMap(
+    messages.map((message) => message.user.id),
+  );
 
-    if (message.ciphertext && message.tag && message.iv && message.keyId) {
-      const unwrappedKey = unwrappedKeyMap[message.keyId];
+  const decryptedMessages = messages.map(
+    ({ ciphertext, tag, iv, keyId, ...message }) => {
+      let body: string | null = null;
 
-      body = decryptMessage(
-        message.ciphertext,
-        message.tag,
-        message.iv,
-        unwrappedKey,
-      );
-    }
-    return {
-      ...message,
-      images: message.images.map((image) => ({
-        id: image.id,
-        isPlaceholder: !image.filename,
-        createdAt: image.createdAt,
-      })),
-      body,
-    };
-  });
+      if (ciphertext && tag && iv && keyId) {
+        const unwrappedKey = unwrappedKeyMap[keyId];
+        body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
+      }
+
+      const profilePictureId = userImagesMap[message.user.id]?.profilePictureId;
+      const coverPhotoId = userImagesMap[message.user.id]?.coverPhotoId;
+
+      return {
+        ...message,
+        images: message.images.map((image) => ({
+          id: image.id,
+          isPlaceholder: !image.filename,
+          createdAt: image.createdAt,
+        })),
+        user: {
+          ...message.user,
+          profilePictureId,
+          coverPhotoId,
+        },
+        body,
+      };
+    },
+  );
 
   return decryptedMessages;
 };
@@ -114,6 +124,8 @@ export const createMessage = async (
   }
 
   const message = await messageRepository.save(messageData);
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
 
   let images: Image[] = [];
   if (imageCount) {
@@ -125,16 +137,23 @@ export const createMessage = async (
     });
     images = await imageRepository.save(imagePlaceholders);
   }
-  const shapedImages = images.map((image) => ({
+  const attachedImages = images.map((image) => ({
     id: image.id,
     isPlaceholder: true,
     createdAt: image.createdAt,
   }));
+
   const messagePayload = {
     ...message,
     body: plaintext,
-    images: shapedImages,
-    user: { id: user.id, name: user.name, displayName: user.displayName },
+    images: attachedImages,
+    user: {
+      id: user.id,
+      name: user.name,
+      displayName: user.displayName,
+      profilePictureId: profilePicture?.id,
+      coverPhotoId: coverPhoto?.id,
+    },
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);

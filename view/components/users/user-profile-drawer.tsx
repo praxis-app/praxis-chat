@@ -1,0 +1,85 @@
+import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { CurrentUser } from '@/types/user.types';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '../ui/drawer';
+import { UserProfile } from './user-profile';
+
+interface Props {
+  trigger: ReactNode;
+  user?: CurrentUser;
+  userId?: string;
+  me?: CurrentUser;
+  name: string;
+}
+
+export const UserProfileDrawer = ({
+  trigger,
+  user,
+  userId,
+  me,
+  name,
+}: Props) => {
+  const { t } = useTranslation();
+  const isDesktop = useIsDesktop();
+
+  if (isDesktop) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+        <DialogContent className="p-0">
+          <VisuallyHidden>
+            <DialogHeader>
+              <DialogTitle>{name}</DialogTitle>
+              <DialogDescription>
+                {t('users.prompts.viewProfile', { name })}
+              </DialogDescription>
+            </DialogHeader>
+          </VisuallyHidden>
+          <UserProfile user={user} userId={userId} me={me} />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // TODO: Ensure there's no spacing above cover photo when drawer is open
+
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      <DrawerContent
+        className="flex min-h-[calc(100%-3.5rem)] w-full flex-col items-start rounded-t-2xl"
+        drawerHandle={{
+          className:
+            'm-0 relative top-1.5 z-50 w-[45px] h-1.5 left-1/2 -translate-x-1/2 absolute',
+        }}
+      >
+        <VisuallyHidden>
+          <DrawerHeader>
+            <DrawerTitle>{name}</DrawerTitle>
+            <DrawerDescription>
+              {t('users.prompts.viewProfile', { name })}
+            </DrawerDescription>
+          </DrawerHeader>
+        </VisuallyHidden>
+        <UserProfile user={user} userId={userId} me={me} className="w-full" />
+      </DrawerContent>
+    </Drawer>
+  );
+};

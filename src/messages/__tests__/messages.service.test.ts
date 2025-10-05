@@ -6,11 +6,13 @@ vi.mock('../../database/data-source', () => {
     find: vi.fn(),
     findOne: vi.fn(),
     save: vi.fn(),
+    createQueryBuilder: vi.fn(),
   };
 
   const mockImageRepository = {
     create: vi.fn(),
     save: vi.fn(),
+    findOne: vi.fn(),
   };
 
   return {
@@ -33,6 +35,12 @@ vi.mock('../../channels/channels.service', () => ({
   getChannelMembers: vi.fn(),
   getUnwrappedChannelKeyMap: vi.fn(),
   getUnwrappedChannelKey: vi.fn(),
+}));
+
+vi.mock('../../users/users.service', () => ({
+  getUserImagesMap: vi.fn(),
+  getUserProfilePicture: vi.fn(),
+  getUserCoverPhoto: vi.fn(),
 }));
 
 vi.mock('../../pub-sub/pub-sub.service', () => ({
@@ -60,6 +68,7 @@ import * as channelsService from '../../channels/channels.service';
 import { sanitizeText } from '../../common/common.utils';
 import { dataSource } from '../../database/data-source';
 import * as pubSubService from '../../pub-sub/pub-sub.service';
+import * as usersService from '../../users/users.service';
 import * as messagesService from '../messages.service';
 
 // Mock data constants
@@ -107,7 +116,7 @@ describe('Messages Service', () => {
       const mockMessages = [
         {
           ...mockMessage,
-          user: { id: 'user-1', name: 'Test User' },
+          user: { id: 'user-1', name: 'Test User', displayName: 'Test User' },
           images: [
             {
               id: 'image-1',
@@ -123,30 +132,57 @@ describe('Messages Service', () => {
         },
       ];
 
-      mockMessageRepository.find.mockResolvedValue(mockMessages);
+      // Mock the query builder chain
+      const mockQueryBuilder = {
+        select: vi.fn().mockReturnThis(),
+        addSelect: vi.fn().mockReturnThis(),
+        leftJoin: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        take: vi.fn().mockReturnThis(),
+        getMany: vi.fn().mockResolvedValue(mockMessages),
+        getRawAndEntities: vi.fn().mockResolvedValue({
+          entities: mockMessages,
+          raw: [],
+        }),
+      };
+
+      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
       vi.mocked(channelsService.getUnwrappedChannelKeyMap).mockResolvedValue(
         {},
       );
+      vi.mocked(usersService.getUserImagesMap).mockResolvedValue({
+        'user-1': { profilePictureId: 'profile-1', coverPhotoId: 'cover-1' },
+      });
 
       const result = await messagesService.getMessages('channel-1', 10, 20);
 
-      expect(mockMessageRepository.find).toHaveBeenCalledWith({
-        where: { channelId: 'channel-1' },
-        relations: ['user', 'images'],
-        select: {
-          id: true,
-          ciphertext: true,
-          user: { id: true, name: true },
-          images: { id: true, filename: true, createdAt: true },
-          createdAt: true,
-          iv: true,
-          keyId: true,
-          tag: true,
-        },
-        order: { createdAt: 'DESC' },
-        skip: 10,
-        take: 20,
-      });
+      expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalledWith('message');
+      expect(mockQueryBuilder.select).toHaveBeenCalledWith([
+        'message.id',
+        'message.ciphertext',
+        'message.keyId',
+        'message.tag',
+        'message.iv',
+        'message.createdAt',
+      ]);
+      expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith([
+        'messageUser.id',
+        'messageUser.name',
+        'messageUser.displayName',
+      ]);
+      expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith([
+        'messageImage.id',
+        'messageImage.filename',
+        'messageImage.createdAt',
+      ]);
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith('message.user', 'messageUser');
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith('message.images', 'messageImage');
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('message.channelId = :channelId', { channelId: 'channel-1' });
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('message.createdAt', 'DESC');
+      expect(mockQueryBuilder.skip).toHaveBeenCalledWith(10);
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
 
       expect(result[0].images).toEqual([
         {
@@ -221,6 +257,26 @@ describe('Messages Service', () => {
           updatedAt: new Date('2023-01-01'),
         } as any,
       ]);
+      vi.mocked(usersService.getUserProfilePicture).mockResolvedValue({
+        id: 'profile-1',
+        filename: 'profile.jpg',
+        imageType: 'profile-picture',
+        messageId: null,
+        proposalId: null,
+        userId: 'user-1',
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      });
+      vi.mocked(usersService.getUserCoverPhoto).mockResolvedValue({
+        id: 'cover-1',
+        filename: 'cover.jpg',
+        imageType: 'cover-photo',
+        messageId: null,
+        proposalId: null,
+        userId: 'user-1',
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      });
 
       const result = await messagesService.createMessage(
         'channel-1',
@@ -250,7 +306,23 @@ describe('Messages Service', () => {
           type: 'message',
           message: expect.objectContaining({
             body: 'Test message',
-            user: { id: 'user-1', name: 'Test User' },
+            user: { 
+              id: 'user-1', 
+              name: 'Test User', 
+              displayName: 'Test User',
+              profilePictureId: 'profile-1',
+              coverPhotoId: 'cover-1'
+            },
+            images: expect.arrayContaining([
+              expect.objectContaining({
+                id: 'image-1',
+                isPlaceholder: true,
+              }),
+              expect.objectContaining({
+                id: 'image-2',
+                isPlaceholder: true,
+              }),
+            ]),
           }),
         },
       );

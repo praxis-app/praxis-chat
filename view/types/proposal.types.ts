@@ -17,7 +17,12 @@ export interface ProposalRes {
   config: ProposalConfigRes;
   images: ImageRes[];
   channelId: string;
-  user: { id: string; name: string; displayName?: string };
+  user: {
+    id: string;
+    name: string;
+    displayName?: string;
+    profilePictureId?: string;
+  };
   createdAt: string;
   myVote?: { id: string; voteType: VoteType };
   votesNeededToRatify: number;

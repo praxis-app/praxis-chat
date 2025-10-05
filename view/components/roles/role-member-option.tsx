@@ -41,7 +41,12 @@ export const RoleMemberOption = ({
       onClick={handleChange}
     >
       <div className="flex items-center">
-        <UserAvatar userId={user.id} name={name} className="mr-3" />
+        <UserAvatar
+          userId={user.id}
+          name={name}
+          imageId={user.profilePictureId}
+          className="mr-3"
+        />
         <span className="max-w-48 truncate select-none">{truncatedName}</span>
       </div>
 

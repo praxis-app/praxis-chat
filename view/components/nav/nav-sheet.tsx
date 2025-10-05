@@ -86,6 +86,7 @@ export const NavSheet = ({ trigger }: Props) => {
                   <UserAvatar
                     name={name ?? ''}
                     userId={me.id}
+                    imageSrc={me.profilePicture?.url}
                     className="size-9"
                     fallbackClassName="text-[1.05rem]"
                   />

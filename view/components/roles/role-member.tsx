@@ -60,7 +60,12 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
   return (
     <div className="mb-4 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
-        <UserAvatar userId={roleMember.id} name={name} className="mr-4" />
+        <UserAvatar
+          userId={roleMember.id}
+          name={name}
+          imageId={roleMember.profilePictureId}
+          className="mr-4"
+        />
         <span className="max-w-48 truncate">{truncatedName}</span>
       </div>
 

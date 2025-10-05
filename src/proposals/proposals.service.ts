@@ -10,6 +10,7 @@ import * as proposalActionsService from '../proposal-actions/proposal-actions.se
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { getServerConfig } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
 import {
   sortConsensusVotesByType,
@@ -114,6 +115,10 @@ export const getInlineProposals = async (
   // Get users eligible to vote on this proposal
   const proposalMemberCount = await getProposalMemberCount();
 
+  const userImagesMap = await usersService.getUserImagesMap(
+    proposals.map((p) => p.user.id),
+  );
+
   const shapedProposals = proposals.map((proposal) => {
     const votesNeededToRatify = Math.ceil(
       proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
@@ -145,6 +150,9 @@ export const getInlineProposals = async (
         }
       : undefined;
 
+    const profilePictureId = userImagesMap[proposal.user.id]?.profilePictureId;
+    const coverPhotoId = userImagesMap[proposal.user.id]?.coverPhotoId;
+
     return {
       ...proposal,
       action: {
@@ -156,6 +164,11 @@ export const getInlineProposals = async (
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
       })),
+      user: {
+        ...proposal.user,
+        profilePictureId,
+        coverPhotoId,
+      },
       votesNeededToRatify,
       agreementVoteCount,
       myVote,

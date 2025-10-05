@@ -36,7 +36,7 @@ export const ChannelFeed = ({
   onLoadMore,
 }: Props) => {
   const { isAppLoading } = useAppStore((state) => state);
-  const { isAnon, isLoggedIn } = useAuthData();
+  const { me, isAnon, isLoggedIn } = useAuthData();
 
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -93,7 +93,7 @@ export const ChannelFeed = ({
   return (
     <div
       ref={feedBoxRef}
-      className="flex flex-1 flex-col-reverse gap-4.5 overflow-y-scroll p-2.5 pb-4"
+      className="flex flex-1 flex-col-reverse gap-4.5 overflow-y-scroll px-3.5 pt-2.5 pb-4"
       onScroll={handleScroll}
     >
       {showWelcomeMessage && (
@@ -102,7 +102,7 @@ export const ChannelFeed = ({
 
       {feed.map((item) => {
         if (item.type === 'message') {
-          return <Message key={`message-${item.id}`} message={item} />;
+          return <Message key={`message-${item.id}`} message={item} me={me} />;
         }
         if (!channel) {
           return null;
@@ -112,6 +112,7 @@ export const ChannelFeed = ({
             key={`proposal-${item.id}`}
             proposal={item}
             channel={channel}
+            me={me}
           />
         );
       })}

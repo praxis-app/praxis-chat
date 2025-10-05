@@ -99,17 +99,26 @@
     },
     "actions": {
       "editProfile": "Edit profile",
-      "save": "Save changes"
+      "save": "Save changes",
+      "changePicture": "Change picture",
+      "selectPicture": "Select picture",
+      "changeCoverPhoto": "Change cover photo",
+      "selectCoverPhoto": "Select cover photo",
+      "profileUpdated": "Profile updated successfully"
     },
     "form": {
       "name": "Username",
       "displayName": "Display name",
-      "bio": "Bio"
+      "bio": "Bio",
+      "profilePicture": "Profile picture",
+      "coverPhoto": "Cover photo"
     },
     "placeholders": {
       "name": "Enter your username",
       "displayName": "Enter your display name",
-      "bio": "Tell us about yourself..."
+      "bio": "Tell us about yourself...",
+      "profilePicture": "Upload a profile picture",
+      "coverPhoto": "Upload a cover photo"
     },
     "errors": {
       "shortName": "Username must be at least 3 characters",
@@ -122,6 +131,9 @@
     "headers": {
       "editProfile": "Edit Profile",
       "editProfileDescription": "Update your profile information."
+    },
+    "prompts": {
+      "viewProfile": "View profile for {{name}}"
     }
   },
 

@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
-import { CurrentUserRes, UpdateUserProfileReq } from '@/types/user.types';
+import { validateImageInput } from '@/lib/image.utilts';
+import { CurrentUser, UpdateUserProfileReq } from '@/types/user.types';
 import {
   MAX_BIO_LENGTH,
   MAX_DISPLAY_NAME_LENGTH,
@@ -10,11 +11,15 @@ import {
 } from '@common/users/users.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import * as zod from 'zod';
 import { handleError } from '../../lib/error.utils';
 import { t } from '../../lib/shared.utils';
+import { ImageInput } from '../images/image-input';
+import { LazyLoadImage } from '../images/lazy-load-image';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -25,7 +30,9 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
+import { UserAvatar } from './user-avatar';
 
 const userProfileSchema = zod.object({
   name: zod
@@ -56,13 +63,18 @@ const userProfileSchema = zod.object({
     })
     .optional()
     .or(zod.literal('')),
+  profilePicture: zod.instanceof(File).optional(),
+  coverPhoto: zod.instanceof(File).optional(),
 });
 
 interface Props {
-  currentUser: CurrentUserRes;
+  currentUser: CurrentUser;
 }
 
 export const UserProfileForm = ({ currentUser }: Props) => {
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File>();
+
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -70,8 +82,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
       name: currentUser.name,
-      displayName: currentUser.displayName,
-      bio: currentUser.bio,
+      displayName: currentUser.displayName || '',
+      bio: currentUser.bio || '',
     },
     mode: 'onChange',
   });
@@ -79,35 +91,66 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
       mutationFn: async (data: UpdateUserProfileReq) => {
+        let profilePicture = currentUser.profilePicture;
+        let coverPhoto = currentUser.coverPhoto;
+
+        if (selectedProfilePicture) {
+          validateImageInput(selectedProfilePicture);
+          const formData = new FormData();
+          formData.append('file', selectedProfilePicture);
+          const { image } = await api.uploadUserProfilePicture(formData);
+          const url = URL.createObjectURL(selectedProfilePicture);
+          profilePicture = { ...image, url };
+        }
+
+        if (selectedCoverPhoto) {
+          validateImageInput(selectedCoverPhoto);
+          const formData = new FormData();
+          formData.append('file', selectedCoverPhoto);
+          const { image } = await api.uploadUserCoverPhoto(formData);
+          const url = URL.createObjectURL(selectedCoverPhoto);
+          coverPhoto = { ...image, url };
+        }
+
         await api.updateUserProfile(data);
-        return data;
+
+        return { ...data, profilePicture, coverPhoto };
       },
       onSuccess: (data) => {
-        queryClient.setQueryData<{ user: CurrentUserRes }>(
-          ['me'],
-          (oldData) => {
-            if (!oldData) {
-              throw new Error('User data not found');
-            }
+        queryClient.setQueryData<{ user: CurrentUser }>(['me'], (oldData) => {
+          if (!oldData) {
+            throw new Error('User data not found');
+          }
 
-            const nameChanged = oldData.user.name !== data.name;
-            const bioChanged = oldData.user.bio !== data.bio;
-            const displayNameChanged =
-              oldData.user.displayName !== data.displayName;
+          const nameChanged = oldData.user.name !== data.name;
+          const displayChanged = oldData.user.displayName !== data.displayName;
+          const bioChanged = oldData.user.bio !== data.bio;
+          const profilePictureChanged =
+            oldData.user.profilePicture?.id !== data.profilePicture?.id;
+          const coverPhotoChanged =
+            oldData.user.coverPhoto?.id !== data.coverPhoto?.id;
 
-            return {
-              user: {
-                ...oldData.user,
-                name: nameChanged ? String(data.name) : oldData.user.name,
-                bio: bioChanged ? data.bio : oldData.user.bio,
-                displayName: displayNameChanged
-                  ? data.displayName
-                  : oldData.user.displayName,
-              },
-            };
-          },
-        );
+          return {
+            user: {
+              ...oldData.user,
+              name: nameChanged ? String(data.name) : oldData.user.name,
+              displayName: displayChanged
+                ? data.displayName
+                : oldData.user.displayName,
+              bio: bioChanged ? data.bio : oldData.user.bio,
+              profilePicture: profilePictureChanged
+                ? data.profilePicture
+                : oldData.user.profilePicture,
+              coverPhoto: coverPhotoChanged
+                ? data.coverPhoto
+                : oldData.user.coverPhoto,
+            },
+          };
+        });
         form.reset(form.getValues());
+        setSelectedProfilePicture(undefined);
+        setSelectedCoverPhoto(undefined);
+        toast(t('users.actions.profileUpdated'));
       },
       onError: (error: Error) => {
         handleError(error);
@@ -115,12 +158,140 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     },
   );
 
+  const handleImageChange = (files: File[]) => {
+    if (files.length === 0) {
+      setSelectedProfilePicture(undefined);
+      return;
+    }
+    setSelectedProfilePicture(files[0]);
+  };
+
+  const handleCoverPhotoChange = (files: File[]) => {
+    if (files.length === 0) {
+      setSelectedCoverPhoto(undefined);
+      return;
+    }
+    setSelectedCoverPhoto(files[0]);
+  };
+
+  const getImageSrc = () => {
+    if (selectedProfilePicture) {
+      return URL.createObjectURL(selectedProfilePicture);
+    }
+    return currentUser.profilePicture?.url;
+  };
+
+  const getCoverPhotoSrc = () => {
+    if (selectedCoverPhoto) {
+      return URL.createObjectURL(selectedCoverPhoto);
+    }
+    return currentUser.coverPhoto?.url;
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((v) => updateUserProfile(v))}
         className="flex flex-col gap-4"
       >
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <FormLabel>{t('users.form.profilePicture')}</FormLabel>
+            <ImageInput
+              onChange={handleImageChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="text-foreground cursor-pointer text-sm uppercase disabled:opacity-50"
+              >
+                {t('actions.edit')}
+              </button>
+            </ImageInput>
+          </div>
+          <div className="relative self-center">
+            <UserAvatar
+              name={currentUser.name}
+              userId={currentUser.id}
+              imageSrc={getImageSrc()}
+              className="size-34"
+              fallbackClassName="text-2xl"
+            />
+            <ImageInput
+              onChange={handleImageChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
+              >
+                {getImageSrc()
+                  ? t('users.actions.changePicture')
+                  : t('users.actions.selectPicture')}
+              </button>
+            </ImageInput>
+          </div>
+        </div>
+
+        <Separator className="my-1" />
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <FormLabel>{t('users.form.coverPhoto')}</FormLabel>
+            <ImageInput
+              onChange={handleCoverPhotoChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="text-foreground cursor-pointer text-sm uppercase disabled:opacity-50"
+              >
+                {t('actions.edit')}
+              </button>
+            </ImageInput>
+          </div>
+          <div className="relative">
+            {getCoverPhotoSrc() && (
+              <LazyLoadImage
+                src={getCoverPhotoSrc()}
+                alt={t('users.form.coverPhoto')}
+                className="h-32 w-full rounded-lg border object-cover"
+                skipAnimation={true}
+              />
+            )}
+            {!getCoverPhotoSrc() && (
+              <div className="bg-muted flex h-32 w-full items-center justify-center rounded-lg border">
+                <span className="text-muted-foreground text-sm">
+                  {t('users.placeholders.coverPhoto')}
+                </span>
+              </div>
+            )}
+            <ImageInput
+              onChange={handleCoverPhotoChange}
+              disabled={isUpdatePending}
+              iconClassName="text-muted-foreground size-5"
+            >
+              <button
+                type="button"
+                disabled={isUpdatePending}
+                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-lg bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
+              >
+                {getCoverPhotoSrc()
+                  ? t('users.actions.changeCoverPhoto')
+                  : t('users.actions.selectCoverPhoto')}
+              </button>
+            </ImageInput>
+          </div>
+        </div>
+
+        <Separator className="my-1" />
+
         <FormField
           control={form.control}
           name="name"
@@ -175,7 +346,9 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           disabled={
             isUpdatePending ||
             !form.formState.isValid ||
-            !form.formState.isDirty
+            (!form.formState.isDirty &&
+              !selectedProfilePicture &&
+              !selectedCoverPhoto)
           }
         >
           {t('users.actions.save')}
