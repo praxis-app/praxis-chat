@@ -67,8 +67,6 @@ export const UserProfileDrawer = ({
     );
   }
 
-  // TODO: Ensure there's no spacing above cover photo when drawer is open
-
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
