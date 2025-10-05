@@ -55,7 +55,7 @@ export const NavDropdown = ({ trigger }: Props) => {
   const truncatedUsername = truncate(name, 22);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent
         sideOffset={12}
