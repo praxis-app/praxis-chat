@@ -63,7 +63,13 @@ export const UserProfileDrawer = ({
   return (
     <Drawer>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent className="flex min-h-[calc(100%-3.5rem)] w-full flex-col items-start rounded-t-2xl border-0">
+      <DrawerContent
+        className="flex min-h-[calc(100%-3.5rem)] w-full flex-col items-start rounded-t-2xl"
+        drawerHandle={{
+          className:
+            'm-0 relative top-1.5 z-50 w-[45px] h-1.5 left-1/2 -translate-x-1/2 absolute',
+        }}
+      >
         <VisuallyHidden>
           <DrawerHeader>
             <DrawerTitle>{name}</DrawerTitle>
@@ -72,12 +78,7 @@ export const UserProfileDrawer = ({
             </DrawerDescription>
           </DrawerHeader>
         </VisuallyHidden>
-        <UserProfile
-          user={user}
-          userId={userId}
-          me={me}
-          className="w-full pt-4"
-        />
+        <UserProfile user={user} userId={userId} me={me} className="w-full" />
       </DrawerContent>
     </Drawer>
   );
