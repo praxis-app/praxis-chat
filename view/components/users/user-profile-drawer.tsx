@@ -1,7 +1,7 @@
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { CurrentUser } from '@/types/user.types';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -36,12 +36,21 @@ export const UserProfileDrawer = ({
   me,
   name,
 }: Props) => {
+  const [open, setOpen] = useState(false);
+
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setOpen(isOpen);
+  };
+
   if (isDesktop) {
     return (
-      <Dialog>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="p-0">
           <VisuallyHidden>
@@ -61,7 +70,7 @@ export const UserProfileDrawer = ({
   // TODO: Ensure there's no spacing above cover photo when drawer is open
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
         className="flex min-h-[calc(100%-3.5rem)] w-full flex-col items-start rounded-t-2xl"
