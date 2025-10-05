@@ -83,7 +83,10 @@ export const NavDropdown = ({ trigger }: Props) => {
 
         {!me.anonymous && (
           <DropdownMenuItem
-            onClick={() => navigate(NavigationPaths.UsersEdit)}
+            onClick={() => {
+              navigate(NavigationPaths.UsersEdit);
+              setIsNavSheetOpen(false);
+            }}
             className="text-md"
           >
             <MdPerson className="text-foreground size-5" />
