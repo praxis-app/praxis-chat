@@ -1,5 +1,6 @@
 // TODO: Add support for user updates with validation
 
+import { GENERATED_NAME_SEPARATOR } from '@common/users/users.constants';
 import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
@@ -257,7 +258,7 @@ const generateName = () => {
 
   const name = uniqueNamesGenerator({
     dictionaries: [colors, nounDictionary, numberDictionary],
-    separator: '_',
+    separator: GENERATED_NAME_SEPARATOR,
   });
 
   return name;
