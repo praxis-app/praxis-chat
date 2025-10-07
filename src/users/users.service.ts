@@ -257,7 +257,7 @@ const generateName = () => {
 
   const name = uniqueNamesGenerator({
     dictionaries: [colors, nounDictionary, numberDictionary],
-    separator: '-',
+    separator: '_',
   });
 
   return name;
