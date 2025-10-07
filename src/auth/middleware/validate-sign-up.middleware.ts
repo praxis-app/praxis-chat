@@ -33,7 +33,9 @@ export const validateSignUp = async (
     return;
   }
   if (name && !VALID_NAME_REGEX.test(name)) {
-    res.status(422).send('User names cannot contain special characters');
+    res
+      .status(422)
+      .send('Username can only contain letters, numbers, and underscores');
     return;
   }
   if (name && name.length < MIN_NAME_LENGTH) {
