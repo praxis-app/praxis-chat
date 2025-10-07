@@ -1,6 +1,10 @@
+// TODO: Leverage zod for validation
+
 import {
+  EMAIL_MAX_LENGTH,
   MAX_NAME_LENGTH,
   MIN_NAME_LENGTH,
+  VALID_EMAIL_REGEX,
   VALID_NAME_REGEX,
 } from '@common/users/users.constants';
 import { NextFunction, Request, Response } from 'express';
@@ -12,9 +16,6 @@ import {
 } from '../../users/users.constants';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
-
-const VALID_EMAIL_REGEX = /^\S+@\S+\.\S+$/;
-const EMAIL_MAX_LENGTH = 254;
 
 export const validateSignUp = async (
   req: Request,
