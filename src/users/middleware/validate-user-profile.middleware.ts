@@ -32,8 +32,16 @@ export const validateUserProfile = async (
   next: NextFunction,
 ) => {
   try {
+    // Validate user sign up is completed
+    if (res.locals.user.anonymous) {
+      res.status(403).send('User sign up must be completed to update profile');
+      return;
+    }
+
+    // Validate request body shape
     userProfileSchema.parse(req.body);
 
+    // Validate username is unique
     const { name } = req.body;
     if (name) {
       const usersWithNameCount = await getUserCount({
