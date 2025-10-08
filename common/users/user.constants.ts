@@ -1,4 +1,3 @@
-export const VALID_EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 export const EMAIL_MAX_LENGTH = 254;
 
 export const GENERATED_NAME_SEPARATOR = '_';

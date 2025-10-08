@@ -34,7 +34,6 @@ import {
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
 
-// TODO: Leverage zod for BE validation
 const signUpFormSchema = zod
   .object({
     name: zod
