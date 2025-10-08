@@ -21,14 +21,6 @@ Praxis is a chat-based collaborative decision-making (CDM) app that blends infor
 
 ## Commands
 
-### Development
-
-```bash
-npm run start           # Start backend server for development
-npm run start:dev       # Start backend with nodemon (auto-restart)
-npm run start:client    # Start Vite dev server on localhost:3000
-```
-
 ### Testing
 
 ```bash
@@ -54,15 +46,6 @@ npm run check          # Full verification: types, lint, tests (client + server)
 - For multi-step changes, run the check after the expected final step, not after every intermediate change
 - Skip for very small changes (a few lines in a single file)
 - When in doubt about whether a change is "small", err on the side of running the check
-
-### Database Migrations
-
-```bash
-npm run typeorm:gen ./src/database/migrations/<migration-name>  # Generate migration
-npm run typeorm:run                                             # Run migrations
-```
-
-TypeORM handles database migrations. PostgreSQL can run via Docker or locally - ensure `.env` connection details are correct.
 
 ## Architecture
 
@@ -172,7 +155,7 @@ Frontend files follow kebab-case naming:
 - **Stores**: `feature-name.store.ts` - Zustand stores
 - **Routes**: `feature.router.tsx` - Route definitions
 - **Types**: `feature.types.ts` - TypeScript type definitions
-- **Utils**: `utility-name.ts` - Utility functions
+- **Utils**: `feature.utils.ts` - Utility and helper functions
 
 Examples:
 
