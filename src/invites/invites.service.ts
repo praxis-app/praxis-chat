@@ -49,7 +49,7 @@ export const getValidInvites = async () => {
     return validateInvite(invite);
   });
 
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     validInvites.map((invite) => invite.user.id),
   );
 
@@ -57,7 +57,7 @@ export const getValidInvites = async () => {
     ...invite,
     user: {
       ...invite.user,
-      profilePicture: userImagesMap[invite.user.id],
+      profilePicture: profilePictures[invite.user.id],
     },
   }));
 

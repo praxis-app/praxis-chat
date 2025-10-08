@@ -170,6 +170,7 @@ export const getUserCoverPhoto = async (userId: string) => {
   });
 };
 
+/** Returns a map of profile pictures keyed by user ID */
 export const getUserProfilePicturesMap = async (userIds: string[]) => {
   if (userIds.length === 0) {
     return {};

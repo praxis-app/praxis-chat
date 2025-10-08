@@ -51,12 +51,12 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
   );
   const shapedMembers = members.map((member) => ({
     ...member,
-    profilePicture: userImagesMap[member.id],
+    profilePicture: profilePictures[member.id],
   }));
 
   return {
@@ -86,7 +86,7 @@ export const getRoles = async () => {
     },
   });
 
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     roles.flatMap((role) => role.members.map((member) => member.id)),
   );
 
@@ -94,7 +94,7 @@ export const getRoles = async () => {
     ...role,
     members: role.members.map((member) => ({
       ...member,
-      profilePicture: userImagesMap[member.id],
+      profilePicture: profilePictures[member.id],
     })),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
@@ -138,12 +138,12 @@ export const getUsersEligibleForRole = async (roleId: string) => {
     return [];
   }
 
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     users.map((user) => user.id),
   );
   const shapedUsers = users.map((user) => ({
     ...user,
-    profilePicture: userImagesMap[user.id],
+    profilePicture: profilePictures[user.id],
   }));
 
   return shapedUsers;
@@ -253,12 +253,12 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   });
 
   const members = [...role.members, ...newMembers];
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
   );
   const shapedMembers = members.map((member) => ({
     ...member,
-    profilePicture: userImagesMap[member.id],
+    profilePicture: profilePictures[member.id],
   }));
 
   await roleRepository.save({

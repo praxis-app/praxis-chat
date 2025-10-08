@@ -61,7 +61,7 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const userImagesMap = await usersService.getUserProfilePicturesMap(
+  const profilePictures = await usersService.getUserProfilePicturesMap(
     messages.map((message) => message.user.id),
   );
 
@@ -83,7 +83,7 @@ export const getMessages = async (
         })),
         user: {
           ...message.user,
-          profilePicture: userImagesMap[message.user.id],
+          profilePicture: profilePictures[message.user.id],
         },
         body,
       };
