@@ -14,7 +14,7 @@ export interface ProposalRes {
   id: string;
   body: string;
   stage: ProposalStage;
-  action?: ProposalActionRes;
+  action: ProposalActionRes;
   config: ProposalConfigRes;
   images: ImageRes[];
   channelId: string;
