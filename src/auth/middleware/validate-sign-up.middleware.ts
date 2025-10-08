@@ -61,35 +61,45 @@ export const validateSignUp = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const body = req.body as SignUpDto;
-  const { email, inviteToken } = body;
+  try {
+    const body = req.body as SignUpDto;
+    const { email, inviteToken } = body;
 
-  // Validate request body shape
-  signUpSchema.parse(body);
+    // Validate request body shape
+    signUpSchema.parse(body);
 
-  // Validate invite token
-  const isFirst = await isFirstUser();
-  if (!isFirst && !inviteToken) {
-    res.status(403).send('You need an invite to sign up');
-    return;
-  }
-  if (inviteToken) {
-    try {
-      await getValidInvite(inviteToken);
-    } catch (error) {
-      res.status(403).send('Invalid invite token');
+    // Validate invite token
+    const isFirst = await isFirstUser();
+    if (!isFirst && !inviteToken) {
+      res.status(403).send('You need an invite to sign up');
       return;
     }
-  }
+    if (inviteToken) {
+      try {
+        await getValidInvite(inviteToken);
+      } catch (error) {
+        res.status(403).send('Invalid invite token');
+        return;
+      }
+    }
 
-  // Check if email is already in use
-  const usersWithEmailCount = await getUserCount({
-    where: { email: normalizeText(email) },
-  });
-  if (usersWithEmailCount > 0) {
-    res.status(409).send('Email address is already in use');
-    return;
-  }
+    // Check if email is already in use
+    const usersWithEmailCount = await getUserCount({
+      where: { email: normalizeText(email) },
+    });
+    if (usersWithEmailCount > 0) {
+      res.status(409).send('Email address is already in use');
+      return;
+    }
 
-  next();
+    next();
+  } catch (error) {
+    if (error instanceof zod.ZodError) {
+      const errorMessage =
+        error.issues[0]?.message || 'Validation failed for sign up';
+      res.status(422).send(errorMessage);
+      return;
+    }
+    res.status(500).send('Internal server error');
+  }
 };
