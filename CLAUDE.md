@@ -27,7 +27,7 @@ Refer to README.md for more information.
   - **Exclude**: Business logic, database models, Express middleware, React components
   - **Examples**: `common/proposals/proposal.types.ts`, `common/votes/vote.constants.ts`
 
-### Backend Architecture (src/)
+### Backend Architecture (`src/`)
 
 #### Core Structure
 
@@ -85,7 +85,7 @@ Examples:
 - `src/messages/messages.controller.ts`
 - `src/users/middleware/validate-user.middleware.ts`
 
-### Frontend Architecture (view/)
+### Frontend Architecture (`view/`)
 
 #### Core Structure
 
