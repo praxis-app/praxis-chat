@@ -55,7 +55,7 @@ export const UserProfile = (props: Props) => {
           userId={profileData.user.id}
           imageId={profileData.user.profilePicture?.id}
           className="border-background size-24 border-4"
-          fallbackClassName="text-xl"
+          fallbackClassName="text-4xl"
         />
 
         <div className="flex flex-col gap-0.5 px-2">
