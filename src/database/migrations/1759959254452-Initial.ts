@@ -1,9 +1,21 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Init1758410738268 implements MigrationInterface {
-  name = 'Init1758410738268';
+export class Initial1759959254452 implements MigrationInterface {
+  name = 'Initial1759959254452';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+            CREATE TABLE "channel_member" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "lastMessageReadId" uuid,
+                "userId" uuid NOT NULL,
+                "channelId" uuid NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "UQ_f6fbde8772b051e6ef433f890cd" UNIQUE ("userId", "channelId"),
+                CONSTRAINT "PK_a4a716289e5b0468f55f8e8d225" PRIMARY KEY ("id")
+            )
+        `);
     await queryRunner.query(`
             CREATE TABLE "invite" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -15,51 +27,6 @@ export class Init1758410738268 implements MigrationInterface {
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "PK_fc9fa190e5a3c5d80604a4f63e1" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_role_member_changetype_enum" AS ENUM('add', 'remove')
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_action_role_member" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "changeType" "public"."proposal_action_role_member_changetype_enum" NOT NULL,
-                "userId" uuid NOT NULL,
-                "proposalActionRoleId" uuid NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_9daabc8eb1cb4a3bc1681773c84" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."vote_votetype_enum" AS ENUM('agree', 'disagree', 'abstain', 'block')
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "vote" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "voteType" "public"."vote_votetype_enum" NOT NULL,
-                "proposalId" uuid,
-                "userId" uuid NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_2d5932d46afe39c8176f9d4be72" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "user" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "name" character varying NOT NULL,
-                "displayName" character varying,
-                "email" character varying,
-                "password" character varying,
-                "bio" character varying,
-                "anonymous" boolean NOT NULL DEFAULT false,
-                "locked" boolean NOT NULL DEFAULT false,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "UQ_065d4d8f3b5adb4a08841eae3c8" UNIQUE ("name"),
-                CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"),
-                CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
             )
         `);
     await queryRunner.query(`
@@ -127,21 +94,6 @@ export class Init1758410738268 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "proposal_action_role" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "name" character varying,
-                "color" character varying,
-                "prevName" character varying,
-                "prevColor" character varying,
-                "proposalActionId" uuid NOT NULL,
-                "roleId" uuid,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "REL_81a331d1f0e93a0eaac9585cb7" UNIQUE ("proposalActionId"),
-                CONSTRAINT "PK_0a14dd2782594c498b221ccf557" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
             CREATE TYPE "public"."proposal_action_actiontype_enum" AS ENUM(
                 'change-settings',
                 'change-role',
@@ -159,6 +111,83 @@ export class Init1758410738268 implements MigrationInterface {
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "REL_542f653febd92b2a0d67dcadb0" UNIQUE ("proposalId"),
                 CONSTRAINT "PK_c44bd6250cf241ddd15782e8b55" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "proposal_action_role" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "name" character varying,
+                "color" character varying,
+                "prevName" character varying,
+                "prevColor" character varying,
+                "proposalActionId" uuid NOT NULL,
+                "roleId" uuid,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "REL_81a331d1f0e93a0eaac9585cb7" UNIQUE ("proposalActionId"),
+                CONSTRAINT "PK_0a14dd2782594c498b221ccf557" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TYPE "public"."proposal_action_role_member_changetype_enum" AS ENUM('add', 'remove')
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "proposal_action_role_member" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "changeType" "public"."proposal_action_role_member_changetype_enum" NOT NULL,
+                "userId" uuid NOT NULL,
+                "proposalActionRoleId" uuid NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_9daabc8eb1cb4a3bc1681773c84" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TYPE "public"."vote_votetype_enum" AS ENUM('agree', 'disagree', 'abstain', 'block')
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "vote" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "voteType" "public"."vote_votetype_enum" NOT NULL,
+                "proposalId" uuid,
+                "userId" uuid NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_2d5932d46afe39c8176f9d4be72" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "user" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "name" character varying NOT NULL,
+                "displayName" character varying,
+                "email" character varying,
+                "password" character varying,
+                "bio" character varying,
+                "anonymous" boolean NOT NULL DEFAULT false,
+                "locked" boolean NOT NULL DEFAULT false,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "UQ_065d4d8f3b5adb4a08841eae3c8" UNIQUE ("name"),
+                CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"),
+                CONSTRAINT "valid_name_check" CHECK ("name" ~ '^[a-z0-9_]+$'),
+                CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TYPE "public"."image_imagetype_enum" AS ENUM('message', 'cover-photo', 'profile-picture')
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "image" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "filename" character varying,
+                "imageType" "public"."image_imagetype_enum" NOT NULL,
+                "messageId" uuid,
+                "proposalId" uuid,
+                "userId" uuid,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_d6db1ab4ee9ad9dbe86c64e4cc3" PRIMARY KEY ("id")
             )
         `);
     await queryRunner.query(`
@@ -185,36 +214,16 @@ export class Init1758410738268 implements MigrationInterface {
     await queryRunner.query(`
             CREATE TABLE "proposal" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "body" character varying,
+                "ciphertext" bytea,
+                "iv" bytea,
+                "tag" bytea,
+                "keyId" uuid,
                 "stage" "public"."proposal_stage_enum" NOT NULL DEFAULT 'voting',
                 "userId" uuid NOT NULL,
                 "channelId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "PK_ca872ecfe4fef5720d2d39e4275" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "image" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "filename" character varying,
-                "imageType" character varying,
-                "messageId" uuid,
-                "proposalId" uuid,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_d6db1ab4ee9ad9dbe86c64e4cc3" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "message" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "body" character varying,
-                "userId" uuid NOT NULL,
-                "channelId" uuid NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id")
             )
         `);
     await queryRunner.query(`
@@ -228,14 +237,29 @@ export class Init1758410738268 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "channel_member" (
+            CREATE TABLE "message" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "lastMessageReadId" uuid,
+                "ciphertext" bytea,
+                "iv" bytea,
+                "tag" bytea,
                 "userId" uuid NOT NULL,
+                "keyId" uuid,
                 "channelId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_a4a716289e5b0468f55f8e8d225" PRIMARY KEY ("id")
+                CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "channel_key" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "wrappedKey" bytea NOT NULL,
+                "iv" bytea NOT NULL,
+                "tag" bytea NOT NULL,
+                "channelId" uuid NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_ea63adc254fc8f8e5b404965d32" PRIMARY KEY ("id")
             )
         `);
     await queryRunner.query(`
@@ -268,8 +292,36 @@ export class Init1758410738268 implements MigrationInterface {
             CREATE INDEX "IDX_8ebd83d04eb1d0270c6e1d9d62" ON "role_members_user" ("userId")
         `);
     await queryRunner.query(`
+            ALTER TABLE "channel_member"
+            ADD CONSTRAINT "FK_245da03cfde01c653c492d83a0d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "channel_member"
+            ADD CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
             ALTER TABLE "invite"
             ADD CONSTRAINT "FK_91bfeec7a9574f458e5b592472d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "permission"
+            ADD CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action_permission"
+            ADD CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44" FOREIGN KEY ("proposalActionRoleId") REFERENCES "proposal_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action"
+            ADD CONSTRAINT "FK_542f653febd92b2a0d67dcadb05" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action_role"
+            ADD CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c" FOREIGN KEY ("proposalActionId") REFERENCES "proposal_action"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action_role"
+            ADD CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "proposal_action_role_member"
@@ -288,28 +340,24 @@ export class Init1758410738268 implements MigrationInterface {
             ADD CONSTRAINT "FK_f5de237a438d298031d11a57c3b" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
-            ALTER TABLE "permission"
-            ADD CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ALTER TABLE "image"
+            ADD CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea" FOREIGN KEY ("messageId") REFERENCES "message"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
-            ALTER TABLE "proposal_action_permission"
-            ADD CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44" FOREIGN KEY ("proposalActionRoleId") REFERENCES "proposal_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ALTER TABLE "image"
+            ADD CONSTRAINT "FK_335251c897e637fa2a83597f263" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
-            ALTER TABLE "proposal_action_role"
-            ADD CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c" FOREIGN KEY ("proposalActionId") REFERENCES "proposal_action"("id") ON DELETE CASCADE ON UPDATE NO ACTION
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role"
-            ADD CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action"
-            ADD CONSTRAINT "FK_542f653febd92b2a0d67dcadb05" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ALTER TABLE "image"
+            ADD CONSTRAINT "FK_dc40417dfa0c7fbd70b8eb880cc" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "proposal_config"
             ADD CONSTRAINT "FK_9b5d32fef3ec87bf111c964f2cf" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal"
+            ADD CONSTRAINT "FK_a3154e9996ebe9681116340c6ba" FOREIGN KEY ("keyId") REFERENCES "channel_key"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "proposal"
@@ -320,28 +368,20 @@ export class Init1758410738268 implements MigrationInterface {
             ADD CONSTRAINT "FK_a6bf88300c559bee3dfdb78c022" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
-            ALTER TABLE "image"
-            ADD CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea" FOREIGN KEY ("messageId") REFERENCES "message"("id") ON DELETE CASCADE ON UPDATE NO ACTION
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "image"
-            ADD CONSTRAINT "FK_335251c897e637fa2a83597f263" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ALTER TABLE "message"
+            ADD CONSTRAINT "FK_446251f8ceb2132af01b68eb593" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "message"
-            ADD CONSTRAINT "FK_446251f8ceb2132af01b68eb593" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ADD CONSTRAINT "FK_ac10a4ed1d76c25807d10b2b334" FOREIGN KEY ("keyId") REFERENCES "channel_key"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "message"
             ADD CONSTRAINT "FK_5fdbbcb32afcea663c2bea2954f" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
-            ALTER TABLE "channel_member"
-            ADD CONSTRAINT "FK_245da03cfde01c653c492d83a0d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "channel_member"
-            ADD CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ALTER TABLE "channel_key"
+            ADD CONSTRAINT "FK_00c23051eef6abf60bf73673e2b" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     await queryRunner.query(`
             ALTER TABLE "role_members_user"
@@ -361,22 +401,16 @@ export class Init1758410738268 implements MigrationInterface {
             ALTER TABLE "role_members_user" DROP CONSTRAINT "FK_bc4c45c917cd69cef0574dc3c0a"
         `);
     await queryRunner.query(`
-            ALTER TABLE "channel_member" DROP CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0"
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "channel_member" DROP CONSTRAINT "FK_245da03cfde01c653c492d83a0d"
+            ALTER TABLE "channel_key" DROP CONSTRAINT "FK_00c23051eef6abf60bf73673e2b"
         `);
     await queryRunner.query(`
             ALTER TABLE "message" DROP CONSTRAINT "FK_5fdbbcb32afcea663c2bea2954f"
         `);
     await queryRunner.query(`
+            ALTER TABLE "message" DROP CONSTRAINT "FK_ac10a4ed1d76c25807d10b2b334"
+        `);
+    await queryRunner.query(`
             ALTER TABLE "message" DROP CONSTRAINT "FK_446251f8ceb2132af01b68eb593"
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "image" DROP CONSTRAINT "FK_335251c897e637fa2a83597f263"
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "image" DROP CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea"
         `);
     await queryRunner.query(`
             ALTER TABLE "proposal" DROP CONSTRAINT "FK_a6bf88300c559bee3dfdb78c022"
@@ -385,22 +419,19 @@ export class Init1758410738268 implements MigrationInterface {
             ALTER TABLE "proposal" DROP CONSTRAINT "FK_de14a768fe600bb1e723b32377e"
         `);
     await queryRunner.query(`
+            ALTER TABLE "proposal" DROP CONSTRAINT "FK_a3154e9996ebe9681116340c6ba"
+        `);
+    await queryRunner.query(`
             ALTER TABLE "proposal_config" DROP CONSTRAINT "FK_9b5d32fef3ec87bf111c964f2cf"
         `);
     await queryRunner.query(`
-            ALTER TABLE "proposal_action" DROP CONSTRAINT "FK_542f653febd92b2a0d67dcadb05"
+            ALTER TABLE "image" DROP CONSTRAINT "FK_dc40417dfa0c7fbd70b8eb880cc"
         `);
     await queryRunner.query(`
-            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b"
+            ALTER TABLE "image" DROP CONSTRAINT "FK_335251c897e637fa2a83597f263"
         `);
     await queryRunner.query(`
-            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c"
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_permission" DROP CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44"
-        `);
-    await queryRunner.query(`
-            ALTER TABLE "permission" DROP CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e"
+            ALTER TABLE "image" DROP CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea"
         `);
     await queryRunner.query(`
             ALTER TABLE "vote" DROP CONSTRAINT "FK_f5de237a438d298031d11a57c3b"
@@ -415,7 +446,28 @@ export class Init1758410738268 implements MigrationInterface {
             ALTER TABLE "proposal_action_role_member" DROP CONSTRAINT "FK_5d535c7141b832cc7213a29b97a"
         `);
     await queryRunner.query(`
+            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action" DROP CONSTRAINT "FK_542f653febd92b2a0d67dcadb05"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "proposal_action_permission" DROP CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "permission" DROP CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e"
+        `);
+    await queryRunner.query(`
             ALTER TABLE "invite" DROP CONSTRAINT "FK_91bfeec7a9574f458e5b592472d"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "channel_member" DROP CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "channel_member" DROP CONSTRAINT "FK_245da03cfde01c653c492d83a0d"
         `);
     await queryRunner.query(`
             DROP INDEX "public"."IDX_8ebd83d04eb1d0270c6e1d9d62"
@@ -433,16 +485,13 @@ export class Init1758410738268 implements MigrationInterface {
             DROP TYPE "public"."server_config_decisionmakingmodel_enum"
         `);
     await queryRunner.query(`
-            DROP TABLE "channel_member"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "channel"
+            DROP TABLE "channel_key"
         `);
     await queryRunner.query(`
             DROP TABLE "message"
         `);
     await queryRunner.query(`
-            DROP TABLE "image"
+            DROP TABLE "channel"
         `);
     await queryRunner.query(`
             DROP TABLE "proposal"
@@ -457,13 +506,34 @@ export class Init1758410738268 implements MigrationInterface {
             DROP TYPE "public"."proposal_config_decisionmakingmodel_enum"
         `);
     await queryRunner.query(`
+            DROP TABLE "image"
+        `);
+    await queryRunner.query(`
+            DROP TYPE "public"."image_imagetype_enum"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "user"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "vote"
+        `);
+    await queryRunner.query(`
+            DROP TYPE "public"."vote_votetype_enum"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "proposal_action_role_member"
+        `);
+    await queryRunner.query(`
+            DROP TYPE "public"."proposal_action_role_member_changetype_enum"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "proposal_action_role"
+        `);
+    await queryRunner.query(`
             DROP TABLE "proposal_action"
         `);
     await queryRunner.query(`
             DROP TYPE "public"."proposal_action_actiontype_enum"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action_role"
         `);
     await queryRunner.query(`
             DROP TABLE "proposal_action_permission"
@@ -490,22 +560,10 @@ export class Init1758410738268 implements MigrationInterface {
             DROP TYPE "public"."permission_action_enum"
         `);
     await queryRunner.query(`
-            DROP TABLE "user"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "vote"
-        `);
-    await queryRunner.query(`
-            DROP TYPE "public"."vote_votetype_enum"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action_role_member"
-        `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_role_member_changetype_enum"
-        `);
-    await queryRunner.query(`
             DROP TABLE "invite"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "channel_member"
         `);
   }
 }
