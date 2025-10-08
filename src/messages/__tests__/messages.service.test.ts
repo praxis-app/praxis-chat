@@ -72,30 +72,10 @@ import * as usersService from '../../users/users.service';
 import * as messagesService from '../messages.service';
 
 // Mock data constants
-const mockMessage = {
-  id: 'message-1',
-  body: 'Test message',
-  userId: 'user-1',
-  channelId: 'channel-1',
-  createdAt: new Date('2023-01-01'),
-  updatedAt: new Date('2023-01-01'),
-};
-
 const mockUser = {
   id: 'user-1',
   name: 'Test User',
   displayName: 'Test User',
-  email: 'test@example.com',
-  password: null,
-  bio: null,
-  anonymous: false,
-  locked: false,
-  proposals: [],
-  votes: [],
-  messages: [],
-  channelMembers: [],
-  roles: [],
-  invites: [],
   createdAt: new Date('2023-01-01'),
   updatedAt: new Date('2023-01-01'),
 } as any;
@@ -115,7 +95,11 @@ describe('Messages Service', () => {
     it('should fetch messages for a channel and format them correctly', async () => {
       const mockMessages = [
         {
-          ...mockMessage,
+          id: 'message-1',
+          userId: 'user-1',
+          channelId: 'channel-1',
+          createdAt: new Date('2023-01-01'),
+          updatedAt: new Date('2023-01-01'),
           user: { id: 'user-1', name: 'Test User', displayName: 'Test User' },
           images: [
             {
@@ -207,17 +191,18 @@ describe('Messages Service', () => {
         imageCount: 2,
       };
 
-      const savedMessage = {
-        ...mockMessage,
-        body: 'Test message',
-      };
-
       const mockImagePlaceholders = [
         { id: 'image-1', createdAt: new Date('2023-01-01') },
         { id: 'image-2', createdAt: new Date('2023-01-01') },
       ];
 
-      mockMessageRepository.save.mockResolvedValue(savedMessage);
+      mockMessageRepository.save.mockResolvedValue({
+        id: 'message-1',
+        userId: 'user-1',
+        channelId: 'channel-1',
+        createdAt: new Date('2023-01-01'),
+        updatedAt: new Date('2023-01-01'),
+      });
       mockImageRepository.create.mockImplementation((data: any) => ({
         messageId: data.messageId,
       }));
@@ -259,24 +244,10 @@ describe('Messages Service', () => {
       ]);
       vi.mocked(usersService.getUserProfilePicture).mockResolvedValue({
         id: 'profile-1',
-        filename: 'profile.jpg',
-        imageType: 'profile-picture',
-        messageId: null,
-        proposalId: null,
-        userId: 'user-1',
-        createdAt: new Date('2023-01-01'),
-        updatedAt: new Date('2023-01-01'),
-      });
+      } as any);
       vi.mocked(usersService.getUserCoverPhoto).mockResolvedValue({
         id: 'cover-1',
-        filename: 'cover.jpg',
-        imageType: 'cover-photo',
-        messageId: null,
-        proposalId: null,
-        userId: 'user-1',
-        createdAt: new Date('2023-01-01'),
-        updatedAt: new Date('2023-01-01'),
-      });
+      } as any);
 
       const result = await messagesService.createMessage(
         'channel-1',
