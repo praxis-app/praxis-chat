@@ -1,10 +1,6 @@
-import * as crypto from 'crypto';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
-import {
-  AES_256_GCM_ALGORITHM,
-  AES_256_GCM_IV_LENGTH,
-} from '../common/common.constants';
+import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
@@ -139,7 +135,7 @@ export const getInlineProposals = async (
     let body: string | null = null;
     if (ciphertext && tag && iv && keyId) {
       const unwrappedKey = unwrappedKeyMap[keyId];
-      body = decryptProposalBody(ciphertext, tag, iv, unwrappedKey);
+      body = decryptText(ciphertext, tag, iv, unwrappedKey);
     }
     const votesNeededToRatify = Math.ceil(
       proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
@@ -261,10 +257,7 @@ export const createProposal = async (
     const { unwrappedKey, ...channelKey } =
       await channelsService.getUnwrappedChannelKey(channelId);
 
-    const { ciphertext, tag, iv } = encryptProposalBody(
-      sanitizedBody,
-      unwrappedKey,
-    );
+    const { ciphertext, tag, iv } = encryptText(sanitizedBody, unwrappedKey);
 
     proposalData = {
       ...proposalData,
@@ -470,35 +463,4 @@ const getProposalMemberCount = async () => {
 
 const getNewProposalKey = (channelId: string, userId: string) => {
   return `new-proposal-${channelId}-${userId}`;
-};
-
-const encryptProposalBody = (body: string, channelKey: Buffer) => {
-  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
-  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, channelKey, iv);
-
-  const ciphertext = Buffer.concat([cipher.update(body), cipher.final()]);
-  const tag = cipher.getAuthTag();
-
-  return { ciphertext, tag, iv };
-};
-
-const decryptProposalBody = (
-  ciphertext: Buffer,
-  tag: Buffer,
-  iv: Buffer,
-  channelKey: Buffer,
-) => {
-  const decipher = crypto.createDecipheriv(
-    AES_256_GCM_ALGORITHM,
-    channelKey,
-    iv,
-  );
-  decipher.setAuthTag(tag);
-
-  const plaintext = Buffer.concat([
-    decipher.update(ciphertext),
-    decipher.final(),
-  ]);
-
-  return plaintext.toString();
 };

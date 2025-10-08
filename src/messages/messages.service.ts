@@ -1,9 +1,5 @@
-import * as crypto from 'crypto';
 import * as channelsService from '../channels/channels.service';
-import {
-  AES_256_GCM_ALGORITHM,
-  AES_256_GCM_IV_LENGTH,
-} from '../common/common.constants';
+import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
@@ -71,7 +67,7 @@ export const getMessages = async (
 
       if (ciphertext && tag && iv && keyId) {
         const unwrappedKey = unwrappedKeyMap[keyId];
-        body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
+        body = decryptText(ciphertext, tag, iv, unwrappedKey);
       }
 
       const images = message.images.map((image) => ({
@@ -105,7 +101,7 @@ export const createMessage = async (
     const { unwrappedKey, ...channelKey } =
       await channelsService.getUnwrappedChannelKey(channelId);
 
-    const { ciphertext, tag, iv } = encryptMessage(plaintext, unwrappedKey);
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
 
     messageData = {
       ...messageData,
@@ -159,37 +155,6 @@ export const createMessage = async (
   }
 
   return messagePayload;
-};
-
-const encryptMessage = (message: string, channelKey: Buffer) => {
-  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
-  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, channelKey, iv);
-
-  const ciphertext = Buffer.concat([cipher.update(message), cipher.final()]);
-  const tag = cipher.getAuthTag();
-
-  return { ciphertext, tag, iv };
-};
-
-const decryptMessage = (
-  ciphertext: Buffer,
-  tag: Buffer,
-  iv: Buffer,
-  channelKey: Buffer,
-) => {
-  const decipher = crypto.createDecipheriv(
-    AES_256_GCM_ALGORITHM,
-    channelKey,
-    iv,
-  );
-  decipher.setAuthTag(tag);
-
-  const plaintext = Buffer.concat([
-    decipher.update(ciphertext),
-    decipher.final(),
-  ]);
-
-  return plaintext.toString();
 };
 
 export const saveMessageImage = async (
