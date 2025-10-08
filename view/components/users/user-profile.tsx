@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { cn } from '../../lib/shared.utils';
-import { truncate } from '../../lib/text.utils';
 import { LazyLoadImage } from '../images/lazy-load-image';
 import { Button } from '../ui/button';
 import { UserAvatar } from './user-avatar';
@@ -44,8 +43,7 @@ export const UserProfile = (props: Props) => {
   }
 
   const isMe = props.me?.id === user.id;
-  const name = user.displayName || user.name;
-  const truncatedUsername = truncate(name, 18);
+  const resolvedName = user.displayName || user.name;
 
   const profilePictureUrl = isCurrentUserType(user)
     ? user.profilePicture?.url
@@ -93,7 +91,7 @@ export const UserProfile = (props: Props) => {
         />
 
         <div className="flex flex-col gap-0.5 px-2">
-          <h2 className="text-xl font-medium">{truncatedUsername}</h2>
+          <h2 className="text-xl font-medium">{resolvedName}</h2>
           <p className="text-muted-foreground text-sm">@{user.name}</p>
         </div>
 
