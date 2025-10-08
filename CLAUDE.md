@@ -59,7 +59,7 @@ npm run check          # Full verification: types, lint, tests (client + server)
 
 ```bash
 npm run typeorm:gen ./src/database/migrations/<migration-name>  # Generate migration
-npm run typeorm:run                                              # Run migrations
+npm run typeorm:run                                             # Run migrations
 ```
 
 TypeORM handles database migrations. PostgreSQL can run via Docker or locally - ensure `.env` connection details are correct.
