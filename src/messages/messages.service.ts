@@ -61,7 +61,7 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const userImagesMap = await usersService.getUserImagesMap(
+  const userImagesMap = await usersService.getUserProfilePicturesMap(
     messages.map((message) => message.user.id),
   );
 
@@ -74,8 +74,6 @@ export const getMessages = async (
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
 
-      const profilePicture = userImagesMap[message.user.id]?.profilePicture;
-
       return {
         ...message,
         images: message.images.map((image) => ({
@@ -85,7 +83,7 @@ export const getMessages = async (
         })),
         user: {
           ...message.user,
-          profilePicture,
+          profilePicture: userImagesMap[message.user.id],
         },
         body,
       };

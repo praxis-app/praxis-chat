@@ -132,17 +132,21 @@ describe('Messages Service', () => {
         }),
       };
 
-      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockMessageRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
       vi.mocked(channelsService.getUnwrappedChannelKeyMap).mockResolvedValue(
         {},
       );
-      vi.mocked(usersService.getUserImagesMap).mockResolvedValue({
+      vi.mocked(usersService.getUserProfilePicturesMap).mockResolvedValue({
         'user-1': { profilePictureId: 'profile-1', coverPhotoId: 'cover-1' },
       });
 
       const result = await messagesService.getMessages('channel-1', 10, 20);
 
-      expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalledWith('message');
+      expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalledWith(
+        'message',
+      );
       expect(mockQueryBuilder.select).toHaveBeenCalledWith([
         'message.id',
         'message.ciphertext',
@@ -161,10 +165,22 @@ describe('Messages Service', () => {
         'messageImage.filename',
         'messageImage.createdAt',
       ]);
-      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith('message.user', 'messageUser');
-      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith('message.images', 'messageImage');
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith('message.channelId = :channelId', { channelId: 'channel-1' });
-      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('message.createdAt', 'DESC');
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'message.user',
+        'messageUser',
+      );
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'message.images',
+        'messageImage',
+      );
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'message.channelId = :channelId',
+        { channelId: 'channel-1' },
+      );
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
+        'message.createdAt',
+        'DESC',
+      );
       expect(mockQueryBuilder.skip).toHaveBeenCalledWith(10);
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
 
@@ -277,12 +293,12 @@ describe('Messages Service', () => {
           type: 'message',
           message: expect.objectContaining({
             body: 'Test message',
-            user: { 
-              id: 'user-1', 
-              name: 'Test User', 
+            user: {
+              id: 'user-1',
+              name: 'Test User',
               displayName: 'Test User',
               profilePictureId: 'profile-1',
-              coverPhotoId: 'cover-1'
+              coverPhotoId: 'cover-1',
             },
             images: expect.arrayContaining([
               expect.objectContaining({

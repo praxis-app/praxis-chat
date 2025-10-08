@@ -170,62 +170,32 @@ export const getUserCoverPhoto = async (userId: string) => {
   });
 };
 
-export const getUserImagesMap = async (userIds: string[]) => {
+export const getUserProfilePicturesMap = async (userIds: string[]) => {
   if (userIds.length === 0) {
     return {};
   }
 
   const images = await imageRepository.find({
     select: ['id', 'userId', 'imageType', 'createdAt'],
-    where: [
-      {
-        userId: In(userIds),
-        imageType: 'profile-picture',
-      },
-      {
-        userId: In(userIds),
-        imageType: 'cover-photo',
-      },
-    ],
-    order: {
-      userId: 'ASC',
-      imageType: 'ASC',
-      createdAt: 'DESC',
-    },
+    where: [{ userId: In(userIds), imageType: 'profile-picture' }],
+    order: { userId: 'ASC', createdAt: 'DESC' },
   });
 
-  const imagesMap: Record<
-    string,
-    { profilePicture: Image | null; coverPhoto: Image | null }
-  > = {};
-
+  const profilePicturesMap: Record<string, Image> = {};
   const processedKeys = new Set<string>();
 
   for (let i = 0; i < images.length; i++) {
     const image = images[i];
     const userId = image.userId as string;
-    const key = `${userId}-${image.imageType}`;
 
     // Only process the first occurrence
-    if (!processedKeys.has(key)) {
-      processedKeys.add(key);
-
-      if (!imagesMap[userId]) {
-        imagesMap[userId] = {
-          profilePicture: null,
-          coverPhoto: null,
-        };
-      }
-      if (image.imageType === 'profile-picture') {
-        imagesMap[userId].profilePicture = image;
-      }
-      if (image.imageType === 'cover-photo') {
-        imagesMap[userId].coverPhoto = image;
-      }
+    if (!processedKeys.has(userId)) {
+      processedKeys.add(userId);
+      profilePicturesMap[userId] = image;
     }
   }
 
-  return imagesMap;
+  return profilePicturesMap;
 };
 
 export const createUserProfilePicture = async (

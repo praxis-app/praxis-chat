@@ -115,7 +115,7 @@ export const getInlineProposals = async (
   // Get users eligible to vote on this proposal
   const proposalMemberCount = await getProposalMemberCount();
 
-  const userImagesMap = await usersService.getUserImagesMap(
+  const userImagesMap = await usersService.getUserProfilePicturesMap(
     proposals.map((p) => p.user.id),
   );
 
@@ -150,8 +150,6 @@ export const getInlineProposals = async (
         }
       : undefined;
 
-    const profilePicture = userImagesMap[proposal.user.id]?.profilePicture;
-
     return {
       ...proposal,
       action: {
@@ -165,7 +163,7 @@ export const getInlineProposals = async (
       })),
       user: {
         ...proposal.user,
-        profilePicture,
+        profilePicture: userImagesMap[proposal.user.id],
       },
       votesNeededToRatify,
       agreementVoteCount,

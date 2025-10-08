@@ -49,21 +49,17 @@ export const getValidInvites = async () => {
     return validateInvite(invite);
   });
 
-  const userImagesMap = await usersService.getUserImagesMap(
+  const userImagesMap = await usersService.getUserProfilePicturesMap(
     validInvites.map((invite) => invite.user.id),
   );
 
-  const shapedInvites = validInvites.map((invite) => {
-    const profilePicture = userImagesMap[invite.user.id]?.profilePicture;
-
-    return {
-      ...invite,
-      user: {
-        ...invite.user,
-        profilePicture,
-      },
-    };
-  });
+  const shapedInvites = validInvites.map((invite) => ({
+    ...invite,
+    user: {
+      ...invite.user,
+      profilePicture: userImagesMap[invite.user.id],
+    },
+  }));
 
   // TODO: Update once pagination has been implemented
   return shapedInvites.slice(0, INVITES_PAGE_SIZE);
