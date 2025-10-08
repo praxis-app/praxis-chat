@@ -17,7 +17,6 @@ export interface ProposalRes {
   action: ProposalActionRes;
   config: ProposalConfigRes;
   images: ImageRes[];
-  channelId: string;
   user: UserRes;
   createdAt: string;
   myVote?: { id: string; voteType: VoteType };
