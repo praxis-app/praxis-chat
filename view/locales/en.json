@@ -302,8 +302,8 @@
       "serverRoles": "Roles",
       "viewServerRoles": "Roles Overview"
     },
-    "subheaders": {
-      "viewServerRoles": "Explore server roles transparently, see who holds them, and understand their permissions."
+    "descriptions": {
+      "addMembers": "Add members to the role."
     },
     "form": {
       "name": "Name",

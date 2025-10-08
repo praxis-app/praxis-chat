@@ -5,6 +5,7 @@ import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -260,9 +261,14 @@ export const EditRolePage = () => {
               open={isAddMemberDialogOpen}
               onOpenChange={() => setIsAddMemberDialogOpen(false)}
             >
-              <DialogContent className="md:min-w-xl">
+              <DialogContent className="overflow-y-auto pt-10 md:max-h-[90vh] md:min-w-xl">
                 <DialogHeader>
                   <DialogTitle>{t('roles.actions.addMembers')}</DialogTitle>
+                  <VisuallyHidden>
+                    <DialogDescription>
+                      {t('roles.descriptions.addMembers')}
+                    </DialogDescription>
+                  </VisuallyHidden>
                 </DialogHeader>
                 <div className="space-y-0.5">
                   {eligibleUsersData?.users.map((user) => (
