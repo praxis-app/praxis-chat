@@ -41,7 +41,6 @@ vi.mock('../../channels/channels.service', () => ({
 vi.mock('../../users/users.service', () => ({
   getUserImagesMap: vi.fn(),
   getUserProfilePicture: vi.fn(),
-  getUserCoverPhoto: vi.fn(),
   getUserProfilePicturesMap: vi.fn(),
 }));
 
@@ -268,9 +267,6 @@ describe('Messages Service', () => {
       vi.mocked(usersService.getUserProfilePicture).mockResolvedValue({
         id: 'profile-1',
       } as any);
-      vi.mocked(usersService.getUserCoverPhoto).mockResolvedValue({
-        id: 'cover-1',
-      } as any);
 
       const result = await messagesService.createMessage(
         'channel-1',
@@ -306,9 +302,6 @@ describe('Messages Service', () => {
               displayName: 'Test User',
               profilePicture: {
                 id: 'profile-1',
-              },
-              coverPhoto: {
-                id: 'cover-1',
               },
             },
             images: expect.arrayContaining([
