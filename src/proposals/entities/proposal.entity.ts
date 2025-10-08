@@ -16,6 +16,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ChannelKey } from '../../channels/entities/channel-key.entity';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Image } from '../../images/entities/image.entity';
 import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
@@ -28,8 +29,20 @@ export class Proposal {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  body: string | null;
+  @Column({ type: 'bytea', nullable: true })
+  ciphertext: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  iv: Buffer | null;
+
+  @Column({ type: 'bytea', nullable: true })
+  tag: Buffer | null;
+
+  @ManyToOne(() => ChannelKey, (key) => key.proposals)
+  key?: ChannelKey;
+
+  @Column({ type: 'uuid', nullable: true })
+  keyId: string | null;
 
   @Column({ type: 'enum', default: 'voting', enum: PROPOSAL_STAGE })
   stage: ProposalStage;

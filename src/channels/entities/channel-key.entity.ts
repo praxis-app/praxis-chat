@@ -7,8 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Channel } from './channel.entity';
 import { Message } from '../../messages/message.entity';
+import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Channel } from './channel.entity';
 
 @Entity()
 export class ChannelKey {
@@ -26,6 +27,9 @@ export class ChannelKey {
 
   @OneToMany(() => Message, (message) => message.key)
   messages: Message[];
+
+  @OneToMany(() => Proposal, (proposal) => proposal.key)
+  proposals: Proposal[];
 
   @ManyToOne(() => Channel, (channel) => channel.keys, {
     onDelete: 'CASCADE',
