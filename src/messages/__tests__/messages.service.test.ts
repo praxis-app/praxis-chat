@@ -18,10 +18,11 @@ vi.mock('../../database/data-source', () => {
   return {
     dataSource: {
       getRepository: vi.fn().mockImplementation((entity) => {
-        if (entity?.name === 'Message' || entity === 'Message') {
+        const entityName = typeof entity === 'function' ? entity.name : entity;
+        if (entityName === 'Message') {
           return mockMessageRepository;
         }
-        if (entity?.name === 'Image' || entity === 'Image') {
+        if (entityName === 'Image' || entityName === 'Image2') {
           return mockImageRepository;
         }
         return mockMessageRepository;
@@ -41,6 +42,7 @@ vi.mock('../../users/users.service', () => ({
   getUserImagesMap: vi.fn(),
   getUserProfilePicture: vi.fn(),
   getUserCoverPhoto: vi.fn(),
+  getUserProfilePicturesMap: vi.fn(),
 }));
 
 vi.mock('../../pub-sub/pub-sub.service', () => ({
@@ -55,7 +57,7 @@ vi.mock('../message.entity', () => ({
   Message: function Message() {},
 }));
 
-vi.mock('../../images/models/image.entity', () => ({
+vi.mock('../../images/entities/image.entity', () => ({
   Image: function Image() {},
 }));
 
@@ -67,6 +69,7 @@ vi.mock('../../users/user.entity', () => ({
 import * as channelsService from '../../channels/channels.service';
 import { sanitizeText } from '../../common/common.utils';
 import { dataSource } from '../../database/data-source';
+import { Image } from '../../images/entities/image.entity';
 import * as pubSubService from '../../pub-sub/pub-sub.service';
 import * as usersService from '../../users/users.service';
 import * as messagesService from '../messages.service';
@@ -139,7 +142,11 @@ describe('Messages Service', () => {
         {},
       );
       vi.mocked(usersService.getUserProfilePicturesMap).mockResolvedValue({
-        'user-1': { profilePictureId: 'profile-1', coverPhotoId: 'cover-1' },
+        'user-1': {
+          id: 'profile-1',
+          userId: 'user-1',
+          imageType: 'profile-picture',
+        } as Image,
       });
 
       const result = await messagesService.getMessages('channel-1', 10, 20);
@@ -297,8 +304,12 @@ describe('Messages Service', () => {
               id: 'user-1',
               name: 'Test User',
               displayName: 'Test User',
-              profilePictureId: 'profile-1',
-              coverPhotoId: 'cover-1',
+              profilePicture: {
+                id: 'profile-1',
+              },
+              coverPhoto: {
+                id: 'cover-1',
+              },
             },
             images: expect.arrayContaining([
               expect.objectContaining({
