@@ -8,6 +8,7 @@ import {
   CreateProposalActionReq,
   ProposalActionRes,
 } from './proposal-action.types';
+import { UserRes } from './user.types';
 
 export interface ProposalRes {
   id: string;
@@ -17,12 +18,7 @@ export interface ProposalRes {
   config: ProposalConfigRes;
   images: ImageRes[];
   channelId: string;
-  user: {
-    id: string;
-    name: string;
-    displayName?: string;
-    profilePictureId?: string;
-  };
+  user: UserRes;
   createdAt: string;
   myVote?: { id: string; voteType: VoteType };
   votesNeededToRatify: number;
