@@ -1,9 +1,9 @@
 import {
-  MAX_BIO_LENGTH,
-  MAX_DISPLAY_NAME_LENGTH,
-  MAX_NAME_LENGTH,
-  MIN_DISPLAY_NAME_LENGTH,
-  MIN_NAME_LENGTH,
+  BIO_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  DISPLAY_NAME_MIN_LENGTH,
+  NAME_MIN_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
@@ -13,17 +13,17 @@ import { getUserCount } from '../users.service';
 const userProfileSchema = zod.object({
   name: zod
     .string()
-    .min(MIN_NAME_LENGTH)
-    .max(MAX_NAME_LENGTH)
+    .min(NAME_MIN_LENGTH)
+    .max(NAME_MAX_LENGTH)
     .regex(VALID_NAME_REGEX)
     .optional(),
   displayName: zod
     .union([
-      zod.string().min(MIN_DISPLAY_NAME_LENGTH).max(MAX_DISPLAY_NAME_LENGTH),
+      zod.string().min(DISPLAY_NAME_MIN_LENGTH).max(DISPLAY_NAME_MAX_LENGTH),
       zod.literal(''),
     ])
     .optional(),
-  bio: zod.string().max(MAX_BIO_LENGTH).optional(),
+  bio: zod.string().max(BIO_MAX_LENGTH).optional(),
 });
 
 export const validateUserProfile = async (

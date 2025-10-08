@@ -27,8 +27,8 @@ import {
 import { Input } from '../ui/input';
 import {
   EMAIL_MAX_LENGTH,
-  MAX_NAME_LENGTH,
-  MIN_NAME_LENGTH,
+  NAME_MAX_LENGTH,
+  NAME_MIN_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   VALID_NAME_REGEX,
@@ -39,10 +39,10 @@ const signUpFormSchema = zod
   .object({
     name: zod
       .string()
-      .min(MIN_NAME_LENGTH, {
+      .min(NAME_MIN_LENGTH, {
         message: t('auth.errors.shortName'),
       })
-      .max(MAX_NAME_LENGTH, {
+      .max(NAME_MAX_LENGTH, {
         message: t('auth.errors.longName'),
       })
       .regex(VALID_NAME_REGEX, {

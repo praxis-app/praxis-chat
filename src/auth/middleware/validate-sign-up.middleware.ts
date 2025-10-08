@@ -2,8 +2,8 @@
 
 import {
   EMAIL_MAX_LENGTH,
-  MAX_NAME_LENGTH,
-  MIN_NAME_LENGTH,
+  NAME_MAX_LENGTH,
+  NAME_MIN_LENGTH,
   VALID_EMAIL_REGEX,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
@@ -38,11 +38,11 @@ export const validateSignUp = async (
       .send('Username can only contain letters, numbers, and underscores');
     return;
   }
-  if (name && name.length < MIN_NAME_LENGTH) {
+  if (name && name.length < NAME_MIN_LENGTH) {
     res.status(422).send('Username must be at least 2 characters');
     return;
   }
-  if (name && name.length > MAX_NAME_LENGTH) {
+  if (name && name.length > NAME_MAX_LENGTH) {
     res.status(422).send('Username cannot exceed 15 characters');
     return;
   }

@@ -2,11 +2,11 @@ import { api } from '@/client/api-client';
 import { validateImageInput } from '@/lib/image.utilts';
 import { CurrentUser, UpdateUserProfileReq } from '@/types/user.types';
 import {
-  MAX_BIO_LENGTH,
-  MAX_DISPLAY_NAME_LENGTH,
-  MAX_NAME_LENGTH,
-  MIN_DISPLAY_NAME_LENGTH,
-  MIN_NAME_LENGTH,
+  BIO_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  DISPLAY_NAME_MIN_LENGTH,
+  NAME_MIN_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,10 +37,10 @@ import { UserAvatar } from './user-avatar';
 const userProfileSchema = zod.object({
   name: zod
     .string()
-    .min(MIN_NAME_LENGTH, {
+    .min(NAME_MIN_LENGTH, {
       message: t('users.errors.shortName'),
     })
-    .max(MAX_NAME_LENGTH, {
+    .max(NAME_MAX_LENGTH, {
       message: t('users.errors.longName'),
     })
     .regex(VALID_NAME_REGEX, {
@@ -48,17 +48,17 @@ const userProfileSchema = zod.object({
     }),
   displayName: zod
     .string()
-    .min(MIN_DISPLAY_NAME_LENGTH, {
+    .min(DISPLAY_NAME_MIN_LENGTH, {
       message: t('users.errors.shortDisplayName'),
     })
-    .max(MAX_DISPLAY_NAME_LENGTH, {
+    .max(DISPLAY_NAME_MAX_LENGTH, {
       message: t('users.errors.longDisplayName'),
     })
     .optional()
     .or(zod.literal('')),
   bio: zod
     .string()
-    .max(MAX_BIO_LENGTH, {
+    .max(BIO_MAX_LENGTH, {
       message: t('users.errors.longBio'),
     })
     .optional()
