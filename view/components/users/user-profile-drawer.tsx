@@ -23,19 +23,12 @@ import { UserProfile } from './user-profile';
 
 interface Props {
   trigger: ReactNode;
-  user?: CurrentUser;
   userId?: string;
   me?: CurrentUser;
   name: string;
 }
 
-export const UserProfileDrawer = ({
-  trigger,
-  user,
-  userId,
-  me,
-  name,
-}: Props) => {
+export const UserProfileDrawer = ({ trigger, userId, me, name }: Props) => {
   const [open, setOpen] = useState(false);
 
   const { t } = useTranslation();
@@ -61,7 +54,7 @@ export const UserProfileDrawer = ({
               </DialogDescription>
             </DialogHeader>
           </VisuallyHidden>
-          <UserProfile user={user} userId={userId} me={me} />
+          <UserProfile userId={userId} me={me} />
         </DialogContent>
       </Dialog>
     );
@@ -85,7 +78,7 @@ export const UserProfileDrawer = ({
             </DrawerDescription>
           </DrawerHeader>
         </VisuallyHidden>
-        <UserProfile user={user} userId={userId} me={me} className="w-full" />
+        <UserProfile userId={userId} me={me} className="w-full" />
       </DrawerContent>
     </Drawer>
   );

@@ -1,4 +1,4 @@
-import { CurrentUser, UserProfileRes } from '@/types/user.types';
+import { CurrentUser } from '@/types/user.types';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { MdEdit } from 'react-icons/md';
@@ -10,18 +10,7 @@ import { LazyLoadImage } from '../images/lazy-load-image';
 import { Button } from '../ui/button';
 import { UserAvatar } from './user-avatar';
 
-const isCurrentUserType = (
-  user: CurrentUser | UserProfileRes,
-): user is CurrentUser => {
-  return (
-    'permissions' in user &&
-    (user.profilePicture === null || 'url' in user.profilePicture) &&
-    (user.coverPhoto === null || 'url' in user.coverPhoto)
-  );
-};
-
 interface Props {
-  user?: CurrentUser;
   userId?: string;
   me?: CurrentUser;
   className?: string;
@@ -30,47 +19,27 @@ interface Props {
 export const UserProfile = (props: Props) => {
   const { t } = useTranslation();
 
-  const { data: profileData } = useQuery({
-    queryKey: ['users', props.userId, 'profile'],
-    queryFn: () => api.getUserProfile(props.userId || ''),
-    enabled: !!props.userId && !props.user,
-  });
-  const user: CurrentUser | UserProfileRes | undefined =
-    props.user || profileData?.user;
+  const resolvedUserId = props.userId || props.me?.id || '';
 
-  if (!user) {
+  const { data: profileData } = useQuery({
+    queryKey: ['users', resolvedUserId, 'profile'],
+    queryFn: () => api.getUserProfile(resolvedUserId),
+    enabled: !!resolvedUserId,
+  });
+
+  if (!profileData) {
     return null;
   }
 
-  const isMe = props.me?.id === user.id;
-  const resolvedName = user.displayName || user.name;
-
-  const profilePictureUrl = isCurrentUserType(user)
-    ? user.profilePicture?.url
-    : undefined;
-  const profilePictureId = !isCurrentUserType(user)
-    ? user.profilePicture?.id
-    : undefined;
-  const coverPhotoUrl = isCurrentUserType(user)
-    ? user.coverPhoto?.url
-    : undefined;
-  const coverPhotoId = !isCurrentUserType(user)
-    ? user.coverPhoto?.id
-    : undefined;
+  const isMe = props.me?.id === profileData.user.id;
+  const resolvedName = profileData.user.displayName || profileData.user.name;
 
   return (
     <div className={cn('flex flex-col gap-4 md:min-w-lg', props.className)}>
       <div className="relative">
-        {coverPhotoUrl ? (
+        {profileData.user.coverPhoto?.id ? (
           <LazyLoadImage
-            src={coverPhotoUrl}
-            alt={t('users.form.coverPhoto')}
-            className="h-32 w-full rounded-t-2xl object-cover md:rounded-t-lg"
-            skipAnimation={true}
-          />
-        ) : coverPhotoId ? (
-          <LazyLoadImage
-            imageId={coverPhotoId}
+            imageId={profileData.user.coverPhoto?.id}
             alt={t('users.form.coverPhoto')}
             className="h-32 w-full rounded-t-2xl object-cover md:rounded-t-lg"
             skipAnimation={true}
@@ -82,22 +51,23 @@ export const UserProfile = (props: Props) => {
 
       <div className="-mt-12 flex flex-col gap-3 px-3 pb-6">
         <UserAvatar
-          name={user.name}
-          userId={user.id}
-          imageSrc={profilePictureUrl}
-          imageId={profilePictureId}
+          name={profileData.user.name}
+          userId={profileData.user.id}
+          imageId={profileData.user.profilePicture?.id}
           className="border-background size-24 border-4"
           fallbackClassName="text-xl"
         />
 
         <div className="flex flex-col gap-0.5 px-2">
           <h2 className="text-xl font-medium">{resolvedName}</h2>
-          <p className="text-muted-foreground text-sm">@{user.name}</p>
+          <p className="text-muted-foreground text-sm">
+            @{profileData.user.name}
+          </p>
         </div>
 
-        {user.bio && (
+        {profileData.user.bio && (
           <p className="text-foreground px-2 text-sm whitespace-pre-wrap">
-            {user.bio}
+            {profileData.user.bio}
           </p>
         )}
 

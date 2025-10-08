@@ -77,7 +77,6 @@ export const LeftNavUserMenu = () => {
       >
         <UserProfileDrawer
           me={me}
-          user={me}
           trigger={
             <DropdownMenuItem
               className="text-md"

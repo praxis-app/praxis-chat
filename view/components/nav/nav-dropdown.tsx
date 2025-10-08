@@ -64,7 +64,6 @@ export const NavDropdown = ({ trigger }: Props) => {
         <UserProfileDrawer
           name={truncatedUsername}
           me={me}
-          user={me}
           trigger={
             <DropdownMenuItem
               className="text-md"

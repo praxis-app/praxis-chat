@@ -1,6 +1,10 @@
 import { api } from '@/client/api-client';
 import { validateImageInput } from '@/lib/image.utilts';
-import { CurrentUser, UpdateUserProfileReq } from '@/types/user.types';
+import {
+  CurrentUser,
+  UpdateUserProfileReq,
+  UserProfileRes,
+} from '@/types/user.types';
 import {
   BIO_MAX_LENGTH,
   DISPLAY_NAME_MAX_LENGTH,
@@ -68,12 +72,16 @@ const userProfileSchema = zod.object({
 });
 
 interface Props {
-  currentUser: CurrentUser;
+  userProfile: UserProfileRes;
+  me: CurrentUser;
 }
 
-export const UserProfileForm = ({ currentUser }: Props) => {
+export const UserProfileForm = ({ userProfile, me }: Props) => {
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
   const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File>();
+
+  const showCoverPhotoPlaceholder =
+    !userProfile.coverPhoto && !selectedCoverPhoto;
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -81,9 +89,9 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const form = useForm<zod.infer<typeof userProfileSchema>>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
-      name: currentUser.name,
-      displayName: currentUser.displayName || '',
-      bio: currentUser.bio || '',
+      name: userProfile.name,
+      displayName: userProfile.displayName || '',
+      bio: userProfile.bio || '',
     },
     mode: 'onChange',
   });
@@ -91,8 +99,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
   const { mutate: updateUserProfile, isPending: isUpdatePending } = useMutation(
     {
       mutationFn: async (data: UpdateUserProfileReq) => {
-        let profilePicture = currentUser.profilePicture;
-        let coverPhoto = currentUser.coverPhoto;
+        let profilePicture = me.profilePicture;
+        let coverPhoto = userProfile.coverPhoto;
 
         if (selectedProfilePicture) {
           validateImageInput(selectedProfilePicture);
@@ -108,8 +116,7 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           const formData = new FormData();
           formData.append('file', selectedCoverPhoto);
           const { image } = await api.uploadUserCoverPhoto(formData);
-          const url = URL.createObjectURL(selectedCoverPhoto);
-          coverPhoto = { ...image, url };
+          coverPhoto = image;
         }
 
         await api.updateUserProfile(data);
@@ -124,11 +131,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
 
           const nameChanged = oldData.user.name !== data.name;
           const displayChanged = oldData.user.displayName !== data.displayName;
-          const bioChanged = oldData.user.bio !== data.bio;
           const profilePictureChanged =
             oldData.user.profilePicture?.id !== data.profilePicture?.id;
-          const coverPhotoChanged =
-            oldData.user.coverPhoto?.id !== data.coverPhoto?.id;
 
           return {
             user: {
@@ -137,16 +141,48 @@ export const UserProfileForm = ({ currentUser }: Props) => {
               displayName: displayChanged
                 ? data.displayName
                 : oldData.user.displayName,
-              bio: bioChanged ? data.bio : oldData.user.bio,
               profilePicture: profilePictureChanged
                 ? data.profilePicture
                 : oldData.user.profilePicture,
-              coverPhoto: coverPhotoChanged
-                ? data.coverPhoto
-                : oldData.user.coverPhoto,
             },
           };
         });
+
+        queryClient.setQueryData<{ user: UserProfileRes }>(
+          ['users', me.id, 'profile'],
+          (oldData) => {
+            if (!oldData) {
+              throw new Error('User data not found');
+            }
+
+            const nameChanged = oldData.user.name !== data.name;
+            const displayChanged =
+              oldData.user.displayName !== data.displayName;
+            const bioChanged = oldData.user.bio !== data.bio;
+            const profilePictureChanged =
+              oldData.user.profilePicture?.id !== data.profilePicture?.id;
+            const coverPhotoChanged =
+              oldData.user.coverPhoto?.id !== data.coverPhoto?.id;
+
+            return {
+              user: {
+                ...oldData.user,
+                name: nameChanged ? String(data.name) : oldData.user.name,
+                displayName: displayChanged
+                  ? data.displayName
+                  : oldData.user.displayName,
+                bio: bioChanged ? data.bio : oldData.user.bio,
+                profilePicture: profilePictureChanged
+                  ? data.profilePicture
+                  : oldData.user.profilePicture,
+                coverPhoto: coverPhotoChanged
+                  ? data.coverPhoto
+                  : oldData.user.coverPhoto,
+              },
+            };
+          },
+        );
+
         form.reset(form.getValues());
         setSelectedProfilePicture(undefined);
         setSelectedCoverPhoto(undefined);
@@ -178,14 +214,14 @@ export const UserProfileForm = ({ currentUser }: Props) => {
     if (selectedProfilePicture) {
       return URL.createObjectURL(selectedProfilePicture);
     }
-    return currentUser.profilePicture?.url;
+    return me.profilePicture?.url;
   };
 
   const getCoverPhotoSrc = () => {
     if (selectedCoverPhoto) {
       return URL.createObjectURL(selectedCoverPhoto);
     }
-    return currentUser.coverPhoto?.url;
+    return '';
   };
 
   return (
@@ -213,8 +249,8 @@ export const UserProfileForm = ({ currentUser }: Props) => {
           </div>
           <div className="relative self-center">
             <UserAvatar
-              name={currentUser.name}
-              userId={currentUser.id}
+              name={userProfile.name}
+              userId={userProfile.id}
               imageSrc={getProfilePictureSrc()}
               className="size-34"
               fallbackClassName="text-2xl"
@@ -257,20 +293,19 @@ export const UserProfileForm = ({ currentUser }: Props) => {
             </ImageInput>
           </div>
           <div className="relative">
-            {getCoverPhotoSrc() && (
-              <LazyLoadImage
-                src={getCoverPhotoSrc()}
-                alt={t('users.form.coverPhoto')}
-                className="h-32 w-full rounded-lg border object-cover"
-                skipAnimation={true}
-              />
-            )}
-            {!getCoverPhotoSrc() && (
+            {showCoverPhotoPlaceholder ? (
               <div className="bg-muted flex h-32 w-full items-center justify-center rounded-lg border">
                 <span className="text-muted-foreground text-sm">
                   {t('users.placeholders.coverPhoto')}
                 </span>
               </div>
+            ) : (
+              <LazyLoadImage
+                src={getCoverPhotoSrc()}
+                imageId={userProfile.coverPhoto?.id}
+                alt={t('users.form.coverPhoto')}
+                className="h-32 w-full rounded-lg border object-cover"
+              />
             )}
             <ImageInput
               onChange={handleCoverPhotoChange}
@@ -282,9 +317,9 @@ export const UserProfileForm = ({ currentUser }: Props) => {
                 disabled={isUpdatePending}
                 className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-lg bg-black/50 text-sm text-white opacity-0 transition-opacity hover:bg-black/60 hover:opacity-100 disabled:opacity-50"
               >
-                {getCoverPhotoSrc()
-                  ? t('users.actions.changeCoverPhoto')
-                  : t('users.actions.selectCoverPhoto')}
+                {showCoverPhotoPlaceholder
+                  ? t('users.actions.selectCoverPhoto')
+                  : t('users.actions.changeCoverPhoto')}
               </button>
             </ImageInput>
           </div>

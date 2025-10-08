@@ -1,23 +1,21 @@
 import { ImageRes } from './image.types';
 import { Permission } from './role.types';
 
-export interface CurrentUserRes {
-  id: string;
-  name: string;
-  displayName?: string;
-  bio?: string;
-  anonymous: boolean;
-  permissions: Permission[];
-  profilePicture: ImageRes | null;
-  coverPhoto: ImageRes | null;
-}
-
 export interface UserRes {
   id: string;
   name: string;
   displayName?: string;
   profilePictureId?: string;
   coverPhotoId?: string;
+}
+
+export interface CurrentUserRes {
+  id: string;
+  name: string;
+  displayName?: string;
+  anonymous: boolean;
+  permissions: Permission[];
+  profilePicture: ImageRes | null;
 }
 
 export interface UserProfileRes {
@@ -37,5 +35,4 @@ export interface UpdateUserProfileReq {
 
 export interface CurrentUser extends CurrentUserRes {
   profilePicture: (ImageRes & { url: string }) | null;
-  coverPhoto: (ImageRes & { url: string }) | null;
 }

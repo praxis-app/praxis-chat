@@ -26,7 +26,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       throw new Error('User ID is missing or invalid');
     }
     const user = await userRepository.findOneOrFail({
-      select: ['id', 'name', 'displayName', 'bio', 'anonymous'],
+      select: ['id', 'name', 'displayName', 'anonymous'],
       where: { id: userId },
     });
     if (!includePerms) {
@@ -35,13 +35,11 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
 
     const permissions = await rolesService.getUserPermissions(userId);
     const profilePicture = await getUserProfilePicture(userId);
-    const coverPhoto = await getUserCoverPhoto(userId);
 
     return {
       ...user,
       permissions,
       profilePicture,
-      coverPhoto,
     };
   } catch (error) {
     console.error(error);

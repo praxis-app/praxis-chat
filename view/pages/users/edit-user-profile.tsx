@@ -5,9 +5,11 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useAppStore } from '@/store/app.store';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { api } from '../../client/api-client';
 
 export const EditUserProfile = () => {
   const { setIsNavSheetOpen } = useAppStore();
@@ -16,7 +18,14 @@ export const EditUserProfile = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
-  const { data: meData, isLoading } = useMeQuery();
+  const { data: meData } = useMeQuery();
+  const userId = meData?.user?.id || '';
+
+  const { data: profileData } = useQuery({
+    queryKey: ['users', userId, 'profile'],
+    queryFn: () => api.getUserProfile(userId),
+    enabled: !!userId,
+  });
 
   const handleBackClick = () => {
     if (isDesktop) {
@@ -26,7 +35,7 @@ export const EditUserProfile = () => {
     setIsNavSheetOpen(true);
   };
 
-  if (isLoading || !meData?.user) {
+  if (!meData?.user || !profileData?.user) {
     return null;
   }
 
@@ -46,7 +55,7 @@ export const EditUserProfile = () => {
       <div className="flex h-full flex-col items-center justify-center p-4 md:p-18">
         <Card className="w-full max-w-md">
           <CardContent>
-            <UserProfileForm currentUser={meData.user} />
+            <UserProfileForm userProfile={profileData.user} me={meData.user} />
           </CardContent>
         </Card>
       </div>
