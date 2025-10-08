@@ -1,4 +1,6 @@
+import { VALID_NAME_REGEX } from '@common/users/user.constants';
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,12 +13,13 @@ import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { Proposal } from '../proposals/entities/proposal.entity';
 import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
+import { Proposal } from '../proposals/entities/proposal.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()
+@Check('valid_name_check', `"name" ~ '${VALID_NAME_REGEX.source}'`)
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;

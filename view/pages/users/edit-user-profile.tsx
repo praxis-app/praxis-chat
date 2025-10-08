@@ -7,7 +7,7 @@ import { useMeQuery } from '@/hooks/use-me-query';
 import { useAppStore } from '@/store/app.store';
 import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export const EditUserProfile = () => {
   const { setIsNavSheetOpen } = useAppStore();
@@ -28,6 +28,10 @@ export const EditUserProfile = () => {
 
   if (isLoading || !meData?.user) {
     return null;
+  }
+
+  if (meData.user.anonymous) {
+    return <Navigate to={NavigationPaths.Home} />;
   }
 
   return (

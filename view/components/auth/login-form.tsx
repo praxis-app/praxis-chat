@@ -7,6 +7,11 @@ import {
 } from '@/constants/shared.constants';
 import { t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
+import {
+  EMAIL_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from '@common/users/user.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -24,10 +29,6 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-
-const EMAIL_MAX_LENGTH = 254;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 64;
 
 const loginFormSchema = zod.object({
   email: zod

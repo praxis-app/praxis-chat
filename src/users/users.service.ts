@@ -1,5 +1,6 @@
 // TODO: Add support for user updates with validation
 
+import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
 import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
@@ -114,6 +115,23 @@ export const updateUserProfile = async (
   });
 };
 
+export const createAnonUser = async () => {
+  const user = await userRepository.save({
+    name: generateName(),
+    anonymous: true,
+  });
+  const isFirst = await isFirstUser();
+
+  if (isFirst) {
+    await createAdminRole(user.id);
+    await channelsService.addMemberToAllChannels(user.id);
+  } else {
+    await channelsService.addMemberToGeneralChannel(user.id);
+  }
+
+  return user;
+};
+
 export const upgradeAnonUser = async (
   userId: string,
   email: string,
@@ -136,23 +154,6 @@ export const upgradeAnonUser = async (
   });
 
   await channelsService.addMemberToAllChannels(user.id);
-};
-
-export const createAnonUser = async () => {
-  const user = await userRepository.save({
-    name: generateName(),
-    anonymous: true,
-  });
-  const isFirst = await isFirstUser();
-
-  if (isFirst) {
-    await createAdminRole(user.id);
-    await channelsService.addMemberToAllChannels(user.id);
-  } else {
-    await channelsService.addMemberToGeneralChannel(user.id);
-  }
-
-  return user;
 };
 
 export const getUserProfilePicture = async (userId: string) => {
@@ -257,7 +258,7 @@ const generateName = () => {
 
   const name = uniqueNamesGenerator({
     dictionaries: [colors, nounDictionary, numberDictionary],
-    separator: '-',
+    separator: GENERATED_NAME_SEPARATOR,
   });
 
   return name;
