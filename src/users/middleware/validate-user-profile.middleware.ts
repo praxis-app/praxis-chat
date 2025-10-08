@@ -9,6 +9,7 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { getUserCount } from '../users.service';
+import { UserProfileDto } from '../dtos/user-profile.dto';
 
 const userProfileSchema = zod.object({
   name: zod
@@ -42,7 +43,7 @@ export const validateUserProfile = async (
     userProfileSchema.parse(req.body);
 
     // Validate username is unique
-    const { name } = req.body;
+    const { name } = req.body as UserProfileDto;
     if (name) {
       const usersWithNameCount = await getUserCount({
         where: { name },
