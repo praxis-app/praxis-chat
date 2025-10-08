@@ -15,38 +15,6 @@ Refer to README.md for more information.
 - Testing: Vitest (both client and server)
 - Required: Node.js v22.11.0
 
-## Development Workflow
-
-**IMPORTANT**: After completing any logical unit of work (feature implementation, bug fix, refactor), run `npm run check` to verify everything works correctly before considering the work complete.
-
-## Commands
-
-### Testing
-
-```bash
-npm test               # Run backend tests only (vitest src)
-npm run test:client    # Run frontend tests only (vitest view)
-npm run test:watch     # Run tests in watch mode
-npm run test:ui        # Open Vitest UI
-```
-
-### Building & Quality Checks
-
-```bash
-npm run build          # Build backend (TypeScript + ESLint + tsc-alias)
-npm run build:client   # Build frontend for production
-npm run types          # Type-check all code
-npm run lint           # Run ESLint
-npm run check          # Full verification: types, lint, tests (client + server), audit
-```
-
-**When to run `npm run check`:**
-
-- After completing a logical unit of work (e.g., implementing a feature, fixing a bug, completing a refactor)
-- For multi-step changes, run the check after the expected final step, not after every intermediate change
-- Skip for very small changes (a few lines in a single file)
-- When in doubt about whether a change is "small", err on the side of running the check
-
 ## Architecture
 
 ### Monorepo Structure
@@ -176,6 +144,36 @@ Examples:
 @common → common/
 ```
 
+## Development Workflow
+
+### Commands
+
+#### Testing
+
+```bash
+npm test               # Run backend tests only (vitest src)
+npm run test:client    # Run frontend tests only (vitest view)
+npm run test:watch     # Run tests in watch mode
+npm run test:ui        # Open Vitest UI
+```
+
+#### Building & Quality Checks
+
+```bash
+npm run build          # Build backend (TypeScript + ESLint + tsc-alias)
+npm run build:client   # Build frontend for production
+npm run types          # Type-check all code
+npm run lint           # Run ESLint
+npm run check          # Full verification: types, lint, tests (client + server), audit
+```
+
+**When to run `npm run check`:**
+
+- After completing a logical unit of work (e.g., implementing a feature, fixing a bug, completing a refactor)
+- For multi-step changes, run the check after the expected final step, not after every intermediate change
+- Skip for very small changes (a few lines in a single file)
+- When in doubt about whether a change is "small", err on the side of running the check
+
 ## Code Guidelines
 
 - Follow clear naming (no 1-2 letter names). Functions are verbs; variables are concrete nouns.
@@ -184,18 +182,6 @@ Examples:
 - Keep code readable and high-verbosity; avoid clever one-liners.
 - For UI strings, always use react-i18next; do not hardcode user-visible text.
 - Do not add ESLint ignore comments.
-
-### Quality Verification
-
-**Required**: Execute `npm run check` when your changes are complete and ready. This runs the full verification suite (types, lint, audit, and tests for both server and client).
-
-When to run:
-
-- After completing a logical unit of work
-- For multi-step changes, after the final step (not every intermediate change)
-- Always before considering work complete and ready for review
-- Skip only for very small changes (a few lines in a single file)
-- When in doubt, run the check
 
 ## TypeScript Configuration
 
