@@ -150,8 +150,8 @@ export const getInlineProposals = async (
         }
       : undefined;
 
-    const profilePictureId = userImagesMap[proposal.user.id]?.profilePictureId;
-    const coverPhotoId = userImagesMap[proposal.user.id]?.coverPhotoId;
+    const profilePicture = userImagesMap[proposal.user.id]?.profilePicture;
+    const coverPhoto = userImagesMap[proposal.user.id]?.coverPhoto;
 
     return {
       ...proposal,
@@ -166,8 +166,8 @@ export const getInlineProposals = async (
       })),
       user: {
         ...proposal.user,
-        profilePictureId,
-        coverPhotoId,
+        profilePicture,
+        coverPhoto,
       },
       votesNeededToRatify,
       agreementVoteCount,
@@ -266,8 +266,8 @@ export const createProposal = async (
       id: user.id,
       name: user.name,
       displayName: user.displayName,
-      profilePictureId: profilePicture?.id,
-      coverPhotoId: coverPhoto?.id,
+      profilePicture,
+      coverPhoto,
     },
     // TODO: Handle images
     images: [],

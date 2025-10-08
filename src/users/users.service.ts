@@ -196,7 +196,7 @@ export const getUserImagesMap = async (userIds: string[]) => {
 
   const imagesMap: Record<
     string,
-    { profilePictureId?: string; coverPhotoId?: string }
+    { profilePicture: Image | null; coverPhoto: Image | null }
   > = {};
 
   const processedKeys = new Set<string>();
@@ -211,13 +211,16 @@ export const getUserImagesMap = async (userIds: string[]) => {
       processedKeys.add(key);
 
       if (!imagesMap[userId]) {
-        imagesMap[userId] = {};
+        imagesMap[userId] = {
+          profilePicture: null,
+          coverPhoto: null,
+        };
       }
       if (image.imageType === 'profile-picture') {
-        imagesMap[userId].profilePictureId = image.id;
+        imagesMap[userId].profilePicture = image;
       }
       if (image.imageType === 'cover-photo') {
-        imagesMap[userId].coverPhotoId = image.id;
+        imagesMap[userId].coverPhoto = image;
       }
     }
   }

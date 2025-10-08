@@ -74,8 +74,8 @@ export const getMessages = async (
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
 
-      const profilePictureId = userImagesMap[message.user.id]?.profilePictureId;
-      const coverPhotoId = userImagesMap[message.user.id]?.coverPhotoId;
+      const profilePicture = userImagesMap[message.user.id]?.profilePicture;
+      const coverPhoto = userImagesMap[message.user.id]?.coverPhoto;
 
       return {
         ...message,
@@ -86,8 +86,8 @@ export const getMessages = async (
         })),
         user: {
           ...message.user,
-          profilePictureId,
-          coverPhotoId,
+          profilePicture,
+          coverPhoto,
         },
         body,
       };
@@ -151,8 +151,8 @@ export const createMessage = async (
       id: user.id,
       name: user.name,
       displayName: user.displayName,
-      profilePictureId: profilePicture?.id,
-      coverPhotoId: coverPhoto?.id,
+      profilePicture,
+      coverPhoto,
     },
   };
 

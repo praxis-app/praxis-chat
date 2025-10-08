@@ -51,7 +51,7 @@ export const InlineProposal = ({ proposal, channel, me }: Props) => {
             <UserAvatar
               name={name}
               userId={user.id}
-              imageId={user.profilePictureId}
+              imageId={user.profilePicture?.id}
               className="mt-0.5"
             />
           </button>

@@ -63,7 +63,7 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
         <UserAvatar
           userId={roleMember.id}
           name={name}
-          imageId={roleMember.profilePictureId}
+          imageId={roleMember.profilePicture?.id}
           className="mr-4"
         />
         <span className="max-w-48 truncate">{truncatedName}</span>

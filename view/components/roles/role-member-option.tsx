@@ -44,7 +44,7 @@ export const RoleMemberOption = ({
         <UserAvatar
           userId={user.id}
           name={name}
-          imageId={user.profilePictureId}
+          imageId={user.profilePicture?.id}
           className="mr-3"
         />
         <span className="max-w-48 truncate select-none">{truncatedName}</span>

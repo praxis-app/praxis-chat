@@ -39,7 +39,7 @@ export const Message = ({
               name={name}
               userId={user.id}
               className="mt-0.5"
-              imageId={user.profilePictureId}
+              imageId={user.profilePicture?.id}
             />
           </button>
         }

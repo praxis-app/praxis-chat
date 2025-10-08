@@ -5,8 +5,10 @@ export interface UserRes {
   id: string;
   name: string;
   displayName?: string;
-  profilePictureId?: string;
-  coverPhotoId?: string;
+  profilePicture: ImageRes | null;
+
+  // TODO: Remove this
+  coverPhoto: ImageRes | null;
 }
 
 export interface CurrentUserRes {

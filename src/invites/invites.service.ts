@@ -54,15 +54,15 @@ export const getValidInvites = async () => {
   );
 
   const shapedInvites = validInvites.map((invite) => {
-    const profilePictureId = userImagesMap[invite.user.id]?.profilePictureId;
-    const coverPhotoId = userImagesMap[invite.user.id]?.coverPhotoId;
+    const profilePicture = userImagesMap[invite.user.id]?.profilePicture;
+    const coverPhoto = userImagesMap[invite.user.id]?.coverPhoto;
 
     return {
       ...invite,
       user: {
         ...invite.user,
-        profilePictureId,
-        coverPhotoId,
+        profilePicture,
+        coverPhoto,
       },
     };
   });
@@ -86,8 +86,8 @@ export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
     ...invite,
     user: {
       ...user,
-      profilePictureId: profilePicture?.id,
-      coverPhotoId: coverPhoto?.id,
+      profilePicture,
+      coverPhoto,
     },
   };
 };
