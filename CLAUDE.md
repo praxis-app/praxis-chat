@@ -21,10 +21,11 @@ Refer to README.md for more information.
 
 - **`src/`** - Backend (Express, TypeORM)
 - **`view/`** - Frontend (React, Vite)
-- **`common/`** - Shared code between frontend and backend (types, constants, utilities)
+- **`common/`** - Shared code between frontend and backend
   - Import via `@common` alias
-  - Only include frequently-used, side-effect-free code
-  - No business logic, database models, middleware, or React components
+  - **Include**: TypeScript types/interfaces, constants/enums, pure utility functions, validation schemas
+  - **Exclude**: Business logic, database models, Express middleware, React components
+  - **Examples**: `common/proposals/proposal.types.ts`, `common/votes/vote.constants.ts`
 
 ### Backend Architecture (src/)
 
