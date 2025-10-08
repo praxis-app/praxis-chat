@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { getCurrentUser } from '../../users/users.service';
-import { verifyAccessToken } from '../auth.service';
+import * as userService from '../../users/users.service';
+import * as authService from '../auth.service';
 
 export const authenticate = async (
   req: Request,
@@ -13,8 +13,8 @@ export const authenticate = async (
     res.status(401).send('Unauthorized');
     return;
   }
-  const sub = verifyAccessToken(token);
-  const user = await getCurrentUser(sub);
+  const sub = authService.verifyAccessToken(token);
+  const user = await userService.getCurrentUser(sub);
   if (!user) {
     res.status(401).send('Unauthorized');
     return;
