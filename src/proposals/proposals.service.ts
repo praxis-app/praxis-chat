@@ -204,7 +204,7 @@ export const isProposalRatifiable = async (proposalId: string) => {
 export const createProposal = async (
   channelId: string,
   { body, closingAt, action }: ProposalDto,
-  userId: string,
+  user: User,
 ) => {
   const sanitizedBody = sanitizeText(body);
   if (body && body.length > 8000) {
@@ -232,8 +232,8 @@ export const createProposal = async (
     body: sanitizedBody,
     config: proposalConfig,
     action: proposalAction,
+    userId: user.id,
     channelId,
-    userId,
   });
 
   const proposalMemberCount = await getProposalMemberCount();
@@ -249,6 +249,9 @@ export const createProposal = async (
     );
   }
 
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
+
   // Shape to match feed expectations
   const shapedProposal = {
     id: proposal.id,
@@ -259,10 +262,13 @@ export const createProposal = async (
       actionType: proposal.action?.actionType,
       role: proposalActionRole,
     },
-    user: await userRepository.findOne({
-      where: { id: userId },
-      select: { id: true, name: true },
-    }),
+    user: {
+      id: user.id,
+      name: user.name,
+      displayName: user.displayName,
+      profilePictureId: profilePicture?.id,
+      coverPhotoId: coverPhoto?.id,
+    },
     // TODO: Handle images
     images: [],
     createdAt: proposal.createdAt,
@@ -273,7 +279,7 @@ export const createProposal = async (
   // Publish proposal to all other channel members for realtime feed updates
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
-    if (member.userId === userId) {
+    if (member.userId === user.id) {
       continue;
     }
     await pubSubService.publish(getNewProposalKey(channelId, member.userId), {
