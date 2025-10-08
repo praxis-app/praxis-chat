@@ -24,8 +24,8 @@ Refer to README.md for more information.
 ### Testing
 
 ```bash
-npm test               # Run backend tests (vitest src)
-npm run test:client    # Run frontend tests (vitest view)
+npm test               # Run backend tests only (vitest src)
+npm run test:client    # Run frontend tests only (vitest view)
 npm run test:watch     # Run tests in watch mode
 npm run test:ui        # Open Vitest UI
 ```
