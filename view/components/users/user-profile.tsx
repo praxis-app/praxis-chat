@@ -78,7 +78,7 @@ export const UserProfile = (props: Props) => {
             skipAnimation={true}
           />
         ) : (
-          <div className="bg-muted flex h-32 w-full rounded-t-2xl" />
+          <div className="bg-muted flex h-32 w-full rounded-t-2xl md:rounded-t-lg" />
         )}
       </div>
 
