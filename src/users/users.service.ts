@@ -1,4 +1,4 @@
-// TODO: Add support for user updates with validation
+// TODO: Add support for user deletion + clean up for saved image files
 
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
 import { FindManyOptions, In } from 'typeorm';
