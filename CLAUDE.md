@@ -6,7 +6,7 @@ This file provides guidance to [Claude Code](https://claude.com/product/claude-c
 
 Praxis is a chat-based collaborative decision-making (CDM) app that blends informal discussion with structured decision-making. Groups can transition from casual conversation to formal proposals and voting without breaking flow.
 
-**Status**: Work in progress - experimental approach within the Praxis project ecosystem (main repo: https://github.com/praxis-app/praxis)
+Refer to README.md for more information.
 
 **Tech Stack**:
 
