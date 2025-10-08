@@ -19,7 +19,7 @@ import { Role } from '../roles/entities/role.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()
-@Check('name_check', `"name" ~ '${VALID_NAME_REGEX.source}'`)
+@Check('valid_name_check', `"name" ~ '${VALID_NAME_REGEX.source}'`)
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
