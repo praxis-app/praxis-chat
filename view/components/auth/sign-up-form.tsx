@@ -120,7 +120,7 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       return api.upgradeAnonSession({ ...values, inviteToken: token });
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['me'] });
+      queryClient.resetQueries({ queryKey: ['me'] });
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },
