@@ -177,21 +177,18 @@ export const getUserProfilePicturesMap = async (userIds: string[]) => {
 
   const images = await imageRepository.find({
     select: ['id', 'userId', 'imageType', 'createdAt'],
-    where: [{ userId: In(userIds), imageType: 'profile-picture' }],
+    where: { userId: In(userIds), imageType: 'profile-picture' },
     order: { userId: 'ASC', createdAt: 'DESC' },
   });
 
   const profilePicturesMap: Record<string, Image> = {};
-  const processedKeys = new Set<string>();
 
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i];
-    const userId = image.userId as string;
-
-    // Only process the first occurrence
-    if (!processedKeys.has(userId)) {
-      processedKeys.add(userId);
-      profilePicturesMap[userId] = image;
+  for (const image of images) {
+    if (!image.userId) {
+      throw new Error('User ID is missing - invalid SQL query');
+    }
+    if (!profilePicturesMap[image.userId]) {
+      profilePicturesMap[image.userId] = image;
     }
   }
 
