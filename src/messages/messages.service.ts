@@ -74,19 +74,16 @@ export const getMessages = async (
         body = decryptMessage(ciphertext, tag, iv, unwrappedKey);
       }
 
-      return {
-        ...message,
-        images: message.images.map((image) => ({
-          id: image.id,
-          isPlaceholder: !image.filename,
-          createdAt: image.createdAt,
-        })),
-        user: {
-          ...message.user,
-          profilePicture: profilePictures[message.user.id],
-        },
-        body,
-      };
+      const images = message.images.map((image) => ({
+        id: image.id,
+        isPlaceholder: !image.filename,
+        createdAt: image.createdAt,
+      }));
+
+      const profilePicture = profilePictures[message.user.id];
+      const user = { ...message.user, profilePicture };
+
+      return { ...message, body, images, user };
     },
   );
 
