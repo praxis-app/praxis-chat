@@ -8,7 +8,7 @@ import {
   MIN_DISPLAY_NAME_LENGTH,
   MIN_NAME_LENGTH,
   VALID_NAME_REGEX,
-} from '@common/users/users.constants';
+} from '@common/users/user.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';

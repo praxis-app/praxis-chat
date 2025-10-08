@@ -6,7 +6,7 @@ import {
   MIN_NAME_LENGTH,
   VALID_EMAIL_REGEX,
   VALID_NAME_REGEX,
-} from '@common/users/users.constants';
+} from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
 import { normalizeText } from '../../common/common.utils';
 import { getValidInvite } from '../../invites/invites.service';

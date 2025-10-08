@@ -1,4 +1,4 @@
-import { VALID_NAME_REGEX } from '@common/users/users.constants';
+import { VALID_NAME_REGEX } from '@common/users/user.constants';
 import {
   Check,
   Column,

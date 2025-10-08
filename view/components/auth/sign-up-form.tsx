@@ -32,7 +32,7 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   VALID_NAME_REGEX,
-} from '@common/users/users.constants';
+} from '@common/users/user.constants';
 
 // TODO: Leverage zod for BE validation
 const signUpFormSchema = zod

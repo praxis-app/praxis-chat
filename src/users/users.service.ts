@@ -1,6 +1,6 @@
 // TODO: Add support for user updates with validation
 
-import { GENERATED_NAME_SEPARATOR } from '@common/users/users.constants';
+import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
 import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
