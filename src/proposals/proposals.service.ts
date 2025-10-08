@@ -10,6 +10,7 @@ import * as proposalActionsService from '../proposal-actions/proposal-actions.se
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { getServerConfig } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
 import {
   sortConsensusVotesByType,
@@ -114,6 +115,10 @@ export const getInlineProposals = async (
   // Get users eligible to vote on this proposal
   const proposalMemberCount = await getProposalMemberCount();
 
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    proposals.map((p) => p.user.id),
+  );
+
   const shapedProposals = proposals.map((proposal) => {
     const votesNeededToRatify = Math.ceil(
       proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
@@ -156,6 +161,10 @@ export const getInlineProposals = async (
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
       })),
+      user: {
+        ...proposal.user,
+        profilePicture: profilePictures[proposal.user.id],
+      },
       votesNeededToRatify,
       agreementVoteCount,
       myVote,
@@ -191,7 +200,7 @@ export const isProposalRatifiable = async (proposalId: string) => {
 export const createProposal = async (
   channelId: string,
   { body, closingAt, action }: ProposalDto,
-  userId: string,
+  user: User,
 ) => {
   const sanitizedBody = sanitizeText(body);
   if (body && body.length > 8000) {
@@ -219,8 +228,8 @@ export const createProposal = async (
     body: sanitizedBody,
     config: proposalConfig,
     action: proposalAction,
+    userId: user.id,
     channelId,
-    userId,
   });
 
   const proposalMemberCount = await getProposalMemberCount();
@@ -236,6 +245,8 @@ export const createProposal = async (
     );
   }
 
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+
   // Shape to match feed expectations
   const shapedProposal = {
     id: proposal.id,
@@ -246,10 +257,12 @@ export const createProposal = async (
       actionType: proposal.action?.actionType,
       role: proposalActionRole,
     },
-    user: await userRepository.findOne({
-      where: { id: userId },
-      select: { id: true, name: true },
-    }),
+    user: {
+      id: user.id,
+      name: user.name,
+      displayName: user.displayName,
+      profilePicture,
+    },
     // TODO: Handle images
     images: [],
     createdAt: proposal.createdAt,
@@ -260,7 +273,7 @@ export const createProposal = async (
   // Publish proposal to all other channel members for realtime feed updates
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
-    if (member.userId === userId) {
+    if (member.userId === user.id) {
       continue;
     }
     await pubSubService.publish(getNewProposalKey(channelId, member.userId), {

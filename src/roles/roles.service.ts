@@ -9,6 +9,7 @@ import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { CHANNEL_ACCESS_MAP } from './channel-access';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
@@ -50,7 +51,20 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  return { ...role, permissions, members, memberCount: members.length };
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePicture: profilePictures[member.id],
+  }));
+
+  return {
+    ...role,
+    permissions,
+    members: shapedMembers,
+    memberCount: members.length,
+  };
 };
 
 export const getRoles = async () => {
@@ -72,8 +86,16 @@ export const getRoles = async () => {
     },
   });
 
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    roles.flatMap((role) => role.members.map((member) => member.id)),
+  );
+
   return roles.map((role) => ({
     ...role,
+    members: role.members.map((member) => ({
+      ...member,
+      profilePicture: profilePictures[member.id],
+    })),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
   }));
@@ -102,8 +124,9 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   if (!role) {
     throw new Error('Role not found');
   }
+
   const userIds = role.members.map(({ id }) => id);
-  return userRepository.find({
+  const users = await userRepository.find({
     where: {
       id: Not(In(userIds)),
       anonymous: false,
@@ -111,6 +134,19 @@ export const getUsersEligibleForRole = async (roleId: string) => {
     },
     select: ['id', 'name', 'displayName'],
   });
+  if (users.length === 0) {
+    return [];
+  }
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    users.map((user) => user.id),
+  );
+  const shapedUsers = users.map((user) => ({
+    ...user,
+    profilePicture: profilePictures[user.id],
+  }));
+
+  return shapedUsers;
 };
 
 export const createRole = async ({ name, color }: CreateRoleDto) => {
@@ -215,9 +251,19 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
       locked: false,
     },
   });
-  return roleRepository.save({
+
+  const members = [...role.members, ...newMembers];
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePicture: profilePictures[member.id],
+  }));
+
+  await roleRepository.save({
     ...role,
-    members: [...role.members, ...newMembers],
+    members: shapedMembers,
   });
 };
 

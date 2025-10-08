@@ -38,7 +38,8 @@ export const InviteCard = ({
     itemType: 'invite link',
   });
 
-  const truncatedUsername = truncate(user.name, 25);
+  const name = user.displayName || user.name;
+  const truncatedUsername = truncate(name, 25);
 
   const handleCopyLink = async () => {
     await copyInviteLink(token);
@@ -77,6 +78,7 @@ export const InviteCard = ({
           <UserAvatar
             name={user.name}
             userId={user.id}
+            imageId={user.profilePicture?.id}
             className="size-7"
             fallbackClassName="text-[0.8rem]"
           />

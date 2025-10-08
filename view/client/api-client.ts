@@ -26,7 +26,12 @@ import {
   RoleRes,
   UpdateRolePermissionsReq,
 } from '../types/role.types';
-import { CurrentUserRes, UserRes } from '../types/user.types';
+import {
+  CurrentUserRes,
+  UpdateUserProfileReq,
+  UserProfileRes,
+  UserRes,
+} from '../types/user.types';
 
 class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -81,9 +86,35 @@ class ApiClient {
     return this.executeRequest<{ user: CurrentUserRes }>('get', path);
   };
 
+  getUserProfile = async (userId: string) => {
+    const path = `/users/${userId}/profile`;
+    return this.executeRequest<{ user: UserProfileRes }>('get', path);
+  };
+
   isFirstUser = async () => {
     const path = '/users/is-first';
     return this.executeRequest<{ isFirstUser: boolean }>('get', path);
+  };
+
+  updateUserProfile = async (data: UpdateUserProfileReq) => {
+    const path = '/users/profile';
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  uploadUserProfilePicture = async (formData: FormData) => {
+    const path = '/users/profile-picture';
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
+      data: formData,
+    });
+  };
+
+  uploadUserCoverPhoto = async (formData: FormData) => {
+    const path = '/users/cover-photo';
+    return this.executeRequest<{ image: ImageRes }>('post', path, {
+      data: formData,
+    });
   };
 
   // -------------------------------------------------------------------------

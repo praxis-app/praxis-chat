@@ -67,14 +67,16 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       },
       imageId,
     });
+
     const [loaded, setLoaded] = useState(!!srcFromImageId);
     const [failed, setFailed] = useState(false);
+
     const { t } = useTranslation();
 
-    const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
-      onLoad && onLoad(event);
-      setLoaded(true);
-    };
+    const resolvedSrc = src || srcFromImageId;
+    const showImage = resolvedSrc && !isPlaceholder && !failed;
+    const elementType = showImage ? 'img' : 'div';
+    const showFileMissing = failed && elementType === 'div' && !isPlaceholder;
 
     const imageClassName = cn(
       'object-cover',
@@ -83,9 +85,10 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       className,
     );
 
-    const resolvedSrc = src || srcFromImageId;
-    const elementType = isPlaceholder || !resolvedSrc || failed ? 'div' : 'img';
-    const showFileMissing = failed && elementType === 'div' && !isPlaceholder;
+    const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+      onLoad && onLoad(event);
+      setLoaded(true);
+    };
 
     return (
       <>

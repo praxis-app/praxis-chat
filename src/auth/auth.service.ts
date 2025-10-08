@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { normalizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as invitesService from '../invites/invites.service';
-import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 
@@ -88,26 +87,6 @@ export const verifyAccessToken = (token: string) => {
     return sub;
   } catch {
     return '';
-  }
-};
-
-export const getAuthedUser = async (userId: string, includePerms = true) => {
-  try {
-    if (!userId) {
-      throw new Error('User ID is missing or invalid');
-    }
-    const user = await userRepository.findOneOrFail({
-      where: { id: userId },
-    });
-    if (!includePerms) {
-      return user;
-    }
-
-    const permissions = await rolesService.getUserPermissions(userId);
-    return { ...user, permissions };
-  } catch (error) {
-    console.error(error);
-    return null;
   }
 };
 

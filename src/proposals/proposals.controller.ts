@@ -11,7 +11,7 @@ export const createProposal = async (req: Request, res: Response) => {
   const proposal = await proposalsService.createProposal(
     channelId,
     req.body,
-    res.locals.user.id,
+    res.locals.user,
   );
   res.json({ proposal });
 };

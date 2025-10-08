@@ -79,7 +79,6 @@
     },
     "errors": {
       "invalidEmail": "Email is invalid.",
-      "invalidName": "Usernames cannot contain special characters",
       "longEmail": "Email cannot exceed 254 characters",
       "longName": "Username cannot exceed 15 characters",
       "missingEmail": "Email cannot be empty",
@@ -96,6 +95,44 @@
     "presence": {
       "online": "Online",
       "offline": "Offline"
+    },
+    "actions": {
+      "editProfile": "Edit profile",
+      "save": "Save changes",
+      "changePicture": "Change picture",
+      "selectPicture": "Select picture",
+      "changeCoverPhoto": "Change cover photo",
+      "selectCoverPhoto": "Select cover photo",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "form": {
+      "name": "Username",
+      "displayName": "Display name",
+      "bio": "Bio",
+      "profilePicture": "Profile picture",
+      "coverPhoto": "Cover photo"
+    },
+    "placeholders": {
+      "name": "Enter your username",
+      "displayName": "Enter your display name",
+      "bio": "Tell us about yourself...",
+      "profilePicture": "Upload a profile picture",
+      "coverPhoto": "Upload a cover photo"
+    },
+    "errors": {
+      "shortName": "Username must be at least 3 characters",
+      "longName": "Username cannot exceed 15 characters",
+      "invalidName": "Username can only contain letters, numbers, and underscores",
+      "shortDisplayName": "Display name must be at least 4 characters",
+      "longDisplayName": "Display name cannot exceed 30 characters",
+      "longBio": "Bio cannot exceed 500 characters"
+    },
+    "headers": {
+      "editProfile": "Edit Profile",
+      "editProfileDescription": "Update your profile information."
+    },
+    "prompts": {
+      "viewProfile": "View profile for {{name}}"
     }
   },
 
@@ -265,8 +302,8 @@
       "serverRoles": "Roles",
       "viewServerRoles": "Roles Overview"
     },
-    "subheaders": {
-      "viewServerRoles": "Explore server roles transparently, see who holds them, and understand their permissions."
+    "descriptions": {
+      "addMembers": "Add members to the role."
     },
     "form": {
       "name": "Name",

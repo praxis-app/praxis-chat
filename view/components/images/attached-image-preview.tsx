@@ -23,7 +23,7 @@ const RemoveButton = ({ onClick }: { onClick(): void }) => {
 };
 
 const SavedImagePreview = ({
-  savedImage: { id, filename },
+  savedImage: { id },
   className,
   handleDelete,
 }: {
@@ -31,6 +31,8 @@ const SavedImagePreview = ({
   handleDelete?(id: string): void;
   savedImage: ImageRes;
 }) => {
+  const { t } = useTranslation();
+
   const ref = useRef<HTMLDivElement>(null);
   const src = useImageSrc({
     imageId: id,
@@ -39,7 +41,7 @@ const SavedImagePreview = ({
 
   return (
     <div ref={ref} className={cn(className)}>
-      <img alt={filename} src={src} width="100%" />
+      <img alt={t('images.labels.attachedImage')} src={src} width="100%" />
       {handleDelete && <RemoveButton onClick={() => handleDelete(id)} />}
     </div>
   );

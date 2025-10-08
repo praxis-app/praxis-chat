@@ -25,15 +25,14 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-
-const EMAIL_MAX_LENGTH = 254;
-
-const NAME_REGEX = /^[A-Za-z0-9 ]+$/;
-const NAME_MIN_LENGTH = 3;
-const NAME_MAX_LENGTH = 15;
-
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 64;
+import {
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  NAME_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  VALID_NAME_REGEX,
+} from '@common/users/user.constants';
 
 const signUpFormSchema = zod
   .object({
@@ -45,8 +44,8 @@ const signUpFormSchema = zod
       .max(NAME_MAX_LENGTH, {
         message: t('auth.errors.longName'),
       })
-      .regex(NAME_REGEX, {
-        message: t('auth.errors.invalidName'),
+      .regex(VALID_NAME_REGEX, {
+        message: t('users.errors.invalidName'),
       }),
     email: zod
       .email({
@@ -120,7 +119,7 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       return api.upgradeAnonSession({ ...values, inviteToken: token });
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['me'] });
+      queryClient.resetQueries({ queryKey: ['me'] });
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },

@@ -39,7 +39,10 @@ export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
   if (channelCount === 0) {
     await initializeGeneralChannel();
   }
-  return channelRepository.find(options);
+  return channelRepository.find({
+    order: { createdAt: 'ASC', ...options?.order },
+    ...options,
+  });
 };
 
 export const getJoinedChannels = async (userId: string) => {
