@@ -54,11 +54,11 @@ export const getRole = async (roleId: string) => {
   const userImagesMap = await usersService.getUserImagesMap(
     members.map((member) => member.id),
   );
-  const shapedMembers = members.map((member) => {
-    const profilePictureId = userImagesMap[member.id]?.profilePictureId;
-    const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
-    return { ...member, profilePictureId, coverPhotoId };
-  });
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePictureId: userImagesMap[member.id]?.profilePictureId,
+    coverPhotoId: userImagesMap[member.id]?.coverPhotoId,
+  }));
 
   return {
     ...role,
@@ -93,11 +93,11 @@ export const getRoles = async () => {
 
   return roles.map((role) => ({
     ...role,
-    members: role.members.map((member) => {
-      const profilePictureId = userImagesMap[member.id]?.profilePictureId;
-      const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
-      return { ...member, profilePictureId, coverPhotoId };
-    }),
+    members: role.members.map((member) => ({
+      ...member,
+      profilePictureId: userImagesMap[member.id]?.profilePictureId,
+      coverPhotoId: userImagesMap[member.id]?.coverPhotoId,
+    })),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
   }));
@@ -259,11 +259,11 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   const userImagesMap = await usersService.getUserImagesMap(
     members.map((member) => member.id),
   );
-  const shapedMembers = members.map((member) => {
-    const profilePictureId = userImagesMap[member.id]?.profilePictureId;
-    const coverPhotoId = userImagesMap[member.id]?.coverPhotoId;
-    return { ...member, profilePictureId, coverPhotoId };
-  });
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePictureId: userImagesMap[member.id]?.profilePictureId,
+    coverPhotoId: userImagesMap[member.id]?.coverPhotoId,
+  }));
 
   await roleRepository.save({
     ...role,
