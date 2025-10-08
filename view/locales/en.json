@@ -132,7 +132,8 @@
       "editProfileDescription": "Update your profile information."
     },
     "prompts": {
-      "viewProfile": "View profile for {{name}}"
+      "viewProfile": "View profile for {{name}}",
+      "logInToViewProfile": "Log in or sign up to view profiles"
     }
   },
 

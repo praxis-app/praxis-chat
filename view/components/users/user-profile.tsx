@@ -16,26 +16,39 @@ interface Props {
   className?: string;
 }
 
-export const UserProfile = (props: Props) => {
+export const UserProfile = ({ userId, me, className }: Props) => {
   const { t } = useTranslation();
 
-  const resolvedUserId = props.userId || props.me?.id || '';
+  const resolvedUserId = userId || me?.id || '';
 
   const { data: profileData } = useQuery({
     queryKey: ['users', resolvedUserId, 'profile'],
     queryFn: () => api.getUserProfile(resolvedUserId),
-    enabled: !!resolvedUserId,
+    enabled: !!resolvedUserId && !!me,
   });
+
+  if (!me) {
+    return (
+      <div
+        className={cn(
+          'flex h-21 flex-col items-center gap-4 pt-8 md:min-w-lg',
+          className,
+        )}
+      >
+        <p>{t('users.prompts.logInToViewProfile')}</p>
+      </div>
+    );
+  }
 
   if (!profileData) {
     return null;
   }
 
-  const isMe = props.me?.id === profileData.user.id;
+  const isMe = me?.id === profileData.user.id;
   const resolvedName = profileData.user.displayName || profileData.user.name;
 
   return (
-    <div className={cn('flex flex-col gap-4 md:min-w-lg', props.className)}>
+    <div className={cn('flex flex-col gap-4 md:min-w-lg', className)}>
       <div className="relative">
         {profileData.user.coverPhoto?.id ? (
           <LazyLoadImage
