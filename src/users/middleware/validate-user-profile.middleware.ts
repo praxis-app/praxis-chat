@@ -1,8 +1,8 @@
 import {
   BIO_MAX_LENGTH,
   DISPLAY_NAME_MAX_LENGTH,
-  NAME_MAX_LENGTH,
   DISPLAY_NAME_MIN_LENGTH,
+  NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
