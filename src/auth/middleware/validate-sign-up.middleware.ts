@@ -4,16 +4,14 @@ import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
   VALID_EMAIL_REGEX,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
 import { normalizeText } from '../../common/common.utils';
 import { getValidInvite } from '../../invites/invites.service';
-import {
-  MAX_PASSWORD_LENGTH,
-  MIN_PASSWORD_LENGTH,
-} from '../../users/users.constants';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
 
@@ -46,13 +44,13 @@ export const validateSignUp = async (
     res.status(422).send('Username cannot exceed 15 characters');
     return;
   }
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    const message = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    const message = `Password must be at least ${PASSWORD_MIN_LENGTH} characters long`;
     res.status(422).send(message);
     return;
   }
-  if (password.length > MAX_PASSWORD_LENGTH) {
-    const message = `Password must be at most ${MAX_PASSWORD_LENGTH} characters long`;
+  if (password.length > PASSWORD_MAX_LENGTH) {
+    const message = `Password must be at most ${PASSWORD_MAX_LENGTH} characters long`;
     res.status(422).send(message);
     return;
   }
