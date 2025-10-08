@@ -48,23 +48,15 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
 };
 
 export const getUserProfile = async (userId: string) => {
-  const user = await userRepository.findOne({
+  const user = await userRepository.findOneOrFail({
     select: ['id', 'name', 'displayName', 'bio'],
     where: { id: userId },
   });
 
-  if (!user) {
-    return null;
-  }
-
   const profilePicture = await getUserProfilePicture(userId);
   const coverPhoto = await getUserCoverPhoto(userId);
 
-  return {
-    ...user,
-    profilePicture,
-    coverPhoto,
-  };
+  return { ...user, profilePicture, coverPhoto };
 };
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
