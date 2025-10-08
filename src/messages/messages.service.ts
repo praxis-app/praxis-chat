@@ -65,7 +65,7 @@ export const getMessages = async (
     messages.map((message) => message.user.id),
   );
 
-  const decryptedMessages = messages.map(
+  const shapedMessages = messages.map(
     ({ ciphertext, tag, iv, keyId, ...message }) => {
       let body: string | null = null;
 
@@ -94,7 +94,7 @@ export const getMessages = async (
     },
   );
 
-  return decryptedMessages;
+  return shapedMessages;
 };
 
 export const createMessage = async (
