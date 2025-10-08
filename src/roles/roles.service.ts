@@ -143,16 +143,11 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   const userImagesMap = await usersService.getUserImagesMap(
     users.map((user) => user.id),
   );
-  const shapedUsers = users.map((user) => {
-    const profilePictureId = userImagesMap[user.id]?.profilePictureId;
-    const coverPhotoId = userImagesMap[user.id]?.coverPhotoId;
-
-    return {
-      ...user,
-      profilePictureId,
-      coverPhotoId,
-    };
-  });
+  const shapedUsers = users.map((user) => ({
+    ...user,
+    profilePictureId: userImagesMap[user.id]?.profilePictureId,
+    coverPhotoId: userImagesMap[user.id]?.coverPhotoId,
+  }));
 
   return shapedUsers;
 };
