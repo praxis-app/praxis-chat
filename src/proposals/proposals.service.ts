@@ -246,7 +246,6 @@ export const createProposal = async (
   }
 
   const profilePicture = await usersService.getUserProfilePicture(user.id);
-  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
 
   // Shape to match feed expectations
   const shapedProposal = {
@@ -263,7 +262,6 @@ export const createProposal = async (
       name: user.name,
       displayName: user.displayName,
       profilePicture,
-      coverPhoto,
     },
     // TODO: Handle images
     images: [],

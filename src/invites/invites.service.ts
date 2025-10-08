@@ -74,14 +74,12 @@ export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
   });
 
   const profilePicture = await usersService.getUserProfilePicture(user.id);
-  const coverPhoto = await usersService.getUserCoverPhoto(user.id);
 
   return {
     ...invite,
     user: {
       ...user,
       profilePicture,
-      coverPhoto,
     },
   };
 };
