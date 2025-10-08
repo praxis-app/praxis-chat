@@ -270,7 +270,7 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
     return { ...member, profilePictureId, coverPhotoId };
   });
 
-  return roleRepository.save({
+  await roleRepository.save({
     ...role,
     members: shapedMembers,
   });
