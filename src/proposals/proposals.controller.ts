@@ -1,11 +1,6 @@
 import { Request, Response } from 'express';
 import * as proposalsService from './proposals.service';
 
-export const getProposal = async (req: Request, res: Response) => {
-  const proposal = await proposalsService.getProposal(req.params.proposalId);
-  res.json({ proposal });
-};
-
 export const createProposal = async (req: Request, res: Response) => {
   const { channelId } = req.params;
   const proposal = await proposalsService.createProposal(
