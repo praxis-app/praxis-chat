@@ -151,7 +151,6 @@ export const getInlineProposals = async (
       : undefined;
 
     const profilePicture = userImagesMap[proposal.user.id]?.profilePicture;
-    const coverPhoto = userImagesMap[proposal.user.id]?.coverPhoto;
 
     return {
       ...proposal,
@@ -167,7 +166,6 @@ export const getInlineProposals = async (
       user: {
         ...proposal.user,
         profilePicture,
-        coverPhoto,
       },
       votesNeededToRatify,
       agreementVoteCount,

@@ -55,14 +55,12 @@ export const getValidInvites = async () => {
 
   const shapedInvites = validInvites.map((invite) => {
     const profilePicture = userImagesMap[invite.user.id]?.profilePicture;
-    const coverPhoto = userImagesMap[invite.user.id]?.coverPhoto;
 
     return {
       ...invite,
       user: {
         ...invite.user,
         profilePicture,
-        coverPhoto,
       },
     };
   });

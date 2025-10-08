@@ -6,9 +6,6 @@ export interface UserRes {
   name: string;
   displayName?: string;
   profilePicture: ImageRes | null;
-
-  // TODO: Remove this
-  coverPhoto: ImageRes | null;
 }
 
 export interface CurrentUserRes {

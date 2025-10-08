@@ -57,7 +57,6 @@ export const getRole = async (roleId: string) => {
   const shapedMembers = members.map((member) => ({
     ...member,
     profilePicture: userImagesMap[member.id]?.profilePicture,
-    coverPhoto: userImagesMap[member.id]?.coverPhoto,
   }));
 
   return {
@@ -96,7 +95,6 @@ export const getRoles = async () => {
     members: role.members.map((member) => ({
       ...member,
       profilePicture: userImagesMap[member.id]?.profilePicture,
-      coverPhoto: userImagesMap[member.id]?.coverPhoto,
     })),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
@@ -146,7 +144,6 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   const shapedUsers = users.map((user) => ({
     ...user,
     profilePicture: userImagesMap[user.id]?.profilePicture,
-    coverPhoto: userImagesMap[user.id]?.coverPhoto,
   }));
 
   return shapedUsers;
@@ -262,7 +259,6 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
   const shapedMembers = members.map((member) => ({
     ...member,
     profilePicture: userImagesMap[member.id]?.profilePicture,
-    coverPhoto: userImagesMap[member.id]?.coverPhoto,
   }));
 
   await roleRepository.save({

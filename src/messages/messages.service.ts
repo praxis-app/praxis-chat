@@ -75,7 +75,6 @@ export const getMessages = async (
       }
 
       const profilePicture = userImagesMap[message.user.id]?.profilePicture;
-      const coverPhoto = userImagesMap[message.user.id]?.coverPhoto;
 
       return {
         ...message,
@@ -87,7 +86,6 @@ export const getMessages = async (
         user: {
           ...message.user,
           profilePicture,
-          coverPhoto,
         },
         body,
       };
