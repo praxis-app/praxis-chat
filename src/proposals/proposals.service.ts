@@ -1,5 +1,10 @@
-import { In, IsNull, Not } from 'typeorm';
+import * as crypto from 'crypto';
+import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
@@ -42,7 +47,10 @@ export const getInlineProposals = async (
     .createQueryBuilder('proposal')
     .select([
       'proposal.id',
-      'proposal.body',
+      'proposal.ciphertext',
+      'proposal.keyId',
+      'proposal.tag',
+      'proposal.iv',
       'proposal.stage',
       'proposal.channelId',
       'proposal.createdAt',
@@ -115,11 +123,24 @@ export const getInlineProposals = async (
   // Get users eligible to vote on this proposal
   const proposalMemberCount = await getProposalMemberCount();
 
+  const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
+    proposals
+      .filter((proposal) => proposal.keyId)
+      .map((proposal) => proposal.keyId!),
+  );
+
   const profilePictures = await usersService.getUserProfilePicturesMap(
     proposals.map((p) => p.user.id),
   );
 
   const shapedProposals = proposals.map((proposal) => {
+    const { ciphertext, tag, iv, keyId } = proposal;
+
+    let body: string | null = null;
+    if (ciphertext && tag && iv && keyId) {
+      const unwrappedKey = unwrappedKeyMap[keyId];
+      body = decryptProposalBody(ciphertext, tag, iv, unwrappedKey);
+    }
     const votesNeededToRatify = Math.ceil(
       proposalMemberCount * (proposal.config.ratificationThreshold * 0.01),
     );
@@ -151,7 +172,8 @@ export const getInlineProposals = async (
       : undefined;
 
     return {
-      ...proposal,
+      id: proposal.id,
+      stage: proposal.stage,
       action: {
         ...proposal.action,
         role: actionRole,
@@ -165,9 +187,13 @@ export const getInlineProposals = async (
         ...proposal.user,
         profilePicture: profilePictures[proposal.user.id],
       },
+      votes: proposal.votes,
+      config: proposal.config,
+      createdAt: proposal.createdAt,
       votesNeededToRatify,
       agreementVoteCount,
       myVote,
+      body,
     };
   });
 
@@ -224,13 +250,32 @@ export const createProposal = async (
     actionType: action.actionType,
   };
 
-  const proposal = await proposalRepository.save({
-    body: sanitizedBody,
+  let proposalData: DeepPartial<Proposal> = {
     config: proposalConfig,
     action: proposalAction,
     userId: user.id,
     channelId,
-  });
+  };
+
+  if (sanitizedBody) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(channelId);
+
+    const { ciphertext, tag, iv } = encryptProposalBody(
+      sanitizedBody,
+      unwrappedKey,
+    );
+
+    proposalData = {
+      ...proposalData,
+      keyId: channelKey.id,
+      ciphertext,
+      tag,
+      iv,
+    };
+  }
+
+  const proposal = await proposalRepository.save(proposalData);
 
   const proposalMemberCount = await getProposalMemberCount();
   const votesNeededToRatify = Math.ceil(
@@ -250,7 +295,7 @@ export const createProposal = async (
   // Shape to match feed expectations
   const shapedProposal = {
     id: proposal.id,
-    body: proposal.body,
+    body: sanitizedBody,
     stage: proposal.stage,
     channelId: proposal.channelId,
     action: {
@@ -425,4 +470,35 @@ const getProposalMemberCount = async () => {
 
 const getNewProposalKey = (channelId: string, userId: string) => {
   return `new-proposal-${channelId}-${userId}`;
+};
+
+const encryptProposalBody = (body: string, channelKey: Buffer) => {
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, channelKey, iv);
+
+  const ciphertext = Buffer.concat([cipher.update(body), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  return { ciphertext, tag, iv };
+};
+
+const decryptProposalBody = (
+  ciphertext: Buffer,
+  tag: Buffer,
+  iv: Buffer,
+  channelKey: Buffer,
+) => {
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    channelKey,
+    iv,
+  );
+  decipher.setAuthTag(tag);
+
+  const plaintext = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ]);
+
+  return plaintext.toString();
 };
