@@ -76,6 +76,7 @@ export const LeftNavUserMenu = () => {
         sideOffset={18}
       >
         <UserProfileDrawer
+          me={me}
           user={me}
           trigger={
             <DropdownMenuItem
