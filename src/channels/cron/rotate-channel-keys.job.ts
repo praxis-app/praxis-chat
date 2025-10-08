@@ -1,7 +1,7 @@
 import { CronJob } from 'cron';
 import { CronExpression } from '../../common/common.constants';
 import { dataSource } from '../../database/data-source';
-import { generateChannelKey } from '../channels.service';
+import * as channelsService from '../channels.service';
 import { ChannelKey } from '../entities/channel-key.entity';
 import { Channel } from '../entities/channel.entity';
 
@@ -12,7 +12,7 @@ const rotateChannelKeys = async () => {
   const channels = await channelRepository.find();
 
   const newChannelKeysToSave = channels.map((channel) => {
-    const { wrappedKey, tag, iv } = generateChannelKey();
+    const { wrappedKey, tag, iv } = channelsService.generateChannelKey();
     return {
       channelId: channel.id,
       wrappedKey,
