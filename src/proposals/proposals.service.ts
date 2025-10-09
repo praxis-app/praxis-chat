@@ -1,7 +1,8 @@
+import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
-import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/common.utils';
+import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
@@ -221,7 +222,7 @@ export const isProposalRatifiable = async (proposalId: string) => {
 
 export const createProposal = async (
   channelId: string,
-  { body, closingAt, action }: ProposalDto,
+  { body, closingAt, action, imageCount }: ProposalDto,
   user: User,
 ) => {
   const sanitizedBody = sanitizeText(body);
@@ -285,6 +286,22 @@ export const createProposal = async (
 
   const profilePicture = await usersService.getUserProfilePicture(user.id);
 
+  let images: Image[] = [];
+  if (imageCount) {
+    const imagePlaceholders = Array.from({ length: imageCount }).map(() => {
+      return imageRepository.create({
+        proposalId: proposal.id,
+        imageType: 'proposal',
+      });
+    });
+    images = await imageRepository.save(imagePlaceholders);
+  }
+  const attachedImages = images.map((image) => ({
+    id: image.id,
+    isPlaceholder: true,
+    createdAt: image.createdAt,
+  }));
+
   // Shape to match feed expectations
   const shapedProposal = {
     id: proposal.id,
@@ -301,8 +318,7 @@ export const createProposal = async (
       displayName: user.displayName,
       profilePicture,
     },
-    // TODO: Handle images
-    images: [],
+    images: attachedImages,
     createdAt: proposal.createdAt,
     agreementVoteCount: 0,
     votesNeededToRatify,
@@ -321,6 +337,38 @@ export const createProposal = async (
   }
 
   return shapedProposal;
+};
+
+export const saveProposalImage = async (
+  proposalId: string,
+  imageId: string,
+  filename: string,
+  user: User,
+) => {
+  const proposal = await proposalRepository.findOne({
+    where: { id: proposalId },
+  });
+  if (!proposal) {
+    throw new Error('Proposal not found');
+  }
+
+  const image = await imageRepository.save({ id: imageId, filename });
+  const channelMembers = await channelsService.getChannelMembers(
+    proposal.channelId,
+  );
+  for (const member of channelMembers) {
+    if (member.userId === user.id) {
+      continue;
+    }
+    const channelKey = getNewProposalKey(proposal.channelId, member.userId);
+    await pubSubService.publish(channelKey, {
+      type: PubSubMessageType.IMAGE,
+      isPlaceholder: false,
+      proposalId,
+      imageId,
+    });
+  }
+  return image;
 };
 
 // TODO: Ensure notifications and pub-sub messages are sent when proposals are ratified
