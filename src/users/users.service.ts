@@ -1,24 +1,26 @@
 // TODO: Add support for user deletion + clean up for saved image files
 
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
-import { FindManyOptions, In } from 'typeorm';
+import { FindManyOptions, In, Like } from 'typeorm';
 import {
   colors,
   NumberDictionary,
   uniqueNamesGenerator,
 } from 'unique-names-generator';
 import * as channelsService from '../channels/channels.service';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as rolesService from '../roles/roles.service';
-import { createAdminRole } from '../roles/roles.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
 import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 
 const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
+const channelMemberRepository = dataSource.getRepository(ChannelMember);
 
 export const getCurrentUser = async (userId: string, includePerms = true) => {
   try {
@@ -83,7 +85,7 @@ export const createUser = async (
   });
 
   if (isFirst) {
-    await createAdminRole(user.id);
+    await rolesService.createAdminRole(user.id);
   }
   await channelsService.addMemberToAllChannels(user.id);
 
@@ -113,7 +115,7 @@ export const createAnonUser = async () => {
   const isFirst = await isFirstUser();
 
   if (isFirst) {
-    await createAdminRole(user.id);
+    await rolesService.createAdminRole(user.id);
     await channelsService.addMemberToAllChannels(user.id);
   } else {
     await channelsService.addMemberToGeneralChannel(user.id);
@@ -210,6 +212,42 @@ export const createUserCoverPhoto = async (
     userId,
   });
   return image;
+};
+
+export const isGeneralChannelMember = async (userId: string) => {
+  const isMember = await channelMemberRepository.exist({
+    where: {
+      channel: {
+        name: Like(`%${GENERAL_CHANNEL_NAME}%`),
+      },
+      userId,
+    },
+  });
+  return isMember;
+};
+
+export const hasSharedChannel = async (userId: string, otherUserId: string) => {
+  const userChannels = await channelMemberRepository.find({
+    where: { userId: userId },
+    select: ['channelId'],
+  });
+
+  const otherUserChannels = await channelMemberRepository.find({
+    where: { userId: otherUserId },
+    select: ['channelId'],
+  });
+
+  const userChannelIds = new Set(
+    userChannels.map((member) => member.channelId),
+  );
+
+  for (const member of otherUserChannels) {
+    if (userChannelIds.has(member.channelId)) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 const generateName = () => {
