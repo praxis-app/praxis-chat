@@ -20,11 +20,12 @@ export const UserProfile = ({ userId, me, className }: Props) => {
   const { t } = useTranslation();
 
   const resolvedUserId = userId || me?.id || '';
+  const isMe = me?.id === resolvedUserId;
 
   const { data: profileData } = useQuery({
     queryKey: ['users', resolvedUserId, 'profile'],
     queryFn: () => api.getUserProfile(resolvedUserId),
-    enabled: !!resolvedUserId && !!me,
+    enabled: !!resolvedUserId && !!me && !(me.anonymous && !isMe),
   });
 
   if (!me) {
@@ -40,11 +41,23 @@ export const UserProfile = ({ userId, me, className }: Props) => {
     );
   }
 
+  if (me.anonymous && !isMe) {
+    return (
+      <div
+        className={cn(
+          'flex h-21 flex-col items-center gap-4 pt-8 md:min-w-lg',
+          className,
+        )}
+      >
+        <p>{t('users.prompts.registerToViewOtherProfiles')}</p>
+      </div>
+    );
+  }
+
   if (!profileData) {
     return null;
   }
 
-  const isMe = me?.id === profileData.user.id;
   const resolvedName = profileData.user.displayName || profileData.user.name;
 
   return (
@@ -53,6 +66,7 @@ export const UserProfile = ({ userId, me, className }: Props) => {
         {profileData.user.coverPhoto?.id ? (
           <LazyLoadImage
             imageId={profileData.user.coverPhoto?.id}
+            userId={profileData.user.id}
             alt={t('users.form.coverPhoto')}
             className="h-32 w-full rounded-t-2xl object-cover md:rounded-t-lg"
             skipAnimation={true}
@@ -84,7 +98,7 @@ export const UserProfile = ({ userId, me, className }: Props) => {
           </p>
         )}
 
-        {isMe && (
+        {isMe && !me.anonymous && (
           <Link to={NavigationPaths.UsersEdit} className="mt-2 px-2">
             <Button variant="outline" className="w-full gap-1.5">
               <MdEdit className="size-4" /> {t('users.actions.editProfile')}

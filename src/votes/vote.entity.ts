@@ -6,12 +6,14 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Proposal } from '../proposals/entities/proposal.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
+@Unique(['proposalId', 'userId'])
 export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;

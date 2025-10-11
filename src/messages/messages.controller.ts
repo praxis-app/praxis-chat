@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { Image } from '../images/entities/image.entity';
+import { getUploadsPath } from '../images/images.utils';
 import * as messagesService from './messages.service';
 
 export const createMessage = async (req: Request, res: Response) => {
@@ -26,4 +28,12 @@ export const uploadMessageImage = async (req: Request, res: Response) => {
   );
 
   res.status(201).json({ image });
+};
+
+export const getMessageImage = async (_req: Request, res: Response) => {
+  const image: Image & { filename: string } = res.locals.image;
+
+  return res.sendFile(image.filename, {
+    root: getUploadsPath(),
+  });
 };

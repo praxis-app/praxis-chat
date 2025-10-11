@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { Image } from '../images/entities/image.entity';
+import { getUploadsPath } from '../images/images.utils';
 import * as usersService from './users.service';
 
 export const getCurrentUser = async (_req: Request, res: Response) => {
@@ -6,14 +8,11 @@ export const getCurrentUser = async (_req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const user = await usersService.getUserProfile(userId);
-
+  const user = await usersService.getUserProfile(req.params.userId);
   if (!user) {
     res.status(404).send('User not found');
     return;
   }
-
   res.json({ user });
 };
 
@@ -49,4 +48,12 @@ export const createUserCoverPhoto = async (req: Request, res: Response) => {
     res.locals.user.id,
   );
   res.status(201).json({ image });
+};
+
+export const getUserImage = async (_req: Request, res: Response) => {
+  const image: Image & { filename: string } = res.locals.image;
+
+  return res.sendFile(image.filename, {
+    root: getUploadsPath(),
+  });
 };

@@ -1,7 +1,9 @@
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { NextFunction, Request, Response } from 'express';
-import * as proposalsService from '../../proposals/proposals.service';
 import * as zod from 'zod';
+import { dataSource } from '../../database/data-source';
+import * as proposalsService from '../../proposals/proposals.service';
+import { Vote } from '../vote.entity';
 
 export const voteSchema = zod.object({
   voteType: zod.enum(VOTE_TYPES, {
@@ -27,6 +29,17 @@ export const validateVote = async (
         .status(422)
         .send('Proposal has been ratified and can no longer be voted on');
       return;
+    }
+
+    if (req.method === 'POST') {
+      const voteRepository = dataSource.getRepository(Vote);
+      const vote = await voteRepository.findOne({
+        where: { proposalId, userId: res.locals.user.id },
+      });
+      if (vote) {
+        res.status(422).send('You have already voted on this proposal');
+        return;
+      }
     }
 
     next();

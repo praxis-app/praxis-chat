@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { ProposalStage } from '@common/proposals/proposal.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';

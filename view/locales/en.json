@@ -133,7 +133,8 @@
     },
     "prompts": {
       "viewProfile": "View profile for {{name}}",
-      "logInToViewProfile": "Log in or sign up to view profiles"
+      "logInToViewProfile": "Log in or sign up to view profiles",
+      "registerToViewOtherProfiles": "You need to register to view other user profiles"
     }
   },
 

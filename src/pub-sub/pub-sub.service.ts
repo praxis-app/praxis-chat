@@ -1,7 +1,8 @@
 import WebSocket from 'ws';
 import * as authService from '../auth/auth.service';
 import * as cacheService from '../cache/cache.service';
-import * as rolesService from '../roles/roles.service';
+import { CHANNEL_ACCESS_MAP } from './channel-access';
+import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import {
   PubSubRequest,
@@ -33,7 +34,7 @@ export const handleMessage = async (
     return;
   }
 
-  const canAccess = rolesService.canAccessChannel(channel, user);
+  const canAccess = canAccessChannel(channel, user);
   if (!canAccess) {
     const response: PubSubResponse = {
       error: { code: 'FORBIDDEN', message: 'Forbidden' },
@@ -109,6 +110,17 @@ const unsubscribe = async (channel: string, token: string) => {
   const channelKey = getChannelCacheKey(channel);
   await cacheService.removeSetMember(channelKey, token);
   delete subscribers[token];
+};
+
+/** Check if a user can access a given pub-sub channel */
+const canAccessChannel = (channelKey: string, user: User) => {
+  for (const { pattern, rules } of Object.values(CHANNEL_ACCESS_MAP)) {
+    const match = pattern.exec(channelKey);
+    if (match) {
+      return Object.values(rules).every((rule) => rule(match, user));
+    }
+  }
+  return false;
 };
 
 const getChannelCacheKey = (channel: string) => {

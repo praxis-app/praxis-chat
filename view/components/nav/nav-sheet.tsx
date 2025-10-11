@@ -1,9 +1,9 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAppStore } from '@/store/app.store';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';

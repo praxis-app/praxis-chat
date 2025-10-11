@@ -6,7 +6,7 @@ import { Avatar, AvatarBadge, AvatarFallback } from '../ui/avatar';
 
 interface Props {
   name: string;
-  userId?: string | null;
+  userId?: string;
   className?: string;
   fallbackClassName?: string;
   imageSrc?: string;
@@ -46,6 +46,7 @@ export const UserAvatar = ({
         alt={name}
         imageId={imageId}
         src={imageSrc}
+        userId={userId}
         skipAnimation={skipLoadAnimation}
         className={cn(
           (imageId || imageSrc) && 'min-h-full min-w-full rounded-full',

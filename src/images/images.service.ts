@@ -10,6 +10,7 @@ export const getImage = async (imageId: string) => {
   });
 };
 
+// TODO: Implement - is currently unused
 export const deleteImage = async (imageId: string) => {
   const image = await imageRepository.findOne({
     where: { id: imageId },
