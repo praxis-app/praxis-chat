@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1759959254452 implements MigrationInterface {
-  name = 'Initial1759959254452';
+export class Initial1760151746923 implements MigrationInterface {
+  name = 'Initial1760151746923';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -153,6 +153,7 @@ export class Initial1759959254452 implements MigrationInterface {
                 "userId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "UQ_fe4797cd8ebb3d89c48c4acb277" UNIQUE ("proposalId", "userId"),
                 CONSTRAINT "PK_2d5932d46afe39c8176f9d4be72" PRIMARY KEY ("id")
             )
         `);
@@ -175,7 +176,12 @@ export class Initial1759959254452 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TYPE "public"."image_imagetype_enum" AS ENUM('message', 'cover-photo', 'profile-picture')
+            CREATE TYPE "public"."image_imagetype_enum" AS ENUM(
+                'message',
+                'proposal',
+                'cover-photo',
+                'profile-picture'
+            )
         `);
     await queryRunner.query(`
             CREATE TABLE "image" (
