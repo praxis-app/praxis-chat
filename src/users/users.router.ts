@@ -3,6 +3,7 @@ import { authenticateOptional } from '../auth/middleware/authenticate-optional.m
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
+import { canReadUserImage } from './middleware/can-read-user-image.middleware';
 import { canReadUserProfile } from './middleware/can-read-user-profile.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
 import {
@@ -20,7 +21,12 @@ export const usersRouter = express.Router();
 // Public routes
 usersRouter
   .get('/is-first', isFirstUser)
-  .get('/:userId/images/:imageId', authenticateOptional, getUserImage);
+  .get(
+    '/:userId/images/:imageId',
+    authenticateOptional,
+    canReadUserImage,
+    getUserImage,
+  );
 
 // Protected routes
 usersRouter
