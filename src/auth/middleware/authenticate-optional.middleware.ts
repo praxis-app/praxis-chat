@@ -12,9 +12,10 @@ export const authenticateOptional = async (
     const [type, token] = authorization?.split(' ') ?? [];
     if (type === 'Bearer' && token) {
       const sub = authService.verifyAccessToken(token);
-      const user = await usersService.getCurrentUser(sub);
-      if (user) {
-        res.locals.user = user;
+      const currentUser = await usersService.getCurrentUser(sub);
+      if (currentUser) {
+        res.locals.authenticated = true;
+        res.locals.user = currentUser;
       }
     }
   } catch {

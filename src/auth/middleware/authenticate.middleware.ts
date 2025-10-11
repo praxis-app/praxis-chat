@@ -7,8 +7,8 @@ export const authenticate = async (
   res: Response,
   next: NextFunction,
 ) => {
-  // If user exists, user is already authed
-  if (res.locals.user) {
+  // User has already been authenticated
+  if (res.locals.authenticated) {
     next();
     return;
   }
@@ -29,7 +29,8 @@ export const authenticate = async (
     return;
   }
 
-  // Set current user in response locals
+  // Set response locals for authenticated user
+  res.locals.authenticated = true;
   res.locals.user = currentUser;
   next();
 };
