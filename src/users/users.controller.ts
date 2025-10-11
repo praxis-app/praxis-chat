@@ -14,7 +14,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   if (currentUser.anonymous && userId !== currentUser.id) {
-    res.status(403).send('Access denied');
+    res.status(403).send('Forbidden');
     return;
   }
 
@@ -24,7 +24,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
   );
 
   if (!hasSharedChannel) {
-    res.status(403).send('Access denied');
+    res.status(403).send('Forbidden');
     return;
   }
 
@@ -88,7 +88,7 @@ export const getUserImage = async (req: Request, res: Response) => {
       await usersService.isGeneralChannelMember(userId);
 
     if (!currentUser && !isGeneralChannelMember) {
-      res.status(403).send('Access denied');
+      res.status(403).send('Forbidden');
       return;
     }
   }
@@ -102,7 +102,7 @@ export const getUserImage = async (req: Request, res: Response) => {
       );
     }
     if (!hasSharedChannel) {
-      res.status(403).send('Access denied');
+      res.status(403).send('Forbidden');
       return;
     }
   }
