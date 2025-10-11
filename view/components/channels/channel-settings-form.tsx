@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { ChannelRes } from '@/types/channel.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';

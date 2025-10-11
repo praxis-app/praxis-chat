@@ -1,6 +1,5 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
@@ -8,6 +7,7 @@ import {
   CreateProposalActionRolePermissionReq,
 } from '@/types/proposal-action.types';
 import { PermissionKeys } from '@/types/role.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';

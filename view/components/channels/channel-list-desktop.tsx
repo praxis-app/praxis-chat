@@ -1,8 +1,8 @@
 import { useAppStore } from '@/store/app.store';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
-import { GENERAL_CHANNEL_NAME } from '../../constants/channel.constants';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { CurrentUserRes } from '../../types/user.types';
 import { ChannelListItemDesktop } from './channel-list-item-desktop';

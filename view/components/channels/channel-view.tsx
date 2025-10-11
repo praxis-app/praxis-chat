@@ -1,5 +1,4 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
@@ -8,6 +7,7 @@ import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { MessageRes } from '@/types/message.types';
 import { ProposalRes } from '@/types/proposal.types';
 import { PubSubMessage } from '@/types/shared.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
