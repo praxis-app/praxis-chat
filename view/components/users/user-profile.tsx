@@ -20,11 +20,12 @@ export const UserProfile = ({ userId, me, className }: Props) => {
   const { t } = useTranslation();
 
   const resolvedUserId = userId || me?.id || '';
+  const isMe = me?.id === resolvedUserId;
 
   const { data: profileData } = useQuery({
     queryKey: ['users', resolvedUserId, 'profile'],
     queryFn: () => api.getUserProfile(resolvedUserId),
-    enabled: !!resolvedUserId && !!me,
+    enabled: !!resolvedUserId && !!me && !(me.anonymous && !isMe),
   });
 
   if (!me) {
@@ -40,11 +41,23 @@ export const UserProfile = ({ userId, me, className }: Props) => {
     );
   }
 
+  if (me.anonymous && !isMe) {
+    return (
+      <div
+        className={cn(
+          'flex h-21 flex-col items-center gap-4 pt-8 md:min-w-lg',
+          className,
+        )}
+      >
+        <p>{t('users.prompts.registerToViewOtherProfiles')}</p>
+      </div>
+    );
+  }
+
   if (!profileData) {
     return null;
   }
 
-  const isMe = me?.id === profileData.user.id;
   const resolvedName = profileData.user.displayName || profileData.user.name;
 
   return (

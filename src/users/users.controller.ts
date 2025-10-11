@@ -13,6 +13,11 @@ export const getUserProfile = async (req: Request, res: Response) => {
   const currentUser: User = res.locals.user;
   const { userId } = req.params;
 
+  if (currentUser.anonymous && userId !== currentUser.id) {
+    res.status(403).send('Access denied');
+    return;
+  }
+
   const hasSharedChannel = await usersService.hasSharedChannel(
     currentUser.id,
     userId,
