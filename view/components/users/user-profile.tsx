@@ -98,7 +98,7 @@ export const UserProfile = ({ userId, me, className }: Props) => {
           </p>
         )}
 
-        {isMe && (
+        {isMe && !me.anonymous && (
           <Link to={NavigationPaths.UsersEdit} className="mt-2 px-2">
             <Button variant="outline" className="w-full gap-1.5">
               <MdEdit className="size-4" /> {t('users.actions.editProfile')}
