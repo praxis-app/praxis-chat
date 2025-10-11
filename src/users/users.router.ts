@@ -3,6 +3,7 @@ import { authenticateOptional } from '../auth/middleware/authenticate-optional.m
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
+import { verifyImage } from '../images/middleware/verify-image.middleware';
 import { canReadUserImage } from './middleware/can-read-user-image.middleware';
 import { canReadUserProfile } from './middleware/can-read-user-profile.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
@@ -25,6 +26,7 @@ usersRouter
     '/:userId/images/:imageId',
     authenticateOptional,
     canReadUserImage,
+    verifyImage,
     getUserImage,
   );
 

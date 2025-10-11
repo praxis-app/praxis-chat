@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
+import { verifyImage } from '../images/middleware/verify-image.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
 import {
   createMessage,
@@ -17,5 +18,5 @@ export const messagesRouter = express.Router({
 messagesRouter
   .use(authenticate)
   .post('/', validateMessage, createMessage)
-  .get(IMAGE_ROUTE, getMessageImage)
+  .get(IMAGE_ROUTE, verifyImage, getMessageImage)
   .post(`${IMAGE_ROUTE}/upload`, uploadImage, uploadMessageImage);
