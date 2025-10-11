@@ -64,7 +64,7 @@ describe('Proposal Images Authorization', () => {
   });
 
   describe('getProposalImage', () => {
-    it('should allow access when user is a channel member', async () => {
+    it('should successfully return image file when image exists and belongs to the specified proposal', async () => {
       const mockImage = {
         id: 'image-1',
         proposalId: 'proposal-1',
@@ -82,7 +82,7 @@ describe('Proposal Images Authorization', () => {
       expect(mockResponse.status).not.toHaveBeenCalledWith(403);
     });
 
-    it('should return 404 when image does not exist', async () => {
+    it('should return 404 when image record does not exist in database', async () => {
       vi.mocked(imagesService.getImage).mockResolvedValue(null);
 
       await proposalsController.getProposalImage(mockRequest, mockResponse);
@@ -92,7 +92,7 @@ describe('Proposal Images Authorization', () => {
       expect(mockResponse.sendFile).not.toHaveBeenCalled();
     });
 
-    it('should return 404 when image proposalId does not match route proposalId', async () => {
+    it('should return 404 when image belongs to a different proposal than requested', async () => {
       const mockImage = {
         id: 'image-1',
         proposalId: 'different-proposal',
@@ -108,7 +108,7 @@ describe('Proposal Images Authorization', () => {
       expect(mockResponse.sendFile).not.toHaveBeenCalled();
     });
 
-    it('should return 404 when image has no filename', async () => {
+    it('should return 404 when image record exists but has no filename (not yet uploaded)', async () => {
       const mockImage = {
         id: 'image-1',
         proposalId: 'proposal-1',
@@ -125,21 +125,47 @@ describe('Proposal Images Authorization', () => {
       );
       expect(mockResponse.sendFile).not.toHaveBeenCalled();
     });
+
+    it('should return 404 when image record exists but physical file is missing from filesystem', async () => {
+      const mockImage = {
+        id: 'image-1',
+        proposalId: 'proposal-1',
+        filename: 'test.jpg',
+      };
+
+      vi.mocked(imagesService.getImage).mockResolvedValue(mockImage as any);
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+
+      await proposalsController.getProposalImage(mockRequest, mockResponse);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.send).toHaveBeenCalledWith('Image file not found');
+      expect(mockResponse.sendFile).not.toHaveBeenCalled();
+    });
+
+    it('should propagate errors when imagesService.getImage throws an exception', async () => {
+      vi.mocked(imagesService.getImage).mockRejectedValue(new Error('Database error'));
+
+      await expect(proposalsController.getProposalImage(mockRequest, mockResponse))
+        .rejects.toThrow('Database error');
+    });
   });
 
   describe('Authorization via Router Middleware', () => {
-    it('should verify that isChannelMember middleware protects image routes', () => {
+    it('should document that authorization is handled by router middleware chain', () => {
       // This test documents that the actual authorization happens at the router level
-      // via the isChannelMember middleware in channels.router.ts:42
+      // via the middleware chain in channels.router.ts:42
       // .use('/:channelId/proposals', isChannelMember, proposalsRouter)
       //
-      // The middleware chain ensures that:
-      // 1. User is authenticated (authenticate middleware)
-      // 2. User is a member of the channel (isChannelMember middleware)
-      // 3. Only then can they access proposal routes, including image routes
+      // The complete middleware chain for image routes is:
+      // 1. authenticate middleware (channels.router.ts:34) - verifies JWT token
+      // 2. isChannelMember middleware (channels.router.ts:42) - verifies user is channel member
+      // 3. proposalsRouter with authenticate middleware (proposals.router.ts:19) - redundant but safe
+      // 4. getProposalImage controller - assumes authorization already verified
       //
       // This is an integration test concern - the controller assumes
       // authorization has already been verified by the middleware chain.
+      // The controller only validates that the image belongs to the correct proposal.
       expect(true).toBe(true);
     });
   });
