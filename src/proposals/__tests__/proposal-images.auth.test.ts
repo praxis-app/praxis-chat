@@ -79,7 +79,8 @@ describe('Proposal Images Authorization', () => {
       expect(mockResponse.sendFile).toHaveBeenCalledWith('test.jpg', {
         root: '/uploads',
       });
-      expect(mockResponse.status).not.toHaveBeenCalledWith(403);
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.send).not.toHaveBeenCalled();
     });
 
     it('should return 404 when image record does not exist in database', async () => {
@@ -151,22 +152,4 @@ describe('Proposal Images Authorization', () => {
     });
   });
 
-  describe('Authorization via Router Middleware', () => {
-    it('should document that authorization is handled by router middleware chain', () => {
-      // This test documents that the actual authorization happens at the router level
-      // via the middleware chain in channels.router.ts:42
-      // .use('/:channelId/proposals', isChannelMember, proposalsRouter)
-      //
-      // The complete middleware chain for image routes is:
-      // 1. authenticate middleware (channels.router.ts:34) - verifies JWT token
-      // 2. isChannelMember middleware (channels.router.ts:42) - verifies user is channel member
-      // 3. proposalsRouter with authenticate middleware (proposals.router.ts:19) - redundant but safe
-      // 4. getProposalImage controller - assumes authorization already verified
-      //
-      // This is an integration test concern - the controller assumes
-      // authorization has already been verified by the middleware chain.
-      // The controller only validates that the image belongs to the correct proposal.
-      expect(true).toBe(true);
-    });
-  });
 });
