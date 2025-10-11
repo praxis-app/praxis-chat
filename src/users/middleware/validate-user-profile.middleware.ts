@@ -8,8 +8,8 @@ import {
 } from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
-import { getUserCount } from '../users.service';
 import { UserProfileDto } from '../dtos/user-profile.dto';
+import { getUserCount } from '../users.service';
 
 const userProfileSchema = zod.object({
   name: zod
@@ -33,12 +33,6 @@ export const validateUserProfile = async (
   next: NextFunction,
 ) => {
   try {
-    // Validate user sign up is completed
-    if (res.locals.user.anonymous) {
-      res.status(403).send('User sign up must be completed to update profile');
-      return;
-    }
-
     // Validate request body shape
     userProfileSchema.parse(req.body);
 
