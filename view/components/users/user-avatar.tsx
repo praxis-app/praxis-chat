@@ -6,7 +6,10 @@ import { Avatar, AvatarBadge, AvatarFallback } from '../ui/avatar';
 
 interface Props {
   name: string;
+
+  // TODO: Determine if this should still be nullable
   userId?: string | null;
+
   className?: string;
   fallbackClassName?: string;
   imageSrc?: string;
@@ -46,6 +49,7 @@ export const UserAvatar = ({
         alt={name}
         imageId={imageId}
         src={imageSrc}
+        userId={userId ?? undefined}
         skipAnimation={skipLoadAnimation}
         className={cn(
           (imageId || imageSrc) && 'min-h-full min-w-full rounded-full',

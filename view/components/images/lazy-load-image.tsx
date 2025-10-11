@@ -15,6 +15,10 @@ interface Props extends ComponentProps<'img'> {
   skipAnimation?: boolean;
   isPlaceholder?: boolean;
   imageId?: string;
+  channelId?: string;
+  messageId?: string;
+  proposalId?: string;
+  userId?: string;
   src?: string;
   className?: string;
   onError?: () => void;
@@ -39,6 +43,10 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       skipAnimation = false,
       isPlaceholder,
       imageId,
+      channelId,
+      messageId,
+      proposalId,
+      userId,
       onLoad,
       src,
       className,
@@ -66,6 +74,10 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
         onError?.();
       },
       imageId,
+      channelId,
+      messageId,
+      proposalId,
+      userId,
     });
 
     const [loaded, setLoaded] = useState(!!srcFromImageId);

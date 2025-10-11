@@ -26,7 +26,10 @@ export const useMeQuery = (
 
         let profilePicture: CurrentUser['profilePicture'] = null;
         if (me.user.profilePicture) {
-          const result = await api.getImage(me.user.profilePicture.id);
+          const result = await api.getUserImage(
+            me.user.id,
+            me.user.profilePicture.id,
+          );
           profilePicture = {
             ...me.user.profilePicture,
             url: URL.createObjectURL(result),

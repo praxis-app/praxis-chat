@@ -102,7 +102,14 @@ export const ChannelFeed = ({
 
       {feed.map((item) => {
         if (item.type === 'message') {
-          return <Message key={`message-${item.id}`} message={item} me={me} />;
+          return (
+            <Message
+              key={`message-${item.id}`}
+              channelId={channel?.id}
+              message={item}
+              me={me}
+            />
+          );
         }
         if (!channel) {
           return null;
