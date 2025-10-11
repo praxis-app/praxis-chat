@@ -3,6 +3,7 @@ import { authenticateOptional } from '../auth/middleware/authenticate-optional.m
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
+import { canReadUserProfile } from './middleware/can-read-user-profile.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
 import {
   createUserCoverPhoto,
@@ -25,7 +26,7 @@ usersRouter
 usersRouter
   .use(authenticate)
   .get('/me', getCurrentUser)
-  .get('/:userId/profile', getUserProfile)
+  .get('/:userId/profile', canReadUserProfile, getUserProfile)
   .post('/profile-picture', isRegistered, uploadImage, createUserProfilePicture)
   .post('/cover-photo', isRegistered, uploadImage, createUserCoverPhoto)
   .put('/profile', isRegistered, validateUserProfile, updateUserProfile);

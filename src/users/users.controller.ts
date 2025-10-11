@@ -10,25 +10,7 @@ export const getCurrentUser = async (_req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
-  const currentUser: User = res.locals.user;
-  const { userId } = req.params;
-
-  if (currentUser.anonymous && userId !== currentUser.id) {
-    res.status(403).send('Forbidden');
-    return;
-  }
-
-  const hasSharedChannel = await usersService.hasSharedChannel(
-    currentUser.id,
-    userId,
-  );
-
-  if (!hasSharedChannel) {
-    res.status(403).send('Forbidden');
-    return;
-  }
-
-  const user = await usersService.getUserProfile(userId);
+  const user = await usersService.getUserProfile(req.params.userId);
 
   if (!user) {
     res.status(404).send('User not found');
