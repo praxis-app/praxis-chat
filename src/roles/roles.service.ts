@@ -10,7 +10,6 @@ import { dataSource } from '../database/data-source';
 import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
-import { CHANNEL_ACCESS_MAP } from './channel-access';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
 
@@ -304,15 +303,4 @@ export const buildPermissionRules = (
     subject: subject as AbilitySubject,
     action,
   }));
-};
-
-/** Check if a user can access a given pub-sub channel */
-export const canAccessChannel = (channelKey: string, user: User) => {
-  for (const { pattern, rules } of Object.values(CHANNEL_ACCESS_MAP)) {
-    const match = pattern.exec(channelKey);
-    if (match) {
-      return Object.values(rules).every((rule) => rule(match, user));
-    }
-  }
-  return false;
 };
