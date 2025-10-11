@@ -10,7 +10,19 @@ export const getCurrentUser = async (_req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
+  const currentUser: User = res.locals.user;
   const { userId } = req.params;
+
+  const hasSharedChannel = await usersService.hasSharedChannel(
+    currentUser.id,
+    userId,
+  );
+
+  if (!hasSharedChannel) {
+    res.status(403).send('Access denied');
+    return;
+  }
+
   const user = await usersService.getUserProfile(userId);
 
   if (!user) {
