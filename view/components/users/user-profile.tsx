@@ -53,6 +53,7 @@ export const UserProfile = ({ userId, me, className }: Props) => {
         {profileData.user.coverPhoto?.id ? (
           <LazyLoadImage
             imageId={profileData.user.coverPhoto?.id}
+            userId={profileData.user.id}
             alt={t('users.form.coverPhoto')}
             className="h-32 w-full rounded-t-2xl object-cover md:rounded-t-lg"
             skipAnimation={true}
