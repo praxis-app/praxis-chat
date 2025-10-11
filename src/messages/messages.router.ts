@@ -1,5 +1,3 @@
-// TODO: Guard routes with permission checks
-
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
