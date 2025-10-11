@@ -1,6 +1,7 @@
+import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import * as channelsService from '../channels/channels.service';
-import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/common.utils';
+import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
@@ -8,11 +9,6 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
-
-enum MessageType {
-  MESSAGE = 'message',
-  IMAGE = 'image',
-}
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
@@ -123,6 +119,8 @@ export const createMessage = async (
         imageType: 'message',
       });
     });
+
+    // TODO: Refactor - save message and images in a single transaction
     images = await imageRepository.save(imagePlaceholders);
   }
   const attachedImages = images.map((image) => ({
@@ -149,7 +147,7 @@ export const createMessage = async (
       continue;
     }
     await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: MessageType.MESSAGE,
+      type: PubSubMessageType.MESSAGE,
       message: messagePayload,
     });
   }
@@ -180,7 +178,7 @@ export const saveMessageImage = async (
     }
     const channelKey = getNewMessageKey(message.channelId, member.userId);
     await pubSubService.publish(channelKey, {
-      type: MessageType.IMAGE,
+      type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
       messageId,
       imageId,

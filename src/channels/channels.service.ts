@@ -1,3 +1,6 @@
+// TODO: Add ability for users to search, leave, and join channels
+
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import * as crypto from 'crypto';
 import { FindManyOptions, In } from 'typeorm';
 import {
@@ -11,7 +14,6 @@ import * as proposalsService from '../proposals/proposals.service';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
-
 export interface CreateChannelDto {
   name: string;
   description?: string;
@@ -21,8 +23,6 @@ export interface UpdateChannelDto {
   name: string;
   description?: string;
 }
-
-const GENERAL_CHANNEL_NAME = 'general';
 
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);

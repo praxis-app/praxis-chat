@@ -1,4 +1,8 @@
 import { Request, Response } from 'express';
+import * as fs from 'fs';
+import * as imagesService from '../images/images.service';
+import { getUploadsPath } from '../images/images.utils';
+import { User } from './user.entity';
 import * as usersService from './users.service';
 
 export const getCurrentUser = async (_req: Request, res: Response) => {
@@ -49,4 +53,59 @@ export const createUserCoverPhoto = async (req: Request, res: Response) => {
     res.locals.user.id,
   );
   res.status(201).json({ image });
+};
+
+export const getUserImage = async (req: Request, res: Response) => {
+  const currentUser: User | undefined = res.locals.user;
+
+  const { userId, imageId } = req.params;
+  const image = await imagesService.getImage(imageId);
+
+  if (!image) {
+    res.status(404).send('Image not found');
+    return;
+  }
+  if (image.userId !== userId) {
+    res.status(404).send('Image not found');
+    return;
+  }
+
+  if (image.imageType === 'profile-picture') {
+    const isGeneralChannelMember =
+      await usersService.isGeneralChannelMember(userId);
+
+    if (!currentUser && !isGeneralChannelMember) {
+      res.status(403).send('Access denied');
+      return;
+    }
+  }
+
+  if (image.imageType === 'cover-photo') {
+    let hasSharedChannel = false;
+    if (currentUser) {
+      hasSharedChannel = await usersService.hasSharedChannel(
+        currentUser.id,
+        userId,
+      );
+    }
+    if (!hasSharedChannel) {
+      res.status(403).send('Access denied');
+      return;
+    }
+  }
+
+  if (!image.filename) {
+    res.status(404).send('Image has not been uploaded yet');
+    return;
+  }
+
+  const filePath = `${getUploadsPath()}/${image.filename}`;
+  if (!fs.existsSync(filePath)) {
+    res.status(404).send('Image file not found');
+    return;
+  }
+
+  return res.sendFile(image.filename, {
+    root: getUploadsPath(),
+  });
 };

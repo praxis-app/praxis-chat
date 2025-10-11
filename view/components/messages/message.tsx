@@ -12,10 +12,12 @@ import { CurrentUser } from '../../types/user.types';
 interface Props {
   message: MessageRes;
   me?: CurrentUser;
+  channelId?: string;
 }
 
 export const Message = ({
-  message: { body, images, user, createdAt },
+  message: { id, body, images, user, createdAt },
+  channelId,
   me,
 }: Props) => {
   const { t } = useTranslation();
@@ -69,6 +71,8 @@ export const Message = ({
         {showImages && (
           <AttachedImageList
             images={images}
+            channelId={channelId}
+            messageId={id}
             imageClassName="rounded-lg"
             className={`pt-1.5 ${isDesktop ? 'w-[350px]' : 'w-full'}`}
           />

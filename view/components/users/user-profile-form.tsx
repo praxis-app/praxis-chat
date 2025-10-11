@@ -303,6 +303,7 @@ export const UserProfileForm = ({ userProfile, me }: Props) => {
               <LazyLoadImage
                 src={getCoverPhotoSrc()}
                 imageId={userProfile.coverPhoto?.id}
+                userId={userProfile.id}
                 alt={t('users.form.coverPhoto')}
                 className="h-32 w-full rounded-lg border object-cover"
               />

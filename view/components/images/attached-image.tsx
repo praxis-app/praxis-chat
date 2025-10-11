@@ -16,13 +16,30 @@ import { LazyLoadImage } from './lazy-load-image';
 
 interface Props {
   image: ImageRes;
+  channelId?: string;
+  messageId?: string;
+  proposalId?: string;
   onImageLoad?(): void;
   className?: string;
 }
 
-export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
+export const AttachedImage = ({
+  image,
+  channelId,
+  messageId,
+  proposalId,
+  onImageLoad,
+  className,
+}: Props) => {
   const queryClient = useQueryClient();
-  const previouslyLoaded = queryClient.getQueryData(['image', image.id]);
+  const previouslyLoaded = queryClient.getQueryData([
+    'images',
+    channelId,
+    image.id,
+    messageId,
+    proposalId,
+    undefined,
+  ]);
 
   const [isLoaded, setIsLoaded] = useState(!!previouslyLoaded);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -54,6 +71,9 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
       <DialogTrigger asChild>
         <LazyLoadImage
           imageId={image.id}
+          channelId={channelId}
+          messageId={messageId}
+          proposalId={proposalId}
           alt={t('images.labels.attachedImage')}
           className={imageClassName}
           isPlaceholder={image.isPlaceholder}
@@ -78,6 +98,9 @@ export const AttachedImage = ({ image, onImageLoad, className }: Props) => {
             alt={t('images.labels.attachedImage')}
             className="max-h-[80%] max-w-full object-contain md:self-center md:rounded"
             imageId={image.id}
+            channelId={channelId}
+            messageId={messageId}
+            proposalId={proposalId}
             onError={() => setIsError(true)}
           />
         )}

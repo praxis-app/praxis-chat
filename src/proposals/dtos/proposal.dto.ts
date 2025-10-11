@@ -4,4 +4,5 @@ export interface ProposalDto {
   body: string;
   closingAt?: Date;
   action: ProposalActionDto;
+  imageCount?: number;
 }

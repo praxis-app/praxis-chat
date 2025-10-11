@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticateOptional } from '../auth/middleware/authenticate-optional.middleware';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { validateUserProfile } from './middleware/validate-user-profile.middleware';
@@ -6,6 +7,7 @@ import {
   createUserCoverPhoto,
   createUserProfilePicture,
   getCurrentUser,
+  getUserImage,
   getUserProfile,
   isFirstUser,
   updateUserProfile,
@@ -14,7 +16,9 @@ import {
 export const usersRouter = express.Router();
 
 // Public routes
-usersRouter.get('/is-first', isFirstUser);
+usersRouter
+  .get('/is-first', isFirstUser)
+  .get('/:userId/images/:imageId', authenticateOptional, getUserImage);
 
 // Protected routes
 usersRouter

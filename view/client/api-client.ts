@@ -349,11 +349,27 @@ class ApiClient {
   // Misc.
   // -------------------------------------------------------------------------
 
-  getImage = (imageId: string) => {
-    const path = `/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, {
-      responseType: 'blob',
-    });
+  getMessageImage = (
+    channelId: string,
+    messageId: string,
+    imageId: string,
+  ) => {
+    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
+  getProposalImage = (
+    channelId: string,
+    proposalId: string,
+    imageId: string,
+  ) => {
+    const path = `/channels/${channelId}/proposals/${proposalId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
+  getUserImage = (userId: string, imageId: string) => {
+    const path = `/users/${userId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
   getHealth = async () => {
