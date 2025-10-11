@@ -42,12 +42,7 @@ export const getProposalImage = async (req: Request, res: Response) => {
 
   const image = await imagesService.getImage(imageId);
 
-  if (!image) {
-    res.status(404).send('Image not found');
-    return;
-  }
-
-  if (image.proposalId !== proposalId) {
+  if (!image || image.proposalId !== proposalId) {
     res.status(404).send('Image not found');
     return;
   }

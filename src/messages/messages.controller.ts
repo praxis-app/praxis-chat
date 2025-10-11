@@ -36,12 +36,7 @@ export const getMessageImage = async (req: Request, res: Response) => {
 
   const image = await imagesService.getImage(imageId);
 
-  if (!image) {
-    res.status(404).send('Image not found');
-    return;
-  }
-
-  if (image.messageId !== messageId) {
+  if (!image || image.messageId !== messageId) {
     res.status(404).send('Image not found');
     return;
   }

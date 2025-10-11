@@ -78,11 +78,7 @@ export const getUserImage = async (req: Request, res: Response) => {
   const { userId, imageId } = req.params;
   const image = await imagesService.getImage(imageId);
 
-  if (!image) {
-    res.status(404).send('Image not found');
-    return;
-  }
-  if (image.userId !== userId) {
+  if (!image || image.userId !== userId) {
     res.status(404).send('Image not found');
     return;
   }
