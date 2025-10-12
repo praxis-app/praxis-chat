@@ -86,16 +86,8 @@ export const getInlinePolls = async (
       'pollActionRoleMemberUser.name',
       'pollActionRoleMemberUser.displayName',
     ])
-    .addSelect([
-      'pollUser.id',
-      'pollUser.name',
-      'pollUser.displayName',
-    ])
-    .addSelect([
-      'pollImage.id',
-      'pollImage.filename',
-      'pollImage.createdAt',
-    ])
+    .addSelect(['pollUser.id', 'pollUser.name', 'pollUser.displayName'])
+    .addSelect(['pollImage.id', 'pollImage.filename', 'pollImage.createdAt'])
     .leftJoin('poll.user', 'pollUser')
     .leftJoin('poll.votes', 'pollVotes')
     .leftJoin('poll.images', 'pollImage')
@@ -121,9 +113,7 @@ export const getInlinePolls = async (
   const pollMemberCount = await getPollMemberCount();
 
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
-    polls
-      .filter((poll) => poll.keyId)
-      .map((poll) => poll.keyId!),
+    polls.filter((poll) => poll.keyId).map((poll) => poll.keyId!),
   );
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
@@ -198,10 +188,7 @@ export const getInlinePolls = async (
 };
 
 export const isPollRatifiable = async (pollId: string) => {
-  const { votes, stage, config } = await getPoll(pollId, [
-    'config',
-    'votes',
-  ]);
+  const { votes, stage, config } = await getPoll(pollId, ['config', 'votes']);
   if (stage !== 'voting') {
     return false;
   }
@@ -473,16 +460,14 @@ const hasMajorityVote = (
 
 /** Synchronizes polls with regard to voting duration and ratifiability */
 const synchronizePoll = async (poll: Poll) => {
-  if (
-    !poll.config.closingAt ||
-    Date.now() < Number(poll.config.closingAt)
-  ) {
+  if (!poll.config.closingAt || Date.now() < Number(poll.config.closingAt)) {
     return;
   }
 
   const isRatifiable = await isPollRatifiable(poll.id);
   if (!isRatifiable) {
     await pollRepository.update(poll.id, { stage: 'closed' });
+    return;
   }
 
   await ratifyPoll(poll.id);
