@@ -216,7 +216,7 @@ export const CreateProposalForm = ({
         (old) => {
           const newItem: FeedItemRes = {
             ...poll,
-            type: 'proposal',
+            type: 'poll',
           };
           if (!old) {
             return { pages: [{ feed: [newItem] }], pageParams: [0] };
@@ -226,7 +226,7 @@ export const CreateProposalForm = ({
               return page;
             }
             const exists = page.feed.some(
-              (fi) => fi.type === 'proposal' && fi.id === poll.id,
+              (fi) => fi.type === 'poll' && fi.id === poll.id,
             );
             if (exists) {
               return page;

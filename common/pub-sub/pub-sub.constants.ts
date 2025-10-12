@@ -1,5 +1,5 @@
 export enum PubSubMessageType {
   MESSAGE = 'message',
-  PROPOSAL = 'proposal',
+  POLL = 'poll',
   IMAGE = 'image',
 }

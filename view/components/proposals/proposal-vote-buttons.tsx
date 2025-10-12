@@ -75,7 +75,7 @@ export const ProposalVoteButtons = ({
           }
           const pages = oldData.pages.map((page) => {
             const feed = page.feed.map((item) => {
-              if (item.type !== 'proposal' || item.id !== pollId) {
+              if (item.type !== 'poll' || item.id !== pollId) {
                 return item;
               }
 

@@ -2,7 +2,7 @@ import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { t } from '@/lib/shared.utils';
 import { RoleRes } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
-import { PROPOSAL_ACTION_TYPE } from '@common/proposal-actions/proposal-action.constants';
+import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import * as zod from 'zod';
 
 const PROPOSAL_BODY_MAX = 6000;
@@ -17,7 +17,7 @@ export const createProposalFormSchema = zod
       .optional(),
     roleName: zod.string().optional(),
     roleColor: zod.string().optional(),
-    action: zod.enum([...PROPOSAL_ACTION_TYPE, '']),
+    action: zod.enum([...POLL_ACTION_TYPE, '']),
     permissions: zod
       .record(zod.enum(PERMISSION_KEYS), zod.boolean().optional())
       .optional(),

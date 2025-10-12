@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
-import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
+import { DECISION_MAKING_MODEL } from '@common/polls/poll.constants';
 import { ServerConfigErrorKeys } from '@common/server-configs/server-config.constants';
 import { serverConfigSchema } from '@common/server-configs/server-config.types';
 import { VotingTimeLimit } from '@common/votes/vote.constants';

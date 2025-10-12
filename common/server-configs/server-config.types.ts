@@ -1,4 +1,4 @@
-import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
+import { DECISION_MAKING_MODEL } from '@common/polls/poll.constants';
 import { VotingTimeLimit } from '@common/votes/vote.constants';
 import * as zod from 'zod';
 import { ServerConfigErrorKeys } from './server-config.constants';

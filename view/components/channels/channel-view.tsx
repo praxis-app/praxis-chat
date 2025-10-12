@@ -154,8 +154,8 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       }
       if (body.type === PubSubMessageType.POLL) {
         const newFeedItem: FeedItemRes = {
-          ...(body.poll as FeedItemRes & { type: 'proposal' }),
-          type: 'proposal',
+          ...(body.poll as FeedItemRes & { type: 'poll' }),
+          type: 'poll',
         };
         queryClient.setQueryData<FeedQuery>(
           ['feed', resolvedChannelId],
@@ -166,7 +166,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
             const pages = oldData.pages.map((page, index) => {
               if (index === 0) {
                 const exists = page.feed.some(
-                  (fi) => fi.type === 'proposal' && fi.id === newFeedItem.id,
+                  (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
                 );
                 if (exists) {
                   return page;

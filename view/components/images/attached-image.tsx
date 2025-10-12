@@ -18,7 +18,7 @@ interface Props {
   image: ImageRes;
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
   onImageLoad?(): void;
   className?: string;
 }
@@ -27,7 +27,7 @@ export const AttachedImage = ({
   image,
   channelId,
   messageId,
-  proposalId,
+  pollId,
   onImageLoad,
   className,
 }: Props) => {
@@ -37,7 +37,7 @@ export const AttachedImage = ({
     channelId,
     image.id,
     messageId,
-    proposalId,
+    pollId,
     undefined,
   ]);
 
@@ -73,7 +73,7 @@ export const AttachedImage = ({
           imageId={image.id}
           channelId={channelId}
           messageId={messageId}
-          proposalId={proposalId}
+          pollId={pollId}
           alt={t('images.labels.attachedImage')}
           className={imageClassName}
           isPlaceholder={image.isPlaceholder}
@@ -100,7 +100,7 @@ export const AttachedImage = ({
             imageId={image.id}
             channelId={channelId}
             messageId={messageId}
-            proposalId={proposalId}
+            pollId={pollId}
             onError={() => setIsError(true)}
           />
         )}
