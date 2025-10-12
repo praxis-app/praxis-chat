@@ -41,7 +41,7 @@ export const ServerSettings = () => {
         <SettingsNavItem
           Icon={MdEmojiPeople}
           label={t('navigation.labels.proposals')}
-          to={NavigationPaths.PollSettings}
+          to={NavigationPaths.ProposalSettings}
         />
         <SettingsNavItem
           Icon={MdLink}
