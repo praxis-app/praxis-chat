@@ -1,6 +1,6 @@
 // API client for server endpoints
 
-import { CreateProposalReq, ProposalRes } from '@/types/proposal.types';
+import { CreatePollReq, PollRes } from '@/types/poll.types';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import {
   CreateVoteReq,
@@ -201,22 +201,22 @@ class ApiClient {
   };
 
   // -------------------------------------------------------------------------
-  // Proposals & Votes
+  // Polls & Votes
   // -------------------------------------------------------------------------
 
-  createProposal = async (channelId: string, data: CreateProposalReq) => {
-    const path = `/channels/${channelId}/proposals`;
-    return this.executeRequest<{ proposal: ProposalRes }>('post', path, {
+  createPoll = async (channelId: string, data: CreatePollReq) => {
+    const path = `/channels/${channelId}/polls`;
+    return this.executeRequest<{ poll: PollRes }>('post', path, {
       data,
     });
   };
 
   createVote = async (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     data: CreateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
+    const path = `/channels/${channelId}/polls/${pollId}/votes`;
     return this.executeRequest<{ vote: CreateVoteRes }>('post', path, {
       data,
     });
@@ -224,11 +224,11 @@ class ApiClient {
 
   updateVote = async (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     voteId: string,
     data: UpdateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
+    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<UpdateVoteRes>('put', path, {
       data,
     });
@@ -236,10 +236,10 @@ class ApiClient {
 
   deleteVote = async (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     voteId: string,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
+    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
 
@@ -358,12 +358,12 @@ class ApiClient {
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
-  getProposalImage = (
+  getPollImage = (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     imageId: string,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/images/${imageId}`;
+    const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
