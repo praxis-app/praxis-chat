@@ -96,6 +96,11 @@ class ApiClient {
     return this.executeRequest<{ isFirstUser: boolean }>('get', path);
   };
 
+  getUserImage = (userId: string, imageId: string) => {
+    const path = `/users/${userId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
   updateUserProfile = async (data: UpdateUserProfileReq) => {
     const path = '/users/profile';
     return this.executeRequest<void>('put', path, {
@@ -200,6 +205,11 @@ class ApiClient {
     });
   };
 
+  getMessageImage = (channelId: string, messageId: string, imageId: string) => {
+    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
   // -------------------------------------------------------------------------
   // Polls & Votes
   // -------------------------------------------------------------------------
@@ -209,6 +219,11 @@ class ApiClient {
     return this.executeRequest<{ poll: PollRes }>('post', path, {
       data,
     });
+  };
+
+  getPollImage = (channelId: string, pollId: string, imageId: string) => {
+    const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
   createVote = async (
@@ -344,21 +359,6 @@ class ApiClient {
   // -------------------------------------------------------------------------
   // Misc.
   // -------------------------------------------------------------------------
-
-  getMessageImage = (channelId: string, messageId: string, imageId: string) => {
-    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
-
-  getPollImage = (channelId: string, pollId: string, imageId: string) => {
-    const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
-
-  getUserImage = (userId: string, imageId: string) => {
-    const path = `/users/${userId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
 
   getHealth = async () => {
     return this.executeRequest<{ timestamp: string }>('get', '/health');
