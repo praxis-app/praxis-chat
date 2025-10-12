@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdPoll } from 'react-icons/md';
-import { CreateProposalForm } from '../proposals/create-proposal-form/create-proposal-form';
+import { CreatePollForm } from '../proposals/create-poll-form/create-poll-form';
 import {
   Dialog,
   DialogContent,
@@ -79,7 +79,7 @@ export const MessageFormMenu = ({
 
         <Separator className="mt-1" />
 
-        <CreateProposalForm
+        <CreatePollForm
           channelId={channelId}
           isGeneralChannel={isGeneralChannel}
           onSuccess={() => setShowProposalForm(false)}

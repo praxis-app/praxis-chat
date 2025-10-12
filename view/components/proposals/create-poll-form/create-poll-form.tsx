@@ -16,16 +16,16 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Wizard } from '../../shared/wizard/wizard';
-import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
-import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
-import { RoleAttributesStep } from './create-proposal-form-steps/role-attributes-step';
-import { RoleMembersStep } from './create-proposal-form-steps/role-members-step';
-import { RoleSelectionStep } from './create-proposal-form-steps/role-selection-step';
-import { RolesPermissionsStep } from './create-proposal-form-steps/roles-permissions-step';
+import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
+import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
+import { RoleAttributesStep } from './create-poll-form-steps/role-attributes-step';
+import { RoleMembersStep } from './create-poll-form-steps/role-members-step';
+import { RoleSelectionStep } from './create-poll-form-steps/role-selection-step';
+import { RolesPermissionsStep } from './create-poll-form-steps/roles-permissions-step';
 import {
-  CreateProposalFormSchema,
-  createProposalFormSchema,
-} from './create-proposal-form.types';
+  CreatePollFormSchema,
+  createPollFormSchema,
+} from './create-poll-form.types';
 
 interface Props {
   channelId?: string;
@@ -34,7 +34,7 @@ interface Props {
   onNavigate: () => void;
 }
 
-export const CreateProposalForm = ({
+export const CreatePollForm = ({
   channelId,
   isGeneralChannel,
   onSuccess,
@@ -45,8 +45,8 @@ export const CreateProposalForm = ({
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const form = useForm<CreateProposalFormSchema>({
-    resolver: zodResolver(createProposalFormSchema),
+  const form = useForm<CreatePollFormSchema>({
+    resolver: zodResolver(createPollFormSchema),
     defaultValues: {
       body: '',
       action: '',
@@ -79,7 +79,7 @@ export const CreateProposalForm = ({
     });
 
   const { mutate: createPoll, isPending } = useMutation({
-    mutationFn: async (values: CreateProposalFormSchema) => {
+    mutationFn: async (values: CreatePollFormSchema) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
@@ -255,8 +255,8 @@ export const CreateProposalForm = ({
 
   const steps: WizardStepData[] = [
     {
-      id: 'proposal-details',
-      component: ProposalDetailsStep,
+      id: 'poll-details',
+      component: PollDetailsStep,
       props: { isLoading: false },
     },
     ...(showChangeRoleSteps
@@ -284,8 +284,8 @@ export const CreateProposalForm = ({
         ]
       : []),
     {
-      id: 'proposal-review',
-      component: ProposalReviewStep,
+      id: 'poll-review',
+      component: PollReviewStep,
       props: { isLoading: false },
     },
   ];

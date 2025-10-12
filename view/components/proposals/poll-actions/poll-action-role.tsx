@@ -24,7 +24,7 @@ interface Props {
   action: PollActionRes;
 }
 
-export const ProposalActionRole = ({ action }: Props) => {
+export const PollActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
   const { data: roleData, isLoading: isRoleLoading } = useQuery({

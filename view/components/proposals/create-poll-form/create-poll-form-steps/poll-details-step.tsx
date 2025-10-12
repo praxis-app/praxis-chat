@@ -20,10 +20,10 @@ import {
   SelectValue,
 } from '../../../ui/select';
 import { Textarea } from '../../../ui/textarea';
-import { CreateProposalFormSchema } from '../create-proposal-form.types';
+import { CreatePollFormSchema } from '../create-poll-form.types';
 
-export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
-  const form = useFormContext<CreateProposalFormSchema>();
+export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
+  const form = useFormContext<CreatePollFormSchema>();
   const { onNext } = useWizardContext();
 
   const { t } = useTranslation();

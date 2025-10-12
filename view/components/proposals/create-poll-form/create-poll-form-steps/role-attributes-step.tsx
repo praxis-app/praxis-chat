@@ -16,9 +16,9 @@ import {
 } from '../../../ui/form';
 import { Input } from '../../../ui/input';
 import {
-  CreateProposalFormSchema,
-  CreateProposalWizardContext,
-} from '../create-proposal-form.types';
+  CreatePollFormSchema,
+  CreatePollWizardContext,
+} from '../create-poll-form.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 
 export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
@@ -26,9 +26,9 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
     onNext,
     onPrevious,
     context: { selectedRole },
-  } = useWizardContext<CreateProposalWizardContext>();
+  } = useWizardContext<CreatePollWizardContext>();
 
-  const form = useFormContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreatePollFormSchema>();
   const { t } = useTranslation();
 
   if (isLoading) {

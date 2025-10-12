@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { WelcomeMessage } from '../invites/welcome-message';
 import { Message } from '../messages/message';
-import { InlineProposal } from '../proposals/inline-proposal';
+import { InlinePoll } from '../proposals/inline-poll';
 
 const LOAD_MORE_THROTTLE_MS = 1500;
 const IN_VIEW_THRESHOLD = 50;
@@ -115,7 +115,7 @@ export const ChannelFeed = ({
           return null;
         }
         return (
-          <InlineProposal
+          <InlinePoll
             key={`proposal-${item.id}`}
             proposal={item}
             channel={channel}

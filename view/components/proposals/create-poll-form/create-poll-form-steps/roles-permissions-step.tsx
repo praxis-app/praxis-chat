@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
-import { CreateProposalFormSchema } from '../create-proposal-form.types';
+import { ProposePermissionToggle } from '../../poll-actions/propose-permission-toggle';
+import { CreatePollFormSchema } from '../create-poll-form.types';
 
 export const RolesPermissionsStep = ({ isLoading }: WizardStepProps) => {
-  const form = useFormContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreatePollFormSchema>();
   const formPermissions = form.watch('permissions')!;
 
   const { onNext, onPrevious } = useWizardContext();
