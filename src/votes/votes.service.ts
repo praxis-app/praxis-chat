@@ -1,11 +1,11 @@
 import { VoteType } from '@common/votes/vote.types';
 import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
-import * as proposalsService from '../proposals/proposals.service';
+import * as pollsService from '../polls/polls.service';
 import { Vote } from './vote.entity';
 
 interface CreateVoteDto {
-  proposalId: string;
+  pollId: string;
   voteType: VoteType;
 }
 
@@ -29,35 +29,35 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
-  const isProposalRatifiable = await proposalsService.isProposalRatifiable(
-    vote.proposalId,
+  const isPollRatifiable = await pollsService.isPollRatifiable(
+    vote.pollId,
   );
-  if (isProposalRatifiable) {
-    // Update proposal to reflect newly created vote
-    await proposalsService.ratifyProposal(vote.proposalId);
-    await proposalsService.implementProposal(vote.proposalId);
+  if (isPollRatifiable) {
+    // Update poll to reflect newly created vote
+    await pollsService.ratifyPoll(vote.pollId);
+    await pollsService.implementPoll(vote.pollId);
   }
 
-  return { ...vote, isRatifyingVote: isProposalRatifiable };
+  return { ...vote, isRatifyingVote: isPollRatifiable };
 };
 
 export const updateVote = async (voteId: string, voteType: VoteType) => {
   const result = await voteRepository.update(voteId, { voteType });
-  const vote = await getVote(voteId, ['proposal']);
+  const vote = await getVote(voteId, ['poll']);
 
-  let isProposalRatifiable = false;
-  if (vote.proposalId) {
-    isProposalRatifiable = await proposalsService.isProposalRatifiable(
-      vote.proposalId,
+  let isPollRatifiable = false;
+  if (vote.pollId) {
+    isPollRatifiable = await pollsService.isPollRatifiable(
+      vote.pollId,
     );
-    if (isProposalRatifiable) {
-      // Update proposal to reflect change in vote
-      await proposalsService.ratifyProposal(vote.proposalId);
-      await proposalsService.implementProposal(vote.proposalId);
+    if (isPollRatifiable) {
+      // Update poll to reflect change in vote
+      await pollsService.ratifyPoll(vote.pollId);
+      await pollsService.implementPoll(vote.pollId);
     }
   }
 
-  return { ...result, isRatifyingVote: isProposalRatifiable };
+  return { ...result, isRatifyingVote: isPollRatifiable };
 };
 
 export const deleteVote = async (voteId: string) => {

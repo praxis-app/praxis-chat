@@ -1,21 +1,21 @@
 import {
   DecisionMakingModel,
-  ProposalStage,
-} from '@common/proposals/proposal.types';
+  PollStage,
+} from '@common/polls/poll.types';
 import { VoteType } from '@common/votes/vote.types';
 import { ImageRes } from './image.types';
 import {
-  CreateProposalActionReq,
-  ProposalActionRes,
-} from './proposal-action.types';
+  CreatePollActionReq,
+  PollActionRes,
+} from './poll-action.types';
 import { UserRes } from './user.types';
 
-export interface ProposalRes {
+export interface PollRes {
   id: string;
   body: string;
-  stage: ProposalStage;
-  action: ProposalActionRes;
-  config: ProposalConfigRes;
+  stage: PollStage;
+  action: PollActionRes;
+  config: PollConfigRes;
   images: ImageRes[];
   user: UserRes;
   createdAt: string;
@@ -24,7 +24,7 @@ export interface ProposalRes {
   agreementVoteCount: number;
 }
 
-export interface ProposalConfigRes {
+export interface PollConfigRes {
   decisionMakingModel: DecisionMakingModel;
   ratificationThreshold: number;
   disagreementsLimit: number;
@@ -32,7 +32,7 @@ export interface ProposalConfigRes {
   closingAt?: string;
 }
 
-export interface CreateProposalReq {
+export interface CreatePollReq {
   body?: string;
-  action: CreateProposalActionReq;
+  action: CreatePollActionReq;
 }

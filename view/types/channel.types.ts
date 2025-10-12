@@ -1,5 +1,5 @@
 import { MessageRes } from './message.types';
-import { ProposalRes } from './proposal.types';
+import { PollRes } from './poll.types';
 
 export interface ChannelRes {
   id: string;
@@ -19,7 +19,7 @@ export interface UpdateChannelReq {
 
 export type FeedItemRes =
   | (MessageRes & { type: 'message' })
-  | (ProposalRes & { type: 'proposal' });
+  | (PollRes & { type: 'poll' });
 
 export interface FeedQuery {
   pages: { feed: FeedItemRes[] }[];

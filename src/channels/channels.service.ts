@@ -10,7 +10,7 @@ import {
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
-import * as proposalsService from '../proposals/proposals.service';
+import * as pollsService from '../polls/polls.service';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
@@ -75,9 +75,9 @@ export const getChannelFeed = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const [messages, proposals] = await Promise.all([
+  const [messages, polls] = await Promise.all([
     messagesService.getMessages(channelId, offset, limit),
-    proposalsService.getInlineProposals(
+    pollsService.getInlinePolls(
       channelId,
       offset,
       limit,
@@ -90,12 +90,12 @@ export const getChannelFeed = async (
     type: 'message',
   }));
 
-  const shapedProposals = proposals.map((proposal) => ({
-    ...proposal,
-    type: 'proposal',
+  const shapedPolls = polls.map((poll) => ({
+    ...poll,
+    type: 'poll',
   }));
 
-  const feed = [...shapedMessages, ...shapedProposals]
+  const feed = [...shapedMessages, ...shapedPolls]
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
 

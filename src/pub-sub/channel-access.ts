@@ -29,8 +29,8 @@ export const CHANNEL_ACCESS_MAP: Record<string, ChannelAccessPolicy> = {
       },
     },
   },
-  newProposal: {
-    pattern: new RegExp(`^new-proposal-(${UUID_REGEX})-(${UUID_REGEX})$`),
+  newPoll: {
+    pattern: new RegExp(`^new-poll-(${UUID_REGEX})-(${UUID_REGEX})$`),
     rules: {
       isOwnMessage: (match, user) => {
         const userId = match[2];

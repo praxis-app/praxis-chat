@@ -7,7 +7,7 @@ import {
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
-import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
+import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Permission } from './entities/permission.entity';
@@ -287,7 +287,7 @@ export const deleteRole = async (id: string) => {
  * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
  */
 export const buildPermissionRules = (
-  roles: Role[] | ProposalActionRole[],
+  roles: Role[] | PollActionRole[],
 ): RawRuleOf<AppAbility>[] => {
   const permissionMap = roles.reduce<PermissionMap>((result, role) => {
     for (const permission of role.permissions || []) {

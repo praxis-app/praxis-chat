@@ -1,7 +1,7 @@
 import {
-  ProposalActionType,
+  PollActionType,
   RoleAttributeChangeType,
-} from '@common/proposal-actions/proposal-action.types';
+} from '@common/poll-actions/poll-action.types';
 import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import { UserRes } from './user.types';
 
@@ -9,50 +9,50 @@ import { UserRes } from './user.types';
 // Requests
 // -------------------------------------------------------------------------
 
-export interface ProposalActionReq {
-  actionType: ProposalActionType;
-  role?: ProposalActionRoleReq;
+export interface PollActionReq {
+  actionType: PollActionType;
+  role?: PollActionRoleReq;
 }
 
-export interface ProposalActionRoleReq {
+export interface PollActionRoleReq {
   name?: string;
   color?: string;
   prevName?: string;
   prevColor?: string;
-  members?: ProposalActionRoleMemberReq[];
-  permissions?: ProposalActionRolePermissionReq[];
+  members?: PollActionRoleMemberReq[];
+  permissions?: PollActionRolePermissionReq[];
 }
 
-export interface ProposalActionRoleMemberReq {
+export interface PollActionRoleMemberReq {
   userId: string;
   changeType: RoleAttributeChangeType;
 }
 
-export interface ProposalActionRolePermissionReq {
+export interface PollActionRolePermissionReq {
   subject: AbilitySubject;
   action: AbilityAction;
   changeType: RoleAttributeChangeType;
 }
 
-export interface CreateProposalActionReq {
-  actionType: ProposalActionType;
-  role?: CreateProposalActionRoleReq;
+export interface CreatePollActionReq {
+  actionType: PollActionType;
+  role?: CreatePollActionRoleReq;
 }
 
-export interface CreateProposalActionRoleReq {
+export interface CreatePollActionRoleReq {
   name?: string;
   color?: string;
-  members?: CreateProposalActionRoleMemberReq[];
-  permissions?: CreateProposalActionRolePermissionReq[];
+  members?: CreatePollActionRoleMemberReq[];
+  permissions?: CreatePollActionRolePermissionReq[];
   roleToUpdateId?: string;
 }
 
-export interface CreateProposalActionRoleMemberReq {
+export interface CreatePollActionRoleMemberReq {
   userId: string;
   changeType: RoleAttributeChangeType;
 }
 
-export interface CreateProposalActionRolePermissionReq {
+export interface CreatePollActionRolePermissionReq {
   subject: AbilitySubject;
   actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
 }
@@ -61,29 +61,29 @@ export interface CreateProposalActionRolePermissionReq {
 // Responses
 // -------------------------------------------------------------------------
 
-export interface ProposalActionRes {
+export interface PollActionRes {
   id: string;
-  actionType: ProposalActionType;
-  role?: ProposalActionRoleRes;
+  actionType: PollActionType;
+  role?: PollActionRoleRes;
 }
 
-export interface ProposalActionRoleRes {
+export interface PollActionRoleRes {
   id: string;
   name?: string;
   color?: string;
   prevName?: string;
   prevColor?: string;
   roleId: string;
-  members?: ProposalActionRoleMemberRes[];
-  permissions?: ProposalActionRolePermissionRes[];
+  members?: PollActionRoleMemberRes[];
+  permissions?: PollActionRolePermissionRes[];
 }
 
-export interface ProposalActionRoleMemberRes {
+export interface PollActionRoleMemberRes {
   changeType: RoleAttributeChangeType;
   user: UserRes;
 }
 
-export interface ProposalActionRolePermissionRes {
+export interface PollActionRolePermissionRes {
   subject: AbilitySubject;
   action: AbilityAction;
   changeType: RoleAttributeChangeType;
