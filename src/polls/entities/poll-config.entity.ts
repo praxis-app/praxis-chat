@@ -1,5 +1,5 @@
-import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
-import { DecisionMakingModel } from '@common/proposals/proposal.types';
+import { DECISION_MAKING_MODEL } from '@common/polls/poll.constants';
+import { DecisionMakingModel } from '@common/polls/poll.types';
 import {
   Column,
   CreateDateColumn,
@@ -9,10 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Proposal } from './proposal.entity';
+import { Poll } from './poll.entity';
 
 @Entity()
-export class ProposalConfig {
+export class PollConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,14 +31,14 @@ export class ProposalConfig {
   @Column({ type: 'timestamp', nullable: true })
   closingAt?: Date;
 
-  @OneToOne(() => Proposal, (proposal) => proposal.config, {
+  @OneToOne(() => Poll, (poll) => poll.config, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
-  proposal: Proposal;
+  poll: Poll;
 
   @Column({ type: 'uuid' })
-  proposalId: string;
+  pollId: string;
 
   @CreateDateColumn()
   createdAt: Date;

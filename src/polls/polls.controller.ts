@@ -1,28 +1,28 @@
 import { Request, Response } from 'express';
 import { Image } from '../images/entities/image.entity';
 import { getUploadsPath } from '../images/images.utils';
-import * as proposalsService from './proposals.service';
+import * as pollsService from './polls.service';
 
-export const createProposal = async (req: Request, res: Response) => {
+export const createPoll = async (req: Request, res: Response) => {
   const { channelId } = req.params;
-  const proposal = await proposalsService.createProposal(
+  const poll = await pollsService.createPoll(
     channelId,
     req.body,
     res.locals.user,
   );
-  res.json({ proposal });
+  res.json({ poll });
 };
 
-export const uploadProposalImage = async (req: Request, res: Response) => {
+export const uploadPollImage = async (req: Request, res: Response) => {
   if (!req.file) {
     res.status(422).send('No image uploaded');
     return;
   }
   const { user } = res.locals;
-  const { proposalId, imageId } = req.params;
+  const { pollId, imageId } = req.params;
   const { filename } = req.file as Express.Multer.File;
-  const image = await proposalsService.saveProposalImage(
-    proposalId,
+  const image = await pollsService.savePollImage(
+    pollId,
     imageId,
     filename,
     user,
@@ -31,12 +31,12 @@ export const uploadProposalImage = async (req: Request, res: Response) => {
   res.status(201).json({ image });
 };
 
-export const deleteProposal = async (req: Request, res: Response) => {
-  const result = await proposalsService.deleteProposal(req.params.proposalId);
+export const deletePoll = async (req: Request, res: Response) => {
+  const result = await pollsService.deletePoll(req.params.pollId);
   res.json(result);
 };
 
-export const getProposalImage = async (_req: Request, res: Response) => {
+export const getPollImage = async (_req: Request, res: Response) => {
   const image: Image & { filename: string } = res.locals.image;
 
   return res.sendFile(image.filename, {

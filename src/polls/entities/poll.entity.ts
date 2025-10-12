@@ -4,8 +4,8 @@
  * - https://github.com/praxis-app/praxis/blob/main/src/proposals/models/proposal.model.ts
  */
 
-import { PROPOSAL_STAGE } from '@common/proposals/proposal.constants';
-import { ProposalStage } from '@common/proposals/proposal.types';
+import { POLL_STAGE } from '@common/polls/poll.constants';
+import { PollStage } from '@common/polls/poll.types';
 import {
   Column,
   CreateDateColumn,
@@ -19,13 +19,13 @@ import {
 import { ChannelKey } from '../../channels/entities/channel-key.entity';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Image } from '../../images/entities/image.entity';
-import { ProposalAction } from '../../proposal-actions/entities/proposal-action.entity';
+import { PollAction } from '../../poll-actions/entities/poll-action.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
-import { ProposalConfig } from './proposal-config.entity';
+import { PollConfig } from './poll-config.entity';
 
 @Entity()
-export class Proposal {
+export class Poll {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,36 +38,36 @@ export class Proposal {
   @Column({ type: 'bytea', nullable: true })
   tag: Buffer | null;
 
-  @ManyToOne(() => ChannelKey, (key) => key.proposals)
+  @ManyToOne(() => ChannelKey, (key) => key.polls)
   key?: ChannelKey;
 
   @Column({ type: 'uuid', nullable: true })
   keyId: string | null;
 
-  @Column({ type: 'enum', default: 'voting', enum: PROPOSAL_STAGE })
-  stage: ProposalStage;
+  @Column({ type: 'enum', default: 'voting', enum: POLL_STAGE })
+  stage: PollStage;
 
-  @OneToOne(() => ProposalAction, (action) => action.proposal, {
+  @OneToOne(() => PollAction, (action) => action.poll, {
     cascade: true,
   })
-  action: ProposalAction;
+  action: PollAction;
 
-  @OneToOne(() => ProposalConfig, (proposalConfig) => proposalConfig.proposal, {
+  @OneToOne(() => PollConfig, (pollConfig) => pollConfig.poll, {
     cascade: true,
   })
-  config: ProposalConfig;
+  config: PollConfig;
 
-  @OneToMany(() => Vote, (vote) => vote.proposal, {
+  @OneToMany(() => Vote, (vote) => vote.poll, {
     cascade: true,
   })
   votes: Vote[];
 
-  @OneToMany(() => Image, (image) => image.proposal, {
+  @OneToMany(() => Image, (image) => image.poll, {
     cascade: true,
   })
   images: Image[];
 
-  @ManyToOne(() => User, (user) => user.proposals, {
+  @ManyToOne(() => User, (user) => user.polls, {
     onDelete: 'CASCADE',
   })
   user: User;
@@ -75,7 +75,7 @@ export class Proposal {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @ManyToOne(() => Channel, (channel) => channel.proposals, {
+  @ManyToOne(() => Channel, (channel) => channel.polls, {
     onDelete: 'CASCADE',
   })
   channel: Channel;

@@ -1,7 +1,7 @@
 import {
-  PROPOSAL_ACTION_TYPE,
+  POLL_ACTION_TYPE,
   ROLE_ATTRIBUTE_CHANGE_TYPE,
-} from '@common/proposal-actions/proposal-action.constants';
+} from '@common/poll-actions/poll-action.constants';
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
@@ -9,12 +9,12 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 
-const proposalActionRoleMemberSchema = zod.object({
+const pollActionRoleMemberSchema = zod.object({
   userId: zod.string(),
   changeType: zod.enum(ROLE_ATTRIBUTE_CHANGE_TYPE),
 });
 
-const proposalActionPermissionSchema = zod.object({
+const pollActionPermissionSchema = zod.object({
   subject: zod.enum(ABILITY_SUBJECTS),
   actions: zod.array(
     zod.object({
@@ -24,18 +24,18 @@ const proposalActionPermissionSchema = zod.object({
   ),
 });
 
-const proposalActionRoleSchema = zod.object({
+const pollActionRoleSchema = zod.object({
   name: zod.string().optional(),
   color: zod.string().optional(),
-  members: zod.array(proposalActionRoleMemberSchema).optional(),
-  permissions: zod.array(proposalActionPermissionSchema).optional(),
+  members: zod.array(pollActionRoleMemberSchema).optional(),
+  permissions: zod.array(pollActionPermissionSchema).optional(),
   roleToUpdateId: zod.string().optional(),
 });
 
-const proposalActionSchema = zod
+const pollActionSchema = zod
   .object({
-    actionType: zod.enum(PROPOSAL_ACTION_TYPE),
-    role: proposalActionRoleSchema.optional(),
+    actionType: zod.enum(POLL_ACTION_TYPE),
+    role: pollActionRoleSchema.optional(),
   })
   .refine(
     (data) => {
@@ -45,7 +45,7 @@ const proposalActionSchema = zod
       return true;
     },
     {
-      message: 'Proposals to change roles must include a role',
+      message: 'Polls to change roles must include a role',
     },
   )
   .refine(
@@ -66,14 +66,14 @@ const proposalActionSchema = zod
       return true;
     },
     {
-      message: 'Proposals to change roles must include at least 1 change',
+      message: 'Polls to change roles must include at least 1 change',
     },
   );
 
-const proposalSchema = zod
+const pollSchema = zod
   .object({
     body: zod.string().optional(),
-    action: proposalActionSchema,
+    action: pollActionSchema,
     closingAt: zod.date().optional(),
   })
   .refine(
@@ -84,22 +84,22 @@ const proposalSchema = zod
       return true;
     },
     {
-      message: 'Test proposals must include a body',
+      message: 'Test polls must include a body',
     },
   );
 
-export const validateProposal = async (
+export const validatePoll = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    proposalSchema.parse(req.body);
+    pollSchema.parse(req.body);
     next();
   } catch (error) {
     if (error instanceof zod.ZodError) {
       const errorMessage =
-        error.issues[0]?.message || 'Validation failed for proposal';
+        error.issues[0]?.message || 'Validation failed for poll';
       res.status(422).send(errorMessage);
       return;
     }

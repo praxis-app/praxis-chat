@@ -1,5 +1,5 @@
-import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/proposal-actions/proposal-action.constants';
-import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
+import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/poll-actions/poll-action.constants';
+import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
 import {
   Column,
   CreateDateColumn,
@@ -9,17 +9,17 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/user.entity';
-import { ProposalActionRole } from './proposal-action-role.entity';
+import { PollActionRole } from './poll-action-role.entity';
 
 @Entity()
-export class ProposalActionRoleMember {
+export class PollActionRoleMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'enum', enum: ROLE_ATTRIBUTE_CHANGE_TYPE })
   changeType: RoleAttributeChangeType;
 
-  @ManyToOne(() => User, (user) => user.proposalActionRoleMembers, {
+  @ManyToOne(() => User, (user) => user.pollActionRoleMembers, {
     onDelete: 'CASCADE',
   })
   user: User;
@@ -28,16 +28,16 @@ export class ProposalActionRoleMember {
   userId: string;
 
   @ManyToOne(
-    () => ProposalActionRole,
-    (proposalActionRole) => proposalActionRole.members,
+    () => PollActionRole,
+    (pollActionRole) => pollActionRole.members,
     {
       onDelete: 'CASCADE',
     },
   )
-  proposalActionRole: ProposalActionRole;
+  pollActionRole: PollActionRole;
 
   @Column({ type: 'uuid' })
-  proposalActionRoleId: string;
+  pollActionRoleId: string;
 
   @CreateDateColumn()
   createdAt: Date;

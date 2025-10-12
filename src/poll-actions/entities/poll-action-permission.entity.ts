@@ -1,5 +1,5 @@
-import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/proposal-actions/proposal-action.constants';
-import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
+import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/poll-actions/poll-action.constants';
+import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
 import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import {
   ABILITY_ACTIONS,
@@ -14,11 +14,11 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProposalActionRole } from './proposal-action-role.entity';
+import { PollActionRole } from './poll-action-role.entity';
 
 @Entity()
-@Unique(['proposalActionRoleId', 'action', 'subject'])
-export class ProposalActionPermission {
+@Unique(['pollActionRoleId', 'action', 'subject'])
+export class PollActionPermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,16 +32,16 @@ export class ProposalActionPermission {
   changeType: RoleAttributeChangeType;
 
   @ManyToOne(
-    () => ProposalActionRole,
-    (proposalActionRole) => proposalActionRole.permissions,
+    () => PollActionRole,
+    (pollActionRole) => pollActionRole.permissions,
     {
       onDelete: 'CASCADE',
     },
   )
-  proposalActionRole: ProposalActionRole;
+  pollActionRole: PollActionRole;
 
   @Column({ type: 'uuid' })
-  proposalActionRoleId: string;
+  pollActionRoleId: string;
 
   @CreateDateColumn()
   createdAt: Date;

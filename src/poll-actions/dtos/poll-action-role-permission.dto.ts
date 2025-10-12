@@ -1,7 +1,7 @@
-import { RoleAttributeChangeType } from '@common/proposal-actions/proposal-action.types';
+import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
 import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 
-export interface ProposalActionRolePermissionDto {
+export interface PollActionRolePermissionDto {
   subject: AbilitySubject;
   actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
 }

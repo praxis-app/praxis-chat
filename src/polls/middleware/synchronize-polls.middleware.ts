@@ -1,22 +1,22 @@
 import { CronJob } from 'cron';
 import { NextFunction, Request, Response } from 'express';
 import { CronExpression } from '../../common/common.constants';
-import * as proposalsService from '../proposals.service';
+import * as pollsService from '../polls.service';
 
 const ONE_HOUR_MS = 1000 * 60 * 60;
 
 let disableTimeout: NodeJS.Timeout | null = null;
 
-const synchronizeProposalsJob = new CronJob(
+const synchronizePollsJob = new CronJob(
   CronExpression.EVERY_5_MINUTES,
   async () => {
-    await proposalsService.synchronizeProposals();
+    await pollsService.synchronizePolls();
   },
 );
 
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
-    synchronizeProposalsJob.stop();
+    synchronizePollsJob.stop();
   }, ONE_HOUR_MS);
 };
 
@@ -26,13 +26,13 @@ const resetDisableTimeout = () => {
   addDisableTimeout();
 };
 
-export const synchronizeProposals = async (
+export const synchronizePolls = async (
   _req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!synchronizeProposalsJob.isActive) {
-    synchronizeProposalsJob.start();
+  if (!synchronizePollsJob.isActive) {
+    synchronizePollsJob.start();
   }
   if (disableTimeout === null) {
     addDisableTimeout();

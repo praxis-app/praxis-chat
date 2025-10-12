@@ -1,4 +1,4 @@
-export const PROPOSAL_ACTION_TYPE = [
+export const POLL_ACTION_TYPE = [
   'change-settings',
   'change-role',
   'create-role',

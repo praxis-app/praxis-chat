@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Poll } from '../../polls/entities/poll.entity';
 import { Channel } from './channel.entity';
 
 @Entity()
@@ -28,8 +28,8 @@ export class ChannelKey {
   @OneToMany(() => Message, (message) => message.key)
   messages: Message[];
 
-  @OneToMany(() => Proposal, (proposal) => proposal.key)
-  proposals: Proposal[];
+  @OneToMany(() => Poll, (poll) => poll.key)
+  polls: Poll[];
 
   @ManyToOne(() => Channel, (channel) => channel.keys, {
     onDelete: 'CASCADE',

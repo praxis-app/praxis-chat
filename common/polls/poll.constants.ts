@@ -4,7 +4,7 @@ export const DECISION_MAKING_MODEL = [
   'majority-vote',
 ] as const;
 
-export const PROPOSAL_STAGE = [
+export const POLL_STAGE = [
   'voting',
   'ratified',
   'revision',

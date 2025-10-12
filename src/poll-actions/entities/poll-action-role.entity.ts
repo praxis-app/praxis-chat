@@ -10,12 +10,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
-import { ProposalActionPermission } from './proposal-action-permission.entity';
-import { ProposalActionRoleMember } from './proposal-action-role-member.entity';
-import { ProposalAction } from './proposal-action.entity';
+import { PollActionPermission } from './poll-action-permission.entity';
+import { PollActionRoleMember } from './poll-action-role-member.entity';
+import { PollAction } from './poll-action.entity';
 
 @Entity()
-export class ProposalActionRole {
+export class PollActionRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,35 +32,35 @@ export class ProposalActionRole {
   prevColor?: string;
 
   @OneToMany(
-    () => ProposalActionPermission,
-    (permission) => permission.proposalActionRole,
+    () => PollActionPermission,
+    (permission) => permission.pollActionRole,
     {
       cascade: true,
       nullable: true,
     },
   )
-  permissions?: ProposalActionPermission[];
+  permissions?: PollActionPermission[];
 
   @OneToMany(
-    () => ProposalActionRoleMember,
-    (member) => member.proposalActionRole,
+    () => PollActionRoleMember,
+    (member) => member.pollActionRole,
     {
       cascade: true,
       nullable: true,
     },
   )
-  members?: ProposalActionRoleMember[];
+  members?: PollActionRoleMember[];
 
-  @OneToOne(() => ProposalAction, (proposalAction) => proposalAction.role, {
+  @OneToOne(() => PollAction, (pollAction) => pollAction.role, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
-  proposalAction: ProposalAction;
+  pollAction: PollAction;
 
   @Column({ type: 'uuid' })
-  proposalActionId: string;
+  pollActionId: string;
 
-  @ManyToOne(() => Role, (role) => role.proposalActionRoles, {
+  @ManyToOne(() => Role, (role) => role.pollActionRoles, {
     nullable: true,
     onDelete: 'CASCADE',
   })

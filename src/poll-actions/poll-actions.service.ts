@@ -4,29 +4,29 @@ import { Permission } from '../roles/entities/permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
-import { ProposalActionRoleDto } from './dtos/proposal-action-role.dto';
-import { ProposalActionPermission } from './entities/proposal-action-permission.entity';
-import { ProposalActionRoleMember } from './entities/proposal-action-role-member.entity';
-import { ProposalActionRole } from './entities/proposal-action-role.entity';
+import { PollActionRoleDto } from './dtos/poll-action-role.dto';
+import { PollActionPermission } from './entities/poll-action-permission.entity';
+import { PollActionRoleMember } from './entities/poll-action-role-member.entity';
+import { PollActionRole } from './entities/poll-action-role.entity';
 
 const usersRepository = dataSource.getRepository(User);
 const rolesRepository = dataSource.getRepository(Role);
 const permissionRepository = dataSource.getRepository(Permission);
 
-const proposalActionRoleRepository =
-  dataSource.getRepository(ProposalActionRole);
+const pollActionRoleRepository =
+  dataSource.getRepository(PollActionRole);
 
-const proposalActionRoleMemberRepository = dataSource.getRepository(
-  ProposalActionRoleMember,
+const pollActionRoleMemberRepository = dataSource.getRepository(
+  PollActionRoleMember,
 );
 
-const proposalActionPermissionRepository = dataSource.getRepository(
-  ProposalActionPermission,
+const pollActionPermissionRepository = dataSource.getRepository(
+  PollActionPermission,
 );
 
-export const createProposalActionRole = async (
-  proposalActionId: string,
-  { roleToUpdateId, members, permissions, ...role }: ProposalActionRoleDto,
+export const createPollActionRole = async (
+  pollActionId: string,
+  { roleToUpdateId, members, permissions, ...role }: PollActionRoleDto,
 ) => {
   const roleToUpdate = await rolesRepository.findOneOrFail({
     where: { id: roleToUpdateId },
@@ -37,36 +37,36 @@ export const createProposalActionRole = async (
   const prevName = name ? roleToUpdate.name : undefined;
   const prevColor = color ? roleToUpdate.color : undefined;
 
-  const savedRole = await proposalActionRoleRepository.save({
+  const savedRole = await pollActionRoleRepository.save({
     roleId: roleToUpdateId,
     name,
     color,
     prevName,
     prevColor,
-    proposalActionId,
+    pollActionId,
   });
 
   if (permissions && permissions.length > 0) {
-    const permissionsToSave: Partial<ProposalActionPermission>[] = [];
+    const permissionsToSave: Partial<PollActionPermission>[] = [];
     for (const permission of permissions) {
       for (const action of permission.actions) {
         permissionsToSave.push({
           ...action,
           subject: permission.subject,
-          proposalActionRoleId: savedRole.id,
+          pollActionRoleId: savedRole.id,
         });
       }
     }
     savedRole.permissions =
-      await proposalActionPermissionRepository.save(permissionsToSave);
+      await pollActionPermissionRepository.save(permissionsToSave);
   }
 
   if (members && members.length > 0) {
-    const actionRoleMembers = await proposalActionRoleMemberRepository.save(
+    const actionRoleMembers = await pollActionRoleMemberRepository.save(
       members.map((member) => ({
         userId: member.userId,
         changeType: member.changeType,
-        proposalActionRoleId: savedRole.id,
+        pollActionRoleId: savedRole.id,
       })),
     );
     const users = await usersRepository.find({
@@ -93,9 +93,9 @@ export const createProposalActionRole = async (
   return savedRole;
 };
 
-export const implementChangeRole = async (proposalActionId: string) => {
-  const actionRole = await proposalActionRoleRepository.findOneOrFail({
-    where: { proposalActionId },
+export const implementChangeRole = async (pollActionId: string) => {
+  const actionRole = await pollActionRoleRepository.findOneOrFail({
+    where: { pollActionId },
     relations: ['permissions', 'members'],
   });
   const roleToUpdate = await rolesRepository.findOneOrFail({
@@ -153,18 +153,18 @@ export const implementChangeRole = async (proposalActionId: string) => {
   if (userIdsToRemove?.length) {
     await rolesService.removeRoleMembers(roleToUpdate.id, userIdsToRemove);
   }
-  // Update proposal action role old name and color
+  // Update poll action role old name and color
   if (actionRole.name || actionRole.color) {
-    await proposalActionRoleRepository.update(actionRole.id, {
+    await pollActionRoleRepository.update(actionRole.id, {
       prevName: actionRole.name ? roleToUpdate.name : undefined,
       prevColor: actionRole.color ? roleToUpdate.color : undefined,
     });
   }
 };
 
-export const implementCreateRole = async (proposalActionId: string) => {
-  const actionRole = await proposalActionRoleRepository.findOneOrFail({
-    where: { proposalActionId },
+export const implementCreateRole = async (pollActionId: string) => {
+  const actionRole = await pollActionRoleRepository.findOneOrFail({
+    where: { pollActionId },
     relations: ['permissions', 'members'],
   });
 
@@ -172,7 +172,7 @@ export const implementCreateRole = async (proposalActionId: string) => {
   const members = actionRole.members?.map(({ userId }) => ({ id: userId }));
 
   if (!name || !color || !permissions || !members) {
-    throw new Error('Failed to find all required proposal action role data', {
+    throw new Error('Failed to find all required poll action role data', {
       cause: actionRole,
     });
   }

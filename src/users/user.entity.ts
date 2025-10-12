@@ -13,8 +13,8 @@ import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
-import { Proposal } from '../proposals/entities/proposal.entity';
+import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
+import { Poll } from '../polls/entities/poll.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Vote } from '../votes/vote.entity';
 
@@ -46,10 +46,10 @@ export class User {
   @Column({ default: false })
   locked: boolean;
 
-  @OneToMany(() => Proposal, (proposal) => proposal.user, {
+  @OneToMany(() => Poll, (poll) => poll.user, {
     cascade: true,
   })
-  proposals: Proposal[];
+  polls: Poll[];
 
   @OneToMany(() => Vote, (vote) => vote.user, {
     cascade: true,
@@ -82,13 +82,13 @@ export class User {
   images: Image[];
 
   @OneToMany(
-    () => ProposalActionRoleMember,
-    (proposalActionRoleMember) => proposalActionRoleMember.user,
+    () => PollActionRoleMember,
+    (pollActionRoleMember) => pollActionRoleMember.user,
     {
       cascade: true,
     },
   )
-  proposalActionRoleMembers: ProposalActionRoleMember[];
+  pollActionRoleMembers: PollActionRoleMember[];
 
   @CreateDateColumn()
   createdAt: Date;
