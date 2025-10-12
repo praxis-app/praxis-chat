@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdPoll } from 'react-icons/md';
-import { CreatePollForm } from '../proposals/create-poll-form/create-poll-form';
+import { CreatePollForm } from '../polls/create-poll-form/create-poll-form';
 import {
   Dialog,
   DialogContent,

@@ -15,12 +15,12 @@ import { PollAction } from './poll-actions/poll-action';
 import { PollVoteButtons } from './poll-vote-buttons';
 
 interface Props {
-  proposal: PollRes;
+  poll: PollRes;
   channel: ChannelRes;
   me?: CurrentUser;
 }
 
-export const InlinePoll = ({ proposal: poll, channel, me }: Props) => {
+export const InlinePoll = ({ poll, channel, me }: Props) => {
   const { t } = useTranslation();
 
   const {
