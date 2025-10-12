@@ -6,12 +6,12 @@ import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { ProposalActionPermission } from '../proposal-actions/entities/proposal-action-permission.entity';
-import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
-import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
-import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
-import { ProposalConfig } from '../proposals/entities/proposal-config.entity';
-import { Proposal } from '../proposals/entities/proposal.entity';
+import { PollActionPermission } from '../poll-actions/entities/poll-action-permission.entity';
+import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
+import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
+import { PollAction } from '../poll-actions/entities/poll-action.entity';
+import { PollConfig } from '../polls/entities/poll-config.entity';
+import { Poll } from '../polls/entities/poll.entity';
 import { Permission } from '../roles/entities/permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
@@ -37,12 +37,12 @@ export const dataSource = new DataSource({
     Invite,
     Message,
     Permission,
-    Proposal,
-    ProposalAction,
-    ProposalActionPermission,
-    ProposalActionRole,
-    ProposalActionRoleMember,
-    ProposalConfig,
+    Poll,
+    PollAction,
+    PollActionPermission,
+    PollActionRole,
+    PollActionRoleMember,
+    PollConfig,
     Role,
     ServerConfig,
     User,
