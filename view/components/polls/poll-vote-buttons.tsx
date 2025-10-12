@@ -18,7 +18,7 @@ interface Props {
   stage: PollStage;
 }
 
-export const ProposalVoteButtons = ({
+export const PollVoteButtons = ({
   channel,
   pollId,
   myVote,

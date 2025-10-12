@@ -8,28 +8,28 @@ import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Input } from '../../../ui/input';
 import {
-  CreateProposalFormSchema,
-  CreateProposalWizardContext,
-} from '../create-proposal-form.types';
+  CreatePollFormSchema,
+  CreatePollWizardContext,
+} from '../create-poll-form.types';
 
 export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
   const {
     context: { selectedRole, usersEligibleForRole },
     onNext,
     onPrevious,
-  } = useWizardContext<CreateProposalWizardContext>();
+  } = useWizardContext<CreatePollWizardContext>();
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const form = useFormContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreatePollFormSchema>();
   const selectedMembers = form.watch('roleMembers') || [];
   const selectedRoleId = form.watch('selectedRoleId');
 
   const { t } = useTranslation();
 
   const setFieldValue = (
-    field: keyof CreateProposalFormSchema,
-    value: CreateProposalFormSchema[keyof CreateProposalFormSchema],
+    field: keyof CreatePollFormSchema,
+    value: CreatePollFormSchema[keyof CreatePollFormSchema],
   ) => {
     form.setValue(field, value, {
       shouldDirty: true,

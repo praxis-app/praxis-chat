@@ -21,10 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../ui/select';
-import { CreateProposalFormSchema } from '../create-proposal-form.types';
+import { CreatePollFormSchema } from '../create-poll-form.types';
 
 export const RoleSelectionStep = () => {
-  const form = useFormContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreatePollFormSchema>();
   const { onNext, onPrevious } = useWizardContext();
 
   const { t } = useTranslation();

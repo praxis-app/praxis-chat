@@ -14,19 +14,19 @@ import { Badge } from '../../../ui/badge';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import {
-  CreateProposalFormSchema,
-  CreateProposalWizardContext,
-} from '../create-proposal-form.types';
+  CreatePollFormSchema,
+  CreatePollWizardContext,
+} from '../create-poll-form.types';
 
-export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
+export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const {
     context: { selectedRole, usersEligibleForRole },
     onSubmit,
     onPrevious,
     isSubmitting,
-  } = useWizardContext<CreateProposalWizardContext>();
+  } = useWizardContext<CreatePollWizardContext>();
 
-  const form = useFormContext<CreateProposalFormSchema>();
+  const form = useFormContext<CreatePollFormSchema>();
 
   const formValues = form.getValues();
   const { action, body, permissions, roleMembers, roleName, roleColor } =

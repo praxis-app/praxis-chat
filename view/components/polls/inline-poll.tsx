@@ -11,16 +11,16 @@ import { Card, CardAction } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { UserProfileDrawer } from '../users/user-profile-drawer';
-import { ProposalAction } from './proposal-actions/proposal-action';
-import { ProposalVoteButtons } from './proposal-vote-buttons';
+import { PollAction } from './poll-actions/poll-action';
+import { PollVoteButtons } from './poll-vote-buttons';
 
 interface Props {
-  proposal: PollRes;
+  poll: PollRes;
   channel: ChannelRes;
   me?: CurrentUser;
 }
 
-export const InlineProposal = ({ proposal: poll, channel, me }: Props) => {
+export const InlinePoll = ({ poll, channel, me }: Props) => {
   const { t } = useTranslation();
 
   const {
@@ -81,10 +81,10 @@ export const InlineProposal = ({ proposal: poll, channel, me }: Props) => {
 
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
-          {action && <ProposalAction action={action} />}
+          {action && <PollAction action={action} />}
 
           <CardAction className="flex w-full flex-wrap gap-2">
-            <ProposalVoteButtons
+            <PollVoteButtons
               pollId={id}
               channel={channel}
               myVote={myVote}

@@ -34,7 +34,7 @@ interface Props {
   serverConfig: ServerConfigRes;
 }
 
-export const ProposalSettingsForm = ({ serverConfig }: Props) => {
+export const PollSettingsForm = ({ serverConfig }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 

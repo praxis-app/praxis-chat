@@ -7,7 +7,7 @@ import * as zod from 'zod';
 
 const PROPOSAL_BODY_MAX = 6000;
 
-export const createProposalFormSchema = zod
+export const createPollFormSchema = zod
   .object({
     body: zod
       .string()
@@ -41,11 +41,11 @@ export const createProposalFormSchema = zod
     path: ['action'],
   });
 
-export type CreateProposalFormSchema = zod.infer<
-  typeof createProposalFormSchema
+export type CreatePollFormSchema = zod.infer<
+  typeof createPollFormSchema
 >;
 
-export interface CreateProposalWizardContext {
+export interface CreatePollWizardContext {
   selectedRole?: RoleRes;
   usersEligibleForRole?: UserRes[];
 }
