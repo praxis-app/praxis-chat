@@ -29,9 +29,7 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
     userId,
   });
 
-  const isPollRatifiable = await pollsService.isPollRatifiable(
-    vote.pollId,
-  );
+  const isPollRatifiable = await pollsService.isPollRatifiable(vote.pollId);
   if (isPollRatifiable) {
     // Update poll to reflect newly created vote
     await pollsService.ratifyPoll(vote.pollId);
@@ -47,9 +45,7 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
 
   let isPollRatifiable = false;
   if (vote.pollId) {
-    isPollRatifiable = await pollsService.isPollRatifiable(
-      vote.pollId,
-    );
+    isPollRatifiable = await pollsService.isPollRatifiable(vote.pollId);
     if (isPollRatifiable) {
       // Update poll to reflect change in vote
       await pollsService.ratifyPoll(vote.pollId);

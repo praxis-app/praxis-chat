@@ -4,11 +4,7 @@ import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { verifyImage } from '../images/middleware/verify-image.middleware';
 import { votesRouter } from '../votes/votes.router';
 import { validatePoll } from './middleware/validate-poll.middleware';
-import {
-  createPoll,
-  getPollImage,
-  uploadPollImage,
-} from './polls.controller';
+import { createPoll, getPollImage, uploadPollImage } from './polls.controller';
 
 const IMAGE_ROUTE = '/:pollId/images/:imageId';
 

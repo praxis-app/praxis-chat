@@ -41,14 +41,10 @@ export class PollActionRole {
   )
   permissions?: PollActionPermission[];
 
-  @OneToMany(
-    () => PollActionRoleMember,
-    (member) => member.pollActionRole,
-    {
-      cascade: true,
-      nullable: true,
-    },
-  )
+  @OneToMany(() => PollActionRoleMember, (member) => member.pollActionRole, {
+    cascade: true,
+    nullable: true,
+  })
   members?: PollActionRoleMember[];
 
   @OneToOne(() => PollAction, (pollAction) => pollAction.role, {

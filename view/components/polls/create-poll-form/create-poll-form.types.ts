@@ -41,9 +41,7 @@ export const createPollFormSchema = zod
     path: ['action'],
   });
 
-export type CreatePollFormSchema = zod.infer<
-  typeof createPollFormSchema
->;
+export type CreatePollFormSchema = zod.infer<typeof createPollFormSchema>;
 
 export interface CreatePollWizardContext {
   selectedRole?: RoleRes;

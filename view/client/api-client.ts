@@ -234,11 +234,7 @@ class ApiClient {
     });
   };
 
-  deleteVote = async (
-    channelId: string,
-    pollId: string,
-    voteId: string,
-  ) => {
+  deleteVote = async (channelId: string, pollId: string, voteId: string) => {
     const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
@@ -349,20 +345,12 @@ class ApiClient {
   // Misc.
   // -------------------------------------------------------------------------
 
-  getMessageImage = (
-    channelId: string,
-    messageId: string,
-    imageId: string,
-  ) => {
+  getMessageImage = (channelId: string, messageId: string, imageId: string) => {
     const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
-  getPollImage = (
-    channelId: string,
-    pollId: string,
-    imageId: string,
-  ) => {
+  getPollImage = (channelId: string, pollId: string, imageId: string) => {
     const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };

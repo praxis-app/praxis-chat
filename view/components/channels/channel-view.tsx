@@ -146,9 +146,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
 
   useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
-      const { body }: PubSubMessage<NewPollPayload> = JSON.parse(
-        event.data,
-      );
+      const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
       if (!body) {
         return;
       }

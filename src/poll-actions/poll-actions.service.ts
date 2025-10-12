@@ -13,16 +13,13 @@ const usersRepository = dataSource.getRepository(User);
 const rolesRepository = dataSource.getRepository(Role);
 const permissionRepository = dataSource.getRepository(Permission);
 
-const pollActionRoleRepository =
-  dataSource.getRepository(PollActionRole);
+const pollActionRoleRepository = dataSource.getRepository(PollActionRole);
 
-const pollActionRoleMemberRepository = dataSource.getRepository(
-  PollActionRoleMember,
-);
+const pollActionRoleMemberRepository =
+  dataSource.getRepository(PollActionRoleMember);
 
-const pollActionPermissionRepository = dataSource.getRepository(
-  PollActionPermission,
-);
+const pollActionPermissionRepository =
+  dataSource.getRepository(PollActionPermission);
 
 export const createPollActionRole = async (
   pollActionId: string,

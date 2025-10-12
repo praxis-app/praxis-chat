@@ -1,13 +1,7 @@
-import {
-  DecisionMakingModel,
-  PollStage,
-} from '@common/polls/poll.types';
+import { DecisionMakingModel, PollStage } from '@common/polls/poll.types';
 import { VoteType } from '@common/votes/vote.types';
 import { ImageRes } from './image.types';
-import {
-  CreatePollActionReq,
-  PollActionRes,
-} from './poll-action.types';
+import { CreatePollActionReq, PollActionRes } from './poll-action.types';
 import { UserRes } from './user.types';
 
 export interface PollRes {

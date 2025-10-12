@@ -27,13 +27,9 @@ export class PollActionRoleMember {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @ManyToOne(
-    () => PollActionRole,
-    (pollActionRole) => pollActionRole.members,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
+  @ManyToOne(() => PollActionRole, (pollActionRole) => pollActionRole.members, {
+    onDelete: 'CASCADE',
+  })
   pollActionRole: PollActionRole;
 
   @Column({ type: 'uuid' })

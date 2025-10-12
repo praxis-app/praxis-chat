@@ -32,10 +32,7 @@ export class Role {
   @JoinTable()
   members: User[];
 
-  @OneToMany(
-    () => PollActionRole,
-    (pollActionRole) => pollActionRole.role,
-  )
+  @OneToMany(() => PollActionRole, (pollActionRole) => pollActionRole.role)
   pollActionRoles: PollActionRole[];
 
   @CreateDateColumn()

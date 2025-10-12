@@ -18,12 +18,7 @@ interface Props {
   stage: PollStage;
 }
 
-export const PollVoteButtons = ({
-  channel,
-  pollId,
-  myVote,
-  stage,
-}: Props) => {
+export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
