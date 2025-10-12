@@ -4,8 +4,8 @@
  * - https://github.com/praxis-app/praxis/blob/main/src/proposals/models/proposal.model.ts
  */
 
-import { POLL_STAGE } from '@common/polls/poll.constants';
-import { PollStage } from '@common/polls/poll.types';
+import { POLL_STAGE, POLL_TYPE } from '@common/polls/poll.constants';
+import { PollStage, PollType } from '@common/polls/poll.types';
 import {
   Column,
   CreateDateColumn,
@@ -46,6 +46,10 @@ export class Poll {
 
   @Column({ type: 'enum', default: 'voting', enum: POLL_STAGE })
   stage: PollStage;
+
+  // TODO: Implement basic polls - only proposal is supported for now
+  @Column({ type: 'enum', default: 'proposal', enum: POLL_TYPE })
+  pollType: PollType;
 
   @OneToOne(() => PollAction, (action) => action.poll, {
     cascade: true,
