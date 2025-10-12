@@ -2,7 +2,7 @@ import { api } from '@/client/api-client';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
-import { ProposalStage } from '@common/proposals/proposal.types';
+import { PollStage } from '@common/polls/poll.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,13 +14,13 @@ import { Button } from '../ui/button';
 interface Props {
   channel: ChannelRes;
   myVote?: { id: string; voteType: VoteType };
-  proposalId: string;
-  stage: ProposalStage;
+  pollId: string;
+  stage: PollStage;
 }
 
 export const ProposalVoteButtons = ({
   channel,
-  proposalId,
+  pollId,
   myVote,
   stage,
 }: Props) => {
@@ -31,7 +31,7 @@ export const ProposalVoteButtons = ({
     mutationFn: async (voteType: VoteType) => {
       // Create vote
       if (!myVote) {
-        const { vote } = await api.createVote(channel.id, proposalId, {
+        const { vote } = await api.createVote(channel.id, pollId, {
           voteType,
         });
         return {
@@ -43,7 +43,7 @@ export const ProposalVoteButtons = ({
       }
       // Delete vote
       if (myVote.voteType === voteType) {
-        await api.deleteVote(channel.id, proposalId, myVote.id);
+        await api.deleteVote(channel.id, pollId, myVote.id);
         return {
           action: 'delete' as const,
           isRatifyingVote: false,
@@ -53,7 +53,7 @@ export const ProposalVoteButtons = ({
       // Update vote
       const { isRatifyingVote } = await api.updateVote(
         channel.id,
-        proposalId,
+        pollId,
         myVote.id,
         { voteType },
       );
@@ -75,7 +75,7 @@ export const ProposalVoteButtons = ({
           }
           const pages = oldData.pages.map((page) => {
             const feed = page.feed.map((item) => {
-              if (item.type !== 'proposal' || item.id !== proposalId) {
+              if (item.type !== 'proposal' || item.id !== pollId) {
                 return item;
               }
 

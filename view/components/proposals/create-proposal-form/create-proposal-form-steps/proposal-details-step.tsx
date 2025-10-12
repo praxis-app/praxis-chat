@@ -1,8 +1,8 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
-import { PROPOSAL_ACTION_TYPE } from '@common/proposal-actions/proposal-action.constants';
+import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ProposalActionType } from '../../../../../common/proposal-actions/proposal-action.types';
+import { PollActionType } from '../../../../../common/poll-actions/poll-action.types';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import {
@@ -28,7 +28,7 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const getProposalActionLabel = (action: ProposalActionType | '') => {
+  const getPollActionLabel = (action: PollActionType | '') => {
     if (action === 'change-role') {
       return t('proposals.actionTypes.changeRole');
     }
@@ -81,9 +81,9 @@ export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROPOSAL_ACTION_TYPE.map((action) => (
+                    {POLL_ACTION_TYPE.map((action) => (
                       <SelectItem key={action} value={action}>
-                        {getProposalActionLabel(action)}
+                        {getPollActionLabel(action)}
                       </SelectItem>
                     ))}
                   </SelectContent>

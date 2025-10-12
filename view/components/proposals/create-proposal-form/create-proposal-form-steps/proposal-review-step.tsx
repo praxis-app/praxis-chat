@@ -4,9 +4,9 @@ import { getPermissionValuesMap } from '@/lib/role.utils';
 import { PermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import {
-  ProposalActionType,
+  PollActionType,
   RoleAttributeChangeType,
-} from '@common/proposal-actions/proposal-action.types';
+} from '@common/poll-actions/poll-action.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -66,7 +66,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const getProposalActionLabel = (action: ProposalActionType | '') => {
+  const getPollActionLabel = (action: PollActionType | '') => {
     if (action === 'change-role') {
       return t('proposals.actionTypes.changeRole');
     }
@@ -147,7 +147,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">{getProposalActionLabel(action)}</p>
+            <p className="text-sm">{getPollActionLabel(action)}</p>
           </CardContent>
         </Card>
 

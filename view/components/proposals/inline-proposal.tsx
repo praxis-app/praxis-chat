@@ -1,6 +1,6 @@
 import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
-import { ProposalRes } from '@/types/proposal.types';
+import { PollRes } from '@/types/poll.types';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { truncate } from '../../lib/text.utils';
@@ -15,12 +15,12 @@ import { ProposalAction } from './proposal-actions/proposal-action';
 import { ProposalVoteButtons } from './proposal-vote-buttons';
 
 interface Props {
-  proposal: ProposalRes;
+  proposal: PollRes;
   channel: ChannelRes;
   me?: CurrentUser;
 }
 
-export const InlineProposal = ({ proposal, channel, me }: Props) => {
+export const InlineProposal = ({ proposal: poll, channel, me }: Props) => {
   const { t } = useTranslation();
 
   const {
@@ -34,7 +34,7 @@ export const InlineProposal = ({ proposal, channel, me }: Props) => {
     votesNeededToRatify,
     agreementVoteCount,
     createdAt,
-  } = proposal;
+  } = poll;
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
@@ -85,7 +85,7 @@ export const InlineProposal = ({ proposal, channel, me }: Props) => {
 
           <CardAction className="flex w-full flex-wrap gap-2">
             <ProposalVoteButtons
-              proposalId={id}
+              pollId={id}
               channel={channel}
               myVote={myVote}
               stage={stage}

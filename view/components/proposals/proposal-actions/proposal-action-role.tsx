@@ -10,9 +10,9 @@ import { Separator } from '@/components/ui/separator';
 import { PERMISSION_KEYS } from '@/constants/role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import {
-  ProposalActionRes,
-  ProposalActionRoleMemberRes,
-} from '@/types/proposal-action.types';
+  PollActionRes,
+  PollActionRoleMemberRes,
+} from '@/types/poll-action.types';
 import { PermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 export const ACCORDION_ITEM_VALUE = 'role-change-proposal';
 
 interface Props {
-  action: ProposalActionRes;
+  action: PollActionRes;
 }
 
 export const ProposalActionRole = ({ action }: Props) => {
@@ -246,7 +246,7 @@ export const ProposalActionRole = ({ action }: Props) => {
               <div>
                 <div className="space-y-2">
                   {action.role.members.map(
-                    (member: ProposalActionRoleMemberRes) => (
+                    (member: PollActionRoleMemberRes) => (
                       <div
                         key={member.user.id}
                         className="flex items-center justify-between"

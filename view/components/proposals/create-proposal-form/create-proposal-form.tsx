@@ -3,9 +3,9 @@ import { WizardStepData } from '@/components/shared/wizard/wizard.types';
 import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
-  CreateProposalActionRoleMemberReq,
-  CreateProposalActionRolePermissionReq,
-} from '@/types/proposal-action.types';
+  CreatePollActionRoleMemberReq,
+  CreatePollActionRolePermissionReq,
+} from '@/types/poll-action.types';
 import { PermissionKeys } from '@/types/role.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -61,13 +61,13 @@ export const CreateProposalForm = ({
   const selectedRoleId = form.watch('selectedRoleId');
   const actionType = form.watch('action');
 
-  const isRoleProposal =
+  const isRolePoll =
     actionType === 'change-role' || actionType === 'create-role';
 
   const { data: roleData, isLoading: isRoleLoading } = useQuery({
     queryKey: ['role', selectedRoleId],
     queryFn: () => api.getRole(selectedRoleId!),
-    enabled: isRoleProposal && !!selectedRoleId && currentStep > 1,
+    enabled: isRolePoll && !!selectedRoleId && currentStep > 1,
   });
 
   // Get eligible users for the selected role
@@ -75,10 +75,10 @@ export const CreateProposalForm = ({
     useQuery({
       queryKey: ['role', selectedRoleId, 'members', 'eligible'],
       queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
-      enabled: isRoleProposal && !!selectedRoleId && currentStep > 2,
+      enabled: isRolePoll && !!selectedRoleId && currentStep > 2,
     });
 
-  const { mutate: createProposal, isPending } = useMutation({
+  const { mutate: createPoll, isPending } = useMutation({
     mutationFn: async (values: CreateProposalFormSchema) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
@@ -101,7 +101,7 @@ export const CreateProposalForm = ({
 
       // Shape permissions from form format to API format and remove unchanged entries
       const permissionChanges = Object.entries(values.permissions || {}).reduce<
-        CreateProposalActionRolePermissionReq[]
+        CreatePollActionRolePermissionReq[]
       >((result, [permissionName, permissionValue]) => {
         if (shapedRolePermissions[permissionName] === permissionValue) {
           return result;
@@ -170,7 +170,7 @@ export const CreateProposalForm = ({
         return result;
       }, []);
 
-      const memberChanges: CreateProposalActionRoleMemberReq[] = [];
+      const memberChanges: CreatePollActionRoleMemberReq[] = [];
       for (const user of eligibleUsersData?.users || []) {
         if (values.roleMembers?.includes(user.id)) {
           memberChanges.push({ userId: user.id, changeType: 'add' });
@@ -193,7 +193,7 @@ export const CreateProposalForm = ({
             }
           : undefined;
 
-      return api.createProposal(channelId, {
+      return api.createPoll(channelId, {
         body: values.body?.trim(),
         action: {
           actionType: values.action,
@@ -201,7 +201,7 @@ export const CreateProposalForm = ({
         },
       });
     },
-    onSuccess: ({ proposal }) => {
+    onSuccess: ({ poll }) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
@@ -210,12 +210,12 @@ export const CreateProposalForm = ({
         return;
       }
 
-      // Optimistically insert new proposal at top of feed (no refetch)
+      // Optimistically insert new poll at top of feed (no refetch)
       queryClient.setQueryData<FeedQuery>(
         ['feed', resolvedChannelId],
         (old) => {
           const newItem: FeedItemRes = {
-            ...proposal,
+            ...poll,
             type: 'proposal',
           };
           if (!old) {
@@ -226,7 +226,7 @@ export const CreateProposalForm = ({
               return page;
             }
             const exists = page.feed.some(
-              (fi) => fi.type === 'proposal' && fi.id === proposal.id,
+              (fi) => fi.type === 'proposal' && fi.id === poll.id,
             );
             if (exists) {
               return page;
@@ -309,7 +309,7 @@ export const CreateProposalForm = ({
   };
 
   const handleSubmit = () => {
-    form.handleSubmit((values) => createProposal(values))();
+    form.handleSubmit((values) => createPoll(values))();
   };
 
   return (

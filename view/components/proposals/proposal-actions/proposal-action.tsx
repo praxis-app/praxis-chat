@@ -1,8 +1,8 @@
-import { ProposalActionRes } from '@/types/proposal-action.types';
+import { PollActionRes } from '@/types/poll-action.types';
 import { ProposalActionRole } from './proposal-action-role';
 
 interface Props {
-  action: ProposalActionRes;
+  action: PollActionRes;
 }
 
 export const ProposalAction = ({ action }: Props) => {
