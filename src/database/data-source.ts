@@ -17,7 +17,7 @@ import { Role } from '../roles/entities/role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Initial1760151746923 } from './migrations/1760151746923-Initial';
+import { Initial1760326454006 } from './migrations/1760326454006-Initial';
 
 dotenv.config();
 
@@ -48,5 +48,5 @@ export const dataSource = new DataSource({
     User,
     Vote,
   ],
-  migrations: [Initial1760151746923],
+  migrations: [Initial1760326454006],
 });

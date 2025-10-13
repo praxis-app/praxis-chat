@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Initial1760151746923 implements MigrationInterface {
-  name = 'Initial1760151746923';
+export class Initial1760326454006 implements MigrationInterface {
+    name = 'Initial1760326454006'
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
             CREATE TABLE "channel_member" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "lastMessageReadId" uuid,
@@ -16,7 +16,7 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_a4a716289e5b0468f55f8e8d225" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "invite" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "token" character varying NOT NULL,
@@ -29,10 +29,10 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_fc9fa190e5a3c5d80604a4f63e1" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TYPE "public"."permission_action_enum" AS ENUM('delete', 'create', 'read', 'update', 'manage')
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TYPE "public"."permission_subject_enum" AS ENUM(
                 'ServerConfig',
                 'Channel',
@@ -42,7 +42,7 @@ export class Initial1760151746923 implements MigrationInterface {
                 'all'
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "permission" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "action" "public"."permission_action_enum" NOT NULL,
@@ -54,7 +54,7 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_3b8b97af9d9d8807e41e6f48362" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "role" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -64,11 +64,11 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_permission_action_enum" AS ENUM('delete', 'create', 'read', 'update', 'manage')
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_action_permission_action_enum" AS ENUM('delete', 'create', 'read', 'update', 'manage')
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_permission_subject_enum" AS ENUM(
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_action_permission_subject_enum" AS ENUM(
                 'ServerConfig',
                 'Channel',
                 'Invite',
@@ -77,24 +77,24 @@ export class Initial1760151746923 implements MigrationInterface {
                 'all'
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_permission_changetype_enum" AS ENUM('add', 'remove')
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_action_permission_changetype_enum" AS ENUM('add', 'remove')
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_action_permission" (
+        await queryRunner.query(`
+            CREATE TABLE "poll_action_permission" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "action" "public"."proposal_action_permission_action_enum" NOT NULL,
-                "subject" "public"."proposal_action_permission_subject_enum" NOT NULL,
-                "changeType" "public"."proposal_action_permission_changetype_enum" NOT NULL,
-                "proposalActionRoleId" uuid NOT NULL,
+                "action" "public"."poll_action_permission_action_enum" NOT NULL,
+                "subject" "public"."poll_action_permission_subject_enum" NOT NULL,
+                "changeType" "public"."poll_action_permission_changetype_enum" NOT NULL,
+                "pollActionRoleId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "UQ_4517bf4c56d391ada8bb64f87de" UNIQUE ("proposalActionRoleId", "action", "subject"),
-                CONSTRAINT "PK_da6266a8417a739330b77007faa" PRIMARY KEY ("id")
+                CONSTRAINT "UQ_67a01570a4a264c965e8e27327b" UNIQUE ("pollActionRoleId", "action", "subject"),
+                CONSTRAINT "PK_33c40531e8827e453c7cde48d9b" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_actiontype_enum" AS ENUM(
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_action_actiontype_enum" AS ENUM(
                 'change-settings',
                 'change-role',
                 'create-role',
@@ -102,62 +102,62 @@ export class Initial1760151746923 implements MigrationInterface {
                 'test'
             )
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_action" (
+        await queryRunner.query(`
+            CREATE TABLE "poll_action" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "actionType" "public"."proposal_action_actiontype_enum" NOT NULL,
-                "proposalId" uuid NOT NULL,
+                "actionType" "public"."poll_action_actiontype_enum" NOT NULL,
+                "pollId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "REL_542f653febd92b2a0d67dcadb0" UNIQUE ("proposalId"),
-                CONSTRAINT "PK_c44bd6250cf241ddd15782e8b55" PRIMARY KEY ("id")
+                CONSTRAINT "REL_5a989cc7b2bd95f83ef2f7aa57" UNIQUE ("pollId"),
+                CONSTRAINT "PK_07ff4c87300a6ff964b34218a50" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_action_role" (
+        await queryRunner.query(`
+            CREATE TABLE "poll_action_role" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying,
                 "color" character varying,
                 "prevName" character varying,
                 "prevColor" character varying,
-                "proposalActionId" uuid NOT NULL,
+                "pollActionId" uuid NOT NULL,
                 "roleId" uuid,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "REL_81a331d1f0e93a0eaac9585cb7" UNIQUE ("proposalActionId"),
-                CONSTRAINT "PK_0a14dd2782594c498b221ccf557" PRIMARY KEY ("id")
+                CONSTRAINT "REL_1cd116cff0095b33272dda497d" UNIQUE ("pollActionId"),
+                CONSTRAINT "PK_55056c1ab988535621bd8a11dc4" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_action_role_member_changetype_enum" AS ENUM('add', 'remove')
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_action_role_member_changetype_enum" AS ENUM('add', 'remove')
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_action_role_member" (
+        await queryRunner.query(`
+            CREATE TABLE "poll_action_role_member" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "changeType" "public"."proposal_action_role_member_changetype_enum" NOT NULL,
+                "changeType" "public"."poll_action_role_member_changetype_enum" NOT NULL,
                 "userId" uuid NOT NULL,
-                "proposalActionRoleId" uuid NOT NULL,
+                "pollActionRoleId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_9daabc8eb1cb4a3bc1681773c84" PRIMARY KEY ("id")
+                CONSTRAINT "PK_d8ba65b39b8ae603d2ca6e78ad6" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TYPE "public"."vote_votetype_enum" AS ENUM('agree', 'disagree', 'abstain', 'block')
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "vote" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "voteType" "public"."vote_votetype_enum" NOT NULL,
-                "proposalId" uuid,
+                "pollId" uuid,
                 "userId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "UQ_fe4797cd8ebb3d89c48c4acb277" UNIQUE ("proposalId", "userId"),
+                CONSTRAINT "UQ_22122c3d0f023c4d4ed37f77924" UNIQUE ("pollId", "userId"),
                 CONSTRAINT "PK_2d5932d46afe39c8176f9d4be72" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "user" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -175,64 +175,68 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TYPE "public"."image_imagetype_enum" AS ENUM(
                 'message',
-                'proposal',
+                'poll',
                 'cover-photo',
                 'profile-picture'
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "image" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "filename" character varying,
                 "imageType" "public"."image_imagetype_enum" NOT NULL,
                 "messageId" uuid,
-                "proposalId" uuid,
+                "pollId" uuid,
                 "userId" uuid,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "PK_d6db1ab4ee9ad9dbe86c64e4cc3" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_config_decisionmakingmodel_enum" AS ENUM('consent', 'consensus', 'majority-vote')
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_config_decisionmakingmodel_enum" AS ENUM('consent', 'consensus', 'majority-vote')
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal_config" (
+        await queryRunner.query(`
+            CREATE TABLE "poll_config" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "decisionMakingModel" "public"."proposal_config_decisionmakingmodel_enum" NOT NULL DEFAULT 'consensus',
+                "decisionMakingModel" "public"."poll_config_decisionmakingmodel_enum" NOT NULL DEFAULT 'consensus',
                 "disagreementsLimit" integer NOT NULL DEFAULT '2',
                 "abstainsLimit" integer NOT NULL DEFAULT '2',
                 "ratificationThreshold" integer NOT NULL DEFAULT '51',
                 "closingAt" TIMESTAMP,
-                "proposalId" uuid NOT NULL,
+                "pollId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "REL_9b5d32fef3ec87bf111c964f2c" UNIQUE ("proposalId"),
-                CONSTRAINT "PK_2f0858babf4bb7af66b142b83f8" PRIMARY KEY ("id")
+                CONSTRAINT "REL_0dbe9a1c2c9dd319da85fa519f" UNIQUE ("pollId"),
+                CONSTRAINT "PK_5b06d0654f0b230beb7e5716d24" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
-            CREATE TYPE "public"."proposal_stage_enum" AS ENUM('voting', 'ratified', 'revision', 'closed')
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_stage_enum" AS ENUM('voting', 'ratified', 'revision', 'closed')
         `);
-    await queryRunner.query(`
-            CREATE TABLE "proposal" (
+        await queryRunner.query(`
+            CREATE TYPE "public"."poll_polltype_enum" AS ENUM('proposal', 'poll')
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "poll" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "ciphertext" bytea,
                 "iv" bytea,
                 "tag" bytea,
                 "keyId" uuid,
-                "stage" "public"."proposal_stage_enum" NOT NULL DEFAULT 'voting',
+                "stage" "public"."poll_stage_enum" NOT NULL DEFAULT 'voting',
+                "pollType" "public"."poll_polltype_enum" NOT NULL DEFAULT 'proposal',
                 "userId" uuid NOT NULL,
                 "channelId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_ca872ecfe4fef5720d2d39e4275" PRIMARY KEY ("id")
+                CONSTRAINT "PK_03b5cf19a7f562b231c3458527e" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "channel" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -242,7 +246,7 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_590f33ee6ee7d76437acf362e39" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "message" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "ciphertext" bytea,
@@ -256,7 +260,7 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "channel_key" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "wrappedKey" bytea NOT NULL,
@@ -268,10 +272,10 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_ea63adc254fc8f8e5b404965d32" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TYPE "public"."server_config_decisionmakingmodel_enum" AS ENUM('consent', 'consensus', 'majority-vote')
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "server_config" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "decisionMakingModel" "public"."server_config_decisionmakingmodel_enum" NOT NULL DEFAULT 'consensus',
@@ -284,292 +288,296 @@ export class Initial1760151746923 implements MigrationInterface {
                 CONSTRAINT "PK_f0bf5101843e99a758694f11417" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "role_members_user" (
                 "roleId" uuid NOT NULL,
                 "userId" uuid NOT NULL,
                 CONSTRAINT "PK_b47ecc28f78e95361c666b11fa8" PRIMARY KEY ("roleId", "userId")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE INDEX "IDX_bc4c45c917cd69cef0574dc3c0" ON "role_members_user" ("roleId")
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE INDEX "IDX_8ebd83d04eb1d0270c6e1d9d62" ON "role_members_user" ("userId")
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_member"
             ADD CONSTRAINT "FK_245da03cfde01c653c492d83a0d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_member"
             ADD CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "invite"
             ADD CONSTRAINT "FK_91bfeec7a9574f458e5b592472d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "permission"
             ADD CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_permission"
-            ADD CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44" FOREIGN KEY ("proposalActionRoleId") REFERENCES "proposal_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_permission"
+            ADD CONSTRAINT "FK_8bb2aaec74bc9c92bdd06dafda0" FOREIGN KEY ("pollActionRoleId") REFERENCES "poll_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action"
-            ADD CONSTRAINT "FK_542f653febd92b2a0d67dcadb05" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action"
+            ADD CONSTRAINT "FK_5a989cc7b2bd95f83ef2f7aa578" FOREIGN KEY ("pollId") REFERENCES "poll"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role"
-            ADD CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c" FOREIGN KEY ("proposalActionId") REFERENCES "proposal_action"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role"
+            ADD CONSTRAINT "FK_1cd116cff0095b33272dda497de" FOREIGN KEY ("pollActionId") REFERENCES "poll_action"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role"
-            ADD CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role"
+            ADD CONSTRAINT "FK_8a38eaeb6c3333208c86cd517d2" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role_member"
-            ADD CONSTRAINT "FK_5d535c7141b832cc7213a29b97a" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role_member"
+            ADD CONSTRAINT "FK_17afee8069124696b9388072270" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role_member"
-            ADD CONSTRAINT "FK_90dfd2320379570d63cb82bd615" FOREIGN KEY ("proposalActionRoleId") REFERENCES "proposal_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role_member"
+            ADD CONSTRAINT "FK_de3c3a3bb75ce77d13a670d168d" FOREIGN KEY ("pollActionRoleId") REFERENCES "poll_action_role"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "vote"
-            ADD CONSTRAINT "FK_a6099cc53a32762d8c69e71dcd1" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ADD CONSTRAINT "FK_3827d62f3c37dc8a63a13c4d0da" FOREIGN KEY ("pollId") REFERENCES "poll"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "vote"
             ADD CONSTRAINT "FK_f5de237a438d298031d11a57c3b" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "image"
             ADD CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea" FOREIGN KEY ("messageId") REFERENCES "message"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "image"
-            ADD CONSTRAINT "FK_335251c897e637fa2a83597f263" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+            ADD CONSTRAINT "FK_90220bb370e4eb47037ee3c6e25" FOREIGN KEY ("pollId") REFERENCES "poll"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "image"
             ADD CONSTRAINT "FK_dc40417dfa0c7fbd70b8eb880cc" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_config"
-            ADD CONSTRAINT "FK_9b5d32fef3ec87bf111c964f2cf" FOREIGN KEY ("proposalId") REFERENCES "proposal"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll_config"
+            ADD CONSTRAINT "FK_0dbe9a1c2c9dd319da85fa519ff" FOREIGN KEY ("pollId") REFERENCES "poll"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal"
-            ADD CONSTRAINT "FK_a3154e9996ebe9681116340c6ba" FOREIGN KEY ("keyId") REFERENCES "channel_key"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll"
+            ADD CONSTRAINT "FK_12b7d870d12b115ba28ad815a0b" FOREIGN KEY ("keyId") REFERENCES "channel_key"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal"
-            ADD CONSTRAINT "FK_de14a768fe600bb1e723b32377e" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll"
+            ADD CONSTRAINT "FK_0610ebcfcfb4a18441a9bcdab2f" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal"
-            ADD CONSTRAINT "FK_a6bf88300c559bee3dfdb78c022" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        await queryRunner.query(`
+            ALTER TABLE "poll"
+            ADD CONSTRAINT "FK_c1240fcc9675946ea5d6c2860e0" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message"
             ADD CONSTRAINT "FK_446251f8ceb2132af01b68eb593" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message"
             ADD CONSTRAINT "FK_ac10a4ed1d76c25807d10b2b334" FOREIGN KEY ("keyId") REFERENCES "channel_key"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message"
             ADD CONSTRAINT "FK_5fdbbcb32afcea663c2bea2954f" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_key"
             ADD CONSTRAINT "FK_00c23051eef6abf60bf73673e2b" FOREIGN KEY ("channelId") REFERENCES "channel"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "role_members_user"
             ADD CONSTRAINT "FK_bc4c45c917cd69cef0574dc3c0a" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE CASCADE
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "role_members_user"
             ADD CONSTRAINT "FK_8ebd83d04eb1d0270c6e1d9d620" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-  }
+    }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
             ALTER TABLE "role_members_user" DROP CONSTRAINT "FK_8ebd83d04eb1d0270c6e1d9d620"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "role_members_user" DROP CONSTRAINT "FK_bc4c45c917cd69cef0574dc3c0a"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_key" DROP CONSTRAINT "FK_00c23051eef6abf60bf73673e2b"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message" DROP CONSTRAINT "FK_5fdbbcb32afcea663c2bea2954f"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message" DROP CONSTRAINT "FK_ac10a4ed1d76c25807d10b2b334"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "message" DROP CONSTRAINT "FK_446251f8ceb2132af01b68eb593"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal" DROP CONSTRAINT "FK_a6bf88300c559bee3dfdb78c022"
+        await queryRunner.query(`
+            ALTER TABLE "poll" DROP CONSTRAINT "FK_c1240fcc9675946ea5d6c2860e0"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal" DROP CONSTRAINT "FK_de14a768fe600bb1e723b32377e"
+        await queryRunner.query(`
+            ALTER TABLE "poll" DROP CONSTRAINT "FK_0610ebcfcfb4a18441a9bcdab2f"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal" DROP CONSTRAINT "FK_a3154e9996ebe9681116340c6ba"
+        await queryRunner.query(`
+            ALTER TABLE "poll" DROP CONSTRAINT "FK_12b7d870d12b115ba28ad815a0b"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_config" DROP CONSTRAINT "FK_9b5d32fef3ec87bf111c964f2cf"
+        await queryRunner.query(`
+            ALTER TABLE "poll_config" DROP CONSTRAINT "FK_0dbe9a1c2c9dd319da85fa519ff"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "image" DROP CONSTRAINT "FK_dc40417dfa0c7fbd70b8eb880cc"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "image" DROP CONSTRAINT "FK_335251c897e637fa2a83597f263"
+        await queryRunner.query(`
+            ALTER TABLE "image" DROP CONSTRAINT "FK_90220bb370e4eb47037ee3c6e25"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "image" DROP CONSTRAINT "FK_f69c7f02013805481ec0edcf3ea"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "vote" DROP CONSTRAINT "FK_f5de237a438d298031d11a57c3b"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "vote" DROP CONSTRAINT "FK_a6099cc53a32762d8c69e71dcd1"
+        await queryRunner.query(`
+            ALTER TABLE "vote" DROP CONSTRAINT "FK_3827d62f3c37dc8a63a13c4d0da"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role_member" DROP CONSTRAINT "FK_90dfd2320379570d63cb82bd615"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role_member" DROP CONSTRAINT "FK_de3c3a3bb75ce77d13a670d168d"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role_member" DROP CONSTRAINT "FK_5d535c7141b832cc7213a29b97a"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role_member" DROP CONSTRAINT "FK_17afee8069124696b9388072270"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_a5582c00ad2e43a5391f6cdb97b"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role" DROP CONSTRAINT "FK_8a38eaeb6c3333208c86cd517d2"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_role" DROP CONSTRAINT "FK_81a331d1f0e93a0eaac9585cb7c"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_role" DROP CONSTRAINT "FK_1cd116cff0095b33272dda497de"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action" DROP CONSTRAINT "FK_542f653febd92b2a0d67dcadb05"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action" DROP CONSTRAINT "FK_5a989cc7b2bd95f83ef2f7aa578"
         `);
-    await queryRunner.query(`
-            ALTER TABLE "proposal_action_permission" DROP CONSTRAINT "FK_d30bc47f532c1ee16830ef03d44"
+        await queryRunner.query(`
+            ALTER TABLE "poll_action_permission" DROP CONSTRAINT "FK_8bb2aaec74bc9c92bdd06dafda0"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "permission" DROP CONSTRAINT "FK_cdb4db95384a1cf7a837c4c683e"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "invite" DROP CONSTRAINT "FK_91bfeec7a9574f458e5b592472d"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_member" DROP CONSTRAINT "FK_01ae975cf03c76e7ebfb14f22f0"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             ALTER TABLE "channel_member" DROP CONSTRAINT "FK_245da03cfde01c653c492d83a0d"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP INDEX "public"."IDX_8ebd83d04eb1d0270c6e1d9d62"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP INDEX "public"."IDX_bc4c45c917cd69cef0574dc3c0"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "role_members_user"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "server_config"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TYPE "public"."server_config_decisionmakingmodel_enum"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "channel_key"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "message"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "channel"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal"
+        await queryRunner.query(`
+            DROP TABLE "poll"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_stage_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_polltype_enum"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_config"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_stage_enum"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_config_decisionmakingmodel_enum"
+        await queryRunner.query(`
+            DROP TABLE "poll_config"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_config_decisionmakingmodel_enum"
+        `);
+        await queryRunner.query(`
             DROP TABLE "image"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TYPE "public"."image_imagetype_enum"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "user"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "vote"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TYPE "public"."vote_votetype_enum"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action_role_member"
+        await queryRunner.query(`
+            DROP TABLE "poll_action_role_member"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_role_member_changetype_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_action_role_member_changetype_enum"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action_role"
+        await queryRunner.query(`
+            DROP TABLE "poll_action_role"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action"
+        await queryRunner.query(`
+            DROP TABLE "poll_action"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_actiontype_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_action_actiontype_enum"
         `);
-    await queryRunner.query(`
-            DROP TABLE "proposal_action_permission"
+        await queryRunner.query(`
+            DROP TABLE "poll_action_permission"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_permission_changetype_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_action_permission_changetype_enum"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_permission_subject_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_action_permission_subject_enum"
         `);
-    await queryRunner.query(`
-            DROP TYPE "public"."proposal_action_permission_action_enum"
+        await queryRunner.query(`
+            DROP TYPE "public"."poll_action_permission_action_enum"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "role"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "permission"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TYPE "public"."permission_subject_enum"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TYPE "public"."permission_action_enum"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "invite"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "channel_member"
         `);
-  }
+    }
+
 }
