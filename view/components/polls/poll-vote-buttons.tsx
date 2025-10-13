@@ -122,7 +122,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       applyUpdate(['feed', channel.id]);
 
       if (result.isRatifyingVote) {
-        toast(t('proposals.prompts.ratifiedSuccess'));
+        toast(t('polls.prompts.ratifiedSuccess'));
       }
     },
     onError(error: Error) {
@@ -132,11 +132,11 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
 
   const handleVoteBtnClick = (voteType: VoteType) => {
     if (stage === 'closed') {
-      toast(t('proposals.prompts.noVotingAfterClose'));
+      toast(t('polls.prompts.noVotingAfterClose'));
       return;
     }
     if (stage === 'ratified') {
-      toast(t('proposals.prompts.noVotingAfterRatification'));
+      toast(t('polls.prompts.noVotingAfterRatification'));
       return;
     }
     castVote(voteType);
@@ -156,7 +156,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
           onClick={() => handleVoteBtnClick(vote)}
           disabled={isPending}
         >
-          {t(`proposals.actions.${vote}`)}
+          {t(`polls.actions.${vote}`)}
         </Button>
       ))}
     </div>

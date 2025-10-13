@@ -68,19 +68,19 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const getPollActionLabel = (action: PollActionType | '') => {
     if (action === 'change-role') {
-      return t('proposals.actionTypes.changeRole');
+      return t('polls.actionTypes.changeRole');
     }
     if (action === 'change-settings') {
-      return t('proposals.actionTypes.changeSettings');
+      return t('polls.actionTypes.changeSettings');
     }
     if (action === 'create-role') {
-      return t('proposals.actionTypes.createRole');
+      return t('polls.actionTypes.createRole');
     }
     if (action === 'plan-event') {
-      return t('proposals.actionTypes.planEvent');
+      return t('polls.actionTypes.planEvent');
     }
     if (action === 'test') {
-      return t('proposals.actionTypes.test');
+      return t('polls.actionTypes.test');
     }
     return '';
   };
@@ -100,7 +100,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
       !Object.keys(permissionChanges).length
     ) {
       form.setError('root', {
-        message: t('proposals.errors.changeRoleRequiresChanges'),
+        message: t('polls.errors.changeRoleRequiresChanges'),
       });
       return;
     }
@@ -118,11 +118,9 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">
-          {t('proposals.headers.review')}
-        </h2>
+        <h2 className="text-lg font-semibold">{t('polls.headers.review')}</h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.descriptions.reviewDescription')}
+          {t('polls.descriptions.reviewDescription')}
         </p>
       </div>
 
@@ -131,7 +129,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.labels.body')}
+                {t('polls.labels.body')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -143,7 +141,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
         <Card className="gap-3 py-5">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('proposals.labels.actionType')}
+              {t('polls.labels.actionType')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -155,7 +153,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.headers.selectedRole')}
+                {t('polls.headers.selectedRole')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -184,7 +182,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.headers.roleAttributesChanges')}
+                  {t('polls.headers.roleAttributesChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -192,7 +190,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                   {nameChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('proposals.labels.roleNameChange')}
+                        {t('polls.labels.roleNameChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <span className="text-muted-foreground text-sm">
@@ -206,7 +204,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                   {colorChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('proposals.labels.roleColorChange')}
+                        {t('polls.labels.roleColorChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <div
@@ -235,7 +233,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.headers.permissions')}
+                  {t('polls.headers.permissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -269,7 +267,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('proposals.headers.memberChanges')}
+                {t('polls.headers.memberChanges')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -311,7 +309,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
           {t('actions.previous')}
         </Button>
         <Button onClick={handleSubmitBtnClick} disabled={isSubmitting}>
-          {t('proposals.actions.create')}
+          {t('polls.actions.create')}
         </Button>
       </div>
     </div>

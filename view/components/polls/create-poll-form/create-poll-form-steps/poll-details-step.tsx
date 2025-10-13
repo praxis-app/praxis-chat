@@ -30,19 +30,19 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
 
   const getPollActionLabel = (action: PollActionType | '') => {
     if (action === 'change-role') {
-      return t('proposals.actionTypes.changeRole');
+      return t('polls.actionTypes.changeRole');
     }
     if (action === 'change-settings') {
-      return t('proposals.actionTypes.changeSettings');
+      return t('polls.actionTypes.changeSettings');
     }
     if (action === 'create-role') {
-      return t('proposals.actionTypes.createRole');
+      return t('polls.actionTypes.createRole');
     }
     if (action === 'plan-event') {
-      return t('proposals.actionTypes.planEvent');
+      return t('polls.actionTypes.planEvent');
     }
     if (action === 'test') {
-      return t('proposals.actionTypes.test');
+      return t('polls.actionTypes.test');
     }
     return '';
   };
@@ -59,10 +59,10 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.headers.basicInfo')}
+          {t('polls.headers.basicInfo')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.descriptions.basicInfoDescription')}
+          {t('polls.descriptions.basicInfoDescription')}
         </p>
       </div>
 
@@ -72,13 +72,11 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
           name="action"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('proposals.labels.actionType')}</FormLabel>
+              <FormLabel>{t('polls.labels.actionType')}</FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={t('proposals.placeholders.action')}
-                    />
+                    <SelectValue placeholder={t('polls.placeholders.action')} />
                   </SelectTrigger>
                   <SelectContent>
                     {POLL_ACTION_TYPE.map((action) => (
@@ -99,11 +97,11 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('proposals.labels.body')}</FormLabel>
+              <FormLabel>{t('polls.labels.body')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
-                  placeholder={t('proposals.placeholders.body')}
+                  placeholder={t('polls.placeholders.body')}
                   className="w-full resize-none md:min-w-md"
                   rows={4}
                 />

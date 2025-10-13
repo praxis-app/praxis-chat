@@ -244,7 +244,7 @@ export const CreatePollForm = ({
         toast(error.response?.data);
         return;
       }
-      toast(t('proposals.errors.errorCreatingProposal'), {
+      toast(t('polls.errors.errorCreatingProposal'), {
         description: error.message,
       });
     },

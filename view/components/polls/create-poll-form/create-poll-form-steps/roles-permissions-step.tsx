@@ -27,10 +27,10 @@ export const RolesPermissionsStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.headers.rolesPermissions')}
+          {t('polls.headers.rolesPermissions')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.descriptions.rolesPermissionsDescription')}
+          {t('polls.descriptions.rolesPermissionsDescription')}
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export const RolesPermissionsStep = ({ isLoading }: WizardStepProps) => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {t('proposals.headers.permissions')}
+              {t('polls.headers.permissions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">

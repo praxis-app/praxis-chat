@@ -61,10 +61,10 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('proposals.headers.roleMembers')}
+          {t('polls.headers.roleMembers')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('proposals.descriptions.roleMembersDescription')}
+          {t('polls.descriptions.roleMembersDescription')}
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
         {selectedRoleId && (
           <>
             <Input
-              placeholder={t('proposals.placeholders.searchMembersPlaceholder')}
+              placeholder={t('polls.placeholders.searchMembersPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="mb-5"
@@ -81,7 +81,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-1.5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('proposals.headers.memberChanges')}
+                  {t('polls.headers.memberChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -96,7 +96,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
                   ))}
                   {filteredUsers.length === 0 && (
                     <p className="text-muted-foreground text-sm">
-                      {t('proposals.prompts.noUsersFound')}
+                      {t('polls.prompts.noUsersFound')}
                     </p>
                   )}
                 </div>

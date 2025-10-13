@@ -9,4 +9,4 @@ globs:
 ---
 
 - Never hardcode user-facing strings. Use `useTranslation()` and keys from `view/locales/en.json`.
-- Add new keys under the most specific namespace (e.g., `proposals.actionTypes.*`).
+- Add new keys under the most specific namespace (e.g., `polls.actionTypes.*`).

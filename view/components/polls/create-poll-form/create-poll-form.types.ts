@@ -12,7 +12,7 @@ export const createPollFormSchema = zod
     body: zod
       .string()
       .max(PROPOSAL_BODY_MAX, {
-        message: t('proposals.errors.longBody'),
+        message: t('polls.errors.longBody'),
       })
       .optional(),
     roleName: zod.string().optional(),
@@ -33,7 +33,7 @@ export const createPollFormSchema = zod
     },
     {
       path: ['body'],
-      message: t('proposals.errors.testProposalRequiresBody'),
+      message: t('polls.errors.testProposalRequiresBody'),
     },
   )
   .refine((data) => data.action === 'test' || data.action === 'change-role', {
