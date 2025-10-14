@@ -252,7 +252,11 @@ const getChannelKeyMaster = () => {
 };
 
 const initializeGeneralChannel = () => {
+  // Generate per-channel key
+  const { wrappedKey, tag, iv } = generateChannelKey();
+
   return channelRepository.save({
     name: GENERAL_CHANNEL_NAME,
+    keys: [{ wrappedKey, tag, iv }],
   });
 };
