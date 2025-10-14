@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticateOptional } from '../auth/middleware/authenticate-optional.middleware';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
+import { isChannelMember } from '../channels/middleware/is-channel-member.middleware';
 import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { verifyImage } from '../images/middleware/verify-image.middleware';
 import {
@@ -28,6 +29,6 @@ messagesRouter.get(
 
 // Protected routes
 messagesRouter
-  .use(authenticate)
+  .use(authenticate, isChannelMember)
   .post('/', validateMessage, createMessage)
   .post(`${IMAGE_ROUTE}/upload`, uploadImage, uploadMessageImage);

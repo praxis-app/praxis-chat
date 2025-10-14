@@ -27,7 +27,8 @@ export const channelsRouter = express.Router();
 // Public routes
 channelsRouter
   .get('/general', getGeneralChannel)
-  .get('/general/feed', authenticateOptional, getGeneralChannelFeed);
+  .get('/general/feed', authenticateOptional, getGeneralChannelFeed)
+  .use('/:channelId/messages', messagesRouter);
 
 // Protected routes
 channelsRouter
@@ -39,5 +40,6 @@ channelsRouter
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
   .delete('/:channelId', can('delete', 'Channel'), deleteChannel)
   .get('/:channelId/feed', isChannelMember, getChannelFeed)
-  .use('/:channelId/polls', isChannelMember, pollsRouter)
-  .use('/:channelId/messages', isChannelMember, messagesRouter);
+
+  // TODO: Move to public routes, similar to messages router - auth internally
+  .use('/:channelId/polls', isChannelMember, pollsRouter);
