@@ -24,7 +24,7 @@ export const authenticate = async (
   // Verify access token and subject claim
   const sub = authService.verifyAccessToken(token);
   const currentUser = await userService.getCurrentUser(sub);
-  if (!currentUser) {
+  if (!currentUser || currentUser.locked) {
     res.status(401).send('Unauthorized');
     return;
   }

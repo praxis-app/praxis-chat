@@ -28,7 +28,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       throw new Error('User ID is missing or invalid');
     }
     const user = await userRepository.findOneOrFail({
-      select: ['id', 'name', 'displayName', 'anonymous'],
+      select: ['id', 'name', 'displayName', 'anonymous', 'locked'],
       where: { id: userId },
     });
     if (!includePerms) {
