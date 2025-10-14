@@ -8,6 +8,7 @@ import {
 } from '@common/roles/role.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
+import { PollDto } from '../dtos/poll.dto';
 
 const pollActionRoleMemberSchema = zod.object({
   userId: zod.string(),
@@ -94,7 +95,19 @@ export const validatePoll = async (
   next: NextFunction,
 ) => {
   try {
-    pollSchema.parse(req.body);
+    const body = req.body as PollDto;
+
+    // Validate request body shape
+    pollSchema.parse(body);
+
+    // Check if user is registered for non-test proposals
+    if (body.action.actionType !== 'test' && res.locals.user.anonymous) {
+      res
+        .status(403)
+        .send('Only registered users can create non-test proposals');
+      return;
+    }
+
     next();
   } catch (error) {
     if (error instanceof zod.ZodError) {
