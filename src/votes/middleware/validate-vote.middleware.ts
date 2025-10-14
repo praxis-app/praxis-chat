@@ -5,6 +5,8 @@ import { dataSource } from '../../database/data-source';
 import * as pollsService from '../../polls/polls.service';
 import { Vote } from '../vote.entity';
 
+const voteRepository = dataSource.getRepository(Vote);
+
 export const voteSchema = zod.object({
   voteType: zod.enum(VOTE_TYPES, {
     message: 'Invalid vote type',
@@ -23,7 +25,16 @@ export const validateVote = async (
     }
 
     const { pollId } = req.params;
-    const poll = await pollsService.getPoll(pollId);
+    const poll = await pollsService.getPoll(pollId, ['action']);
+
+    // For non-test proposals, only registered users can vote
+    if (poll.action.actionType !== 'test' && res.locals.user.anonymous) {
+      res
+        .status(403)
+        .send('Only registered users can vote on non-test proposals');
+      return;
+    }
+
     if (poll.stage === 'ratified') {
       res
         .status(422)
@@ -32,7 +43,6 @@ export const validateVote = async (
     }
 
     if (req.method === 'POST') {
-      const voteRepository = dataSource.getRepository(Vote);
       const vote = await voteRepository.findOne({
         where: { pollId, userId: res.locals.user.id },
       });
