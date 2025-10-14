@@ -365,19 +365,6 @@ export const ratifyPoll = async (pollId: string) => {
   });
 };
 
-export const implementPoll = async (pollId: string) => {
-  const {
-    action: { id, actionType },
-  } = await getPoll(pollId, ['action']);
-
-  if (actionType === 'change-role') {
-    await pollActionsService.implementChangeRole(id);
-  }
-  if (actionType === 'create-role') {
-    await pollActionsService.implementCreateRole(id);
-  }
-};
-
 export const synchronizePolls = async () => {
   const polls = await pollRepository.find({
     where: {
@@ -471,7 +458,7 @@ const synchronizePoll = async (poll: Poll) => {
   }
 
   await ratifyPoll(poll.id);
-  await implementPoll(poll.id);
+  await pollActionsService.implementPollAction(poll.id);
 };
 
 const getMyVotesMap = async (pollIds: string[], currentUserId: string) => {

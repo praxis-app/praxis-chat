@@ -1,6 +1,7 @@
 import { VoteType } from '@common/votes/vote.types';
 import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
+import * as pollActionsService from '../poll-actions/poll-actions.service';
 import * as pollsService from '../polls/polls.service';
 import { Vote } from './vote.entity';
 
@@ -33,7 +34,7 @@ export const createVote = async (voteData: CreateVoteDto, userId: string) => {
   if (isPollRatifiable) {
     // Update poll to reflect newly created vote
     await pollsService.ratifyPoll(vote.pollId);
-    await pollsService.implementPoll(vote.pollId);
+    await pollActionsService.implementPollAction(vote.pollId);
   }
 
   return { ...vote, isRatifyingVote: isPollRatifiable };
@@ -49,7 +50,7 @@ export const updateVote = async (voteId: string, voteType: VoteType) => {
     if (isPollRatifiable) {
       // Update poll to reflect change in vote
       await pollsService.ratifyPoll(vote.pollId);
-      await pollsService.implementPoll(vote.pollId);
+      await pollActionsService.implementPollAction(vote.pollId);
     }
   }
 

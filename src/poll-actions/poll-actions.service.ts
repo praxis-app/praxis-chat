@@ -8,11 +8,13 @@ import { PollActionRoleDto } from './dtos/poll-action-role.dto';
 import { PollActionPermission } from './entities/poll-action-permission.entity';
 import { PollActionRoleMember } from './entities/poll-action-role-member.entity';
 import { PollActionRole } from './entities/poll-action-role.entity';
+import { PollAction } from './entities/poll-action.entity';
 
 const usersRepository = dataSource.getRepository(User);
 const rolesRepository = dataSource.getRepository(Role);
 const permissionRepository = dataSource.getRepository(Permission);
 
+const pollActionRepository = dataSource.getRepository(PollAction);
 const pollActionRoleRepository = dataSource.getRepository(PollActionRole);
 
 const pollActionRoleMemberRepository =
@@ -20,6 +22,19 @@ const pollActionRoleMemberRepository =
 
 const pollActionPermissionRepository =
   dataSource.getRepository(PollActionPermission);
+
+export const implementPollAction = async (pollId: string) => {
+  const { id, actionType } = await pollActionRepository.findOneOrFail({
+    where: { pollId },
+  });
+
+  if (actionType === 'change-role') {
+    await implementChangeRole(id);
+  }
+  if (actionType === 'create-role') {
+    await implementCreateRole(id);
+  }
+};
 
 export const createPollActionRole = async (
   pollActionId: string,
