@@ -214,7 +214,7 @@
       "ratifiedSuccess": "This proposal has been ratified! 🎉"
     },
     "errors": {
-      "anonymousUserNonTestAction": "Anonymous users can only create test proposals. Please register to create other proposal types.",
+      "registerToCreateNonTestProposals": "Anonymous users can only create test proposals. Please register to create other proposal types.",
       "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role.",
       "errorCreatingProposal": "Error creating proposal",
       "longBody": "Proposal body cannot exceed 6000 characters",

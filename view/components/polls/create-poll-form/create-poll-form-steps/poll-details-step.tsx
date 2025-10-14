@@ -37,7 +37,7 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
     if (isAnon && value !== 'test') {
       form.setError('action', {
         type: 'manual',
-        message: t('polls.errors.anonymousUserNonTestAction'),
+        message: t('polls.errors.registerToCreateNonTestProposals'),
       });
     } else {
       form.clearErrors('action');
