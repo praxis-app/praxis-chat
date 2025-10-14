@@ -5,7 +5,7 @@ import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { MessageRes } from '@/types/message.types';
-import { ProposalRes } from '@/types/proposal.types';
+import { PollRes } from '@/types/poll.types';
 import { PubSubMessage } from '@/types/shared.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
@@ -21,9 +21,9 @@ interface NewMessagePayload {
   message: MessageRes;
 }
 
-interface NewProposalPayload {
-  type: PubSubMessageType.PROPOSAL;
-  proposal: ProposalRes;
+interface NewPollPayload {
+  type: PubSubMessageType.POLL;
+  poll: PollRes;
 }
 
 interface ImageMessagePayload {
@@ -144,18 +144,16 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     enabled: !!meData && !!channel && !!resolvedChannelId,
   });
 
-  useSubscription(`new-proposal-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
-      const { body }: PubSubMessage<NewProposalPayload> = JSON.parse(
-        event.data,
-      );
+      const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
       if (!body) {
         return;
       }
-      if (body.type === PubSubMessageType.PROPOSAL) {
+      if (body.type === PubSubMessageType.POLL) {
         const newFeedItem: FeedItemRes = {
-          ...(body.proposal as FeedItemRes & { type: 'proposal' }),
-          type: 'proposal',
+          ...(body.poll as FeedItemRes & { type: 'poll' }),
+          type: 'poll',
         };
         queryClient.setQueryData<FeedQuery>(
           ['feed', resolvedChannelId],
@@ -166,7 +164,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
             const pages = oldData.pages.map((page, index) => {
               if (index === 0) {
                 const exists = page.feed.some(
-                  (fi) => fi.type === 'proposal' && fi.id === newFeedItem.id,
+                  (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
                 );
                 if (exists) {
                   return page;

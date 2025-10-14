@@ -8,7 +8,7 @@ interface UseImageSrcProps {
   imageId?: string;
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
   userId?: string;
   onError?: () => void;
   ref: RefObject<HTMLElement>;
@@ -19,7 +19,7 @@ export const useImageSrc = ({
   imageId,
   channelId,
   messageId,
-  proposalId,
+  pollId,
   userId,
   onError,
   ref,
@@ -36,8 +36,8 @@ export const useImageSrc = ({
       // Determine which API method to call based on parent context
       if (messageId && channelId) {
         result = await api.getMessageImage(channelId, messageId, imageId);
-      } else if (proposalId && channelId) {
-        result = await api.getProposalImage(channelId, proposalId, imageId);
+      } else if (pollId && channelId) {
+        result = await api.getPollImage(channelId, pollId, imageId);
       } else if (userId) {
         result = await api.getUserImage(userId, imageId);
       } else {
@@ -54,7 +54,7 @@ export const useImageSrc = ({
   };
 
   const { data } = useQuery({
-    queryKey: ['images', channelId, imageId, messageId, proposalId, userId],
+    queryKey: ['images', channelId, imageId, messageId, pollId, userId],
     queryFn: getImageSrc,
     enabled: enabled && !!imageId && viewed,
   });

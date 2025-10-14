@@ -21,8 +21,8 @@ export const verifyImage = async (
   if (image.messageId && req.params.messageId) {
     ownershipValid = image.messageId === req.params.messageId;
   }
-  if (image.proposalId && req.params.proposalId) {
-    ownershipValid = image.proposalId === req.params.proposalId;
+  if (image.pollId && req.params.pollId) {
+    ownershipValid = image.pollId === req.params.pollId;
   }
   if (image.userId && req.params.userId) {
     ownershipValid = image.userId === req.params.userId;

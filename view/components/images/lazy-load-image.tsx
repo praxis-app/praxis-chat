@@ -17,7 +17,7 @@ interface Props extends ComponentProps<'img'> {
   imageId?: string;
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
   userId?: string;
   src?: string;
   className?: string;
@@ -45,7 +45,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       imageId,
       channelId,
       messageId,
-      proposalId,
+      pollId,
       userId,
       onLoad,
       src,
@@ -76,7 +76,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       imageId,
       channelId,
       messageId,
-      proposalId,
+      pollId,
       userId,
     });
 

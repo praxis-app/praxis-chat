@@ -26,14 +26,14 @@ const SavedImagePreview = ({
   savedImage,
   channelId,
   messageId,
-  proposalId,
+  pollId,
   handleDelete,
   className,
 }: {
   savedImage: ImageRes;
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
   className?: string;
   handleDelete?(id: string): void;
 }) => {
@@ -45,7 +45,7 @@ const SavedImagePreview = ({
     ref,
     channelId,
     messageId,
-    proposalId,
+    pollId,
   });
 
   return (
@@ -67,7 +67,7 @@ interface Props {
   className?: string;
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
 }
 
 export const AttachedImagePreview = ({
@@ -79,7 +79,7 @@ export const AttachedImagePreview = ({
   className,
   channelId,
   messageId,
-  proposalId,
+  pollId,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -104,7 +104,7 @@ export const AttachedImagePreview = ({
             savedImage={savedImage}
             channelId={channelId}
             messageId={messageId}
-            proposalId={proposalId}
+            pollId={pollId}
           />
         ))}
 

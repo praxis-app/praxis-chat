@@ -1,5 +1,5 @@
-import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
-import { DecisionMakingModel } from '@common/proposals/proposal.types';
+import { DECISION_MAKING_MODEL } from '@common/polls/poll.constants';
+import { DecisionMakingModel } from '@common/polls/poll.types';
 import { VotingTimeLimit } from '@common/votes/vote.constants';
 import {
   Column,

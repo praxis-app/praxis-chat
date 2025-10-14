@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProposalActionRole } from '../../proposal-actions/entities/proposal-action-role.entity';
+import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
 import { User } from '../../users/user.entity';
 import { Permission } from './permission.entity';
 
@@ -32,11 +32,8 @@ export class Role {
   @JoinTable()
   members: User[];
 
-  @OneToMany(
-    () => ProposalActionRole,
-    (proposalActionRole) => proposalActionRole.role,
-  )
-  proposalActionRoles: ProposalActionRole[];
+  @OneToMany(() => PollActionRole, (pollActionRole) => pollActionRole.role)
+  pollActionRoles: PollActionRole[];
 
   @CreateDateColumn()
   createdAt: Date;

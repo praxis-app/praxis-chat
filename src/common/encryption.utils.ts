@@ -1,5 +1,8 @@
 import * as crypto from 'crypto';
-import { AES_256_GCM_ALGORITHM, AES_256_GCM_IV_LENGTH } from './common.constants';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from './common.constants';
 
 export const encryptText = (plaintext: string, key: Buffer) => {
   const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);

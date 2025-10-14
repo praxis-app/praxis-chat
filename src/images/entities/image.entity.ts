@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Poll } from '../../polls/entities/poll.entity';
 import { User } from '../../users/user.entity';
 import { IMAGE_TYPES } from '../image.constants';
 import { ImageType } from '../image.types';
@@ -31,13 +31,13 @@ export class Image {
   @Column({ type: 'varchar', nullable: true })
   messageId: string | null;
 
-  @ManyToOne(() => Proposal, (proposal) => proposal.images, {
+  @ManyToOne(() => Poll, (poll) => poll.images, {
     onDelete: 'CASCADE',
   })
-  proposal?: Proposal;
+  poll?: Poll;
 
   @Column({ type: 'varchar', nullable: true })
-  proposalId: string | null;
+  pollId: string | null;
 
   @ManyToOne(() => User, (user) => user.images, {
     onDelete: 'CASCADE',

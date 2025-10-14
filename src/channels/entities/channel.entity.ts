@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Poll } from '../../polls/entities/poll.entity';
 import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
@@ -30,10 +30,10 @@ export class Channel {
   })
   members: ChannelMember[];
 
-  @OneToMany(() => Proposal, (proposal) => proposal.channel, {
+  @OneToMany(() => Poll, (poll) => poll.channel, {
     cascade: true,
   })
-  proposals: Proposal[];
+  polls: Poll[];
 
   @OneToMany(() => ChannelKey, (key) => key.channel, {
     cascade: true,

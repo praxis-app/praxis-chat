@@ -3,7 +3,7 @@ import { UpdateResult } from 'typeorm';
 
 export interface CreateVoteRes {
   id: string;
-  proposalId: string;
+  pollId: string;
   userId: string;
   voteType: VoteType;
   isRatifyingVote: boolean;

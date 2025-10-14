@@ -2,7 +2,7 @@ import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { dataSource } from '../../database/data-source';
-import * as proposalsService from '../../proposals/proposals.service';
+import * as pollsService from '../../polls/polls.service';
 import { Vote } from '../vote.entity';
 
 export const voteSchema = zod.object({
@@ -22,22 +22,22 @@ export const validateVote = async (
       voteSchema.parse(req.body);
     }
 
-    const { proposalId } = req.params;
-    const proposal = await proposalsService.getProposal(proposalId);
-    if (proposal.stage === 'ratified') {
+    const { pollId } = req.params;
+    const poll = await pollsService.getPoll(pollId);
+    if (poll.stage === 'ratified') {
       res
         .status(422)
-        .send('Proposal has been ratified and can no longer be voted on');
+        .send('Poll has been ratified and can no longer be voted on');
       return;
     }
 
     if (req.method === 'POST') {
       const voteRepository = dataSource.getRepository(Vote);
       const vote = await voteRepository.findOne({
-        where: { proposalId, userId: res.locals.user.id },
+        where: { pollId, userId: res.locals.user.id },
       });
       if (vote) {
-        res.status(422).send('You have already voted on this proposal');
+        res.status(422).send('You have already voted on this poll');
         return;
       }
     }

@@ -7,7 +7,7 @@ interface Props {
   images: ImageRes[];
   channelId?: string;
   messageId?: string;
-  proposalId?: string;
+  pollId?: string;
   className?: string;
   fillCard?: boolean;
   imageClassName?: string;
@@ -19,7 +19,7 @@ export const AttachedImageList = ({
   images,
   channelId,
   messageId,
-  proposalId,
+  pollId,
   className,
   fillCard,
   imageClassName,
@@ -43,7 +43,7 @@ export const AttachedImageList = ({
           image={image}
           channelId={channelId}
           messageId={messageId}
-          proposalId={proposalId}
+          pollId={pollId}
           onImageLoad={onImageLoad}
           className={imageClasses}
         />

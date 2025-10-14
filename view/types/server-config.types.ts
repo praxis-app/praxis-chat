@@ -1,4 +1,4 @@
-import { DecisionMakingModel } from '@common/proposals/proposal.types';
+import { DecisionMakingModel } from '@common/polls/poll.types';
 
 export interface ServerConfigReq {
   decisionMakingModel?: DecisionMakingModel;

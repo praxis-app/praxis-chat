@@ -1,6 +1,6 @@
 // API client for server endpoints
 
-import { CreateProposalReq, ProposalRes } from '@/types/proposal.types';
+import { CreatePollReq, PollRes } from '@/types/poll.types';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
 import {
   CreateVoteReq,
@@ -94,6 +94,11 @@ class ApiClient {
   isFirstUser = async () => {
     const path = '/users/is-first';
     return this.executeRequest<{ isFirstUser: boolean }>('get', path);
+  };
+
+  getUserImage = (userId: string, imageId: string) => {
+    const path = `/users/${userId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
   updateUserProfile = async (data: UpdateUserProfileReq) => {
@@ -200,23 +205,33 @@ class ApiClient {
     });
   };
 
+  getMessageImage = (channelId: string, messageId: string, imageId: string) => {
+    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
   // -------------------------------------------------------------------------
-  // Proposals & Votes
+  // Polls & Votes
   // -------------------------------------------------------------------------
 
-  createProposal = async (channelId: string, data: CreateProposalReq) => {
-    const path = `/channels/${channelId}/proposals`;
-    return this.executeRequest<{ proposal: ProposalRes }>('post', path, {
+  createPoll = async (channelId: string, data: CreatePollReq) => {
+    const path = `/channels/${channelId}/polls`;
+    return this.executeRequest<{ poll: PollRes }>('post', path, {
       data,
     });
   };
 
+  getPollImage = (channelId: string, pollId: string, imageId: string) => {
+    const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
+    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+  };
+
   createVote = async (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     data: CreateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes`;
+    const path = `/channels/${channelId}/polls/${pollId}/votes`;
     return this.executeRequest<{ vote: CreateVoteRes }>('post', path, {
       data,
     });
@@ -224,22 +239,18 @@ class ApiClient {
 
   updateVote = async (
     channelId: string,
-    proposalId: string,
+    pollId: string,
     voteId: string,
     data: UpdateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
+    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<UpdateVoteRes>('put', path, {
       data,
     });
   };
 
-  deleteVote = async (
-    channelId: string,
-    proposalId: string,
-    voteId: string,
-  ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/votes/${voteId}`;
+  deleteVote = async (channelId: string, pollId: string, voteId: string) => {
+    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
 
@@ -348,29 +359,6 @@ class ApiClient {
   // -------------------------------------------------------------------------
   // Misc.
   // -------------------------------------------------------------------------
-
-  getMessageImage = (
-    channelId: string,
-    messageId: string,
-    imageId: string,
-  ) => {
-    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
-
-  getProposalImage = (
-    channelId: string,
-    proposalId: string,
-    imageId: string,
-  ) => {
-    const path = `/channels/${channelId}/proposals/${proposalId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
-
-  getUserImage = (userId: string, imageId: string) => {
-    const path = `/users/${userId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
-  };
 
   getHealth = async () => {
     return this.executeRequest<{ timestamp: string }>('get', '/health');

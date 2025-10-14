@@ -238,7 +238,7 @@ describe('Messages Service', () => {
         iv: Buffer.alloc(12),
         unwrappedKey: Buffer.alloc(32),
         messages: [],
-        proposals: [],
+        polls: [],
         channel: {} as any,
         createdAt: new Date('2023-01-01'),
         updatedAt: new Date('2023-01-01'),

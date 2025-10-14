@@ -12,7 +12,7 @@ globs:
 - Use zod + @hookform/resolvers for forms; keep schemas near the form.
 - All strings go through `useTranslation()` with keys under the appropriate namespace.
 
-- Do not invalidate feed queries after creating messages, proposals, or votes.
+- Do not invalidate feed queries after creating messages, polls, or votes.
   - Avoid calling `queryClient.invalidateQueries` to update the channel feed in response to a create.
   - Instead, perform an optimistic update using `queryClient.setQueryData` or similar.
   - Preserve `pageParams` and do not mutate other pages.
