@@ -1,6 +1,7 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
+import { useAuthData } from '@/hooks/use-auth-data';
 import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
-import { useFormContext } from 'react-hook-form';
+import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { PollActionType } from '../../../../../common/poll-actions/poll-action.types';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -25,8 +26,23 @@ import { CreatePollFormSchema } from '../create-poll-form.types';
 export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreatePollFormSchema>();
   const { onNext } = useWizardContext();
-
+  const { isAnon } = useAuthData();
   const { t } = useTranslation();
+
+  const handlePollActionChange = (
+    value: string,
+    field: ControllerRenderProps<CreatePollFormSchema>,
+  ) => {
+    field.onChange(value);
+    if (isAnon && value !== 'test') {
+      form.setError('action', {
+        type: 'manual',
+        message: t('polls.errors.anonymousUserNonTestAction'),
+      });
+    } else {
+      form.clearErrors('action');
+    }
+  };
 
   const getPollActionLabel = (action: PollActionType | '') => {
     if (action === 'change-role') {
@@ -74,7 +90,12 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
             <FormItem>
               <FormLabel>{t('polls.labels.actionType')}</FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) =>
+                    handlePollActionChange(value, field)
+                  }
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('polls.placeholders.action')} />
                   </SelectTrigger>
