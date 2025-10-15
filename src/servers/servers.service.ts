@@ -2,7 +2,7 @@
 
 import { dataSource } from '../database/data-source';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
-import { Server } from './server.entity';
+import { Server } from './entities/server.entity';
 
 export const INITIAL_SERVER_NAME = 'praxis';
 

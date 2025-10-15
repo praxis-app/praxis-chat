@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Server } from '../../servers/server.entity';
+import { Server } from '../../servers/entities/server.entity';
 
 @Entity()
 export class ServerConfig {

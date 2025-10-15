@@ -1,5 +1,3 @@
-// TODO: Decide whether to name it Server, Community, or ChatServer
-
 import {
   Column,
   CreateDateColumn,
@@ -9,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Channel } from '../channels/entities/channel.entity';
-import { ServerConfig } from '../server-configs/entities/server-config.entity';
+import { Channel } from '../../channels/entities/channel.entity';
+import { ServerConfig } from '../../server-configs/entities/server-config.entity';
 
 @Entity()
 export class Server {

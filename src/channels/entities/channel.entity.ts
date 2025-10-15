@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
 import { Poll } from '../../polls/entities/poll.entity';
-import { Server } from '../../servers/server.entity';
+import { Server } from '../../servers/entities/server.entity';
 import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
