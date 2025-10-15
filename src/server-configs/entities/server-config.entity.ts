@@ -38,6 +38,9 @@ export class ServerConfig {
   @JoinColumn()
   server: Server;
 
+  @Column({ type: 'uuid' })
+  serverId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
