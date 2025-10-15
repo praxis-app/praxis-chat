@@ -14,6 +14,7 @@ The Server entity (`src/servers/entities/server.entity.ts`) defines the core dat
 - **Channels**: Chat channels associated with the server
 - **Roles**: Permission-based roles scoped to the server
 - **ServerConfig**: Server-specific configuration settings
+- **Invites**: Server invitation tokens for new users
 
 Each server has a unique name and optional description.
 
@@ -28,7 +29,7 @@ The current implementation assumes one server per Praxis instance:
 
 ### Purpose
 
-This architecture serves as foundational infrastructure for future multi-server support. By establishing server relationships now, entities like channels, roles, and members already reference a server ID. When multiple servers are supported, minimal schema changes will be required, primarily adding server selection/creation UI and updating services to handle multiple server contexts.
+This architecture serves as foundational infrastructure for future multi-server support. By establishing server relationships now, entities like channels, roles, members, and invites already reference a server ID. When multiple servers are supported, minimal schema changes will be required, primarily adding server selection/creation UI and updating services to handle multiple server contexts.
 
 ## Future Considerations
 

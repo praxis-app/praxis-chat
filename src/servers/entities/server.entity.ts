@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
+import { Invite } from '../../invites/invite.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { ServerConfig } from '../../server-configs/entities/server-config.entity';
 import { ServerMember } from './server-member.entity';
@@ -31,6 +32,9 @@ export class Server {
 
   @OneToMany(() => Role, (role) => role.server)
   roles: Role[];
+
+  @OneToMany(() => Invite, (invite) => invite.server)
+  invites: Invite[];
 
   @OneToOne(() => ServerConfig, (config) => config.server, {
     cascade: true,
