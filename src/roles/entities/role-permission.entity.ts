@@ -16,7 +16,7 @@ import { Role } from './role.entity';
 
 @Entity()
 @Unique(['roleId', 'action', 'subject'])
-export class Permission {
+export class RolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

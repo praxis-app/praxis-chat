@@ -11,7 +11,7 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
-import { Permission } from './entities/permission.entity';
+import { RolePermission } from './entities/role-permission.entity';
 import { Role } from './entities/role.entity';
 
 const DEFAULT_ROLE_COLOR = '#f44336';
@@ -35,7 +35,7 @@ interface UpdateRolePermissionsDto {
 
 const userRepository = dataSource.getRepository(User);
 const roleRepository = dataSource.getRepository(Role);
-const permissionRepository = dataSource.getRepository(Permission);
+const rolePermissionRepository = dataSource.getRepository(RolePermission);
 
 export const getRole = async (roleId: string) => {
   const role = await roleRepository.findOne({
@@ -198,7 +198,7 @@ export const updateRolePermissions = async (
     throw new Error('Role not found');
   }
 
-  const permissionsToSave = permissions.reduce<Partial<Permission>[]>(
+  const permissionsToSave = permissions.reduce<Partial<RolePermission>[]>(
     (result, { action, subject }) => {
       const actions = Array.isArray(action) ? action : [action];
 
@@ -235,9 +235,9 @@ export const updateRolePermissions = async (
   );
 
   if (permissionsToDelete.length) {
-    await permissionRepository.delete(permissionsToDelete);
+    await rolePermissionRepository.delete(permissionsToDelete);
   }
-  await permissionRepository.save(permissionsToSave);
+  await rolePermissionRepository.save(permissionsToSave);
 };
 
 export const addRoleMembers = async (roleId: string, userIds: string[]) => {
