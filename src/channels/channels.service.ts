@@ -284,7 +284,7 @@ const initializeGeneralChannel = async () => {
   } catch (error) {
     // Handle race condition: if another request created the channel concurrently,
     // the duplicate key error will be thrown. In this case, fetch and return
-    // the channel that was just created by the other request.
+    // the channel that was just created by the other request
     if (
       error instanceof QueryFailedError &&
       error.driverError?.message.includes('duplicate key')

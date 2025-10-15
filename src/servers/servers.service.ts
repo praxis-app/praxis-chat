@@ -1,5 +1,6 @@
 // TODO: Add support for multiple chat servers per instance
 
+import { QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
@@ -21,13 +22,31 @@ export const getServerSafely = async () => {
 };
 
 export const createInitialServer = async () => {
-  const server = await serverRepository.save({
-    name: INITIAL_SERVER_NAME,
-  });
-  await serverConfigRepository.save({
-    serverId: server.id,
-  });
-  return server;
+  try {
+    const server = await serverRepository.save({
+      name: INITIAL_SERVER_NAME,
+    });
+    await serverConfigRepository.save({
+      serverId: server.id,
+    });
+    return server;
+  } catch (error) {
+    // Handle race condition: if another request created the server concurrently,
+    // the duplicate key error will be thrown. In this case, fetch and return
+    // the server that was just created by the other request
+    if (
+      error instanceof QueryFailedError &&
+      error.driverError?.message.includes('duplicate key')
+    ) {
+      const existingServer = await serverRepository.findOne({
+        where: { name: INITIAL_SERVER_NAME },
+      });
+      if (existingServer) {
+        return existingServer;
+      }
+    }
+    throw error;
+  }
 };
 
 export const addMemberToServer = async (userId: string) => {
