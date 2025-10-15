@@ -5,9 +5,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Server } from '../../servers/entities/server.entity';
 
 @Entity()
 export class ServerConfig {
@@ -28,6 +31,15 @@ export class ServerConfig {
 
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
+
+  @OneToOne(() => Server, (server) => server.config, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  server: Server;
+
+  @Column({ type: 'uuid' })
+  serverId: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -16,6 +16,7 @@ import { Message } from '../messages/message.entity';
 import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
 import { Poll } from '../polls/entities/poll.entity';
 import { Role } from '../roles/entities/role.entity';
+import { ServerMember } from '../servers/entities/server-member.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()
@@ -65,6 +66,11 @@ export class User {
     cascade: true,
   })
   channelMembers: ChannelMember[];
+
+  @OneToMany(() => ServerMember, (serverMember) => serverMember.user, {
+    cascade: true,
+  })
+  serverMembers: ServerMember[];
 
   @ManyToMany(() => Role, (role) => role.members, {
     onDelete: 'CASCADE',

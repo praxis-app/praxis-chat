@@ -10,7 +10,7 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
-import { getServerConfig } from '../server-configs/server-configs.service';
+import { getServerConfigSafely } from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
@@ -217,7 +217,7 @@ export const createPoll = async (
     throw new Error('Polls must be 8000 characters or less');
   }
 
-  const serverConfig = await getServerConfig();
+  const serverConfig = await getServerConfigSafely();
   const configClosingAt = serverConfig.votingTimeLimit
     ? new Date(Date.now() + serverConfig.votingTimeLimit * 60 * 1000)
     : undefined;

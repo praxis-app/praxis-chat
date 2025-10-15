@@ -1,5 +1,6 @@
 import cryptoRandomString from 'crypto-random-string';
 import { dataSource } from '../database/data-source';
+import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Invite } from './invite.entity';
@@ -66,10 +67,13 @@ export const getValidInvites = async () => {
 };
 
 export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
+  const server = await serversService.getServerSafely();
   const token = cryptoRandomString({ length: 8 });
+
   const invite = await inviteRepository.save({
     ...inviteData,
     userId: user.id,
+    server,
     token,
   });
 

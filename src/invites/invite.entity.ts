@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -27,6 +28,14 @@ export class Invite {
 
   @Column()
   userId: string;
+
+  @ManyToOne(() => Server, (server) => server.invites, {
+    onDelete: 'CASCADE',
+  })
+  server: Server;
+
+  @Column({ type: 'uuid' })
+  serverId: string;
 
   @Column({ nullable: true, type: 'timestamp' })
   expiresAt: Date | null;
