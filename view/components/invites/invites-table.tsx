@@ -33,7 +33,7 @@ export const InvitesTable = ({ invites }: Props) => {
           <TableBody>
             {invites.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="pt-8 text-center">
+                <TableCell colSpan={4} className="pt-8 pb-4 text-center">
                   {t('invites.prompts.noInvites')}
                 </TableCell>
               </TableRow>
