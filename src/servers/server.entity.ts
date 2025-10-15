@@ -5,17 +5,19 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Channel } from '../channels/entities/channel.entity';
+import { ServerConfig } from '../server-configs/entities/server-config.entity';
 
 @Entity()
 export class Server {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   name: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -23,6 +25,11 @@ export class Server {
 
   @OneToMany(() => Channel, (channel) => channel.server)
   channels: Channel[];
+
+  @OneToOne(() => ServerConfig, (config) => config.server, {
+    cascade: true,
+  })
+  config: ServerConfig;
 
   @CreateDateColumn()
   createdAt: Date;

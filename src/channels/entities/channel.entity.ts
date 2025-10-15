@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
@@ -14,6 +15,7 @@ import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
 @Entity()
+@Unique(['serverId', 'name'])
 export class Channel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
