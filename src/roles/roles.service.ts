@@ -8,6 +8,7 @@ import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
+import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Permission } from './entities/permission.entity';
@@ -149,15 +150,17 @@ export const getUsersEligibleForRole = async (roleId: string) => {
 };
 
 export const createRole = async ({ name, color }: CreateRoleDto) => {
-  const role = await roleRepository.save({ name, color });
+  const server = await serversService.getServerSafely();
+  const role = await roleRepository.save({ name, color, server });
   return { ...role, memberCount: 0 };
 };
 
 export const createAdminRole = async (userId: string) => {
+  const server = await serversService.getServerSafely();
+
   await roleRepository.save({
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
-    members: [{ id: userId }],
     permissions: [
       { subject: 'ServerConfig', action: 'manage' },
       { subject: 'Channel', action: 'manage' },
@@ -165,6 +168,8 @@ export const createAdminRole = async (userId: string) => {
       { subject: 'Invite', action: 'manage' },
       { subject: 'Role', action: 'manage' },
     ],
+    members: [{ id: userId }],
+    server,
   });
 };
 
