@@ -27,7 +27,9 @@ export const channelsRouter = express.Router();
 // Public routes
 channelsRouter
   .get('/general', getGeneralChannel)
-  .get('/general/feed', authenticateOptional, getGeneralChannelFeed);
+  .get('/general/feed', authenticateOptional, getGeneralChannelFeed)
+  .use('/:channelId/messages', messagesRouter)
+  .use('/:channelId/polls', pollsRouter);
 
 // Protected routes
 channelsRouter
@@ -38,6 +40,4 @@ channelsRouter
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
   .delete('/:channelId', can('delete', 'Channel'), deleteChannel)
-  .get('/:channelId/feed', isChannelMember, getChannelFeed)
-  .use('/:channelId/polls', isChannelMember, pollsRouter)
-  .use('/:channelId/messages', isChannelMember, messagesRouter);
+  .get('/:channelId/feed', isChannelMember, getChannelFeed);
