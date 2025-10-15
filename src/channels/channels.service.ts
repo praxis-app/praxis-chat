@@ -183,11 +183,13 @@ export const createChannel = async (
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
+  const server = await getServerSafely();
   const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
     members: [{ userId: currentUserId }],
     keys: [{ wrappedKey, tag, iv }],
+    server,
   });
 
   return channel;
