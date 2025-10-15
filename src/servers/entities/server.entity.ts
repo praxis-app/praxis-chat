@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
 import { ServerConfig } from '../../server-configs/entities/server-config.entity';
+import { ServerMember } from './server-member.entity';
 
 @Entity()
 export class Server {
@@ -20,6 +21,9 @@ export class Server {
 
   @Column({ type: 'varchar', nullable: true })
   description: string | null;
+
+  @OneToMany(() => ServerMember, (member) => member.server)
+  members: ServerMember[];
 
   @OneToMany(() => Channel, (channel) => channel.server)
   channels: Channel[];

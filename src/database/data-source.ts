@@ -16,6 +16,7 @@ import { Permission } from '../roles/entities/permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { Server } from '../servers/entities/server.entity';
+import { ServerMember } from '../servers/entities/server-member.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Initial1760326454006 } from './migrations/1760326454006-Initial';
@@ -47,6 +48,7 @@ export const dataSource = new DataSource({
     Role,
     Server,
     ServerConfig,
+    ServerMember,
     User,
     Vote,
   ],
