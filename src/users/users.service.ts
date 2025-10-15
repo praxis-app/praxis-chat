@@ -14,6 +14,7 @@ import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as rolesService from '../roles/roles.service';
+import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
 import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
@@ -87,7 +88,7 @@ export const createUser = async (
   if (isFirst) {
     await rolesService.createAdminRole(user.id);
   }
-  await channelsService.addMemberToAllChannels(user.id);
+  await serversService.addMemberToServer(user.id);
 
   return user;
 };
@@ -116,7 +117,7 @@ export const createAnonUser = async () => {
 
   if (isFirst) {
     await rolesService.createAdminRole(user.id);
-    await channelsService.addMemberToAllChannels(user.id);
+    await serversService.addMemberToServer(user.id);
   } else {
     await channelsService.addMemberToGeneralChannel(user.id);
   }
@@ -145,7 +146,7 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  await channelsService.addMemberToAllChannels(user.id);
+  await serversService.addMemberToServer(user.id);
 };
 
 export const getUserProfilePicture = async (userId: string) => {
