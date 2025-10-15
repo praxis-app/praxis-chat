@@ -2,7 +2,7 @@
 
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import * as crypto from 'crypto';
-import { FindManyOptions, In } from 'typeorm';
+import { FindManyOptions, In, QueryFailedError } from 'typeorm';
 import {
   AES_256_GCM_ALGORITHM,
   AES_256_GCM_IV_LENGTH,
@@ -272,12 +272,30 @@ const initializeGeneralChannel = async () => {
     userId: user.id,
   }));
 
-  const channel = await channelRepository.save({
-    name: GENERAL_CHANNEL_NAME,
-    keys: [{ wrappedKey, tag, iv }],
-    members: channelMembers,
-    server,
-  });
+  try {
+    const channel = await channelRepository.save({
+      name: GENERAL_CHANNEL_NAME,
+      keys: [{ wrappedKey, tag, iv }],
+      members: channelMembers,
+      server,
+    });
 
-  return channel;
+    return channel;
+  } catch (error) {
+    // Handle race condition: if another request created the channel concurrently,
+    // the duplicate key error will be thrown. In this case, fetch and return
+    // the channel that was just created by the other request.
+    if (
+      error instanceof QueryFailedError &&
+      error.driverError?.message.includes('duplicate key')
+    ) {
+      const existingChannel = await channelRepository.findOne({
+        where: { name: GENERAL_CHANNEL_NAME },
+      });
+      if (existingChannel) {
+        return existingChannel;
+      }
+    }
+    throw error;
+  }
 };
