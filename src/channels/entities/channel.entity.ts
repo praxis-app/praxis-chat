@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
 import { Poll } from '../../polls/entities/poll.entity';
+import { Server } from '../../servers/server.entity';
 import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
@@ -39,6 +41,14 @@ export class Channel {
     cascade: true,
   })
   keys: ChannelKey[];
+
+  @ManyToOne(() => Server, (server) => server.channels, {
+    onDelete: 'CASCADE',
+  })
+  server: Server;
+
+  @Column({ type: 'uuid' })
+  serverId: string;
 
   @CreateDateColumn()
   createdAt: Date;
