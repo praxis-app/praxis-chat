@@ -12,6 +12,7 @@ import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
 import { getServerSafely } from '../servers/servers.service';
+import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
@@ -26,6 +27,7 @@ export interface UpdateChannelDto {
   description?: string;
 }
 
+const userRepository = dataSource.getRepository(User);
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const channelKeyRepository = dataSource.getRepository(ChannelKey);
@@ -259,9 +261,17 @@ const initializeGeneralChannel = async () => {
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
-  return channelRepository.save({
+  const users = await userRepository.find();
+  const channelMembers: Partial<ChannelMember>[] = users.map((user) => ({
+    userId: user.id,
+  }));
+
+  const channel = await channelRepository.save({
     name: GENERAL_CHANNEL_NAME,
     keys: [{ wrappedKey, tag, iv }],
+    members: channelMembers,
     server,
   });
+
+  return channel;
 };
