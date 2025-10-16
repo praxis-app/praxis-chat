@@ -12,14 +12,14 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import { PollConfig } from '../polls/entities/poll-config.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { Permission } from '../roles/entities/permission.entity';
+import { RolePermission } from '../roles/entities/role-permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
-import { Server } from '../servers/entities/server.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
+import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Initial1760326454006 } from './migrations/1760326454006-Initial';
+import { Initial1760569615876 } from './migrations/1760569615876-Initial';
 
 dotenv.config();
 
@@ -38,7 +38,6 @@ export const dataSource = new DataSource({
     Image,
     Invite,
     Message,
-    Permission,
     Poll,
     PollAction,
     PollActionPermission,
@@ -46,11 +45,12 @@ export const dataSource = new DataSource({
     PollActionRoleMember,
     PollConfig,
     Role,
+    RolePermission,
     Server,
     ServerConfig,
     ServerMember,
     User,
     Vote,
   ],
-  migrations: [Initial1760326454006],
+  migrations: [Initial1760569615876],
 });

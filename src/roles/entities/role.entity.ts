@@ -12,7 +12,7 @@ import {
 import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
 import { Server } from '../../servers/entities/server.entity';
 import { User } from '../../users/user.entity';
-import { Permission } from './permission.entity';
+import { RolePermission } from './role-permission.entity';
 
 @Entity()
 export class Role {
@@ -25,10 +25,10 @@ export class Role {
   @Column({ type: 'varchar' })
   color: string;
 
-  @OneToMany(() => Permission, (permission) => permission.role, {
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {
     cascade: true,
   })
-  permissions: Permission[];
+  permissions: RolePermission[];
 
   @ManyToMany(() => User, (user) => user.roles)
   @JoinTable()

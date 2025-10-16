@@ -1,6 +1,6 @@
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
-import { Permission } from '../roles/entities/permission.entity';
+import { RolePermission } from '../roles/entities/role-permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
@@ -12,7 +12,7 @@ import { PollAction } from './entities/poll-action.entity';
 
 const usersRepository = dataSource.getRepository(User);
 const rolesRepository = dataSource.getRepository(Role);
-const permissionRepository = dataSource.getRepository(Permission);
+const rolePermissionRepository = dataSource.getRepository(RolePermission);
 
 const pollActionRepository = dataSource.getRepository(PollAction);
 const pollActionRoleRepository = dataSource.getRepository(PollActionRole);
@@ -137,7 +137,7 @@ export const implementChangeRole = async (pollActionId: string) => {
       (permission) => permission.changeType === 'remove',
     );
     if (toRemove.length > 0) {
-      await permissionRepository.remove(
+      await rolePermissionRepository.remove(
         roleToUpdate.permissions.filter((permission) =>
           toRemove.some(
             (p) =>
@@ -148,7 +148,7 @@ export const implementChangeRole = async (pollActionId: string) => {
       );
     }
     if (toAdd.length > 0) {
-      await permissionRepository.save(
+      await rolePermissionRepository.save(
         toAdd.map(({ action, subject }) => ({
           roleId: roleToUpdate.id,
           action,
