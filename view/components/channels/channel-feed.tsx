@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { WelcomeMessage } from '../invites/welcome-message';
 import { Message } from '../messages/message';
-import { InlineProposal } from '../proposals/inline-proposal';
+import { InlinePoll } from '../polls/inline-poll';
 
 const LOAD_MORE_THROTTLE_MS = 1500;
 const IN_VIEW_THRESHOLD = 50;
@@ -36,7 +36,7 @@ export const ChannelFeed = ({
   onLoadMore,
 }: Props) => {
   const { isAppLoading } = useAppStore((state) => state);
-  const { isAnon, isLoggedIn } = useAuthData();
+  const { me, isAnon, isLoggedIn } = useAuthData();
 
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -93,7 +93,7 @@ export const ChannelFeed = ({
   return (
     <div
       ref={feedBoxRef}
-      className="flex flex-1 flex-col-reverse gap-4.5 overflow-y-scroll p-2.5 pb-4"
+      className="flex flex-1 flex-col-reverse gap-4.5 overflow-y-scroll px-3.5 pt-2.5 pb-4"
       onScroll={handleScroll}
     >
       {showWelcomeMessage && (
@@ -102,16 +102,24 @@ export const ChannelFeed = ({
 
       {feed.map((item) => {
         if (item.type === 'message') {
-          return <Message key={`message-${item.id}`} message={item} />;
+          return (
+            <Message
+              key={`message-${item.id}`}
+              channelId={channel?.id}
+              message={item}
+              me={me}
+            />
+          );
         }
         if (!channel) {
           return null;
         }
         return (
-          <InlineProposal
-            key={`proposal-${item.id}`}
-            proposal={item}
+          <InlinePoll
+            key={`poll-${item.id}`}
+            poll={item}
             channel={channel}
+            me={me}
           />
         );
       })}

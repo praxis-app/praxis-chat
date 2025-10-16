@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { normalizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as invitesService from '../invites/invites.service';
-import * as rolesService from '../roles/roles.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 
@@ -24,6 +23,7 @@ export interface LoginDto {
 
 const userRepository = dataSource.getRepository(User);
 
+// TODO: Move validation to middleware with zod
 export const login = async ({ email, password }: LoginDto) => {
   if (!email) {
     throw new Error('Email is required');
@@ -82,7 +82,7 @@ export const createAnonSession = async (inviteToken?: string) => {
 
 export const verifyAccessToken = (token: string) => {
   try {
-    const secret = process.env.TOKEN_SECRET as string;
+    const secret = process.env.AUTH_TOKEN_SECRET as string;
     const { sub } = jwt.verify(token, secret) as { sub: string };
     return sub;
   } catch {
@@ -90,29 +90,9 @@ export const verifyAccessToken = (token: string) => {
   }
 };
 
-export const getAuthedUser = async (userId: string, includePerms = true) => {
-  try {
-    if (!userId) {
-      throw new Error('User ID is missing or invalid');
-    }
-    const user = await userRepository.findOneOrFail({
-      where: { id: userId },
-    });
-    if (!includePerms) {
-      return user;
-    }
-
-    const permissions = await rolesService.getUserPermissions(userId);
-    return { ...user, permissions };
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
 export const generateAccessToken = (userId: string) => {
   const payload = { sub: userId };
-  return jwt.sign(payload, process.env.TOKEN_SECRET || '', {
+  return jwt.sign(payload, process.env.AUTH_TOKEN_SECRET || '', {
     expiresIn: ACCESS_TOKEN_EXPIRES_IN,
   });
 };

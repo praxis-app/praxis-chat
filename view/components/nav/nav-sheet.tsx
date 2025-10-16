@@ -1,9 +1,9 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAuthData } from '@/hooks/use-auth-data';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAppStore } from '@/store/app.store';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -42,7 +42,7 @@ export const NavSheet = ({ trigger }: Props) => {
 
   const { data: channelsData } = useQuery({
     queryKey: ['channels'],
-    queryFn: api.getChannels,
+    queryFn: api.getJoinedChannels,
     enabled: !isDesktop && isRegistered,
   });
 
@@ -51,6 +51,8 @@ export const NavSheet = ({ trigger }: Props) => {
     queryFn: () => api.getGeneralChannel(),
     enabled: !isMeLoading && !isRegistered,
   });
+
+  const name = me?.displayName || me?.name;
 
   return (
     <Sheet open={isNavSheetOpen} onOpenChange={setIsNavSheetOpen}>
@@ -82,8 +84,9 @@ export const NavSheet = ({ trigger }: Props) => {
               <NavDropdown
                 trigger={
                   <UserAvatar
-                    name={me.name}
+                    name={name ?? ''}
                     userId={me.id}
+                    imageSrc={me.profilePicture?.url}
                     className="size-9"
                     fallbackClassName="text-[1.05rem]"
                   />

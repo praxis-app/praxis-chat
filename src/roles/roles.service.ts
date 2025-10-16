@@ -7,10 +7,11 @@ import {
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
-import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
+import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
+import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
-import { CHANNEL_ACCESS_MAP } from './channel-access';
-import { Permission } from './entities/permission.entity';
+import * as usersService from '../users/users.service';
+import { RolePermission } from './entities/role-permission.entity';
 import { Role } from './entities/role.entity';
 
 const DEFAULT_ROLE_COLOR = '#f44336';
@@ -34,7 +35,7 @@ interface UpdateRolePermissionsDto {
 
 const userRepository = dataSource.getRepository(User);
 const roleRepository = dataSource.getRepository(Role);
-const permissionRepository = dataSource.getRepository(Permission);
+const rolePermissionRepository = dataSource.getRepository(RolePermission);
 
 export const getRole = async (roleId: string) => {
   const role = await roleRepository.findOne({
@@ -50,7 +51,20 @@ export const getRole = async (roleId: string) => {
   });
   const permissions = buildPermissionRules([role]);
 
-  return { ...role, permissions, members, memberCount: members.length };
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePicture: profilePictures[member.id],
+  }));
+
+  return {
+    ...role,
+    permissions,
+    members: shapedMembers,
+    memberCount: members.length,
+  };
 };
 
 export const getRoles = async () => {
@@ -72,8 +86,16 @@ export const getRoles = async () => {
     },
   });
 
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    roles.flatMap((role) => role.members.map((member) => member.id)),
+  );
+
   return roles.map((role) => ({
     ...role,
+    members: role.members.map((member) => ({
+      ...member,
+      profilePicture: profilePictures[member.id],
+    })),
     permissions: buildPermissionRules([role]),
     memberCount: role.members.length,
   }));
@@ -102,8 +124,9 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   if (!role) {
     throw new Error('Role not found');
   }
+
   const userIds = role.members.map(({ id }) => id);
-  return userRepository.find({
+  const users = await userRepository.find({
     where: {
       id: Not(In(userIds)),
       anonymous: false,
@@ -111,18 +134,33 @@ export const getUsersEligibleForRole = async (roleId: string) => {
     },
     select: ['id', 'name', 'displayName'],
   });
+  if (users.length === 0) {
+    return [];
+  }
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    users.map((user) => user.id),
+  );
+  const shapedUsers = users.map((user) => ({
+    ...user,
+    profilePicture: profilePictures[user.id],
+  }));
+
+  return shapedUsers;
 };
 
 export const createRole = async ({ name, color }: CreateRoleDto) => {
-  const role = await roleRepository.save({ name, color });
+  const server = await serversService.getServerSafely();
+  const role = await roleRepository.save({ name, color, server });
   return { ...role, memberCount: 0 };
 };
 
 export const createAdminRole = async (userId: string) => {
+  const server = await serversService.getServerSafely();
+
   await roleRepository.save({
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
-    members: [{ id: userId }],
     permissions: [
       { subject: 'ServerConfig', action: 'manage' },
       { subject: 'Channel', action: 'manage' },
@@ -130,6 +168,8 @@ export const createAdminRole = async (userId: string) => {
       { subject: 'Invite', action: 'manage' },
       { subject: 'Role', action: 'manage' },
     ],
+    members: [{ id: userId }],
+    server,
   });
 };
 
@@ -158,7 +198,7 @@ export const updateRolePermissions = async (
     throw new Error('Role not found');
   }
 
-  const permissionsToSave = permissions.reduce<Partial<Permission>[]>(
+  const permissionsToSave = permissions.reduce<Partial<RolePermission>[]>(
     (result, { action, subject }) => {
       const actions = Array.isArray(action) ? action : [action];
 
@@ -195,9 +235,9 @@ export const updateRolePermissions = async (
   );
 
   if (permissionsToDelete.length) {
-    await permissionRepository.delete(permissionsToDelete);
+    await rolePermissionRepository.delete(permissionsToDelete);
   }
-  await permissionRepository.save(permissionsToSave);
+  await rolePermissionRepository.save(permissionsToSave);
 };
 
 export const addRoleMembers = async (roleId: string, userIds: string[]) => {
@@ -215,9 +255,19 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
       locked: false,
     },
   });
-  return roleRepository.save({
+
+  const members = [...role.members, ...newMembers];
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    members.map((member) => member.id),
+  );
+  const shapedMembers = members.map((member) => ({
+    ...member,
+    profilePicture: profilePictures[member.id],
+  }));
+
+  await roleRepository.save({
     ...role,
-    members: [...role.members, ...newMembers],
+    members: shapedMembers,
   });
 };
 
@@ -242,7 +292,7 @@ export const deleteRole = async (id: string) => {
  * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
  */
 export const buildPermissionRules = (
-  roles: Role[] | ProposalActionRole[],
+  roles: Role[] | PollActionRole[],
 ): RawRuleOf<AppAbility>[] => {
   const permissionMap = roles.reduce<PermissionMap>((result, role) => {
     for (const permission of role.permissions || []) {
@@ -258,15 +308,4 @@ export const buildPermissionRules = (
     subject: subject as AbilitySubject,
     action,
   }));
-};
-
-/** Check if a user can access a given pub-sub channel */
-export const canAccessChannel = (channelKey: string, user: User) => {
-  for (const { pattern, rules } of Object.values(CHANNEL_ACCESS_MAP)) {
-    const match = pattern.exec(channelKey);
-    if (match) {
-      return Object.values(rules).every((rule) => rule(match, user));
-    }
-  }
-  return false;
 };

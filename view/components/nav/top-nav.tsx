@@ -35,18 +35,23 @@ export const TopNav = ({
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
-  const handleBackClick = useCallback(() => {
-    if (onBackClick) {
-      onBackClick();
-      return;
-    }
-    if (isDesktop) {
-      navigate(NavigationPaths.Home);
-      return;
-    }
-
-    setIsNavSheetOpen(true);
-  }, [isDesktop, navigate, onBackClick, setIsNavSheetOpen]);
+  const handleBackClick = useCallback(
+    (isEscapeKey = false) => {
+      if (onBackClick) {
+        onBackClick();
+        return;
+      }
+      if (isDesktop) {
+        navigate(NavigationPaths.Home);
+        return;
+      }
+      if (isEscapeKey) {
+        return;
+      }
+      setIsNavSheetOpen(true);
+    },
+    [isDesktop, navigate, onBackClick, setIsNavSheetOpen],
+  );
 
   // Handle escape key to go back or open nav sheet
   useEffect(() => {
@@ -55,7 +60,7 @@ export const TopNav = ({
         if (isNavSheetOpen) {
           setIsNavSheetOpen(false);
         } else {
-          handleBackClick();
+          handleBackClick(true);
         }
       }
     };
@@ -66,7 +71,7 @@ export const TopNav = ({
   }, [handleBackClick, isNavSheetOpen, setIsNavSheetOpen, goBackOnEscape]);
 
   const renderBackBtn = () => (
-    <Button variant="ghost" size="icon" onClick={handleBackClick}>
+    <Button variant="ghost" size="icon" onClick={() => handleBackClick()}>
       {backBtnIcon || <LuArrowLeft className="size-6" />}
     </Button>
   );

@@ -1,13 +1,14 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { MessageRes } from '@/types/message.types';
-import { ProposalRes } from '@/types/proposal.types';
+import { PollRes } from '@/types/poll.types';
 import { PubSubMessage } from '@/types/shared.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
+import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { MessageForm } from '../messages/message-form';
@@ -15,24 +16,18 @@ import { LeftNavDesktop } from '../nav/left-nav-desktop';
 import { ChannelFeed } from './channel-feed';
 import { ChannelTopNav } from './channel-top-nav';
 
-enum MessageType {
-  MESSAGE = 'message',
-  IMAGE = 'image',
-  PROPOSAL = 'proposal',
-}
-
 interface NewMessagePayload {
-  type: MessageType.MESSAGE;
+  type: PubSubMessageType.MESSAGE;
   message: MessageRes;
 }
 
-interface NewProposalPayload {
-  type: MessageType.PROPOSAL;
-  proposal: ProposalRes;
+interface NewPollPayload {
+  type: PubSubMessageType.POLL;
+  poll: PollRes;
 }
 
 interface ImageMessagePayload {
-  type: MessageType.IMAGE;
+  type: PubSubMessageType.IMAGE;
   isPlaceholder: boolean;
   messageId: string;
   imageId: string;
@@ -85,7 +80,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       }
 
       // Update cache with new message, images are placeholders
-      if (body.type === MessageType.MESSAGE) {
+      if (body.type === PubSubMessageType.MESSAGE) {
         const newFeedItem: FeedItemRes = {
           ...body.message,
           type: 'message',
@@ -113,7 +108,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       }
 
       // Update cache with image status once uploaded
-      if (body.type === MessageType.IMAGE) {
+      if (body.type === PubSubMessageType.IMAGE) {
         queryClient.setQueryData<FeedQuery>(
           ['feed', resolvedChannelId],
           (oldData) => {
@@ -149,18 +144,16 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     enabled: !!meData && !!channel && !!resolvedChannelId,
   });
 
-  useSubscription(`new-proposal-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
-      const { body }: PubSubMessage<NewProposalPayload> = JSON.parse(
-        event.data,
-      );
+      const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
       if (!body) {
         return;
       }
-      if (body.type === MessageType.PROPOSAL) {
+      if (body.type === PubSubMessageType.POLL) {
         const newFeedItem: FeedItemRes = {
-          ...(body.proposal as FeedItemRes & { type: 'proposal' }),
-          type: 'proposal',
+          ...(body.poll as FeedItemRes & { type: 'poll' }),
+          type: 'poll',
         };
         queryClient.setQueryData<FeedQuery>(
           ['feed', resolvedChannelId],
@@ -171,7 +164,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
             const pages = oldData.pages.map((page, index) => {
               if (index === 0) {
                 const exists = page.feed.some(
-                  (fi) => fi.type === 'proposal' && fi.id === newFeedItem.id,
+                  (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
                 );
                 if (exists) {
                   return page;

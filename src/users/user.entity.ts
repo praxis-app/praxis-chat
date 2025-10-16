@@ -1,4 +1,6 @@
+import { VALID_NAME_REGEX } from '@common/users/user.constants';
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -8,14 +10,17 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
+import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { Proposal } from '../proposals/entities/proposal.entity';
-import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
+import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
+import { Poll } from '../polls/entities/poll.entity';
 import { Role } from '../roles/entities/role.entity';
+import { ServerMember } from '../servers/entities/server-member.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()
+@Check('valid_name_check', `"name" ~ '${VALID_NAME_REGEX.source}'`)
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,6 +34,7 @@ export class User {
   @Column({ type: 'varchar', nullable: true, unique: true })
   email: string | null;
 
+  // TODO: Set `select: false` to avoid accidental password exposure
   @Column({ type: 'varchar', nullable: true })
   password: string | null;
 
@@ -41,10 +47,10 @@ export class User {
   @Column({ default: false })
   locked: boolean;
 
-  @OneToMany(() => Proposal, (proposal) => proposal.user, {
+  @OneToMany(() => Poll, (poll) => poll.user, {
     cascade: true,
   })
-  proposals: Proposal[];
+  polls: Poll[];
 
   @OneToMany(() => Vote, (vote) => vote.user, {
     cascade: true,
@@ -61,6 +67,11 @@ export class User {
   })
   channelMembers: ChannelMember[];
 
+  @OneToMany(() => ServerMember, (serverMember) => serverMember.user, {
+    cascade: true,
+  })
+  serverMembers: ServerMember[];
+
   @ManyToMany(() => Role, (role) => role.members, {
     onDelete: 'CASCADE',
   })
@@ -71,14 +82,19 @@ export class User {
   })
   invites: Invite[];
 
+  @OneToMany(() => Image, (image) => image.user, {
+    cascade: true,
+  })
+  images: Image[];
+
   @OneToMany(
-    () => ProposalActionRoleMember,
-    (proposalActionRoleMember) => proposalActionRoleMember.user,
+    () => PollActionRoleMember,
+    (pollActionRoleMember) => pollActionRoleMember.user,
     {
       cascade: true,
     },
   )
-  proposalActionRoleMembers: ProposalActionRoleMember[];
+  pollActionRoleMembers: PollActionRoleMember[];
 
   @CreateDateColumn()
   createdAt: Date;

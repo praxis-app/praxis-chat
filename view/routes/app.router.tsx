@@ -7,6 +7,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { authRouter } from './auth.router';
 import { channelsRouter } from './channels.router';
 import { settingsRouter } from './settings.router';
+import { usersRouter } from './users.router';
 
 export const appRouter = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ export const appRouter = createBrowserRouter([
       authRouter,
       settingsRouter,
       channelsRouter,
+      usersRouter,
     ],
   },
 ]);

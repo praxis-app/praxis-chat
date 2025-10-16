@@ -1,7 +1,9 @@
 import cryptoRandomString from 'crypto-random-string';
 import { dataSource } from '../database/data-source';
-import { Invite } from './invite.entity';
+import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
+import { Invite } from './invite.entity';
 
 const INVITES_PAGE_SIZE = 20;
 
@@ -38,26 +40,52 @@ export const getValidInvites = async () => {
       'invite.expiresAt',
       'user.id',
       'user.name',
+      'user.displayName',
     ])
     .orderBy('invite.createdAt', 'DESC')
     .getMany();
 
+  // TOOD: Move filtering logic to query
   const validInvites = invites.filter((invite) => {
     return validateInvite(invite);
   });
 
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    validInvites.map((invite) => invite.user.id),
+  );
+
+  const shapedInvites = validInvites.map((invite) => ({
+    ...invite,
+    user: {
+      ...invite.user,
+      profilePicture: profilePictures[invite.user.id],
+    },
+  }));
+
   // TODO: Update once pagination has been implemented
-  return validInvites.slice(0, INVITES_PAGE_SIZE);
+  return shapedInvites.slice(0, INVITES_PAGE_SIZE);
 };
 
 export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
+  const server = await serversService.getServerSafely();
   const token = cryptoRandomString({ length: 8 });
+
   const invite = await inviteRepository.save({
     ...inviteData,
     userId: user.id,
+    server,
     token,
   });
-  return { ...invite, user };
+
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+
+  return {
+    ...invite,
+    user: {
+      ...user,
+      profilePicture,
+    },
+  };
 };
 
 export const redeemInvite = async (token: string) => {

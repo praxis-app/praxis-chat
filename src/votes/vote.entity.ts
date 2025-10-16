@@ -6,12 +6,14 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Proposal } from '../proposals/entities/proposal.entity';
+import { Poll } from '../polls/entities/poll.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
+@Unique(['pollId', 'userId'])
 export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,13 +21,13 @@ export class Vote {
   @Column({ type: 'enum', enum: VOTE_TYPES })
   voteType: VoteType;
 
-  @ManyToOne(() => Proposal, (proposal) => proposal.votes, {
+  @ManyToOne(() => Poll, (poll) => poll.votes, {
     onDelete: 'CASCADE',
   })
-  proposal?: Proposal;
+  poll?: Poll;
 
   @Column({ type: 'varchar', nullable: true })
-  proposalId: string | null;
+  pollId: string | null;
 
   // TODO: Uncomment when QuestionnaireTicket is defined
   // @ManyToOne(

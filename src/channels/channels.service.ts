@@ -1,7 +1,19 @@
+// TODO: Add ability for users to search, leave, and join channels
+
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
+import * as crypto from 'crypto';
+import { FindManyOptions, In, QueryFailedError } from 'typeorm';
+import {
+  AES_256_GCM_ALGORITHM,
+  AES_256_GCM_IV_LENGTH,
+} from '../common/common.constants';
 import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
-import * as proposalsService from '../proposals/proposals.service';
+import * as pollsService from '../polls/polls.service';
+import { getServerSafely } from '../servers/servers.service';
+import { User } from '../users/user.entity';
+import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
 
@@ -15,10 +27,10 @@ export interface UpdateChannelDto {
   description?: string;
 }
 
-const GENERAL_CHANNEL_NAME = 'general';
-
+const userRepository = dataSource.getRepository(User);
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const channelKeyRepository = dataSource.getRepository(ChannelKey);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -26,13 +38,22 @@ export const getChannel = (channelId: string) => {
   });
 };
 
-export const getChannels = async () => {
+export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
   const channelCount = await channelRepository.count();
   if (channelCount === 0) {
     await initializeGeneralChannel();
   }
   return channelRepository.find({
-    order: { createdAt: 'ASC' },
+    order: { createdAt: 'ASC', ...options?.order },
+    ...options,
+  });
+};
+
+export const getJoinedChannels = async (userId: string) => {
+  return getChannelsSafely({
+    where: {
+      members: { userId },
+    },
   });
 };
 
@@ -58,14 +79,9 @@ export const getChannelFeed = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const [messages, proposals] = await Promise.all([
+  const [messages, polls] = await Promise.all([
     messagesService.getMessages(channelId, offset, limit),
-    proposalsService.getChannelProposals(
-      channelId,
-      offset,
-      limit,
-      currentUserId,
-    ),
+    pollsService.getInlinePolls(channelId, offset, limit, currentUserId),
   ]);
 
   const shapedMessages = messages.map((message) => ({
@@ -73,12 +89,12 @@ export const getChannelFeed = async (
     type: 'message',
   }));
 
-  const shapedProposals = proposals.map((proposal) => ({
-    ...proposal,
-    type: 'proposal',
+  const shapedPolls = polls.map((poll) => ({
+    ...poll,
+    type: 'poll',
   }));
 
-  const feed = [...shapedMessages, ...shapedProposals]
+  const feed = [...shapedMessages, ...shapedPolls]
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
 
@@ -100,6 +116,28 @@ export const isChannelMember = async (channelId: string, userId: string) => {
   });
 };
 
+/** Returns a map of unwrapped channel keys that are keyed by channel key ID */
+export const getUnwrappedChannelKeyMap = async (channelKeyIds: string[]) => {
+  const channelKeys = await channelKeyRepository.find({
+    where: { id: In(channelKeyIds) },
+    select: ['id', 'wrappedKey', 'tag', 'iv'],
+  });
+
+  return channelKeys.reduce<Record<string, Buffer>>((result, channelKey) => {
+    result[channelKey.id] = unwrapChannelKey(channelKey);
+    return result;
+  }, {});
+};
+
+export const getUnwrappedChannelKey = async (channelId: string) => {
+  const channelKey = await channelKeyRepository.findOneOrFail({
+    where: { channelId },
+    order: { createdAt: 'DESC' },
+  });
+  const unwrappedKey = unwrapChannelKey(channelKey);
+  return { ...channelKey, unwrappedKey };
+};
+
 export const addMemberToGeneralChannel = async (userId: string) => {
   const generalChannel = await getGeneralChannel();
   await channelMemberRepository.save({
@@ -108,8 +146,29 @@ export const addMemberToGeneralChannel = async (userId: string) => {
   });
 };
 
-export const addMemberToAllChannels = async (userId: string) => {
-  const channels = await getChannels();
+// TODO: Reconsider how new users are added to channels
+export const addMemberToAllServerChannels = async (
+  userId: string,
+  serverId: string,
+) => {
+  const channelCount = await channelRepository.count();
+  if (channelCount === 0) {
+    await initializeGeneralChannel();
+  }
+
+  const channels = await channelRepository
+    .createQueryBuilder('channel')
+    .leftJoin('channel.members', 'member', 'member.userId = :userId', {
+      userId,
+    })
+    .where('channel.serverId = :serverId', { serverId })
+    .andWhere('member.id IS NULL')
+    .getMany();
+
+  if (channels.length === 0) {
+    return;
+  }
+
   const channelMembers = channels.map((channel) => ({
     channelId: channel.id,
     userId,
@@ -117,7 +176,7 @@ export const addMemberToAllChannels = async (userId: string) => {
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = (
+export const createChannel = async (
   { name, description }: CreateChannelDto,
   currentUserId: string,
 ) => {
@@ -125,11 +184,34 @@ export const createChannel = (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
-  return channelRepository.save({
+  // Generate per-channel key
+  const { wrappedKey, tag, iv } = generateChannelKey();
+
+  const server = await getServerSafely();
+  const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
     members: [{ userId: currentUserId }],
+    keys: [{ wrappedKey, tag, iv }],
+    server,
   });
+
+  return channel;
+};
+
+export const generateChannelKey = () => {
+  // Generate per-channel key
+  const channelKey = crypto.randomBytes(32);
+
+  // Wrap it with the master key
+  const masterKey = getChannelKeyMaster();
+  const iv = crypto.randomBytes(AES_256_GCM_IV_LENGTH);
+  const cipher = crypto.createCipheriv(AES_256_GCM_ALGORITHM, masterKey, iv);
+
+  const wrappedKey = Buffer.concat([cipher.update(channelKey), cipher.final()]);
+  const tag = cipher.getAuthTag();
+
+  return { wrappedKey, tag, iv };
 };
 
 export const updateChannel = async (
@@ -150,8 +232,70 @@ export const deleteChannel = async (channelId: string) => {
   return channelRepository.delete(channelId);
 };
 
-const initializeGeneralChannel = () => {
-  return channelRepository.save({
-    name: GENERAL_CHANNEL_NAME,
-  });
+// -------------------------------------------------------------------------
+// Helper functions
+// -------------------------------------------------------------------------
+
+const unwrapChannelKey = ({ wrappedKey, tag, iv }: ChannelKey) => {
+  const masterKey = getChannelKeyMaster();
+  const decipher = crypto.createDecipheriv(
+    AES_256_GCM_ALGORITHM,
+    masterKey,
+    iv,
+  );
+  decipher.setAuthTag(tag);
+
+  const unwrappedKey = Buffer.concat([
+    decipher.update(wrappedKey),
+    decipher.final(),
+  ]);
+
+  return unwrappedKey;
+};
+
+const getChannelKeyMaster = () => {
+  const channelKeyMaster = process.env.CHANNEL_KEY_MASTER;
+  if (!channelKeyMaster) {
+    throw new Error('CHANNEL_KEY_MASTER is not set');
+  }
+  return Buffer.from(channelKeyMaster, 'base64');
+};
+
+const initializeGeneralChannel = async () => {
+  const server = await getServerSafely();
+
+  // Generate per-channel key
+  const { wrappedKey, tag, iv } = generateChannelKey();
+
+  const users = await userRepository.find();
+  const channelMembers: Partial<ChannelMember>[] = users.map((user) => ({
+    userId: user.id,
+  }));
+
+  try {
+    const channel = await channelRepository.save({
+      name: GENERAL_CHANNEL_NAME,
+      keys: [{ wrappedKey, tag, iv }],
+      members: channelMembers,
+      server,
+    });
+
+    return channel;
+  } catch (error) {
+    // Handle race condition: if another request created the channel concurrently,
+    // the duplicate key error will be thrown. In this case, fetch and return
+    // the channel that was just created by the other request
+    if (
+      error instanceof QueryFailedError &&
+      error.driverError?.message.includes('duplicate key')
+    ) {
+      const existingChannel = await channelRepository.findOne({
+        where: { name: GENERAL_CHANNEL_NAME },
+      });
+      if (existingChannel) {
+        return existingChannel;
+      }
+    }
+    throw error;
+  }
 };

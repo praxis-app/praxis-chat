@@ -2,15 +2,20 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Poll } from '../../polls/entities/poll.entity';
+import { Server } from '../../servers/entities/server.entity';
+import { ChannelKey } from './channel-key.entity';
 import { ChannelMember } from './channel-member.entity';
 
 @Entity()
+@Unique(['serverId', 'name'])
 export class Channel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,10 +34,23 @@ export class Channel {
   })
   members: ChannelMember[];
 
-  @OneToMany(() => Proposal, (proposal) => proposal.channel, {
+  @OneToMany(() => Poll, (poll) => poll.channel, {
     cascade: true,
   })
-  proposals: Proposal[];
+  polls: Poll[];
+
+  @OneToMany(() => ChannelKey, (key) => key.channel, {
+    cascade: true,
+  })
+  keys: ChannelKey[];
+
+  @ManyToOne(() => Server, (server) => server.channels, {
+    onDelete: 'CASCADE',
+  })
+  server: Server;
+
+  @Column({ type: 'uuid' })
+  serverId: string;
 
   @CreateDateColumn()
   createdAt: Date;

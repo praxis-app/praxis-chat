@@ -7,14 +7,14 @@ import {
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { t } from '@/lib/shared.utils';
+import { useAppStore } from '@/store/app.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -25,16 +25,14 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import { useAppStore } from '@/store/app.store';
-
-const EMAIL_MAX_LENGTH = 254;
-
-const NAME_REGEX = /^[A-Za-z0-9 ]+$/;
-const NAME_MIN_LENGTH = 3;
-const NAME_MAX_LENGTH = 15;
-
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 64;
+import {
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  NAME_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  VALID_NAME_REGEX,
+} from '@common/users/user.constants';
 
 const signUpFormSchema = zod
   .object({
@@ -46,8 +44,8 @@ const signUpFormSchema = zod
       .max(NAME_MAX_LENGTH, {
         message: t('auth.errors.longName'),
       })
-      .regex(NAME_REGEX, {
-        message: t('auth.errors.invalidName'),
+      .regex(VALID_NAME_REGEX, {
+        message: t('users.errors.invalidName'),
       }),
     email: zod
       .email({
@@ -111,11 +109,8 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
-    onError(error: AxiosError) {
-      const errorMessage =
-        (error.response?.data as string) || t('errors.somethingWentWrong');
-
-      toast(errorMessage);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 
@@ -124,12 +119,12 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
       return api.upgradeAnonSession({ ...values, inviteToken: token });
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['me'] });
+      queryClient.resetQueries({ queryKey: ['me'] });
       navigate(NavigationPaths.Home);
       setIsRedirecting(true);
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 

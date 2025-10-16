@@ -58,7 +58,7 @@
       "alreadyLoggedIn": "You're already signed in.",
       "alreadyRegistered": "You have already created an account.",
       "authenticated": "You are authenticated.",
-      "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer?",
+      "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer to do?",
       "createAccount": "Create an account",
       "createPassword": "Create a strong password",
       "dontHaveAccount": "Don't have an account?",
@@ -79,7 +79,6 @@
     },
     "errors": {
       "invalidEmail": "Email is invalid.",
-      "invalidName": "Usernames cannot contain special characters",
       "longEmail": "Email cannot exceed 254 characters",
       "longName": "Username cannot exceed 15 characters",
       "missingEmail": "Email cannot be empty",
@@ -96,22 +95,69 @@
     "presence": {
       "online": "Online",
       "offline": "Offline"
+    },
+    "actions": {
+      "editProfile": "Edit profile",
+      "save": "Save changes",
+      "changePicture": "Change picture",
+      "selectPicture": "Select picture",
+      "changeCoverPhoto": "Change cover photo",
+      "selectCoverPhoto": "Select cover photo",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "form": {
+      "name": "Username",
+      "displayName": "Display name",
+      "bio": "Bio",
+      "profilePicture": "Profile picture",
+      "coverPhoto": "Cover photo"
+    },
+    "placeholders": {
+      "name": "Enter your username",
+      "displayName": "Enter your display name",
+      "bio": "Tell us about yourself...",
+      "profilePicture": "Upload a profile picture",
+      "coverPhoto": "Upload a cover photo"
+    },
+    "errors": {
+      "shortName": "Username must be at least 3 characters",
+      "longName": "Username cannot exceed 15 characters",
+      "invalidName": "Username can only contain letters, numbers, and underscores",
+      "shortDisplayName": "Display name must be at least 4 characters",
+      "longDisplayName": "Display name cannot exceed 30 characters",
+      "longBio": "Bio cannot exceed 500 characters"
+    },
+    "headers": {
+      "editProfile": "Edit Profile",
+      "editProfileDescription": "Update your profile information."
+    },
+    "prompts": {
+      "viewProfile": "View profile for {{name}}",
+      "logInToViewProfile": "Log in or sign up to view profiles",
+      "registerToViewOtherProfiles": "You need to register to view other user profiles"
     }
   },
 
-  "proposals": {
+  "polls": {
     "labels": {
       "actionType": "Action",
       "active": "Active",
       "body": "Proposal",
       "closed": "Closed",
+      "consensus": "Consensus",
       "consensusProposal": "Consensus Proposal",
+      "consent": "Consent",
+      "majority": "Majority vote",
+      "proposedSettings": "Settings proposal",
+      "ratified": "Ratified",
+      "revision": "Revision",
+      "roleChangeProposal": "Role change proposal",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
-      "roleSelection": "Role selection",
-      "roleChangeProposal": "Role change proposal",
       "roleProposal": "Role proposal",
-      "proposedSettings": "Settings proposal"
+      "roleSelection": "Role selection",
+      "voteCount": "{{agreementVoteCount}}/{{votesNeededToRatify}} voted",
+      "voting": "Voting"
     },
     "headers": {
       "availableRoles": "Available Roles",
@@ -134,7 +180,7 @@
     "placeholders": {
       "action": "Select an action type",
       "body": "Enter your proposal details...",
-      "searchPlaceholder": "Search users...",
+      "searchMembersPlaceholder": "Search members...",
       "selectRolePlaceholder": "Select a role..."
     },
     "actions": {
@@ -155,24 +201,24 @@
       "selectRoleDescription": "Choose the role you want to modify"
     },
     "actionTypes": {
-      "change-role": "Change role",
-      "change-settings": "Change settings",
-      "create-role": "Create role",
-      "plan-event": "Plan event",
-      "test": "QA test"
+      "changeRole": "Change role",
+      "changeSettings": "Change settings",
+      "createRole": "Create role",
+      "planEvent": "Plan event",
+      "test": "Test"
     },
     "prompts": {
-      "noUsersFound": "No users found"
+      "noUsersFound": "No users found",
+      "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
+      "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on.",
+      "ratifiedSuccess": "This proposal has been ratified! 🎉"
     },
     "errors": {
+      "registerToCreateNonTestProposals": "Anonymous users can only create test proposals. Please register to create other proposal types.",
+      "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role.",
+      "errorCreatingProposal": "Error creating proposal",
       "longBody": "Proposal body cannot exceed 6000 characters",
-      "errorCreatingProposal": "Error creating proposal"
-    }
-  },
-
-  "votes": {
-    "prompts": {
-      "voteCast": "Vote cast successfully"
+      "testProposalRequiresBody": "Test proposals must include a body"
     }
   },
 
@@ -238,6 +284,9 @@
       "imageTooLarge": "Image is too large. Maximum file size is 8MB.",
       "tooManyImages": "You can upload a maximum of 5 images.",
       "fileMissing": "Image file is missing."
+    },
+    "descriptions": {
+      "attachedImage": "This is an attached image enlarged for viewing."
     }
   },
 
@@ -256,8 +305,8 @@
       "serverRoles": "Roles",
       "viewServerRoles": "Roles Overview"
     },
-    "subheaders": {
-      "viewServerRoles": "Explore server roles transparently, see who holds them, and understand their permissions."
+    "descriptions": {
+      "addMembers": "Add members to the role."
     },
     "form": {
       "name": "Name",
@@ -331,6 +380,34 @@
     }
   },
 
+  "settings": {
+    "names": {
+      "decisionMakingModel": "Decision making model",
+      "ratificationThreshold": "Ratification threshold",
+      "disagreementsLimit": "Disagreements limit",
+      "abstainsLimit": "Abstains limit",
+      "votingTimeLimit": "Voting time limit"
+    },
+    "descriptions": {
+      "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
+      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
+      "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
+      "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
+      "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified."
+    },
+    "explanations": {
+      "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
+      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to reach consensus.",
+      "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
+      "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
+      "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."
+    },
+    "errors": {
+      "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
+      "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
+    }
+  },
+
   "invites": {
     "actions": {
       "generateLink": "Generate a new link"
@@ -390,6 +467,7 @@
     },
     "labels": {
       "serverSettings": "Server settings",
+      "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"
     },
@@ -401,19 +479,28 @@
 
   "time": {
     "days": "{{days}}d",
+    "daysEndsIn": "Ends in {{days}} day",
+    "daysEndsIn_plural": "Ends in {{days}} days",
     "daysFull": "{{count}} day",
     "daysFull_plural": "{{count}} days",
     "hours": "{{hours}}h",
+    "hoursEndsIn": "Ends in {{hours}} hour",
+    "hoursEndsIn_plural": "Ends in {{hours}} hours",
+    "hoursFull": "{{count}} hour",
+    "hoursFull_plural": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
     "minutes": "{{minutes}}m",
+    "minutesEndsIn": "Ends in {{minutes}} minute",
+    "minutesEndsIn_plural": "Ends in {{minutes}} minutes",
     "minutesFull": "{{count}} minute",
     "minutesFull_plural": "{{count}} minutes",
     "never": "Never",
+    "unlimited": "Unlimited",
     "weeks": "{{count}} week",
-    "weeks_plural": "{{count}} weeks",
-    "hoursFull": "{{count}} hour",
-    "hoursFull_plural": "{{count}} hours"
+    "weeksEndsIn": "Ends in {{weeks}} week",
+    "weeksEndsIn_plural": "Ends in {{weeks}} weeks",
+    "weeks_plural": "{{count}} weeks"
   }
 }

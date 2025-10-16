@@ -1,102 +1,153 @@
+import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import * as channelsService from '../channels/channels.service';
 import { sanitizeText } from '../common/common.utils';
+import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
+import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
-
-enum MessageType {
-  MESSAGE = 'message',
-  IMAGE = 'image',
-}
-
-export interface CreateMessageDto {
-  body?: string;
-  channelId: string;
-  imageCount: number;
-}
+import { CreateMessageDto } from './message.types';
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
 
+// TODO: Return `resolvedName` field for users
 export const getMessages = async (
   channelId: string,
   offset?: number,
   limit?: number,
 ) => {
-  const messages = await messageRepository.find({
-    where: { channelId },
-    relations: ['user', 'images'],
-    select: {
-      id: true,
-      body: true,
-      user: {
-        id: true,
-        name: true,
-      },
-      images: {
-        id: true,
-        filename: true,
-        createdAt: true,
-      },
-      createdAt: true,
-    },
-    order: {
-      createdAt: 'DESC',
-    },
-    skip: offset,
-    take: limit,
-  });
+  const messages = await messageRepository
+    .createQueryBuilder('message')
+    .select([
+      'message.id',
+      'message.ciphertext',
+      'message.keyId',
+      'message.tag',
+      'message.iv',
+      'message.createdAt',
+    ])
+    .addSelect([
+      'messageUser.id',
+      'messageUser.name',
+      'messageUser.displayName',
+    ])
+    .addSelect([
+      'messageImage.id',
+      'messageImage.filename',
+      'messageImage.createdAt',
+    ])
+    .leftJoin('message.user', 'messageUser')
+    .leftJoin('message.images', 'messageImage')
+    .where('message.channelId = :channelId', { channelId })
+    .orderBy('message.createdAt', 'DESC')
+    .skip(offset)
+    .take(limit)
+    .getMany();
 
-  return messages.map((message) => ({
-    ...message,
-    images: message.images.map((image) => {
-      return {
+  const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
+    messages
+      .filter((message) => message.keyId)
+      .map((message) => message.keyId!),
+  );
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    messages.map((message) => message.user.id),
+  );
+
+  const shapedMessages = messages.map(
+    ({ ciphertext, tag, iv, keyId, ...message }) => {
+      let body: string | null = null;
+
+      if (ciphertext && tag && iv && keyId) {
+        const unwrappedKey = unwrappedKeyMap[keyId];
+        body = decryptText(ciphertext, tag, iv, unwrappedKey);
+      }
+
+      const images = message.images.map((image) => ({
         id: image.id,
         isPlaceholder: !image.filename,
         createdAt: image.createdAt,
-      };
-    }),
-  }));
+      }));
+
+      const profilePicture = profilePictures[message.user.id];
+      const user = { ...message.user, profilePicture };
+
+      return { ...message, body, images, user };
+    },
+  );
+
+  return shapedMessages;
 };
 
 export const createMessage = async (
-  { body, imageCount, ...messageData }: CreateMessageDto,
+  channelId: string,
+  { body, imageCount }: CreateMessageDto,
   user: User,
 ) => {
-  const message = await messageRepository.save({
-    body: sanitizeText(body),
+  let messageData: Partial<Message> = {
     userId: user.id,
-    ...messageData,
-  });
-  let images: Image[] = [];
+    channelId,
+  };
 
+  const plaintext = sanitizeText(body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(channelId);
+
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
+
+    messageData = {
+      ...messageData,
+      keyId: channelKey.id,
+      ciphertext,
+      tag,
+      iv,
+    };
+  }
+
+  const message = await messageRepository.save(messageData);
+  const profilePicture = await usersService.getUserProfilePicture(user.id);
+
+  let images: Image[] = [];
   if (imageCount) {
     const imagePlaceholders = Array.from({ length: imageCount }).map(() => {
-      return imageRepository.create({ messageId: message.id });
+      return imageRepository.create({
+        messageId: message.id,
+        imageType: 'message',
+      });
     });
+
+    // TODO: Refactor - save message and images in a single transaction
     images = await imageRepository.save(imagePlaceholders);
   }
-  const shapedImages = images.map((image) => ({
+  const attachedImages = images.map((image) => ({
     id: image.id,
     isPlaceholder: true,
     createdAt: image.createdAt,
   }));
+
   const messagePayload = {
     ...message,
-    images: shapedImages,
-    user: { id: user.id, name: user.name },
+    body: plaintext,
+    images: attachedImages,
+    user: {
+      id: user.id,
+      name: user.name,
+      displayName: user.displayName,
+      profilePicture,
+    },
   };
 
-  const { channelId } = messageData;
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
     if (member.userId === user.id) {
       continue;
     }
     await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: MessageType.MESSAGE,
+      type: PubSubMessageType.MESSAGE,
       message: messagePayload,
     });
   }
@@ -127,7 +178,7 @@ export const saveMessageImage = async (
     }
     const channelKey = getNewMessageKey(message.channelId, member.userId);
     await pubSubService.publish(channelKey, {
-      type: MessageType.IMAGE,
+      type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
       messageId,
       imageId,

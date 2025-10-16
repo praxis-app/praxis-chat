@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { ChannelSkeleton } from '@/components/channels/channel-skeleton';
 import { ChannelView } from '@/components/channels/channel-view';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 

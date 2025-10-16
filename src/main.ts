@@ -9,7 +9,8 @@ import { createServer } from 'http';
 import morgan from 'morgan';
 import { join } from 'path';
 import 'reflect-metadata';
-import { appRouter } from './app.router';
+import { appRouter } from './app/app.router';
+import * as appService from './app/app.service';
 import * as cacheService from './cache/cache.service';
 import { dataSource } from './database/data-source';
 import { WebSocketServerWithIds } from './pub-sub/pub-sub.models';
@@ -24,6 +25,7 @@ dotenv.config();
 
   await dataSource.initialize();
   await cacheService.initializeCache();
+  await appService.startCronJobs();
 
   app.use(
     helmet({

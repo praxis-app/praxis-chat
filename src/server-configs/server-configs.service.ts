@@ -1,12 +1,13 @@
 import * as dotenv from 'dotenv';
 import { dataSource } from '../database/data-source';
 import { ServerConfig } from './entities/server-config.entity';
+import { ServerConfigDto } from './server-config.types';
 
 dotenv.config();
 
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
 
-export const getServerConfig = async () => {
+export const getServerConfigSafely = async () => {
   const serverConfigs = await serverConfigRepository.find();
   if (!serverConfigs.length) {
     return initializeServerConfig();
@@ -14,23 +15,11 @@ export const getServerConfig = async () => {
   return serverConfigs[0];
 };
 
-export const initializeServerConfig = async () => {
-  return serverConfigRepository.save({});
+export const updateServerConfig = async (data: ServerConfigDto) => {
+  const serverConfig = await getServerConfigSafely();
+  return serverConfigRepository.update(serverConfig.id, data);
 };
 
-export const updateServerConfig = async (
-  data: Partial<
-    Pick<
-      ServerConfig,
-      | 'decisionMakingModel'
-      | 'standAsidesLimit'
-      | 'reservationsLimit'
-      | 'ratificationThreshold'
-      | 'verificationThreshold'
-      | 'votingTimeLimit'
-    >
-  >,
-) => {
-  const serverConfig = await getServerConfig();
-  return serverConfigRepository.update(serverConfig.id, data);
+const initializeServerConfig = async () => {
+  return serverConfigRepository.save({});
 };

@@ -11,6 +11,8 @@ export const roleMembersRouter = express.Router({
 });
 
 roleMembersRouter
+  // All authenticated users can see who's eligible
+  .get('/eligible', getUsersEligibleForRole)
+  // Only users with permission can add or remove members directly
   .post('/', can('update', 'Role'), addRoleMembers)
-  .delete('/:userId', can('update', 'Role'), removeRoleMember)
-  .get('/eligible', can('read', 'Role'), getUsersEligibleForRole);
+  .delete('/:userId', can('update', 'Role'), removeRoleMember);

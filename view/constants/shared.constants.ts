@@ -28,6 +28,8 @@ export enum NavigationPaths {
   SignUp = '/auth/signup',
   Channels = '/channels',
   Invites = '/settings/invites',
+  ProposalSettings = '/settings/proposals',
+  UsersEdit = '/users/edit',
   Roles = '/settings/roles',
   Settings = '/settings',
 }

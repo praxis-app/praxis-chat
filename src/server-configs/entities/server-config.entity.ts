@@ -1,13 +1,16 @@
-import { DECISION_MAKING_MODEL } from '@common/proposals/proposal.constants';
-import { DecisionMakingModel } from '@common/proposals/proposal.types';
+import { DECISION_MAKING_MODEL } from '@common/polls/poll.constants';
+import { DecisionMakingModel } from '@common/polls/poll.types';
+import { VotingTimeLimit } from '@common/votes/vote.constants';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { VotingTimeLimit } from '../../votes/vote.constants';
+import { Server } from '../../servers/entities/server.entity';
 
 @Entity()
 export class ServerConfig {
@@ -18,19 +21,25 @@ export class ServerConfig {
   decisionMakingModel: DecisionMakingModel;
 
   @Column({ default: 2 })
-  standAsidesLimit: number;
+  disagreementsLimit: number;
 
   @Column({ default: 2 })
-  reservationsLimit: number;
+  abstainsLimit: number;
 
   @Column({ default: 51 })
   ratificationThreshold: number;
 
-  @Column({ default: 51 })
-  verificationThreshold: number;
-
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
+
+  @OneToOne(() => Server, (server) => server.config, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  server: Server;
+
+  @Column({ type: 'uuid' })
+  serverId: string;
 
   @CreateDateColumn()
   createdAt: Date;

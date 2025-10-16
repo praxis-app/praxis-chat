@@ -62,7 +62,7 @@ export const ChannelListItemDesktop = ({
       onOpenChange={setShowDeleteChannelDialog}
     >
       <ContextMenu modal={false}>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger disabled={!canManageChannels}>
           <div
             className={cn(
               'text-muted-foreground hover:bg-accent mx-2 flex items-center justify-between rounded-[4px] pr-2.5',

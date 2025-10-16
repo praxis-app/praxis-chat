@@ -23,24 +23,37 @@ const RemoveButton = ({ onClick }: { onClick(): void }) => {
 };
 
 const SavedImagePreview = ({
-  savedImage: { id, filename },
-  className,
+  savedImage,
+  channelId,
+  messageId,
+  pollId,
   handleDelete,
+  className,
 }: {
+  savedImage: ImageRes;
+  channelId?: string;
+  messageId?: string;
+  pollId?: string;
   className?: string;
   handleDelete?(id: string): void;
-  savedImage: ImageRes;
 }) => {
+  const { t } = useTranslation();
+
   const ref = useRef<HTMLDivElement>(null);
   const src = useImageSrc({
-    imageId: id,
+    imageId: savedImage.id,
     ref,
+    channelId,
+    messageId,
+    pollId,
   });
 
   return (
     <div ref={ref} className={cn(className)}>
-      <img alt={filename} src={src} width="100%" />
-      {handleDelete && <RemoveButton onClick={() => handleDelete(id)} />}
+      <img alt={t('images.labels.attachedImage')} src={src} width="100%" />
+      {handleDelete && (
+        <RemoveButton onClick={() => handleDelete(savedImage.id)} />
+      )}
     </div>
   );
 };
@@ -52,6 +65,9 @@ interface Props {
   savedImages?: ImageRes[];
   selectedImages: File[];
   className?: string;
+  channelId?: string;
+  messageId?: string;
+  pollId?: string;
 }
 
 export const AttachedImagePreview = ({
@@ -61,6 +77,9 @@ export const AttachedImagePreview = ({
   savedImages,
   selectedImages,
   className,
+  channelId,
+  messageId,
+  pollId,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -83,6 +102,9 @@ export const AttachedImagePreview = ({
             className={containerClassName}
             handleDelete={handleDelete}
             savedImage={savedImage}
+            channelId={channelId}
+            messageId={messageId}
+            pollId={pollId}
           />
         ))}
 

@@ -1,12 +1,11 @@
+import { UserRes } from './user.types';
+
 export interface InviteRes {
   id: string;
   token: string;
   uses: number;
   maxUses?: number;
-  user: {
-    id: string;
-    name: string;
-  };
+  user: UserRes;
   expiresAt?: string;
   createdAt: string;
 }

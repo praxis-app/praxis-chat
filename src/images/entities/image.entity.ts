@@ -7,7 +7,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../messages/message.entity';
-import { Proposal } from '../../proposals/entities/proposal.entity';
+import { Poll } from '../../polls/entities/poll.entity';
+import { User } from '../../users/user.entity';
+import { IMAGE_TYPES } from '../image.constants';
+import { ImageType } from '../image.types';
 
 @Entity()
 export class Image {
@@ -17,8 +20,8 @@ export class Image {
   @Column({ nullable: true, type: 'varchar' })
   filename: string | null;
 
-  @Column({ nullable: true, type: 'varchar' })
-  imageType: string | null;
+  @Column({ type: 'enum', enum: IMAGE_TYPES })
+  imageType: ImageType;
 
   @ManyToOne(() => Message, (message) => message.images, {
     onDelete: 'CASCADE',
@@ -28,13 +31,21 @@ export class Image {
   @Column({ type: 'varchar', nullable: true })
   messageId: string | null;
 
-  @ManyToOne(() => Proposal, (proposal) => proposal.images, {
+  @ManyToOne(() => Poll, (poll) => poll.images, {
     onDelete: 'CASCADE',
   })
-  proposal?: Proposal;
+  poll?: Poll;
 
   @Column({ type: 'varchar', nullable: true })
-  proposalId: string | null;
+  pollId: string | null;
+
+  @ManyToOne(() => User, (user) => user.images, {
+    onDelete: 'CASCADE',
+  })
+  user?: User;
+
+  @Column({ type: 'varchar', nullable: true })
+  userId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

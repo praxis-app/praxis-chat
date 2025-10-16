@@ -1,11 +1,11 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@/constants/channel.constants';
 import { KeyCodes } from '@/constants/shared.constants';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { handleError } from '../../lib/error.utils';
 import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
 import { AttachedImagePreview } from '../images/attached-image-preview';
 import { ImageInput } from '../images/image-input';
@@ -138,8 +139,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       onSend?.();
       reset();
     },
-    onError: (error: Error) => {
-      toast(error.message);
+    onError(error: Error) {
+      handleError(error);
     },
   });
 

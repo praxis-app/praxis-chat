@@ -1,22 +1,25 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
+import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
-import { ProposalActionPermission } from '../proposal-actions/entities/proposal-action-permission.entity';
-import { ProposalActionRoleMember } from '../proposal-actions/entities/proposal-action-role-member.entity';
-import { ProposalActionRole } from '../proposal-actions/entities/proposal-action-role.entity';
-import { ProposalAction } from '../proposal-actions/entities/proposal-action.entity';
-import { ProposalConfig } from '../proposals/entities/proposal-config.entity';
-import { Proposal } from '../proposals/entities/proposal.entity';
-import { Permission } from '../roles/entities/permission.entity';
+import { PollActionPermission } from '../poll-actions/entities/poll-action-permission.entity';
+import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
+import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
+import { PollAction } from '../poll-actions/entities/poll-action.entity';
+import { PollConfig } from '../polls/entities/poll-config.entity';
+import { Poll } from '../polls/entities/poll.entity';
+import { RolePermission } from '../roles/entities/role-permission.entity';
 import { Role } from '../roles/entities/role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
+import { ServerMember } from '../servers/entities/server-member.entity';
+import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Init1740949608930 } from './migrations/1740949608930-Init';
+import { Initial1760569615876 } from './migrations/1760569615876-Initial';
 
 dotenv.config();
 
@@ -30,21 +33,24 @@ export const dataSource = new DataSource({
   synchronize: process.env.NODE_ENV === 'development',
   entities: [
     Channel,
+    ChannelKey,
     ChannelMember,
     Image,
     Invite,
     Message,
-    Permission,
-    Proposal,
-    ProposalAction,
-    ProposalActionPermission,
-    ProposalActionRole,
-    ProposalActionRoleMember,
-    ProposalConfig,
+    Poll,
+    PollAction,
+    PollActionPermission,
+    PollActionRole,
+    PollActionRoleMember,
+    PollConfig,
     Role,
+    RolePermission,
+    Server,
     ServerConfig,
+    ServerMember,
     User,
     Vote,
   ],
-  migrations: [Init1740949608930],
+  migrations: [Initial1760569615876],
 });

@@ -4,19 +4,25 @@ import { ImageRes } from '@/types/image.types';
 import { AttachedImage } from './attached-image';
 
 interface Props {
+  images: ImageRes[];
+  channelId?: string;
+  messageId?: string;
+  pollId?: string;
   className?: string;
   fillCard?: boolean;
   imageClassName?: string;
-  images: ImageRes[];
   onImageLoad?(): void;
   topRounded?: boolean;
 }
 
 export const AttachedImageList = ({
+  images,
+  channelId,
+  messageId,
+  pollId,
   className,
   fillCard,
   imageClassName,
-  images,
   onImageLoad,
   topRounded,
 }: Props) => (
@@ -35,6 +41,9 @@ export const AttachedImageList = ({
         <AttachedImage
           key={image.id}
           image={image}
+          channelId={channelId}
+          messageId={messageId}
+          pollId={pollId}
           onImageLoad={onImageLoad}
           className={imageClasses}
         />

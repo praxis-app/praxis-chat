@@ -1,17 +1,11 @@
 import { Request, Response } from 'express';
+import { Image } from '../images/entities/image.entity';
+import { getUploadsPath } from '../images/images.utils';
 import * as messagesService from './messages.service';
-
-export const getMessages = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
-  const offset = req.query.offset ? Number(req.query.offset) : undefined;
-  const limit = req.query.limit ? Number(req.query.limit) : undefined;
-
-  const messages = await messagesService.getMessages(channelId, offset, limit);
-  res.json({ messages });
-};
 
 export const createMessage = async (req: Request, res: Response) => {
   const message = await messagesService.createMessage(
+    req.params.channelId,
     req.body,
     res.locals.user,
   );
@@ -34,4 +28,12 @@ export const uploadMessageImage = async (req: Request, res: Response) => {
   );
 
   res.status(201).json({ image });
+};
+
+export const getMessageImage = async (_req: Request, res: Response) => {
+  const image: Image & { filename: string } = res.locals.image;
+
+  return res.sendFile(image.filename, {
+    root: getUploadsPath(),
+  });
 };
