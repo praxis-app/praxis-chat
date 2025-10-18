@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { getCompromises } from '../chat-analysis.service';
 
 interface TestScenario {

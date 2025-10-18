@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { getChatSummary } from '../chat-analysis.service';
 
 interface TestScenario {
