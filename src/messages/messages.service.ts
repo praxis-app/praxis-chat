@@ -9,10 +9,8 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
-import {
-  handleCommandExecution,
-  isCommandMessage,
-} from '../commands/commands.service';
+import { isCommandMessage } from '../commands/commands.service';
+import { enqueueCommand } from '../commands/command-queue.service';
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
@@ -32,6 +30,7 @@ export const getMessages = async (
       'message.tag',
       'message.iv',
       'message.isBot',
+      'message.commandStatus',
       'message.createdAt',
     ])
     .addSelect([
@@ -163,29 +162,40 @@ export const createMessage = async (
     });
   }
 
-  // Check if the message is a command and execute it
+  // Check if the message is a command and enqueue it for processing
   if (plaintext && isCommandMessage(plaintext)) {
     try {
-      const botMessageBody = await handleCommandExecution({
+      // Create bot message immediately with 'processing' status
+      const botMessage = await createBotMessage(
+        channelId,
+        'Processing your command...',
+        'processing',
+      );
+
+      // Enqueue command for background processing
+      await enqueueCommand({
         channelId,
         messageBody: plaintext,
+        botMessageId: botMessage.id,
       });
-
-      // Create and send bot response
-      await createBotMessage(channelId, botMessageBody);
     } catch (error) {
-      console.error('Error handling command execution', error);
+      console.error('Error enqueueing command', error);
     }
   }
 
   return messagePayload;
 };
 
-const createBotMessage = async (channelId: string, body: string) => {
+const createBotMessage = async (
+  channelId: string,
+  body: string,
+  commandStatus: 'processing' | 'completed' | 'failed' | null = null,
+) => {
   const messageData: Partial<Message> = {
     userId: null,
     isBot: true,
     channelId,
+    commandStatus,
   };
 
   const plaintext = sanitizeText(body);
@@ -209,6 +219,7 @@ const createBotMessage = async (channelId: string, body: string) => {
     images: [],
     user: null,
     isBot: true,
+    commandStatus,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
@@ -217,6 +228,63 @@ const createBotMessage = async (channelId: string, body: string) => {
       type: PubSubMessageType.MESSAGE,
       message: messagePayload,
     });
+  }
+
+  return messagePayload;
+};
+
+export const updateBotMessage = async (
+  messageId: string,
+  updates: {
+    body: string;
+    commandStatus: 'processing' | 'completed' | 'failed';
+  },
+) => {
+  const message = await messageRepository.findOne({
+    where: { id: messageId, isBot: true },
+  });
+
+  if (!message) {
+    throw new Error('Bot message not found');
+  }
+
+  const plaintext = sanitizeText(updates.body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(message.channelId);
+
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
+
+    message.ciphertext = ciphertext;
+    message.tag = tag;
+    message.iv = iv;
+    message.keyId = channelKey.id;
+  }
+
+  message.commandStatus = updates.commandStatus;
+
+  const updatedMessage = await messageRepository.save(message);
+
+  const messagePayload = {
+    ...updatedMessage,
+    body: plaintext,
+    images: [],
+    user: null,
+    isBot: true,
+    commandStatus: updates.commandStatus,
+  };
+
+  const channelMembers = await channelsService.getChannelMembers(
+    message.channelId,
+  );
+  for (const member of channelMembers) {
+    await pubSubService.publish(
+      getNewMessageKey(message.channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   return messagePayload;

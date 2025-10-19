@@ -43,6 +43,7 @@
     "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.0.2",
+    "bull": "^4.16.5",
     "chroma-js": "^3.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -91,6 +92,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",
     "@types/bcrypt": "^5.0.2",
+    "@types/bull": "^3.15.9",
     "@types/chroma-js": "^2.4.5",
     "@types/color-hash": "^2.0.0",
     "@types/cors": "^2.8.17",

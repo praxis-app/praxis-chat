@@ -8,6 +8,7 @@ export interface MessageRes {
   user: UserRes | null;
   userId: string | null;
   isBot: boolean;
+  commandStatus?: 'processing' | 'completed' | 'failed' | null;
   createdAt: string;
 }
 

@@ -63,6 +63,7 @@ describe('ChannelFeed', () => {
       },
       userId: 'user1',
       isBot: false,
+      commandStatus: null,
       createdAt: '2023-12-01T12:00:00Z',
     },
     {
@@ -76,6 +77,7 @@ describe('ChannelFeed', () => {
       },
       userId: 'user2',
       isBot: false,
+      commandStatus: null,
       createdAt: '2023-12-01T12:05:00Z',
     },
   ];

@@ -105,7 +105,12 @@ export const ChannelFeed = ({
         if (item.type === 'message') {
           if (item.isBot) {
             return (
-              <BotMessage key={`message-${item.id}`}>{item.body}</BotMessage>
+              <BotMessage
+                key={`message-${item.id}`}
+                isProcessing={item.commandStatus === 'processing'}
+              >
+                {item.body}
+              </BotMessage>
             );
           }
           return (

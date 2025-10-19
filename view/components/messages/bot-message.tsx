@@ -13,6 +13,7 @@ interface Props {
   children: ReactNode;
   currentUserOnly?: boolean;
   onDismiss?: () => void;
+  isProcessing?: boolean;
 }
 
 export const BotMessage = ({
@@ -20,6 +21,7 @@ export const BotMessage = ({
   bodyClassName,
   currentUserOnly,
   onDismiss,
+  isProcessing = false,
 }: Props) => {
   const { t } = useTranslation();
   const formattedDate = timeAgo(Date());
@@ -40,7 +42,22 @@ export const BotMessage = ({
           </div>
         </div>
 
-        <div className={cn(bodyClassName)}>{children}</div>
+        <div className={cn(bodyClassName)}>
+          {isProcessing ? (
+            <div className="flex items-center gap-2">
+              <div className="text-muted-foreground animate-pulse">
+                {children}
+              </div>
+              <div className="flex gap-1">
+                <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]"></div>
+                <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]"></div>
+                <div className="bg-muted-foreground h-2 w-2 animate-bounce rounded-full"></div>
+              </div>
+            </div>
+          ) : (
+            children
+          )}
+        </div>
 
         {(currentUserOnly || onDismiss) && (
           <div className="flex items-center gap-1 pt-1">

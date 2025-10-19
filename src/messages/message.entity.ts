@@ -41,6 +41,9 @@ export class Message {
   @Column({ default: false })
   isBot: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  commandStatus: 'processing' | 'completed' | 'failed' | null;
+
   @ManyToOne(() => ChannelKey, (key) => key.messages)
   key?: ChannelKey;
 
