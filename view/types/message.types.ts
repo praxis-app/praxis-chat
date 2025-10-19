@@ -5,7 +5,9 @@ export interface MessageRes {
   id: string;
   body: string;
   images?: ImageRes[];
-  user: UserRes;
+  user: UserRes | null;
+  userId: string | null;
+  isBot: boolean;
   createdAt: string;
 }
 

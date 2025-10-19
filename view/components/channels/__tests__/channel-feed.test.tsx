@@ -61,6 +61,8 @@ describe('ChannelFeed', () => {
         name: 'John Doe',
         profilePicture: null,
       },
+      userId: 'user1',
+      isBot: false,
       createdAt: '2023-12-01T12:00:00Z',
     },
     {
@@ -72,6 +74,8 @@ describe('ChannelFeed', () => {
         name: 'Jane Smith',
         profilePicture: null,
       },
+      userId: 'user2',
+      isBot: false,
       createdAt: '2023-12-01T12:05:00Z',
     },
   ];

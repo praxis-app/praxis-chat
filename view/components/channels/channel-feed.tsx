@@ -14,6 +14,7 @@ import {
   useState,
 } from 'react';
 import { WelcomeMessage } from '../invites/welcome-message';
+import { BotMessage } from '../messages/bot-message';
 import { Message } from '../messages/message';
 import { InlinePoll } from '../polls/inline-poll';
 
@@ -102,6 +103,11 @@ export const ChannelFeed = ({
 
       {feed.map((item) => {
         if (item.type === 'message') {
+          if (item.isBot) {
+            return (
+              <BotMessage key={`message-${item.id}`}>{item.body}</BotMessage>
+            );
+          }
           return (
             <Message
               key={`message-${item.id}`}

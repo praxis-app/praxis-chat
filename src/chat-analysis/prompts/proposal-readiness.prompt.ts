@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { PromptTemplate } from '../ollama/ollama.types';
 
 export const proposalReadinessSchema = z.object({
@@ -47,5 +46,18 @@ export const PROPOSAL_READINESS_PROMPT: PromptTemplate = {
     repeat_penalty: 1.2, // Prevent repetition
     top_k: 20, // Reduce nonsense
   },
-  format: zodToJsonSchema(proposalReadinessSchema),
+  format: {
+    type: 'object',
+    properties: {
+      ready: {
+        type: 'boolean',
+        description: 'Whether the conversation is ready for a proposal',
+      },
+      reason: {
+        type: 'string',
+        description: 'A short explanation for the readiness',
+      },
+    },
+    required: ['ready', 'reason'],
+  },
 };

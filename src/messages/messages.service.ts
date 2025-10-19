@@ -9,6 +9,10 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
+import {
+  handleCommandExecution,
+  isCommandMessage,
+} from '../commands/commands.service';
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
@@ -27,6 +31,7 @@ export const getMessages = async (
       'message.keyId',
       'message.tag',
       'message.iv',
+      'message.isBot',
       'message.createdAt',
     ])
     .addSelect([
@@ -53,9 +58,11 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const profilePictures = await usersService.getUserProfilePicturesMap(
-    messages.map((message) => message.user.id),
-  );
+  const userIds = messages
+    .filter((message) => message.user)
+    .map((message) => message.user!.id);
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(userIds);
 
   const shapedMessages = messages.map(
     ({ ciphertext, tag, iv, keyId, ...message }) => {
@@ -72,8 +79,12 @@ export const getMessages = async (
         createdAt: image.createdAt,
       }));
 
-      const profilePicture = profilePictures[message.user.id];
-      const user = { ...message.user, profilePicture };
+      const user = message.user
+        ? {
+            ...message.user,
+            profilePicture: profilePictures[message.user.id],
+          }
+        : null;
 
       return { ...message, body, images, user };
     },
@@ -146,6 +157,62 @@ export const createMessage = async (
     if (member.userId === user.id) {
       continue;
     }
+    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
+      type: PubSubMessageType.MESSAGE,
+      message: messagePayload,
+    });
+  }
+
+  // Check if the message is a command and execute it
+  if (plaintext && isCommandMessage(plaintext)) {
+    try {
+      const botMessageBody = await handleCommandExecution({
+        channelId,
+        messageBody: plaintext,
+      });
+
+      // Create and send bot response
+      await createBotMessage(channelId, botMessageBody);
+    } catch (error) {
+      console.error('Error handling command execution', error);
+    }
+  }
+
+  return messagePayload;
+};
+
+const createBotMessage = async (channelId: string, body: string) => {
+  const messageData: Partial<Message> = {
+    userId: null,
+    isBot: true,
+    channelId,
+  };
+
+  const plaintext = sanitizeText(body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(channelId);
+
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
+
+    messageData.keyId = channelKey.id;
+    messageData.ciphertext = ciphertext;
+    messageData.tag = tag;
+    messageData.iv = iv;
+  }
+
+  const message = await messageRepository.save(messageData);
+
+  const messagePayload = {
+    ...message,
+    body: plaintext,
+    images: [],
+    user: null,
+    isBot: true,
+  };
+
+  const channelMembers = await channelsService.getChannelMembers(channelId);
+  for (const member of channelMembers) {
     await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
       type: PubSubMessageType.MESSAGE,
       message: messagePayload,

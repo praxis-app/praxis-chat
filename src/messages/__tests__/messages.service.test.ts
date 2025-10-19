@@ -159,6 +159,7 @@ describe('Messages Service', () => {
         'message.keyId',
         'message.tag',
         'message.iv',
+        'message.isBot',
         'message.createdAt',
       ]);
       expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith([

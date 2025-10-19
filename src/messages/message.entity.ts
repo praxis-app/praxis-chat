@@ -31,11 +31,15 @@ export class Message {
 
   @ManyToOne(() => User, (user) => user.messages, {
     onDelete: 'CASCADE',
+    nullable: true,
   })
-  user: User;
+  user: User | null;
 
-  @Column()
-  userId: string;
+  @Column({ nullable: true })
+  userId: string | null;
+
+  @Column({ default: false })
+  isBot: boolean;
 
   @ManyToOne(() => ChannelKey, (key) => key.messages)
   key?: ChannelKey;

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { PromptTemplate } from '../ollama/ollama.types';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
 export const disagreementsSchema = z.object({
   disagreements: z.string().array().describe('An array of disagreements'),
@@ -35,5 +34,15 @@ export const DISAGREEMENTS_PROMPT: PromptTemplate = {
     top_k: 10, // Narrow choices for structured output
     top_p: 0.8, // Further restrict token selection
   },
-  format: zodToJsonSchema(disagreementsSchema),
+  format: {
+    type: 'object',
+    properties: {
+      disagreements: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'An array of disagreements',
+      },
+    },
+    required: ['disagreements'],
+  },
 };

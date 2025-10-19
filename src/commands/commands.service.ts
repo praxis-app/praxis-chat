@@ -5,7 +5,6 @@ import {
   handleDraftProposalCommand,
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
-import { getMessageBody } from '../matrix/matrix.utils';
 
 enum Commands {
   Summary = '/summary',
@@ -15,12 +14,17 @@ enum Commands {
   DraftProposal = '/draft-proposal',
 }
 
+interface CommandContext {
+  channelId: string;
+  messageBody: string;
+}
+
 export const handleCommandExecution = async (
-  event: Record<string, unknown>,
-) => {
+  context: CommandContext,
+): Promise<string> => {
   const commandHandlers: Record<
     Commands,
-    (event: Record<string, unknown>) => Promise<void>
+    (context: CommandContext) => Promise<string>
   > = {
     [Commands.Summary]: handleSummaryCommand,
     [Commands.Consensus]: handleConsensusCommand,
@@ -29,14 +33,13 @@ export const handleCommandExecution = async (
     [Commands.DraftProposal]: handleDraftProposalCommand,
   };
 
-  const body = getMessageBody(event);
   const command = Object.values(Commands).find((command) =>
-    body?.toLowerCase().startsWith(command),
+    context.messageBody?.toLowerCase().startsWith(command),
   );
   if (!command) {
     throw new Error('No valid command found in message');
   }
-  await commandHandlers[command](event);
+  return await commandHandlers[command](context);
 };
 
 export const isCommandMessage = (body: string) => {
