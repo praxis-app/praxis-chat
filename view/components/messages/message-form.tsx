@@ -126,7 +126,12 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               if (alreadyExists) {
                 return page;
               }
-              return { feed: [newFeedItem, ...page.feed] };
+              const sortedFeed = [newFeedItem, ...page.feed].sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              );
+              return { feed: sortedFeed };
             }
             return page;
           });
