@@ -1,12 +1,12 @@
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
 import { timeAgo } from '@/lib/time.utils';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import appIconImg from '../../assets/images/app-icon.png';
-import { UserAvatar } from '../users/user-avatar';
 import { MdVisibility } from 'react-icons/md';
-import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
+import appIconImg from '../../assets/images/app-icon.png';
 import { Button } from '../ui/button';
+import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
   bodyClassName?: string;
@@ -14,6 +14,7 @@ interface Props {
   currentUserOnly?: boolean;
   onDismiss?: () => void;
   isProcessing?: boolean;
+  createdAt?: string;
 }
 
 export const BotMessage = ({
@@ -22,9 +23,10 @@ export const BotMessage = ({
   currentUserOnly,
   onDismiss,
   isProcessing = false,
+  createdAt = new Date().toISOString(),
 }: Props) => {
   const { t } = useTranslation();
-  const formattedDate = timeAgo(Date());
+  const formattedDate = timeAgo(createdAt);
 
   return (
     <div className="flex gap-4 pt-4">

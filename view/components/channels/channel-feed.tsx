@@ -108,6 +108,7 @@ export const ChannelFeed = ({
               <BotMessage
                 key={`message-${item.id}`}
                 isProcessing={item.commandStatus === 'processing'}
+                createdAt={item.createdAt}
               >
                 {item.body}
               </BotMessage>
