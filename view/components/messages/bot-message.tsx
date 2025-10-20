@@ -5,16 +5,17 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdVisibility } from 'react-icons/md';
 import appIconImg from '../../assets/images/app-icon.png';
+import { MessageRes } from '../../types/message.types';
+import { FormattedText } from '../shared/formatted-text';
 import { Button } from '../ui/button';
 import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
   bodyClassName?: string;
-  children: ReactNode;
+  children?: ReactNode;
   currentUserOnly?: boolean;
   onDismiss?: () => void;
-  isProcessing?: boolean;
-  createdAt?: string;
+  message?: MessageRes;
 }
 
 export const BotMessage = ({
@@ -22,11 +23,29 @@ export const BotMessage = ({
   bodyClassName,
   currentUserOnly,
   onDismiss,
-  isProcessing = false,
-  createdAt = new Date().toISOString(),
+  message,
 }: Props) => {
   const { t } = useTranslation();
-  const formattedDate = timeAgo(createdAt);
+  const formattedDate = timeAgo(message?.createdAt || Date());
+
+  const renderContent = () => {
+    if (children) {
+      return children;
+    }
+    if (!message) {
+      return null;
+    }
+    return (
+      <div
+        className={cn(
+          message.commandStatus === 'processing' &&
+            'text-muted-foreground animate-pulse',
+        )}
+      >
+        <FormattedText text={message.body} />
+      </div>
+    );
+  };
 
   return (
     <div className="flex gap-4 pt-4">
@@ -44,15 +63,7 @@ export const BotMessage = ({
           </div>
         </div>
 
-        <div className={cn(bodyClassName)}>
-          {isProcessing ? (
-            <div className="text-muted-foreground animate-pulse">
-              {children}
-            </div>
-          ) : (
-            children
-          )}
-        </div>
+        <div className={cn(bodyClassName)}>{renderContent()}</div>
 
         {(currentUserOnly || onDismiss) && (
           <div className="flex items-center gap-1 pt-1">

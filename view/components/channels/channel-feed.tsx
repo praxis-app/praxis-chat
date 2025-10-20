@@ -104,15 +104,7 @@ export const ChannelFeed = ({
       {feed.map((item) => {
         if (item.type === 'message') {
           if (item.isBot) {
-            return (
-              <BotMessage
-                key={`message-${item.id}`}
-                isProcessing={item.commandStatus === 'processing'}
-                createdAt={item.createdAt}
-              >
-                {item.body}
-              </BotMessage>
-            );
+            return <BotMessage key={`message-${item.id}`} message={item} />;
           }
           return (
             <Message
