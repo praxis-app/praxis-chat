@@ -48,7 +48,7 @@ export const BotMessage = ({
   };
 
   return (
-    <div className="flex gap-4 pt-4">
+    <div className="flex gap-4">
       <UserAvatar
         name={t('messages.names.praxisBot')}
         imageSrc={appIconImg}
