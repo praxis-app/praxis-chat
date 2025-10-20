@@ -15,6 +15,7 @@
     "types": "tsc -b",
     "test": "vitest run --config vitest.src.config.mts",
     "test:client": "vitest run --config vite.config.mts",
+    "test:llm": "vitest run --config src/chat-analysis/__tests__/vitest.llm.config.mts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
   },
