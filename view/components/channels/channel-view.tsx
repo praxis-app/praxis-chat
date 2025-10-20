@@ -79,7 +79,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         return;
       }
 
-      // Update cache with new message, images are placeholders
+      // Update cache with new message or update existing bot message
       if (body.type === PubSubMessageType.MESSAGE) {
         const newFeedItem: FeedItemRes = {
           ...body.message,
@@ -95,6 +95,19 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
               };
             }
             const pages = oldData.pages.map((page, index) => {
+              // Check if message already exists (for bot message updates)
+              const existingIndex = page.feed.findIndex(
+                (item) => item.type === 'message' && item.id === newFeedItem.id,
+              );
+
+              if (existingIndex !== -1) {
+                // Update existing message (bot message with LLM result)
+                const updatedFeed = [...page.feed];
+                updatedFeed[existingIndex] = newFeedItem;
+                return { feed: updatedFeed };
+              }
+
+              // Add new message to first page only
               if (index === 0) {
                 return {
                   feed: [newFeedItem, ...page.feed],
