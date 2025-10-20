@@ -35,16 +35,14 @@ export const BotMessage = ({
     if (!message) {
       return null;
     }
-    return (
-      <div
-        className={cn(
-          message.commandStatus === 'processing' &&
-            'text-muted-foreground animate-pulse',
-        )}
-      >
-        <FormattedText text={message.body} />
-      </div>
-    );
+    if (message.commandStatus === 'processing') {
+      return (
+        <div className="text-muted-foreground animate-pulse">
+          {t('messages.prompts.processingCommand')}
+        </div>
+      );
+    }
+    return <FormattedText text={message.body} />;
   };
 
   return (
