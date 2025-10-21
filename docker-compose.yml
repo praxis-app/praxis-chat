@@ -61,8 +61,19 @@ services:
     volumes:
       - cache:/data
 
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    ports:
+      - ${OLLAMA_PORT}:${OLLAMA_PORT}
+    volumes:
+      - ollama:/root/.ollama
+    restart: always
+    env_file: .env
+
 volumes:
   pgdata:
   content:
   cache:
     driver: local
+  ollama:

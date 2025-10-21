@@ -1,7 +1,12 @@
-import ollama from 'ollama';
+import { Ollama } from 'ollama';
 import { Model, PromptConfig } from './ollama.types';
 import { INIT_OLLAMA_PROMPT } from './prompts/init-ollama.prompt';
 import { OLLAMA_HEALTH_PROMPT } from './prompts/ollama-health.prompt';
+
+// Configure Ollama client to use Docker service
+const ollama = new Ollama({
+  host: `${process.env.OLLAMA_HOST}:${process.env.OLLAMA_PORT}`,
+});
 
 /**
  * In-memory cache of verified Ollama models.
