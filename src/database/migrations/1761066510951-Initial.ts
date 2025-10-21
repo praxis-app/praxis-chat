@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1760569615876 implements MigrationInterface {
-  name = 'Initial1760569615876';
+export class Initial1761066510951 implements MigrationInterface {
+  name = 'Initial1761066510951';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -291,12 +291,17 @@ export class Initial1760569615876 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
+            CREATE TYPE "public"."message_commandstatus_enum" AS ENUM('processing', 'completed', 'failed')
+        `);
+    await queryRunner.query(`
             CREATE TABLE "message" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "ciphertext" bytea,
                 "iv" bytea,
                 "tag" bytea,
-                "userId" uuid NOT NULL,
+                "userId" uuid,
+                "isBot" boolean NOT NULL DEFAULT false,
+                "commandStatus" "public"."message_commandstatus_enum",
                 "keyId" uuid,
                 "channelId" uuid NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
@@ -563,6 +568,9 @@ export class Initial1760569615876 implements MigrationInterface {
         `);
     await queryRunner.query(`
             DROP TABLE "message"
+        `);
+    await queryRunner.query(`
+            DROP TYPE "public"."message_commandstatus_enum"
         `);
     await queryRunner.query(`
             DROP TABLE "channel"
