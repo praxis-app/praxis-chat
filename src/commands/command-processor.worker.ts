@@ -4,6 +4,10 @@ import { CommandJobData, commandQueue } from './command-queue.service';
 import * as messagesService from '../messages/messages.service';
 
 export const startCommandProcessor = () => {
+  if (process.env.ENABLE_LLM_FEATURES !== 'true') {
+    return;
+  }
+
   commandQueue.process(async (job: Job<CommandJobData>) => {
     const { channelId, messageBody, botMessageId } = job.data;
 
