@@ -7,10 +7,6 @@ export const startCommandProcessor = () => {
   commandQueue.process(async (job: Job<CommandJobData>) => {
     const { channelId, messageBody, botMessageId } = job.data;
 
-    console.info(
-      `Processing command: ${messageBody.split(' ')[0]} for channel ${channelId}`,
-    );
-
     try {
       const result = await handleCommandExecution({
         channelId,
@@ -21,8 +17,6 @@ export const startCommandProcessor = () => {
         body: result,
         commandStatus: 'completed',
       });
-
-      console.info(`Command completed: ${botMessageId}`);
 
       return { success: true, result };
     } catch (error) {
@@ -36,11 +30,4 @@ export const startCommandProcessor = () => {
       throw error;
     }
   });
-
-  console.info('Command processor worker started');
-};
-
-export const stopCommandProcessor = async () => {
-  await commandQueue.close();
-  console.info('Command processor worker stopped');
 };

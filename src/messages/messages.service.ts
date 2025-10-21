@@ -162,17 +162,14 @@ export const createMessage = async (
     });
   }
 
-  // Check if the message is a command and enqueue it for processing
   if (plaintext && isCommandMessage(plaintext)) {
     try {
-      // Create bot message immediately with 'processing' status
       const botMessage = await createBotMessage(
         channelId,
         'Processing your command...',
         'processing',
       );
 
-      // Enqueue command for background processing
       await enqueueCommand({
         channelId,
         messageBody: plaintext,
