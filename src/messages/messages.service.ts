@@ -162,7 +162,11 @@ export const createMessage = async (
     });
   }
 
-  if (plaintext && isCommandMessage(plaintext)) {
+  if (
+    plaintext &&
+    isCommandMessage(plaintext) &&
+    process.env.ENABLE_LLM_FEATURES === 'true'
+  ) {
     try {
       const botMessage = await createBotMessage(
         channelId,
