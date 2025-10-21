@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { Channel } from '../channels/entities/channel.entity';
+import { COMMAND_STATUS } from '../commands/command.constants';
+import { CommandStatus } from '../commands/command.types';
 import { Image } from '../images/entities/image.entity';
 import { User } from '../users/user.entity';
 
@@ -41,8 +43,8 @@ export class Message {
   @Column({ default: false })
   isBot: boolean;
 
-  @Column({ type: 'varchar', nullable: true })
-  commandStatus: 'processing' | 'completed' | 'failed' | null;
+  @Column({ type: 'enum', enum: COMMAND_STATUS, nullable: true })
+  commandStatus: CommandStatus | null;
 
   @ManyToOne(() => ChannelKey, (key) => key.messages)
   key?: ChannelKey;
