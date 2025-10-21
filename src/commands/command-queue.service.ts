@@ -3,8 +3,6 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const REDIS_URL = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
-
 export interface CommandJobData {
   channelId: string;
   messageBody: string;
@@ -12,7 +10,11 @@ export interface CommandJobData {
 }
 
 export const commandQueue = new Bull<CommandJobData>('command-processing', {
-  redis: REDIS_URL,
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT ?? '6379'),
+    password: process.env.REDIS_PASSWORD,
+  },
   defaultJobOptions: {
     attempts: 3,
     backoff: {
