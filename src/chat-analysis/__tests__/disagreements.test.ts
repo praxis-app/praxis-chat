@@ -24,23 +24,6 @@ const scenarios: TestScenario[] = [
     ],
     expectedDisagreement: true,
   },
-  // TODO: Add tests back after fixing issues with gpt-oss:20b model
-  // {
-  //   description: 'should not identify disagreements when participants agree',
-  //   messages: [
-  //     { sender: 'Alice', body: 'I think this proposal is excellent.' },
-  //     { sender: 'Bob', body: 'I agree, it covers all the key points.' },
-  //     { sender: 'Charlie', body: 'Yes, I’m on board with this.' },
-  //   ],
-  //   expectedDisagreementKeywords: [],
-  //   expectedDisagreement: false,
-  // },
-  // {
-  //   description: 'should handle empty messages gracefully',
-  //   messages: [],
-  //   expectedDisagreementKeywords: [],
-  //   expectedDisagreement: false,
-  // },
 ];
 
 describe('getDisagreements', () => {
