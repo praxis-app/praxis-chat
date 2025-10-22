@@ -32,7 +32,6 @@ export const handleSummaryCommand = async (
       return 'No messages found in this channel to summarize.';
     }
 
-    console.info('🔍 Fetching chat summary');
     const start = Date.now();
     const summary = await getChatSummary({ messages });
     const message = `${summary} (${Date.now() - start}ms)`;
@@ -60,7 +59,6 @@ export const handleConsensusCommand = async (
       return 'No messages found in this channel to check for consensus.';
     }
 
-    console.info('🔍 Checking for consensus');
     const start = Date.now();
     const { isReady, reason, error } = await isReadyForProposal({ messages });
     let message = `${isReady ? '✅' : '❌'} - ${reason} (${Date.now() - start}ms)`;
@@ -91,7 +89,6 @@ export const handleDisagreementsCommand = async (
       return 'No messages found in this channel to check for disagreements.';
     }
 
-    console.info('🔍 Checking for disagreements');
     const start = Date.now();
     const { disagreements, error } = await getDisagreements({ messages });
 
@@ -131,7 +128,6 @@ export const handleCompromisesCommand = async (
       return 'No messages found in this channel to check for compromises.';
     }
 
-    console.info('🔍 Checking for compromises');
     const start = Date.now();
     const { compromises, error } = await getCompromises({ messages });
 
@@ -171,7 +167,6 @@ export const handleDraftProposalCommand = async (
       return 'No messages found in this channel to draft a proposal.';
     }
 
-    console.info('✍️ Drafting proposal');
     const start = Date.now();
     const { title, description, error } = await draftProposal({ messages });
     let message = `[Draft proposal] ${title}\n${description} (${Date.now() - start}ms)`;
@@ -186,10 +181,7 @@ export const handleDraftProposalCommand = async (
   }
 };
 
-const fetchChannelMessages = async (
-  channelId: string,
-  limit?: number,
-) => {
+const fetchChannelMessages = async (channelId: string, limit?: number) => {
   const effectiveLimit = limit || MAX_MESSAGE_LIMIT;
   const messages = await messagesService.getMessages(
     channelId,
