@@ -24,6 +24,7 @@ dotenv.config();
 
   await dataSource.initialize();
   await cacheService.initializeCache();
+  await appService.initializeApp();
   appService.startCronJobs();
   startCommandProcessor();
 

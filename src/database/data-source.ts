@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
+import { Bot } from '../bots/bot.entity';
 import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
@@ -32,6 +33,7 @@ export const dataSource = new DataSource({
   port: parseInt(process.env.DB_PORT as string),
   synchronize: process.env.NODE_ENV === 'development',
   entities: [
+    Bot,
     Channel,
     ChannelKey,
     ChannelMember,
