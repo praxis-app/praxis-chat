@@ -26,7 +26,7 @@ export const commandQueue = new Bull<CommandJobData>('command-processing', {
   },
 });
 
-export const enqueueCommand = async (data: CommandJobData) => {
+export const queueCommandJob = async (data: CommandJobData) => {
   const job = await commandQueue.add(data, {
     priority: 1,
   });

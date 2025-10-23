@@ -1,5 +1,9 @@
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
+import { IsNull, Not } from 'typeorm';
+import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
+import * as commandQueueService from '../commands/command-queue.service';
+import * as commandsService from '../commands/commands.service';
 import { sanitizeText } from '../common/common.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
@@ -9,8 +13,6 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
-import { isCommandMessage } from '../commands/commands.service';
-import { enqueueCommand } from '../commands/command-queue.service';
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
@@ -29,7 +31,7 @@ export const getMessages = async (
       'message.keyId',
       'message.tag',
       'message.iv',
-      'message.isBot',
+      'message.botId',
       'message.commandStatus',
       'message.createdAt',
     ])
@@ -44,6 +46,8 @@ export const getMessages = async (
       'messageImage.createdAt',
     ])
     .leftJoin('message.user', 'messageUser')
+    .leftJoin('message.bot', 'messageBot')
+    .addSelect(['messageBot.id', 'messageBot.name', 'messageBot.displayName'])
     .leftJoin('message.images', 'messageImage')
     .where('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
@@ -85,7 +89,15 @@ export const getMessages = async (
           }
         : null;
 
-      return { ...message, body, images, user };
+      const bot = message.bot
+        ? {
+            id: message.bot.id,
+            name: message.bot.name,
+            displayName: message.bot.displayName,
+          }
+        : null;
+
+      return { ...message, body, images, user, bot };
     },
   );
 
@@ -149,6 +161,7 @@ export const createMessage = async (
       displayName: user.displayName,
       profilePicture,
     },
+    bot: null,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
@@ -164,7 +177,7 @@ export const createMessage = async (
 
   if (
     plaintext &&
-    isCommandMessage(plaintext) &&
+    commandsService.isCommandMessage(plaintext) &&
     process.env.ENABLE_LLM_FEATURES === 'true'
   ) {
     try {
@@ -174,7 +187,7 @@ export const createMessage = async (
         'processing',
       );
 
-      await enqueueCommand({
+      await commandQueueService.queueCommandJob({
         channelId,
         messageBody: plaintext,
         botMessageId: botMessage.id,
@@ -192,9 +205,10 @@ const createBotMessage = async (
   body: string,
   commandStatus: 'processing' | 'completed' | 'failed' | null = null,
 ) => {
+  const defaultBot = await getDefaultBot();
   const messageData: Partial<Message> = {
     userId: null,
-    isBot: true,
+    botId: defaultBot.id,
     channelId,
     commandStatus,
   };
@@ -214,13 +228,19 @@ const createBotMessage = async (
 
   const message = await messageRepository.save(messageData);
 
+  const bot = {
+    id: defaultBot.id,
+    name: defaultBot.name,
+    displayName: defaultBot.displayName,
+  };
+
   const messagePayload = {
     ...message,
     body: plaintext,
     images: [],
     user: null,
-    isBot: true,
     commandStatus,
+    bot,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
@@ -242,7 +262,8 @@ export const updateBotMessage = async (
   },
 ) => {
   const message = await messageRepository.findOne({
-    where: { id: messageId, isBot: true },
+    where: { id: messageId, botId: Not(IsNull()) },
+    relations: ['bot'],
   });
 
   if (!message) {
@@ -266,13 +287,21 @@ export const updateBotMessage = async (
 
   const updatedMessage = await messageRepository.save(message);
 
+  const bot = message.bot
+    ? {
+        id: message.bot.id,
+        name: message.bot.name,
+        displayName: message.bot.displayName,
+      }
+    : null;
+
   const messagePayload = {
     ...updatedMessage,
     body: plaintext,
     images: [],
     user: null,
-    isBot: true,
     commandStatus: updates.commandStatus,
+    bot,
   };
 
   const channelMembers = await channelsService.getChannelMembers(
