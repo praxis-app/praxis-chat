@@ -50,9 +50,6 @@ export class Message {
   @Column({ nullable: true })
   botId: string | null;
 
-  @Column({ default: false })
-  isBot: boolean;
-
   @Column({ type: 'enum', enum: COMMAND_STATUS, nullable: true })
   commandStatus: CommandStatus | null;
 

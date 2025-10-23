@@ -204,7 +204,7 @@ const prepareMessages = (
         result: { sender: string; body: string }[],
         message: (typeof messages)[0],
       ) => {
-        if (message.isBot || !message.body || !message.user) {
+        if (message.bot || !message.body || !message.user) {
           return result;
         }
 
