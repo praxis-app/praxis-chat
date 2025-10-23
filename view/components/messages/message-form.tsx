@@ -125,11 +125,13 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               id: meData.user.id,
               name: meData.user.name,
               profilePicture: meData.user.profilePicture,
-            }
+          }
           : null,
         userId: meData?.user?.id ?? null,
-        isBot: false,
+        botId: null,
+        bot: null,
         createdAt: new Date().toISOString(),
+        commandStatus: null,
       };
 
       const optimisticFeedItem: FeedItemRes = {

@@ -26,6 +26,10 @@ export const BotMessage = ({
   message,
 }: Props) => {
   const { t } = useTranslation();
+  const botName =
+    message?.bot?.displayName ||
+    message?.bot?.name ||
+    t('messages.names.praxisBot');
   const formattedDate = timeAgo(message?.createdAt || Date());
 
   const renderContent = () => {
@@ -42,20 +46,23 @@ export const BotMessage = ({
         </div>
       );
     }
+    if (!message.body) {
+      return null;
+    }
     return <FormattedText text={message.body} />;
   };
 
   return (
     <div className="flex gap-4">
       <UserAvatar
-        name={t('messages.names.praxisBot')}
+        name={botName}
         imageSrc={appIconImg}
         className="mt-0.5"
       />
 
       <div>
         <div className="flex items-center gap-1.5">
-          <div className="font-medium">{t('messages.names.praxisBot')}</div>
+          <div className="font-medium">{botName}</div>
           <div className="text-muted-foreground text-sm font-light">
             {formattedDate}
           </div>
