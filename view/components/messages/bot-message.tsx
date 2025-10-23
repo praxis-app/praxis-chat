@@ -1,7 +1,7 @@
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
 import { timeAgo } from '@/lib/time.utils';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdVisibility } from 'react-icons/md';
 import appIconImg from '../../assets/images/app-icon.png';
@@ -17,6 +17,48 @@ interface Props {
   onDismiss?: () => void;
   message?: MessageRes;
 }
+
+// TODO: Ensure this actually works
+const generatePulseColor = () => {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 70 + Math.random() * 20;
+  const lightness = 45 + Math.random() * 10;
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+};
+
+const ProcessingCommandMessage = ({ text }: { text: string }) => {
+  const [pulseColor, setPulseColor] = useState(generatePulseColor);
+  const transitionDuration = useMemo(
+    () => `${600 + Math.random() * 300}ms`,
+    [],
+  );
+  const glowColor = useMemo(
+    () => pulseColor.replace('hsl(', 'hsla(').replace(')', ', 0.35)'),
+    [pulseColor],
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseColor(generatePulseColor());
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all ease-in-out"
+      style={{
+        backgroundColor: pulseColor,
+        boxShadow: `0 0 20px -6px ${glowColor}`,
+        transitionDuration,
+      }}
+    >
+      {text}
+    </div>
+  );
+};
 
 export const BotMessage = ({
   children,
@@ -41,9 +83,9 @@ export const BotMessage = ({
     }
     if (message.commandStatus === 'processing') {
       return (
-        <div className="text-muted-foreground animate-pulse">
-          {t('messages.prompts.processingCommand')}
-        </div>
+        <ProcessingCommandMessage
+          text={t('messages.prompts.processingCommand')}
+        />
       );
     }
     if (!message.body) {
@@ -54,11 +96,7 @@ export const BotMessage = ({
 
   return (
     <div className="flex gap-4">
-      <UserAvatar
-        name={botName}
-        imageSrc={appIconImg}
-        className="mt-0.5"
-      />
+      <UserAvatar name={botName} imageSrc={appIconImg} className="mt-0.5" />
 
       <div>
         <div className="flex items-center gap-1.5">
