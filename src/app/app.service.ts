@@ -1,8 +1,8 @@
-import { ensureDefaultBotExists } from '../bots/bots.service';
+import * as botsService from '../bots/bots.service';
 import { rotateChannelKeysJob } from '../channels/cron/rotate-channel-keys.job';
 
 export const initializeApp = async () => {
-  await ensureDefaultBotExists();
+  await botsService.ensureDefaultBotExists();
 };
 
 export const startCronJobs = () => {
