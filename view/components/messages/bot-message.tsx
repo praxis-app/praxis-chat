@@ -34,7 +34,7 @@ const ProcessingCommandMessage = ({ text }: { text: string }) => {
     [],
   );
   const glowColor = useMemo(
-    () => pulseColor.replace('hsl(', 'hsla(').replace(')', ', 0.35)'),
+    () => pulseColor.replace('hsl(', 'hsla(').replace(')', ', 0.6)'),
     [pulseColor],
   );
 
@@ -48,10 +48,10 @@ const ProcessingCommandMessage = ({ text }: { text: string }) => {
 
   return (
     <div
-      className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all ease-in-out"
+      className="text-foreground inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all ease-in-out"
       style={{
-        backgroundColor: pulseColor,
-        boxShadow: `0 0 20px -6px ${glowColor}`,
+        backgroundColor: 'transparent',
+        boxShadow: `0 0 0 1px ${glowColor}, 0 0 12px 3px ${glowColor}, 0 0 28px 6px ${glowColor}`,
         transitionDuration,
       }}
     >
