@@ -1,7 +1,7 @@
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
 import { timeAgo } from '@/lib/time.utils';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdVisibility } from 'react-icons/md';
 import appIconImg from '../../assets/images/app-icon.png';
@@ -27,37 +27,51 @@ const generatePulseColor = () => {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 };
 
-const ProcessingCommandMessage = ({ text }: { text: string }) => {
-  const [pulseColor, setPulseColor] = useState(generatePulseColor);
-  const transitionDuration = useMemo(
-    () => `${600 + Math.random() * 300}ms`,
-    [],
+const useProcessingGlow = (isProcessing: boolean) => {
+  const [currentColor, setCurrentColor] = useState<string | null>(() =>
+    isProcessing ? generatePulseColor() : null,
   );
-  const glowColor = useMemo(
-    () => pulseColor.replace('hsl(', 'hsla(').replace(')', ', 0.6)'),
-    [pulseColor],
-  );
+  const [transitionDuration, setTransitionDuration] = useState('250ms');
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPulseColor(generatePulseColor());
-    }, 1200);
+    if (!isProcessing) {
+      setCurrentColor(null);
+      setTransitionDuration('250ms');
+      return;
+    }
+
+    const updateGlow = () => {
+      setCurrentColor(generatePulseColor());
+      setTransitionDuration(`${600 + Math.random() * 300}ms`);
+    };
+
+    updateGlow();
+    const interval = setInterval(updateGlow, 1200);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isProcessing]);
 
-  return (
-    <div
-      className="text-foreground inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-all ease-in-out"
-      style={{
-        backgroundColor: 'transparent',
-        boxShadow: `0 0 0 1px ${glowColor}, 0 0 12px 3px ${glowColor}, 0 0 28px 6px ${glowColor}`,
-        transitionDuration,
-      }}
-    >
-      {text}
-    </div>
-  );
+  return useMemo<CSSProperties>(() => {
+    const transition = `box-shadow ${transitionDuration} ease-in-out`;
+
+    if (!isProcessing || !currentColor) {
+      return {
+        borderRadius: '0.75rem',
+        boxShadow: '0 0 0 0 transparent',
+        transition,
+      };
+    }
+
+    const glowColor = currentColor
+      .replace('hsl(', 'hsla(')
+      .replace(')', ', 0.6)');
+
+    return {
+      borderRadius: '0.75rem',
+      boxShadow: `0 0 0 1px ${glowColor}, 0 0 12px 3px ${glowColor}, 0 0 28px 6px ${glowColor}`,
+      transition,
+    };
+  }, [currentColor, isProcessing, transitionDuration]);
 };
 
 export const BotMessage = ({
@@ -68,6 +82,9 @@ export const BotMessage = ({
   message,
 }: Props) => {
   const { t } = useTranslation();
+  const isProcessing = message?.commandStatus !== 'processing';
+  const contentGlowStyle = useProcessingGlow(isProcessing);
+
   const botName =
     message?.bot?.displayName ||
     message?.bot?.name ||
@@ -81,11 +98,11 @@ export const BotMessage = ({
     if (!message) {
       return null;
     }
-    if (message.commandStatus === 'processing') {
+    if (isProcessing) {
       return (
-        <ProcessingCommandMessage
-          text={t('messages.prompts.processingCommand')}
-        />
+        <div className="text-foreground px-3 py-1.5 text-sm font-medium">
+          {t('messages.prompts.processingCommand')}
+        </div>
       );
     }
     if (!message.body) {
@@ -106,7 +123,12 @@ export const BotMessage = ({
           </div>
         </div>
 
-        <div className={cn(bodyClassName)}>{renderContent()}</div>
+        <div
+          className={cn('transition-all', bodyClassName)}
+          style={contentGlowStyle}
+        >
+          {renderContent()}
+        </div>
 
         {(currentUserOnly || onDismiss) && (
           <div className="flex items-center gap-1 pt-1">
