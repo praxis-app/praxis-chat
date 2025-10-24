@@ -10,7 +10,6 @@ import 'reflect-metadata';
 import { appRouter } from './app/app.router';
 import * as appService from './app/app.service';
 import * as cacheService from './cache/cache.service';
-import { startCommandProcessor } from './commands/command-processor.worker';
 import { dataSource } from './database/data-source';
 import { WebSocketServerWithIds } from './pub-sub/pub-sub.models';
 import * as pubSubService from './pub-sub/pub-sub.service';
@@ -25,8 +24,6 @@ dotenv.config();
   await dataSource.initialize();
   await cacheService.initializeCache();
   await appService.initializeApp();
-  appService.startCronJobs();
-  startCommandProcessor();
 
   app.use(
     helmet({
