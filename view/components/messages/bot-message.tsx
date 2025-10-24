@@ -68,7 +68,7 @@ const useProcessingGlow = (isProcessing: boolean) => {
 
     return {
       borderRadius: '0.75rem',
-      boxShadow: `0 0 0 1px ${glowColor}, 0 0 12px 3px ${glowColor}, 0 0 28px 6px ${glowColor}`,
+      boxShadow: `inset 0 0 0 1px ${glowColor}, inset 0 0 10px 4px ${glowColor}, inset 0 0 22px 10px ${glowColor}`,
       transition,
     };
   }, [currentColor, isProcessing, transitionDuration]);
