@@ -100,7 +100,7 @@ export const BotMessage = ({
     }
     if (isProcessing) {
       return (
-        <div className="text-foreground px-3 py-1.5 text-sm font-medium">
+        <div className="text-foreground mt-1 px-3 py-1.5 text-sm font-medium">
           {t('messages.prompts.processingCommand')}
         </div>
       );
