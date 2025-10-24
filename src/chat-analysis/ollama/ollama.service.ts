@@ -4,29 +4,14 @@ import { Model, PromptConfig } from './ollama.types';
 import { INIT_OLLAMA_PROMPT } from './prompts/init-ollama.prompt';
 import { OLLAMA_HEALTH_PROMPT } from './prompts/ollama-health.prompt';
 
-const parsedHeadersTimeout = Number.parseInt(
-  process.env.OLLAMA_HEADERS_TIMEOUT ?? '',
-  10,
-);
-const headersTimeoutMs =
-  Number.isFinite(parsedHeadersTimeout) && parsedHeadersTimeout >= 0
-    ? parsedHeadersTimeout
-    : 10 * 60 * 1000;
-
-const parsedBodyTimeout = Number.parseInt(
-  process.env.OLLAMA_BODY_TIMEOUT ?? '',
-  10,
-);
-const bodyTimeoutMs =
-  Number.isFinite(parsedBodyTimeout) && parsedBodyTimeout >= 0
-    ? parsedBodyTimeout
-    : 0;
+const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout
 
 // Increase fetch timeouts so long-running model pulls don't trigger Undici header/body timeouts.
 setGlobalDispatcher(
   new Agent({
-    headersTimeout: headersTimeoutMs,
-    bodyTimeout: bodyTimeoutMs,
+    headersTimeout: OLLAMA_HEADERS_TIMEOUT_MS,
+    bodyTimeout: OLLAMA_BODY_TIMEOUT_MS,
   }),
 );
 
