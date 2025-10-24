@@ -1,7 +1,7 @@
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
 import { timeAgo } from '@/lib/time.utils';
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdVisibility } from 'react-icons/md';
 import appIconImg from '../../assets/images/app-icon.png';
@@ -18,6 +18,61 @@ interface Props {
   message?: MessageRes;
 }
 
+const generatePulseColor = () => {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 70 + Math.random() * 20;
+  const lightness = 45 + Math.random() * 10;
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+};
+
+const useProcessingGlow = (isProcessing: boolean) => {
+  const [currentColor, setCurrentColor] = useState<string | null>(() =>
+    isProcessing ? generatePulseColor() : null,
+  );
+  const [transitionDuration, setTransitionDuration] = useState('250ms');
+
+  useEffect(() => {
+    if (!isProcessing) {
+      setCurrentColor(null);
+      setTransitionDuration('250ms');
+      return;
+    }
+
+    const updateGlow = () => {
+      setCurrentColor(generatePulseColor());
+      setTransitionDuration(`${600 + Math.random() * 300}ms`);
+    };
+
+    updateGlow();
+    const interval = setInterval(updateGlow, 1200);
+
+    return () => clearInterval(interval);
+  }, [isProcessing]);
+
+  return useMemo<CSSProperties>(() => {
+    const transition = `box-shadow ${transitionDuration} ease-in-out`;
+
+    if (!isProcessing || !currentColor) {
+      return {
+        borderRadius: '0.75rem',
+        boxShadow: '0 0 0 0 transparent',
+        transition,
+      };
+    }
+
+    const glowColor = currentColor
+      .replace('hsl(', 'hsla(')
+      .replace(')', ', 0.35)');
+
+    return {
+      borderRadius: '0.75rem',
+      boxShadow: `inset 0 0 0 1px ${glowColor}, inset 0 0 6px 2px ${glowColor}, inset 0 0 12px 4px ${glowColor}`,
+      transition,
+    };
+  }, [currentColor, isProcessing, transitionDuration]);
+};
+
 export const BotMessage = ({
   children,
   bodyClassName,
@@ -26,6 +81,13 @@ export const BotMessage = ({
   message,
 }: Props) => {
   const { t } = useTranslation();
+  const isProcessing = message?.commandStatus === 'processing';
+  const contentGlowStyle = useProcessingGlow(isProcessing);
+
+  const botName =
+    message?.bot?.displayName ||
+    message?.bot?.name ||
+    t('messages.names.praxisBot');
   const formattedDate = timeAgo(message?.createdAt || Date());
 
   const renderContent = () => {
@@ -35,33 +97,37 @@ export const BotMessage = ({
     if (!message) {
       return null;
     }
-    if (message.commandStatus === 'processing') {
+    if (isProcessing) {
       return (
-        <div className="text-muted-foreground animate-pulse">
+        <div className="text-foreground mt-1 px-3 py-1.5 text-sm font-medium">
           {t('messages.prompts.processingCommand')}
         </div>
       );
+    }
+    if (!message.body) {
+      return null;
     }
     return <FormattedText text={message.body} />;
   };
 
   return (
     <div className="flex gap-4">
-      <UserAvatar
-        name={t('messages.names.praxisBot')}
-        imageSrc={appIconImg}
-        className="mt-0.5"
-      />
+      <UserAvatar name={botName} imageSrc={appIconImg} className="mt-0.5" />
 
       <div>
         <div className="flex items-center gap-1.5">
-          <div className="font-medium">{t('messages.names.praxisBot')}</div>
+          <div className="font-medium">{botName}</div>
           <div className="text-muted-foreground text-sm font-light">
             {formattedDate}
           </div>
         </div>
 
-        <div className={cn(bodyClassName)}>{renderContent()}</div>
+        <div
+          className={cn('transition-all', bodyClassName)}
+          style={contentGlowStyle}
+        >
+          {renderContent()}
+        </div>
 
         {(currentUserOnly || onDismiss) && (
           <div className="flex items-center gap-1 pt-1">

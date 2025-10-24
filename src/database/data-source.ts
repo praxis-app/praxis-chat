@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
+import { Bot } from '../bots/bot.entity';
 import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
@@ -19,7 +20,7 @@ import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Initial1761066510951 } from './migrations/1761066510951-Initial';
+import { Initial1761279879950 } from './migrations/1761279879950-Initial';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ export const dataSource = new DataSource({
   port: parseInt(process.env.DB_PORT as string),
   synchronize: process.env.NODE_ENV === 'development',
   entities: [
+    Bot,
     Channel,
     ChannelKey,
     ChannelMember,
@@ -52,5 +54,5 @@ export const dataSource = new DataSource({
     User,
     Vote,
   ],
-  migrations: [Initial1761066510951],
+  migrations: [Initial1761279879950],
 });

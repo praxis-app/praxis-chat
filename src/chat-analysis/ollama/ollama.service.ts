@@ -1,9 +1,20 @@
+import { Agent, setGlobalDispatcher } from 'undici';
 import { Ollama } from 'ollama';
 import { Model, PromptConfig } from './ollama.types';
 import { INIT_OLLAMA_PROMPT } from './prompts/init-ollama.prompt';
 import { OLLAMA_HEALTH_PROMPT } from './prompts/ollama-health.prompt';
 
-// Configure Ollama client to use Docker service
+const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout
+
+// Increase fetch timeouts so long-running model pulls don't trigger Undici header/body timeouts.
+setGlobalDispatcher(
+  new Agent({
+    headersTimeout: OLLAMA_HEADERS_TIMEOUT_MS,
+    bodyTimeout: OLLAMA_BODY_TIMEOUT_MS,
+  }),
+);
+
 const ollama = new Ollama({
   host: `${process.env.OLLAMA_HOST}:${process.env.OLLAMA_PORT}`,
 });
