@@ -27,8 +27,6 @@ export const ensureDefaultBotExists = async (): Promise<Bot> => {
 
   const newBot = botRepository.create({
     name: DEFAULT_BOT_NAME,
-    displayName: 'Praxis Bot',
-    description: 'Default bot for automated system messages and analysis',
   });
 
   await botRepository.save(newBot);
