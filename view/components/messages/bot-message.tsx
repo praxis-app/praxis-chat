@@ -18,7 +18,6 @@ interface Props {
   message?: MessageRes;
 }
 
-// TODO: Ensure this actually works
 const generatePulseColor = () => {
   const hue = Math.floor(Math.random() * 360);
   const saturation = 70 + Math.random() * 20;
