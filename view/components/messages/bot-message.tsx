@@ -64,11 +64,11 @@ const useProcessingGlow = (isProcessing: boolean) => {
 
     const glowColor = currentColor
       .replace('hsl(', 'hsla(')
-      .replace(')', ', 0.6)');
+      .replace(')', ', 0.35)');
 
     return {
       borderRadius: '0.75rem',
-      boxShadow: `inset 0 0 0 1px ${glowColor}, inset 0 0 10px 4px ${glowColor}, inset 0 0 22px 10px ${glowColor}`,
+      boxShadow: `inset 0 0 0 1px ${glowColor}, inset 0 0 6px 2px ${glowColor}, inset 0 0 12px 4px ${glowColor}`,
       transition,
     };
   }, [currentColor, isProcessing, transitionDuration]);
@@ -82,7 +82,7 @@ export const BotMessage = ({
   message,
 }: Props) => {
   const { t } = useTranslation();
-  const isProcessing = message?.commandStatus !== 'processing';
+  const isProcessing = message?.commandStatus === 'processing';
   const contentGlowStyle = useProcessingGlow(isProcessing);
 
   const botName =
