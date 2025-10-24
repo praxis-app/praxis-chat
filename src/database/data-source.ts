@@ -20,7 +20,7 @@ import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Initial1761066510951 } from './migrations/1761066510951-Initial';
+import { Initial1761279879950 } from './migrations/1761279879950-Initial';
 
 dotenv.config();
 
@@ -54,5 +54,5 @@ export const dataSource = new DataSource({
     User,
     Vote,
   ],
-  migrations: [Initial1761066510951],
+  migrations: [Initial1761279879950],
 });
