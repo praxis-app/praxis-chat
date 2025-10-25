@@ -39,7 +39,7 @@ export const getChatSummary = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   const content = await executePrompt({
-    model: 'llama3.1:8b',
+    model: 'llama3.2:1b',
     template: CHAT_SUMMARY_PROMPT,
     variables: { chatData },
   });
@@ -53,7 +53,7 @@ export const isReadyForProposal = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'mistral:7b',
+      model: 'llama3.2:1b',
       template: PROPOSAL_READINESS_PROMPT,
       variables: { chatData },
     });
@@ -73,14 +73,13 @@ export const isReadyForProposal = async ({ messages }: Chat) => {
   }
 };
 
-// FIXME: This is not working as expected with the gpt-oss:20b model
 export const getDisagreements = async ({ messages }: Chat) => {
   const recentMessages = messages.slice(-50);
   const chatData = shapeChatData(recentMessages);
 
   try {
     const content = await executePrompt({
-      model: 'gpt-oss:20b',
+      model: 'llama3.2:1b',
       template: DISAGREEMENTS_PROMPT,
       variables: { chatData },
     });
@@ -101,7 +100,7 @@ export const getCompromises = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'mistral:7b',
+      model: 'llama3.2:1b',
       template: COMPROMISES_PROMPT,
       variables: { chatData },
     });
@@ -120,7 +119,7 @@ export const draftProposal = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'llama3.1:8b',
+      model: 'llama3.2:1b',
       template: DRAFT_PROPOSAL_PROMPT,
       variables: { chatData },
     });
