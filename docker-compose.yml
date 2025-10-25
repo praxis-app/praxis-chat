@@ -64,6 +64,7 @@ services:
   ollama:
     container_name: ollama
     image: ollama/ollama:latest
+    profiles: ['ollama']
     ports:
       - ${OLLAMA_PORT}:${OLLAMA_PORT}
     volumes:
