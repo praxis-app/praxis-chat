@@ -81,13 +81,13 @@ const ensureModel = async (model: Model) => {
 export const getOllamaInitMessage = async () => {
   const start = Date.now();
   const content = await executePrompt({
-    model: 'gemma3:1b',
+    model: 'llama3.2:1b',
     template: INIT_OLLAMA_PROMPT,
   });
 
   const end = Date.now();
   const duration = end - start;
-  return `Gemma 3 1B: ${content.trim()} - ${duration}ms`;
+  return `Llama 3.2 1B: ${content.trim()} - ${duration}ms`;
 };
 
 export const getOllamaHealth = async () => {
