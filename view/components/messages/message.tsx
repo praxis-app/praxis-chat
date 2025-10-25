@@ -23,6 +23,10 @@ export const Message = ({
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
+  if (!user) {
+    return null;
+  }
+
   const formattedDate = timeAgo(createdAt);
   const showImages = !!images?.length;
 

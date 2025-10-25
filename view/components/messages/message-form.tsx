@@ -1,10 +1,12 @@
 import { api } from '@/client/api-client';
 import { KeyCodes } from '@/constants/shared.constants';
+import { useMeQuery } from '@/hooks/use-me-query';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
+import { MessageRes } from '@/types/message.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -51,6 +53,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
+  const { data: meData } = useMeQuery();
+
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { body: '' },
@@ -62,19 +66,26 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const draftKey = `message-draft-${channelId}`;
 
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
-    mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
+    mutationFn: async ({
+      body,
+      capturedImages,
+    }: zod.infer<typeof formSchema> & { capturedImages: File[] }) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
-      validateImageInput(images);
+      validateImageInput(capturedImages);
 
-      const { message } = await api.sendMessage(channelId, body, images.length);
+      const { message } = await api.sendMessage(
+        channelId,
+        body,
+        capturedImages.length,
+      );
       const messageImages: ImageRes[] = [];
 
-      if (images.length && message.images) {
-        for (let i = 0; i < images.length; i++) {
+      if (capturedImages.length && message.images) {
+        for (let i = 0; i < capturedImages.length; i++) {
           const formData = new FormData();
-          formData.set('file', images[i]);
+          formData.set('file', capturedImages[i]);
 
           const placeholder = message.images[i];
           const { image } = await api.uploadMessageImage(
@@ -92,12 +103,80 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         images: messageImages,
       };
     },
-    onSuccess: (messageWithImages) => {
-      if (images.length) {
+    onMutate: async ({ body, capturedImages }) => {
+      const resolvedChannelId = isGeneralChannel
+        ? GENERAL_CHANNEL_NAME
+        : channelId;
+
+      await queryClient.cancelQueries({
+        queryKey: ['feed', resolvedChannelId],
+      });
+
+      const previousFeed = queryClient.getQueryData<FeedQuery>([
+        'feed',
+        resolvedChannelId,
+      ]);
+
+      const optimisticMessage: MessageRes = {
+        id: `temp-${Date.now()}`,
+        body,
+        user: meData?.user
+          ? {
+              id: meData.user.id,
+              name: meData.user.name,
+              profilePicture: meData.user.profilePicture,
+          }
+          : null,
+        userId: meData?.user?.id ?? null,
+        botId: null,
+        bot: null,
+        createdAt: new Date().toISOString(),
+        commandStatus: null,
+      };
+
+      const optimisticFeedItem: FeedItemRes = {
+        ...optimisticMessage,
+        type: 'message',
+      };
+
+      queryClient.setQueryData<FeedQuery>(
+        ['feed', resolvedChannelId],
+        (oldData) => {
+          if (!oldData) {
+            return {
+              pages: [{ feed: [optimisticFeedItem] }],
+              pageParams: [0],
+            };
+          }
+
+          const pages = oldData.pages.map((page, index) => {
+            if (index === 0) {
+              const sortedFeed = [optimisticFeedItem, ...page.feed].sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              );
+              return { feed: sortedFeed };
+            }
+            return page;
+          });
+          return { pages, pageParams: oldData.pageParams };
+        },
+      );
+
+      if (capturedImages.length) {
         setImagesInputKey(Date.now());
         setImages([]);
       }
 
+      localStorage.removeItem(draftKey);
+      setValue('body', '');
+      onSend?.();
+      reset();
+
+      return { previousFeed };
+    },
+    onSuccess: (messageWithImages) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
@@ -119,27 +198,42 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
           const pages = oldData.pages.map((page, index) => {
             if (index === 0) {
-              const alreadyExists = page.feed.some(
+              const feedWithoutOptimistic = page.feed.filter(
+                (item) =>
+                  !(item.type === 'message' && item.id.startsWith('temp-')),
+              );
+              const alreadyExists = feedWithoutOptimistic.some(
                 (item) =>
                   item.type === 'message' && item.id === messageWithImages.id,
               );
               if (alreadyExists) {
-                return page;
+                return { feed: feedWithoutOptimistic };
               }
-              return { feed: [newFeedItem, ...page.feed] };
+              const sortedFeed = [newFeedItem, ...feedWithoutOptimistic].sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              );
+              return { feed: sortedFeed };
             }
             return page;
           });
           return { pages, pageParams: oldData.pageParams };
         },
       );
-
-      localStorage.removeItem(draftKey);
-      setValue('body', '');
-      onSend?.();
-      reset();
     },
-    onError(error: Error) {
+    onError: (error: Error, _variables, context) => {
+      const resolvedChannelId = isGeneralChannel
+        ? GENERAL_CHANNEL_NAME
+        : channelId;
+
+      if (context?.previousFeed) {
+        queryClient.setQueryData<FeedQuery>(
+          ['feed', resolvedChannelId],
+          context.previousFeed,
+        );
+      }
+
       handleError(error);
     },
   });
@@ -213,7 +307,9 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       setIsAuthPromptOpen(true);
       return;
     }
-    handleSubmit((values) => sendMessage(values))();
+    handleSubmit((values) =>
+      sendMessage({ ...values, capturedImages: images }),
+    )();
   };
 
   const handleInputKeyDown: KeyboardEventHandler = (e) => {
@@ -282,7 +378,9 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           <ChooseAuthDialog
             isOpen={isAuthPromptOpen}
             setIsOpen={setIsAuthPromptOpen}
-            sendMessage={handleSubmit((values) => sendMessage(values))}
+            sendMessage={handleSubmit((values) =>
+              sendMessage({ ...values, capturedImages: images }),
+            )}
           />
 
           {!isEmpty ? (

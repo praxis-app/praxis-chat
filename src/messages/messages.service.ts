@@ -1,5 +1,9 @@
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
+import { IsNull, Not } from 'typeorm';
+import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
+import * as commandQueueService from '../commands/command-queue.service';
+import * as commandsService from '../commands/commands.service';
 import { sanitizeText } from '../common/common.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
@@ -27,6 +31,8 @@ export const getMessages = async (
       'message.keyId',
       'message.tag',
       'message.iv',
+      'message.botId',
+      'message.commandStatus',
       'message.createdAt',
     ])
     .addSelect([
@@ -40,6 +46,8 @@ export const getMessages = async (
       'messageImage.createdAt',
     ])
     .leftJoin('message.user', 'messageUser')
+    .leftJoin('message.bot', 'messageBot')
+    .addSelect(['messageBot.id', 'messageBot.name', 'messageBot.displayName'])
     .leftJoin('message.images', 'messageImage')
     .where('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
@@ -53,9 +61,11 @@ export const getMessages = async (
       .map((message) => message.keyId!),
   );
 
-  const profilePictures = await usersService.getUserProfilePicturesMap(
-    messages.map((message) => message.user.id),
-  );
+  const userIds = messages
+    .filter((message) => message.user)
+    .map((message) => message.user!.id);
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(userIds);
 
   const shapedMessages = messages.map(
     ({ ciphertext, tag, iv, keyId, ...message }) => {
@@ -72,10 +82,22 @@ export const getMessages = async (
         createdAt: image.createdAt,
       }));
 
-      const profilePicture = profilePictures[message.user.id];
-      const user = { ...message.user, profilePicture };
+      const user = message.user
+        ? {
+            ...message.user,
+            profilePicture: profilePictures[message.user.id],
+          }
+        : null;
 
-      return { ...message, body, images, user };
+      const bot = message.bot
+        ? {
+            id: message.bot.id,
+            name: message.bot.name,
+            displayName: message.bot.displayName,
+          }
+        : null;
+
+      return { ...message, body, images, user, bot };
     },
   );
 
@@ -139,6 +161,7 @@ export const createMessage = async (
       displayName: user.displayName,
       profilePicture,
     },
+    bot: null,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
@@ -150,6 +173,148 @@ export const createMessage = async (
       type: PubSubMessageType.MESSAGE,
       message: messagePayload,
     });
+  }
+
+  if (
+    plaintext &&
+    commandsService.isCommandMessage(plaintext) &&
+    process.env.ENABLE_LLM_FEATURES === 'true'
+  ) {
+    try {
+      const botMessage = await createBotMessage(
+        channelId,
+        'Processing your command...',
+        'processing',
+      );
+
+      await commandQueueService.queueCommandJob({
+        channelId,
+        messageBody: plaintext,
+        botMessageId: botMessage.id,
+      });
+    } catch (error) {
+      console.error('Error enqueueing command', error);
+    }
+  }
+
+  return messagePayload;
+};
+
+const createBotMessage = async (
+  channelId: string,
+  body: string,
+  commandStatus: 'processing' | 'completed' | 'failed' | null = null,
+) => {
+  const defaultBot = await getDefaultBot();
+  const messageData: Partial<Message> = {
+    userId: null,
+    botId: defaultBot.id,
+    channelId,
+    commandStatus,
+  };
+
+  const plaintext = sanitizeText(body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(channelId);
+
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
+
+    messageData.keyId = channelKey.id;
+    messageData.ciphertext = ciphertext;
+    messageData.tag = tag;
+    messageData.iv = iv;
+  }
+
+  const message = await messageRepository.save(messageData);
+
+  const bot = {
+    id: defaultBot.id,
+    name: defaultBot.name,
+    displayName: defaultBot.displayName,
+  };
+
+  const messagePayload = {
+    ...message,
+    body: plaintext,
+    images: [],
+    user: null,
+    commandStatus,
+    bot,
+  };
+
+  const channelMembers = await channelsService.getChannelMembers(channelId);
+  for (const member of channelMembers) {
+    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
+      type: PubSubMessageType.MESSAGE,
+      message: messagePayload,
+    });
+  }
+
+  return messagePayload;
+};
+
+export const updateBotMessage = async (
+  messageId: string,
+  updates: {
+    body: string;
+    commandStatus: 'processing' | 'completed' | 'failed';
+  },
+) => {
+  const message = await messageRepository.findOne({
+    where: { id: messageId, botId: Not(IsNull()) },
+    relations: ['bot'],
+  });
+
+  if (!message) {
+    throw new Error('Bot message not found');
+  }
+
+  const plaintext = sanitizeText(updates.body);
+  if (plaintext) {
+    const { unwrappedKey, ...channelKey } =
+      await channelsService.getUnwrappedChannelKey(message.channelId);
+
+    const { ciphertext, tag, iv } = encryptText(plaintext, unwrappedKey);
+
+    message.ciphertext = ciphertext;
+    message.tag = tag;
+    message.iv = iv;
+    message.keyId = channelKey.id;
+  }
+
+  message.commandStatus = updates.commandStatus;
+
+  const updatedMessage = await messageRepository.save(message);
+
+  const bot = message.bot
+    ? {
+        id: message.bot.id,
+        name: message.bot.name,
+        displayName: message.bot.displayName,
+      }
+    : null;
+
+  const messagePayload = {
+    ...updatedMessage,
+    body: plaintext,
+    images: [],
+    user: null,
+    commandStatus: updates.commandStatus,
+    bot,
+  };
+
+  const channelMembers = await channelsService.getChannelMembers(
+    message.channelId,
+  );
+  for (const member of channelMembers) {
+    await pubSubService.publish(
+      getNewMessageKey(message.channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   return messagePayload;

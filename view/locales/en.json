@@ -234,7 +234,8 @@
       "sendAMessage": "Send a message...",
       "noMessagesYet": "No messages yet",
       "onlyVisibleToYou": "Only visible to you",
-      "inviteRequired": "You need to be invited before you can send messages."
+      "inviteRequired": "You need to be invited before you can send messages.",
+      "processingCommand": "Processing your command..."
     },
     "errors": {
       "longBody": "Message body cannot exceed 6000 characters",

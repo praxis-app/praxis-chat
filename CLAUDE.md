@@ -50,6 +50,7 @@ Refer to README.md for more information.
 #### Directory Structure
 
 - `app/` - Application initialization and configuration
+- `bots/` - Bot entity, default bot bootstrap, and shared bot helpers
 - `auth/` - Authentication & JWT middleware
 - `cache/` - Redis caching service
 - `channels/` - Chat channels, members, keys, cron jobs
