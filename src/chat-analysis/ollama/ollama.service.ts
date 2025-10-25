@@ -1,8 +1,6 @@
-import { Agent, setGlobalDispatcher } from 'undici';
 import { Ollama } from 'ollama';
+import { Agent, setGlobalDispatcher } from 'undici';
 import { Model, PromptConfig } from './ollama.types';
-import { INIT_OLLAMA_PROMPT } from './prompts/init-ollama.prompt';
-import { OLLAMA_HEALTH_PROMPT } from './prompts/ollama-health.prompt';
 
 const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout
@@ -76,24 +74,4 @@ const ensureModel = async (model: Model) => {
     console.error('Error checking/pulling model:', error);
     throw error;
   }
-};
-
-export const getOllamaInitMessage = async () => {
-  const start = Date.now();
-  const content = await executePrompt({
-    model: 'llama3.2:1b',
-    template: INIT_OLLAMA_PROMPT,
-  });
-
-  const end = Date.now();
-  const duration = end - start;
-  return `Llama 3.2 1B: ${content.trim()} - ${duration}ms`;
-};
-
-export const getOllamaHealth = async () => {
-  const content = await executePrompt({
-    model: 'llama3.2:1b',
-    template: OLLAMA_HEALTH_PROMPT,
-  });
-  return content.trim();
 };
