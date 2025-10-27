@@ -1,3 +1,4 @@
+import { Job } from 'bull';
 import {
   handleCompromisesCommand,
   handleConsensusCommand,
@@ -5,6 +6,8 @@ import {
   handleDraftProposalCommand,
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
+import * as messagesService from '../messages/messages.service';
+import { CommandJobData, commandQueue } from './command-queue.service';
 
 enum Commands {
   Summary = '/summary',
@@ -40,6 +43,39 @@ export const handleCommandExecution = async (
     throw new Error('No valid command found in message');
   }
   return await commandHandlers[command](context);
+};
+
+export const startCommandProcessor = () => {
+  if (process.env.ENABLE_LLM_FEATURES !== 'true') {
+    return;
+  }
+
+  commandQueue.process(async (job: Job<CommandJobData>) => {
+    const { channelId, messageBody, botMessageId } = job.data;
+
+    try {
+      const result = await handleCommandExecution({
+        channelId,
+        messageBody,
+      });
+
+      await messagesService.updateBotMessage(botMessageId, {
+        body: result,
+        commandStatus: 'completed',
+      });
+
+      return { success: true, result };
+    } catch (error) {
+      console.error('Error processing command:', error);
+
+      await messagesService.updateBotMessage(botMessageId, {
+        body: 'Sorry, I encountered an error while processing your command. Please try again.',
+        commandStatus: 'failed',
+      });
+
+      throw error;
+    }
+  });
 };
 
 export const isCommandMessage = (body: string) => {

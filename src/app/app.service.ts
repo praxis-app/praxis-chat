@@ -1,10 +1,10 @@
 import * as botsService from '../bots/bots.service';
 import { rotateChannelKeysJob } from '../channels/cron/rotate-channel-keys.job';
-import { startCommandProcessor } from '../commands/command-processor.worker';
+import * as commandsService from '../commands/commands.service';
 
 export const initializeApp = async () => {
   await botsService.ensureDefaultBotExists();
-  startCommandProcessor();
+  commandsService.startCommandProcessor();
   startCronJobs();
 };
 
