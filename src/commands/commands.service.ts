@@ -8,27 +8,11 @@ import {
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
 import * as messagesService from '../messages/messages.service';
+import { commandQueue } from './command-queue';
 import { Commands } from './command.constants';
 import { CommandContext, CommandJobData } from './command.types';
 
 dotenv.config();
-
-const commandQueue = new Bull<CommandJobData>('command-processing', {
-  redis: {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT ?? '6379'),
-    password: process.env.REDIS_PASSWORD,
-  },
-  defaultJobOptions: {
-    attempts: 3,
-    backoff: {
-      type: 'exponential',
-      delay: 2000,
-    },
-    removeOnComplete: true,
-    removeOnFail: false,
-  },
-});
 
 export const handleCommandExecution = async (
   context: CommandContext,
