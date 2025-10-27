@@ -8,27 +8,10 @@ import {
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
 import * as messagesService from '../messages/messages.service';
+import { Commands } from './command.constants';
+import { CommandContext, CommandJobData } from './command.types';
 
 dotenv.config();
-
-enum Commands {
-  Summary = '/summary',
-  Consensus = '/consensus',
-  Disagreements = '/disagreements',
-  Compromises = '/compromises',
-  DraftProposal = '/draft-proposal',
-}
-
-interface CommandContext {
-  channelId: string;
-  messageBody: string;
-}
-
-interface CommandJobData {
-  channelId: string;
-  messageBody: string;
-  botMessageId: string;
-}
 
 const commandQueue = new Bull<CommandJobData>('command-processing', {
   redis: {
