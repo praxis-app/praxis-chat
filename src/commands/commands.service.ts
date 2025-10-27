@@ -1,4 +1,5 @@
-import { Job } from 'bull';
+import Bull from 'bull';
+import * as dotenv from 'dotenv';
 import {
   handleCompromisesCommand,
   handleConsensusCommand,
@@ -7,7 +8,8 @@ import {
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
 import * as messagesService from '../messages/messages.service';
-import { CommandJobData, commandQueue } from './command-queue.service';
+
+dotenv.config();
 
 enum Commands {
   Summary = '/summary',
@@ -21,6 +23,29 @@ interface CommandContext {
   channelId: string;
   messageBody: string;
 }
+
+interface CommandJobData {
+  channelId: string;
+  messageBody: string;
+  botMessageId: string;
+}
+
+const commandQueue = new Bull<CommandJobData>('command-processing', {
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT ?? '6379'),
+    password: process.env.REDIS_PASSWORD,
+  },
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 2000,
+    },
+    removeOnComplete: true,
+    removeOnFail: false,
+  },
+});
 
 export const handleCommandExecution = async (
   context: CommandContext,
@@ -50,7 +75,7 @@ export const startCommandProcessor = () => {
     return;
   }
 
-  commandQueue.process(async (job: Job<CommandJobData>) => {
+  commandQueue.process(async (job: Bull.Job<CommandJobData>) => {
     const { channelId, messageBody, botMessageId } = job.data;
 
     try {
@@ -76,6 +101,13 @@ export const startCommandProcessor = () => {
       throw error;
     }
   });
+};
+
+export const queueCommandJob = async (data: CommandJobData) => {
+  const job = await commandQueue.add(data, {
+    priority: 1,
+  });
+  return job;
 };
 
 export const isCommandMessage = (body: string) => {

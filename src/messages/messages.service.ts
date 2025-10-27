@@ -2,7 +2,7 @@ import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
-import * as commandQueueService from '../commands/command-queue.service';
+
 import * as commandsService from '../commands/commands.service';
 import { sanitizeText } from '../common/common.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
@@ -187,7 +187,7 @@ export const createMessage = async (
         'processing',
       );
 
-      await commandQueueService.queueCommandJob({
+      await commandsService.queueCommandJob({
         channelId,
         messageBody: plaintext,
         botMessageId: botMessage.id,
