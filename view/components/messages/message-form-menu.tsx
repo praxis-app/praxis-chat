@@ -24,6 +24,7 @@ interface Props {
   trigger: ReactNode;
   channelId?: string;
   isGeneralChannel?: boolean;
+  disabled?: boolean;
 }
 
 export const MessageFormMenu = ({
@@ -32,6 +33,7 @@ export const MessageFormMenu = ({
   setShowMenu,
   channelId,
   isGeneralChannel,
+  disabled,
 }: Props) => {
   const [showPollForm, setShowPollForm] = useState(false);
   const dialogContentRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,10 @@ export const MessageFormMenu = ({
   return (
     <Dialog open={showPollForm} onOpenChange={setShowPollForm}>
       <DropdownMenu open={showMenu} onOpenChange={setShowMenu}>
-        <DropdownMenuTrigger className="bg-input/30 hover:bg-input/40 inline-flex size-11 cursor-pointer items-center justify-center rounded-full p-2 px-3 focus:outline-none [&_svg]:shrink-0">
+        <DropdownMenuTrigger
+          className="bg-input/30 hover:bg-input/40 inline-flex size-11 cursor-pointer items-center justify-center rounded-full p-2 px-3 focus:outline-none [&_svg]:shrink-0"
+          disabled={disabled}
+        >
           {trigger}
         </DropdownMenuTrigger>
         <DropdownMenuContent

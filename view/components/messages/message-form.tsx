@@ -333,6 +333,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               <MdAdd
                 className={cn(
                   'text-muted-foreground size-7 transition-transform duration-200',
+                  isMessageSending && 'cursor-not-allowed opacity-50',
                   showMenu && 'rotate-45',
                 )}
               />
@@ -341,6 +342,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             setShowMenu={setShowMenu}
             channelId={channelId}
             isGeneralChannel={isGeneralChannel}
+            disabled={isMessageSending}
           />
 
           <div className="bg-input/30 flex w-full items-center rounded-3xl px-2">
