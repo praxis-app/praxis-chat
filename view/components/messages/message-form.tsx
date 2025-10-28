@@ -351,12 +351,16 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
                 <Textarea
                   {...field}
                   placeholder={t('messages.placeholders.sendMessage')}
-                  className="min-h-12 resize-none border-none bg-transparent py-3 shadow-none focus-visible:border-none focus-visible:ring-0 md:py-3.5 dark:bg-transparent"
+                  className={cn(
+                    'min-h-12 resize-none border-none bg-transparent py-3 shadow-none focus-visible:border-none focus-visible:ring-0 md:py-3.5 dark:bg-transparent',
+                    isMessageSending && 'opacity-50',
+                  )}
                   onKeyDown={handleInputKeyDown}
                   onChange={(e) => {
                     saveDraft(e.target.value);
                     field.onChange(e);
                   }}
+                  disabled={isMessageSending}
                   ref={inputRef}
                   rows={1}
                 />
