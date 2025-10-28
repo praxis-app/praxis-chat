@@ -66,26 +66,24 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const draftKey = `message-draft-${channelId}`;
 
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
-    mutationFn: async ({
-      body,
-      capturedImages,
-    }: zod.infer<typeof formSchema> & { capturedImages: File[] }) => {
+    mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
-      validateImageInput(capturedImages);
+      const currentImages = [...images];
+      validateImageInput(currentImages);
 
       const { message } = await api.sendMessage(
         channelId,
         body,
-        capturedImages.length,
+        currentImages.length,
       );
       const messageImages: ImageRes[] = [];
 
-      if (capturedImages.length && message.images) {
-        for (let i = 0; i < capturedImages.length; i++) {
+      if (currentImages.length && message.images) {
+        for (let i = 0; i < currentImages.length; i++) {
           const formData = new FormData();
-          formData.set('file', capturedImages[i]);
+          formData.set('file', currentImages[i]);
 
           const placeholder = message.images[i];
           const { image } = await api.uploadMessageImage(
@@ -103,7 +101,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         images: messageImages,
       };
     },
-    onMutate: async ({ body, capturedImages }) => {
+    onMutate: async ({ body }) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
@@ -125,7 +123,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               id: meData.user.id,
               name: meData.user.name,
               profilePicture: meData.user.profilePicture,
-          }
+            }
           : null,
         userId: meData?.user?.id ?? null,
         botId: null,
@@ -163,16 +161,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           return { pages, pageParams: oldData.pageParams };
         },
       );
-
-      if (capturedImages.length) {
-        setImagesInputKey(Date.now());
-        setImages([]);
-      }
-
-      localStorage.removeItem(draftKey);
-      setValue('body', '');
-      onSend?.();
-      reset();
 
       return { previousFeed };
     },
@@ -221,6 +209,16 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           return { pages, pageParams: oldData.pageParams };
         },
       );
+
+      if (messageWithImages.images?.length) {
+        setImagesInputKey(Date.now());
+        setImages([]);
+      }
+
+      localStorage.removeItem(draftKey);
+      setValue('body', '');
+      onSend?.();
+      reset();
     },
     onError: (error: Error, _variables, context) => {
       const resolvedChannelId = isGeneralChannel
@@ -307,9 +305,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       setIsAuthPromptOpen(true);
       return;
     }
-    handleSubmit((values) =>
-      sendMessage({ ...values, capturedImages: images }),
-    )();
+    handleSubmit((values) => sendMessage(values))();
   };
 
   const handleInputKeyDown: KeyboardEventHandler = (e) => {
@@ -370,6 +366,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             <ImageInput
               key={imagesInputKey}
               setImages={setImages}
+              disabled={isMessageSending}
               iconClassName="text-muted-foreground size-6 self-center"
               multiple
             />
@@ -378,9 +375,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           <ChooseAuthDialog
             isOpen={isAuthPromptOpen}
             setIsOpen={setIsAuthPromptOpen}
-            sendMessage={handleSubmit((values) =>
-              sendMessage({ ...values, capturedImages: images }),
-            )}
+            sendMessage={handleSubmit((values) => sendMessage(values))}
           />
 
           {!isEmpty ? (
@@ -411,6 +406,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           <AttachedImagePreview
             handleRemove={handleRemoveSelectedImage}
             selectedImages={images}
+            disabled={isMessageSending}
             className="ml-1.5"
           />
         )}

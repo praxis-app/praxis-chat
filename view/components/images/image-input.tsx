@@ -23,7 +23,7 @@ export const ImageInput = ({
   setImage,
   setImages,
   iconClassName,
-  disabled,
+  disabled = false,
 }: Props) => {
   const imageInput = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
@@ -81,6 +81,7 @@ export const ImageInput = ({
         multiple={multiple}
         name={name}
         onChange={handleChange}
+        disabled={disabled}
         ref={imageInput}
         style={{ display: 'none' }}
         type="file"
