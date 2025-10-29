@@ -175,8 +175,11 @@ export const createMessage = async (
     });
   }
 
+  // TODO: Send an error message for invalid command messages
+
   if (
     plaintext &&
+    user.anonymous === false &&
     commandsService.isCommandMessage(plaintext) &&
     process.env.ENABLE_LLM_FEATURES === 'true'
   ) {
