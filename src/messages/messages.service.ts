@@ -2,7 +2,6 @@ import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
-
 import { CommandStatus } from '../commands/command.types';
 import * as commandsService from '../commands/commands.service';
 import { sanitizeText } from '../common/common.utils';
