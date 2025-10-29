@@ -48,6 +48,11 @@ vi.mock('../../pub-sub/pub-sub.service', () => ({
   publish: vi.fn(),
 }));
 
+vi.mock('../../commands/commands.service', () => ({
+  isCommandMessage: vi.fn().mockReturnValue(false),
+  queueCommandJob: vi.fn(),
+}));
+
 vi.mock('../../common/common.utils', () => ({
   sanitizeText: vi.fn((text?: string) => text?.trim() || ''),
 }));
