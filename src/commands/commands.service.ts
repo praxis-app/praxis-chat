@@ -1,3 +1,4 @@
+import { Commands } from '@common/commands/command.constants';
 import Bull from 'bull';
 import * as dotenv from 'dotenv';
 import {
@@ -9,7 +10,6 @@ import {
 } from '../chat-analysis/chat-analysis.commands';
 import * as messagesService from '../messages/messages.service';
 import { commandQueue } from './command-queue';
-import { Commands } from './command.constants';
 import { CommandContext, CommandJobData } from './command.types';
 
 dotenv.config();

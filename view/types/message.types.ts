@@ -1,3 +1,4 @@
+import { CommandStatus } from '@common/commands/command.types';
 import { ImageRes } from './image.types';
 import { UserRes } from './user.types';
 
@@ -15,10 +16,7 @@ export interface MessageRes {
   userId: string | null;
   botId: string | null;
   bot: BotRes | null;
-
-  // TODO: Leverage the CommandStatus type after its moved to @common
-  commandStatus?: 'processing' | 'completed' | 'failed' | null;
-
+  commandStatus?: CommandStatus | null;
   createdAt: string;
 }
 

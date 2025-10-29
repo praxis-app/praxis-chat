@@ -1,3 +1,5 @@
+import { COMMAND_STATUS } from '@common/commands/command.constants';
+import { CommandStatus } from '@common/commands/command.types';
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +12,6 @@ import {
 import { Bot } from '../bots/bot.entity';
 import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { Channel } from '../channels/entities/channel.entity';
-import { COMMAND_STATUS } from '../commands/command.constants';
-import { CommandStatus } from '../commands/command.types';
 import { Image } from '../images/entities/image.entity';
 import { User } from '../users/user.entity';
 
