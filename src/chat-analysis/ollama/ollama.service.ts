@@ -50,7 +50,7 @@ export const executePrompt = async ({
   return response;
 };
 
-const ensureModel = async (model: Model) => {
+export const ensureModel = async (model: Model) => {
   // If the model is already verified, bail
   if (verifiedModels.has(model)) {
     return;

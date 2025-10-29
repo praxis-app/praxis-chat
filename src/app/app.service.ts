@@ -1,10 +1,14 @@
 import * as botsService from '../bots/bots.service';
 import { rotateChannelKeysJob } from '../channels/cron/rotate-channel-keys.job';
+import * as chatAnalysisService from '../chat-analysis/chat-analysis.service';
 import * as commandsService from '../commands/commands.service';
 
 export const initializeApp = async () => {
-  await botsService.ensureDefaultBotExists();
-  commandsService.startCommandProcessor();
+  if (process.env.ENABLE_LLM_FEATURES === 'true') {
+    await botsService.ensureDefaultBotExists();
+    await chatAnalysisService.loadRequiredModels();
+    commandsService.startCommandProcessor();
+  }
   startCronJobs();
 };
 

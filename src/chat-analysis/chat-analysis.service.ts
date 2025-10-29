@@ -6,7 +6,8 @@
  * limited and still a work in progress.
  */
 
-import { executePrompt } from './ollama/ollama.service';
+import { ensureModel, executePrompt } from './ollama/ollama.service';
+import { Model } from './ollama/ollama.types';
 import { CHAT_SUMMARY_PROMPT } from './prompts/chat-summary.prompt';
 import {
   COMPROMISES_PROMPT,
@@ -25,6 +26,8 @@ import {
   proposalReadinessSchema,
 } from './prompts/proposal-readiness.prompt';
 
+const CHAT_ANALYSIS_MODEL: Model = 'llama3.2:1b';
+
 interface Message {
   sender: string;
   body: string;
@@ -39,7 +42,7 @@ export const getChatSummary = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   const content = await executePrompt({
-    model: 'llama3.2:1b',
+    model: CHAT_ANALYSIS_MODEL,
     template: CHAT_SUMMARY_PROMPT,
     variables: { chatData },
   });
@@ -53,7 +56,7 @@ export const isReadyForProposal = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'llama3.2:1b',
+      model: CHAT_ANALYSIS_MODEL,
       template: PROPOSAL_READINESS_PROMPT,
       variables: { chatData },
     });
@@ -79,7 +82,7 @@ export const getDisagreements = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'llama3.2:1b',
+      model: CHAT_ANALYSIS_MODEL,
       template: DISAGREEMENTS_PROMPT,
       variables: { chatData },
     });
@@ -100,7 +103,7 @@ export const getCompromises = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'llama3.2:1b',
+      model: CHAT_ANALYSIS_MODEL,
       template: COMPROMISES_PROMPT,
       variables: { chatData },
     });
@@ -119,7 +122,7 @@ export const draftProposal = async ({ messages }: Chat) => {
 
   try {
     const content = await executePrompt({
-      model: 'llama3.2:1b',
+      model: CHAT_ANALYSIS_MODEL,
       template: DRAFT_PROPOSAL_PROMPT,
       variables: { chatData },
     });
@@ -137,6 +140,10 @@ export const draftProposal = async ({ messages }: Chat) => {
       error: JSON.stringify(e),
     };
   }
+};
+
+export const loadRequiredModels = async () => {
+  await ensureModel(CHAT_ANALYSIS_MODEL);
 };
 
 const shapeChatData = (messages: Message[]) => {

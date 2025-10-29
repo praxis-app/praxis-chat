@@ -38,10 +38,6 @@ export const handleCommandExecution = async (
 };
 
 export const startCommandProcessor = () => {
-  if (process.env.ENABLE_LLM_FEATURES !== 'true') {
-    return;
-  }
-
   commandQueue.process(async (job: Bull.Job<CommandJobData>) => {
     const { channelId, messageBody, botMessageId } = job.data;
 
