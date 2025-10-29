@@ -3,6 +3,7 @@ import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
 
+import { CommandStatus } from '../commands/command.types';
 import * as commandsService from '../commands/commands.service';
 import { sanitizeText } from '../common/common.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
@@ -206,7 +207,7 @@ export const createMessage = async (
 const createBotMessage = async (
   channelId: string,
   body: string,
-  commandStatus: 'processing' | 'completed' | 'failed' | null = null,
+  commandStatus: CommandStatus | null = null,
 ) => {
   const defaultBot = await getDefaultBot();
   const messageData: Partial<Message> = {
@@ -261,7 +262,7 @@ export const updateBotMessage = async (
   messageId: string,
   updates: {
     body: string;
-    commandStatus: 'processing' | 'completed' | 'failed';
+    commandStatus: CommandStatus;
   },
 ) => {
   const message = await messageRepository.findOne({

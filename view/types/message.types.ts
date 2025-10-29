@@ -15,7 +15,10 @@ export interface MessageRes {
   userId: string | null;
   botId: string | null;
   bot: BotRes | null;
+
+  // TODO: Leverage the CommandStatus type after its moved to @common
   commandStatus?: 'processing' | 'completed' | 'failed' | null;
+
   createdAt: string;
 }
 
