@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, toJSONSchema } from 'zod';
 import { PromptTemplate } from '../ollama/ollama.types';
 
 export const disagreementsSchema = z.object({
@@ -34,15 +34,5 @@ export const DISAGREEMENTS_PROMPT: PromptTemplate = {
     top_k: 10, // Narrow choices for structured output
     top_p: 0.8, // Further restrict token selection
   },
-  format: {
-    type: 'object',
-    properties: {
-      disagreements: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'An array of disagreements',
-      },
-    },
-    required: ['disagreements'],
-  },
+  format: toJSONSchema(disagreementsSchema),
 };

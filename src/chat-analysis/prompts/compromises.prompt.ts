@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, toJSONSchema } from 'zod';
 import { PromptTemplate } from '../ollama/ollama.types';
 
 export const compromisesSchema = z.object({
@@ -32,15 +32,5 @@ export const COMPROMISES_PROMPT: PromptTemplate = {
     num_predict: 500,
     repeat_penalty: 1.3,
   },
-  format: {
-    type: 'object',
-    properties: {
-      compromises: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'An array of compromises',
-      },
-    },
-    required: ['compromises'],
-  },
+  format: toJSONSchema(compromisesSchema),
 };
