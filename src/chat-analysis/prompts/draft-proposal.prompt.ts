@@ -24,7 +24,6 @@ export const DRAFT_PROPOSAL_PROMPT: PromptTemplate = {
       "title": "Decision: Meet on Tuesdays at 2pm",
       "description": "The team has agreed to meet every Tuesday at 2pm."
     }
-
   `,
   user: 'Draft a proposal based on this discussion:\n{chatData}',
   format: {
