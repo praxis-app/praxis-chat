@@ -1,29 +1,31 @@
 import { Ollama } from 'ollama';
-import { Agent, setGlobalDispatcher } from 'undici';
+import { Agent } from 'undici';
 import { Model, PromptConfig } from './ollama.types';
 
 const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout
 
-// Increase fetch timeouts so long-running model pulls don't trigger Undici header/body timeouts.
-setGlobalDispatcher(
-  new Agent({
-    headersTimeout: OLLAMA_HEADERS_TIMEOUT_MS,
-    bodyTimeout: OLLAMA_BODY_TIMEOUT_MS,
-  }),
-);
-
 const ollama = new Ollama({
   host: `${process.env.OLLAMA_HOST}:${process.env.OLLAMA_PORT}`,
+
+  // Increase fetch timeouts so long-running model pulls don't trigger Undici
+  // header/body timeouts. This only affects Ollama requests, not other
+  // fetch calls in the application
+  fetch: (url, options) => {
+    const agent = new Agent({
+      headersTimeout: OLLAMA_HEADERS_TIMEOUT_MS,
+      bodyTimeout: OLLAMA_BODY_TIMEOUT_MS,
+    });
+    return fetch(url, { ...options, dispatcher: agent });
+  },
 });
 
 /**
- * In-memory cache of verified Ollama models.
+ * In-memory cache of verified Ollama models
  *
- * This cache prevents redundant model verification checks by storing
- * model names that have already been confirmed to exist locally.
- * Without this cache, we would need to call `ollama.list()` on every
- * request to verify model availability.
+ * This cache prevents redundant model verification checks by storing model names that
+ * have already been confirmed to exist locally. Without this cache, we would need to
+ * call `ollama.list()` on every request to verify model availability
  */
 const verifiedModels = new Set<Model>();
 
