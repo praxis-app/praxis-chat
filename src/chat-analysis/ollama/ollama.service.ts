@@ -29,6 +29,8 @@ const ollama = new Ollama({
  * This cache prevents redundant model verification checks by storing model names that
  * have already been confirmed to exist locally. Without this cache, we would need to
  * call `ollama.list()` on every request to verify model availability
+ *
+ * TODO: Consider moving this to Redis
  */
 const verifiedModels = new Set<Model>();
 
