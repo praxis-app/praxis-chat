@@ -1,5 +1,5 @@
 import { Ollama } from 'ollama';
-import { Agent } from 'undici';
+import { Agent, fetch as undiciFetch } from 'undici';
 import { Model, PromptConfig } from './ollama.types';
 
 const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
@@ -16,7 +16,7 @@ const ollama = new Ollama({
       headersTimeout: OLLAMA_HEADERS_TIMEOUT_MS,
       bodyTimeout: OLLAMA_BODY_TIMEOUT_MS,
     });
-    return fetch(url, { ...options, dispatcher: agent });
+    return undiciFetch(url, { ...options, dispatcher: agent });
   },
 });
 
