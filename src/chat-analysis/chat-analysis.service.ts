@@ -6,7 +6,7 @@
  * limited and still a work in progress.
  */
 
-import { ensureModel, executePrompt } from './ollama/ollama.service';
+import * as ollamaService from './ollama/ollama.service';
 import { Model } from './ollama/ollama.types';
 import { CHAT_SUMMARY_PROMPT } from './prompts/chat-summary.prompt';
 import {
@@ -41,7 +41,7 @@ export const getChatSummary = async ({ messages }: Chat) => {
   const recentMessages = messages.slice(-50);
   const chatData = shapeChatData(recentMessages);
 
-  const content = await executePrompt({
+  const content = await ollamaService.executePrompt({
     model: CHAT_ANALYSIS_MODEL,
     template: CHAT_SUMMARY_PROMPT,
     variables: { chatData },
@@ -55,7 +55,7 @@ export const isReadyForProposal = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   try {
-    const content = await executePrompt({
+    const content = await ollamaService.executePrompt({
       model: CHAT_ANALYSIS_MODEL,
       template: PROPOSAL_READINESS_PROMPT,
       variables: { chatData },
@@ -81,7 +81,7 @@ export const getDisagreements = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   try {
-    const content = await executePrompt({
+    const content = await ollamaService.executePrompt({
       model: CHAT_ANALYSIS_MODEL,
       template: DISAGREEMENTS_PROMPT,
       variables: { chatData },
@@ -102,7 +102,7 @@ export const getCompromises = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   try {
-    const content = await executePrompt({
+    const content = await ollamaService.executePrompt({
       model: CHAT_ANALYSIS_MODEL,
       template: COMPROMISES_PROMPT,
       variables: { chatData },
@@ -121,7 +121,7 @@ export const draftProposal = async ({ messages }: Chat) => {
   const chatData = shapeChatData(recentMessages);
 
   try {
-    const content = await executePrompt({
+    const content = await ollamaService.executePrompt({
       model: CHAT_ANALYSIS_MODEL,
       template: DRAFT_PROPOSAL_PROMPT,
       variables: { chatData },
@@ -143,7 +143,7 @@ export const draftProposal = async ({ messages }: Chat) => {
 };
 
 export const loadRequiredModels = async () => {
-  await ensureModel(CHAT_ANALYSIS_MODEL);
+  await ollamaService.ensureModel(CHAT_ANALYSIS_MODEL);
 };
 
 const shapeChatData = (messages: Message[]) => {
