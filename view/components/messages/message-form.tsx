@@ -65,6 +65,13 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const isEmpty = isEmptyBody && !images.length;
   const draftKey = `message-draft-${channelId}`;
 
+  const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
+    return [...feed].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  };
+
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
     mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
       if (!channelId) {
@@ -115,8 +122,15 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         resolvedChannelId,
       ]);
 
+      const currentImages = [...images];
+      const optimisticImages: ImageRes[] = currentImages.map((_file, i) => ({
+        id: `temp-img-${i}-${crypto.randomUUID()}`,
+        isPlaceholder: true,
+        createdAt: new Date().toISOString(),
+      }));
+
       const optimisticMessage: MessageRes = {
-        id: `temp-${Date.now()}`,
+        id: `temp-${crypto.randomUUID()}`,
         body,
         user: meData?.user
           ? {
@@ -130,6 +144,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         bot: null,
         createdAt: new Date().toISOString(),
         commandStatus: null,
+        images: optimisticImages.length ? optimisticImages : undefined,
       };
 
       const optimisticFeedItem: FeedItemRes = {
@@ -149,11 +164,10 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
           const pages = oldData.pages.map((page, index) => {
             if (index === 0) {
-              const sortedFeed = [optimisticFeedItem, ...page.feed].sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime(),
-              );
+              const sortedFeed = sortFeedByDate([
+                optimisticFeedItem,
+                ...page.feed,
+              ]);
               return { feed: sortedFeed };
             }
             return page;
@@ -162,12 +176,18 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         },
       );
 
-      return { previousFeed };
+      return { previousFeed, optimisticImageUrls: currentImages.map(URL.createObjectURL) };
     },
-    onSuccess: (messageWithImages) => {
+    onSuccess: (messageWithImages, _variables, context) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
+
+      if (context?.optimisticImageUrls) {
+        for (const url of context.optimisticImageUrls) {
+          URL.revokeObjectURL(url);
+        }
+      }
 
       const newFeedItem: FeedItemRes = {
         ...messageWithImages,
@@ -197,11 +217,10 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               if (alreadyExists) {
                 return { feed: feedWithoutOptimistic };
               }
-              const sortedFeed = [newFeedItem, ...feedWithoutOptimistic].sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime(),
-              );
+              const sortedFeed = sortFeedByDate([
+                newFeedItem,
+                ...feedWithoutOptimistic,
+              ]);
               return { feed: sortedFeed };
             }
             return page;
@@ -210,7 +229,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         },
       );
 
-      if (messageWithImages.images?.length) {
+      if (images.length) {
         setImagesInputKey(Date.now());
         setImages([]);
       }
@@ -224,6 +243,12 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
+
+      if (context?.optimisticImageUrls) {
+        for (const url of context.optimisticImageUrls) {
+          URL.revokeObjectURL(url);
+        }
+      }
 
       if (context?.previousFeed) {
         queryClient.setQueryData<FeedQuery>(
