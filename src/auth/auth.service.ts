@@ -1,10 +1,13 @@
 import { compare, hash } from 'bcrypt';
+import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { normalizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as invitesService from '../invites/invites.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
+
+dotenv.config();
 
 const ACCESS_TOKEN_EXPIRES_IN = 60 * 60 * 24 * 90;
 const SALT_ROUNDS = 10;

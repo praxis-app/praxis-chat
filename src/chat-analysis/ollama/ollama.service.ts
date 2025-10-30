@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv';
 import { Ollama } from 'ollama';
 import { Agent, fetch as undiciFetch } from 'undici';
 import { Model, PromptConfig } from './ollama.types';
+
+dotenv.config();
 
 const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout

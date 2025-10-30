@@ -1,5 +1,6 @@
 import { CommandStatus } from '@common/commands/command.types';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
+import * as dotenv from 'dotenv';
 import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
@@ -13,6 +14,8 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
+
+dotenv.config();
 
 const messageRepository = dataSource.getRepository(Message);
 const imageRepository = dataSource.getRepository(Image);
