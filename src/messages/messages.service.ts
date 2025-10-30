@@ -183,8 +183,8 @@ export const createMessage = async (
   if (
     plaintext &&
     user.anonymous === false &&
-    commandsService.isCommandMessage(plaintext) &&
-    process.env.ENABLE_LLM_FEATURES === 'true'
+    process.env.ENABLE_LLM_FEATURES === 'true' &&
+    commandsService.isCommandMessage(plaintext)
   ) {
     try {
       const botMessage = await createBotMessage(
