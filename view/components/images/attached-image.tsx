@@ -68,11 +68,9 @@ export const AttachedImage = ({
           pollId={pollId}
           alt={t('images.labels.attachedImage')}
           className={cn(
-            'w-full',
-            // TODO: Clean this up - TW classes aren't merging correctly with `className`
-            isLoaded
-              ? 'h-auto cursor-pointer'
-              : `cursor-default ${isError ? 'h-2' : 'h-[300px]'}`,
+            'w-full cursor-default',
+            isLoaded && 'h-auto cursor-pointer',
+            !isLoaded && (isError ? 'h-2' : 'h-[300px]'),
             className,
           )}
           isPlaceholder={image.isPlaceholder}
