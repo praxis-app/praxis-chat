@@ -106,7 +106,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
         <div
           ref={setRef}
           className={cn(
-            'relative overflow-hidden',
+            'relative overflow-hidden transition-colors duration-200',
             shouldShowPlaceholderBackground && 'bg-muted',
             className, // TODO: Determine if this is also needed for the container
           )}
