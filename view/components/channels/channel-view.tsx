@@ -128,7 +128,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
               );
 
               if (existingIndex !== -1) {
-                // Update existing message (bot message with LLM result)
+                // Update existing message (bot message with command result)
                 const updatedFeed = [...page.feed];
                 const existingMessage = page.feed[existingIndex];
                 updatedFeed[existingIndex] = buildFeedItem(existingMessage);
