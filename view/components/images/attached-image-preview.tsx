@@ -58,7 +58,7 @@ const SavedImagePreview = ({
   });
 
   return (
-    <div ref={ref} className={cn(className)}>
+    <div ref={ref} className={cn(className, disabled && 'opacity-50')}>
       <img alt={t('images.labels.attachedImage')} src={src} width="100%" />
       {handleDelete && (
         <RemoveButton
@@ -124,7 +124,10 @@ export const AttachedImagePreview = ({
         ))}
 
       {selectedImages.map((image) => (
-        <div className={containerClassName} key={image.name}>
+        <div
+          className={cn(containerClassName, disabled && 'opacity-50')}
+          key={image.name}
+        >
           <img alt={image.name} src={URL.createObjectURL(image)} width="100%" />
           {handleRemove && (
             <RemoveButton
