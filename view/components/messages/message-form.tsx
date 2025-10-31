@@ -182,21 +182,24 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         },
       );
 
-      return { previousFeed, optimisticImageUrls };
+      return { previousFeed, optimisticImages };
     },
-    onSuccess: (messageWithImages, _variables, context) => {
+    onSuccess: (message, _variables, context) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
 
-      if (context?.optimisticImageUrls) {
-        for (const url of context.optimisticImageUrls) {
-          URL.revokeObjectURL(url);
+      const imagesWithSrc = message.images?.map((image, index) => {
+        const optimisticImage = context?.optimisticImages?.[index];
+        if (optimisticImage?.src && !image.src) {
+          return { ...image, src: optimisticImage.src };
         }
-      }
+        return image;
+      });
 
       const newFeedItem: FeedItemRes = {
-        ...messageWithImages,
+        ...message,
+        images: imagesWithSrc ?? message.images,
         type: 'message',
       };
 
@@ -217,8 +220,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
                   !(item.type === 'message' && item.id.startsWith('temp-')),
               );
               const alreadyExists = feedWithoutOptimistic.some(
-                (item) =>
-                  item.type === 'message' && item.id === messageWithImages.id,
+                (item) => item.type === 'message' && item.id === message.id,
               );
               if (alreadyExists) {
                 return { feed: feedWithoutOptimistic };
@@ -249,12 +251,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
-
-      if (context?.optimisticImageUrls) {
-        for (const url of context.optimisticImageUrls) {
-          URL.revokeObjectURL(url);
-        }
-      }
 
       if (context?.previousFeed) {
         queryClient.setQueryData<FeedQuery>(
