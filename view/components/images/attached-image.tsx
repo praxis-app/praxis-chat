@@ -66,6 +66,7 @@ export const AttachedImage = ({
           channelId={channelId}
           messageId={messageId}
           pollId={pollId}
+          src={image.src}
           alt={t('images.labels.attachedImage')}
           className={cn(
             'w-full cursor-default',
@@ -98,6 +99,7 @@ export const AttachedImage = ({
             channelId={channelId}
             messageId={messageId}
             pollId={pollId}
+            src={image.src}
             onError={() => setIsError(true)}
           />
         )}

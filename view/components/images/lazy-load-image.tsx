@@ -85,7 +85,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
     const { t } = useTranslation();
 
     const resolvedSrc = src || srcFromImageId;
-    const showImage = resolvedSrc && !isPlaceholder && !failed;
+    const showImage = !!resolvedSrc && !failed && (!isPlaceholder || !!src);
     const showFileMissing = failed && !showImage && !isPlaceholder;
 
     const shouldShowPlaceholderBackground =

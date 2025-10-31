@@ -123,11 +123,17 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       ]);
 
       const currentImages = [...images];
-      const optimisticImages: ImageRes[] = currentImages.map((_file, i) => ({
-        id: `temp-img-${i}-${crypto.randomUUID()}`,
-        isPlaceholder: true,
-        createdAt: new Date().toISOString(),
-      }));
+      const optimisticImageUrls = currentImages.map((file) =>
+        URL.createObjectURL(file),
+      );
+      const optimisticImages: ImageRes[] = optimisticImageUrls.map(
+        (src, i) => ({
+          id: `temp-img-${i}-${crypto.randomUUID()}`,
+          isPlaceholder: true,
+          createdAt: new Date().toISOString(),
+          src,
+        }),
+      );
 
       const optimisticMessage: MessageRes = {
         id: `temp-${crypto.randomUUID()}`,
@@ -176,7 +182,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         },
       );
 
-      return { previousFeed, optimisticImageUrls: currentImages.map(URL.createObjectURL) };
+      return { previousFeed, optimisticImageUrls };
     },
     onSuccess: (messageWithImages, _variables, context) => {
       const resolvedChannelId = isGeneralChannel
