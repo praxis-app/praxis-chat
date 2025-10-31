@@ -246,12 +246,16 @@ const createBotMessage = async (
   };
 
   const messagePayload = {
-    ...message,
+    id: message.id,
     body: plaintext,
     images: [],
     user: null,
-    commandStatus,
+    userId: null,
+    botId: bot.id,
     bot,
+    commandStatus,
+    createdAt: message.createdAt,
+    updatedAt: message.updatedAt,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
@@ -307,12 +311,16 @@ export const updateBotMessage = async (
     : null;
 
   const messagePayload = {
-    ...updatedMessage,
+    id: updatedMessage.id,
     body: plaintext,
     images: [],
     user: null,
-    commandStatus: updates.commandStatus,
+    userId: null,
+    botId: bot?.id,
     bot,
+    commandStatus: updates.commandStatus,
+    createdAt: updatedMessage.createdAt,
+    updatedAt: updatedMessage.updatedAt,
   };
 
   const channelMembers = await channelsService.getChannelMembers(
