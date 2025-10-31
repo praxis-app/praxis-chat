@@ -6,6 +6,7 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { timeAgo } from '@/lib/time.utils';
 import { MessageRes } from '@/types/message.types';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../../lib/shared.utils';
 import { truncate } from '../../lib/text.utils';
 import { CurrentUser } from '../../types/user.types';
 
@@ -22,6 +23,10 @@ export const Message = ({
 }: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
+
+  if (!user) {
+    return null;
+  }
 
   const formattedDate = timeAgo(createdAt);
   const showImages = !!images?.length;
@@ -74,7 +79,7 @@ export const Message = ({
             channelId={channelId}
             messageId={id}
             imageClassName="rounded-lg"
-            className={`pt-1.5 ${isDesktop ? 'w-[350px]' : 'w-full'}`}
+            className={cn('pt-1.5', isDesktop ? 'w-[350px]' : 'w-full')}
           />
         )}
 

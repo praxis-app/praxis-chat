@@ -1,3 +1,5 @@
+import { COMMAND_STATUS } from '@common/commands/command.constants';
+import { CommandStatus } from '@common/commands/command.types';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Bot } from '../bots/bot.entity';
 import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
@@ -31,11 +34,24 @@ export class Message {
 
   @ManyToOne(() => User, (user) => user.messages, {
     onDelete: 'CASCADE',
+    nullable: true,
   })
-  user: User;
+  user: User | null;
 
-  @Column()
-  userId: string;
+  @Column({ nullable: true })
+  userId: string | null;
+
+  @ManyToOne(() => Bot, (bot) => bot.messages, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  bot: Bot | null;
+
+  @Column({ nullable: true })
+  botId: string | null;
+
+  @Column({ type: 'enum', enum: COMMAND_STATUS, nullable: true })
+  commandStatus: CommandStatus | null;
 
   @ManyToOne(() => ChannelKey, (key) => key.messages)
   key?: ChannelKey;

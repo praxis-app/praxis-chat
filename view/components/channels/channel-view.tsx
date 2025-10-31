@@ -4,6 +4,7 @@ import { useMeQuery } from '@/hooks/use-me-query';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
+import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
 import { PollRes } from '@/types/poll.types';
 import { PubSubMessage } from '@/types/shared.types';
@@ -79,26 +80,78 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         return;
       }
 
-      // Update cache with new message, images are placeholders
+      // Update cache with new message or update existing bot message
       if (body.type === PubSubMessageType.MESSAGE) {
-        const newFeedItem: FeedItemRes = {
-          ...body.message,
-          type: 'message',
+        const messagePayload = body.message;
+
+        const preserveImageSrc = (
+          existingImages?: ImageRes[],
+          incomingImages?: ImageRes[],
+        ) => {
+          if (!incomingImages?.length || !existingImages?.length) {
+            return incomingImages;
+          }
+
+          const existingMap = new Map(
+            existingImages.map((img) => [img.id, img]),
+          );
+
+          return incomingImages.map((image) => {
+            const existing = existingMap.get(image.id);
+            if (existing?.src && !image.src) {
+              return { ...image, src: existing.src };
+            }
+            return image;
+          });
         };
+
+        const buildFeedItem = (existing?: FeedItemRes): FeedItemRes => ({
+          ...messagePayload,
+          images: preserveImageSrc(existing?.images, messagePayload.images),
+          type: 'message',
+        });
+
         queryClient.setQueryData<FeedQuery>(
           ['feed', resolvedChannelId],
           (oldData) => {
             if (!oldData) {
               return {
-                pages: [{ feed: [newFeedItem] }],
+                pages: [{ feed: [buildFeedItem()] }],
                 pageParams: [0],
               };
             }
             const pages = oldData.pages.map((page, index) => {
+              // Check if message already exists (for bot message updates)
+              const existingIndex = page.feed.findIndex(
+                (item) =>
+                  item.type === 'message' && item.id === messagePayload.id,
+              );
+
+              if (existingIndex !== -1) {
+                // Update existing message (bot message with command result)
+                const updatedFeed = [...page.feed];
+                const existingMessage = page.feed[existingIndex];
+                updatedFeed[existingIndex] = buildFeedItem(existingMessage);
+
+                // Sort by createdAt descending (newest first)
+                updatedFeed.sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                );
+                return { feed: updatedFeed };
+              }
+
+              // Add new message to first page only
               if (index === 0) {
-                return {
-                  feed: [newFeedItem, ...page.feed],
-                };
+                const updatedFeed = [buildFeedItem(), ...page.feed];
+                // Sort by createdAt descending (newest first)
+                updatedFeed.sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                );
+                return { feed: updatedFeed };
               }
               return page;
             });
@@ -169,7 +222,14 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
                 if (exists) {
                   return page;
                 }
-                return { feed: [newFeedItem, ...page.feed] };
+                const updatedFeed = [newFeedItem, ...page.feed];
+                // Sort by createdAt descending (newest first)
+                updatedFeed.sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                );
+                return { feed: updatedFeed };
               }
               return page;
             });

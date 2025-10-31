@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.{test,spec}.ts'],
-    exclude: ['node_modules/**', 'dist/**', 'view/**'],
+    exclude: ['node_modules/**', 'dist/**', 'view/**', 'src/chat-analysis/**'],
     globals: true,
     setupFiles: ['src/tests/setup.ts'],
   },

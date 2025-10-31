@@ -47,14 +47,6 @@ export const AttachedImage = ({
 
   const { t } = useTranslation();
 
-  const imageClassName = cn(
-    'w-full',
-    isLoaded
-      ? 'cursor-pointer h-auto'
-      : `cursor-default ${isError ? 'h-2' : 'h-[300px]'}`,
-    className,
-  );
-
   const handleLoad = () => {
     onImageLoad?.();
     setIsLoaded(true);
@@ -74,8 +66,14 @@ export const AttachedImage = ({
           channelId={channelId}
           messageId={messageId}
           pollId={pollId}
+          src={image.src}
           alt={t('images.labels.attachedImage')}
-          className={imageClassName}
+          className={cn(
+            'w-full cursor-default',
+            isLoaded && 'h-auto cursor-pointer',
+            !isLoaded && (isError ? 'h-2' : 'h-[300px]'),
+            className,
+          )}
           isPlaceholder={image.isPlaceholder}
           onClick={handleClick}
           onError={() => setIsError(true)}
@@ -101,6 +99,7 @@ export const AttachedImage = ({
             channelId={channelId}
             messageId={messageId}
             pollId={pollId}
+            src={image.src}
             onError={() => setIsError(true)}
           />
         )}

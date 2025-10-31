@@ -23,7 +23,7 @@ dotenv.config();
 
   await dataSource.initialize();
   await cacheService.initializeCache();
-  await appService.startCronJobs();
+  await appService.initializeApp();
 
   app.use(
     helmet({

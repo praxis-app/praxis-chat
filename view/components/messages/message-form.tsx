@@ -1,10 +1,12 @@
 import { api } from '@/client/api-client';
 import { KeyCodes } from '@/constants/shared.constants';
+import { useMeQuery } from '@/hooks/use-me-query';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
+import { MessageRes } from '@/types/message.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -51,6 +53,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
+  const { data: meData } = useMeQuery();
+
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { body: '' },
@@ -61,20 +65,32 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const isEmpty = isEmptyBody && !images.length;
   const draftKey = `message-draft-${channelId}`;
 
+  const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
+    return [...feed].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  };
+
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
     mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
-      validateImageInput(images);
+      const currentImages = [...images];
+      validateImageInput(currentImages);
 
-      const { message } = await api.sendMessage(channelId, body, images.length);
+      const { message } = await api.sendMessage(
+        channelId,
+        body,
+        currentImages.length,
+      );
       const messageImages: ImageRes[] = [];
 
-      if (images.length && message.images) {
-        for (let i = 0; i < images.length; i++) {
+      if (currentImages.length && message.images) {
+        for (let i = 0; i < currentImages.length; i++) {
           const formData = new FormData();
-          formData.set('file', images[i]);
+          formData.set('file', currentImages[i]);
 
           const placeholder = message.images[i];
           const { image } = await api.uploadMessageImage(
@@ -92,18 +108,100 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         images: messageImages,
       };
     },
-    onSuccess: (messageWithImages) => {
-      if (images.length) {
-        setImagesInputKey(Date.now());
-        setImages([]);
-      }
-
+    onMutate: async ({ body }) => {
       const resolvedChannelId = isGeneralChannel
         ? GENERAL_CHANNEL_NAME
         : channelId;
 
+      await queryClient.cancelQueries({
+        queryKey: ['feed', resolvedChannelId],
+      });
+
+      const previousFeed = queryClient.getQueryData<FeedQuery>([
+        'feed',
+        resolvedChannelId,
+      ]);
+
+      const currentImages = [...images];
+      const optimisticImageUrls = currentImages.map((file) =>
+        URL.createObjectURL(file),
+      );
+      const optimisticImages: ImageRes[] = optimisticImageUrls.map(
+        (src, i) => ({
+          id: `temp-img-${i}-${crypto.randomUUID()}`,
+          isPlaceholder: true,
+          createdAt: new Date().toISOString(),
+
+          // TODO: Ensure image file isn't fetched from BE if its already cached
+          src,
+        }),
+      );
+
+      const optimisticMessage: MessageRes = {
+        id: `temp-${crypto.randomUUID()}`,
+        body,
+        user: meData?.user
+          ? {
+              id: meData.user.id,
+              name: meData.user.name,
+              profilePicture: meData.user.profilePicture,
+            }
+          : null,
+        userId: meData?.user?.id ?? null,
+        botId: null,
+        bot: null,
+        createdAt: new Date().toISOString(),
+        commandStatus: null,
+        images: optimisticImages.length ? optimisticImages : undefined,
+      };
+
+      const optimisticFeedItem: FeedItemRes = {
+        ...optimisticMessage,
+        type: 'message',
+      };
+
+      queryClient.setQueryData<FeedQuery>(
+        ['feed', resolvedChannelId],
+        (oldData) => {
+          if (!oldData) {
+            return {
+              pages: [{ feed: [optimisticFeedItem] }],
+              pageParams: [0],
+            };
+          }
+
+          const pages = oldData.pages.map((page, index) => {
+            if (index === 0) {
+              const sortedFeed = sortFeedByDate([
+                optimisticFeedItem,
+                ...page.feed,
+              ]);
+              return { feed: sortedFeed };
+            }
+            return page;
+          });
+          return { pages, pageParams: oldData.pageParams };
+        },
+      );
+
+      return { previousFeed, optimisticImages };
+    },
+    onSuccess: (message, _variables, context) => {
+      const resolvedChannelId = isGeneralChannel
+        ? GENERAL_CHANNEL_NAME
+        : channelId;
+
+      const imagesWithSrc = message.images?.map((image, index) => {
+        const optimisticImage = context?.optimisticImages?.[index];
+        if (optimisticImage?.src && !image.src) {
+          return { ...image, src: optimisticImage.src };
+        }
+        return image;
+      });
+
       const newFeedItem: FeedItemRes = {
-        ...messageWithImages,
+        ...message,
+        images: imagesWithSrc ?? message.images,
         type: 'message',
       };
 
@@ -119,14 +217,21 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
           const pages = oldData.pages.map((page, index) => {
             if (index === 0) {
-              const alreadyExists = page.feed.some(
+              const feedWithoutOptimistic = page.feed.filter(
                 (item) =>
-                  item.type === 'message' && item.id === messageWithImages.id,
+                  !(item.type === 'message' && item.id.startsWith('temp-')),
+              );
+              const alreadyExists = feedWithoutOptimistic.some(
+                (item) => item.type === 'message' && item.id === message.id,
               );
               if (alreadyExists) {
-                return page;
+                return { feed: feedWithoutOptimistic };
               }
-              return { feed: [newFeedItem, ...page.feed] };
+              const sortedFeed = sortFeedByDate([
+                newFeedItem,
+                ...feedWithoutOptimistic,
+              ]);
+              return { feed: sortedFeed };
             }
             return page;
           });
@@ -134,12 +239,28 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         },
       );
 
+      if (images.length) {
+        setImagesInputKey(Date.now());
+        setImages([]);
+      }
+
       localStorage.removeItem(draftKey);
       setValue('body', '');
       onSend?.();
       reset();
     },
-    onError(error: Error) {
+    onError: (error: Error, _variables, context) => {
+      const resolvedChannelId = isGeneralChannel
+        ? GENERAL_CHANNEL_NAME
+        : channelId;
+
+      if (context?.previousFeed) {
+        queryClient.setQueryData<FeedQuery>(
+          ['feed', resolvedChannelId],
+          context.previousFeed,
+        );
+      }
+
       handleError(error);
     },
   });
@@ -241,6 +362,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               <MdAdd
                 className={cn(
                   'text-muted-foreground size-7 transition-transform duration-200',
+                  isMessageSending && 'cursor-not-allowed opacity-50',
                   showMenu && 'rotate-45',
                 )}
               />
@@ -249,6 +371,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             setShowMenu={setShowMenu}
             channelId={channelId}
             isGeneralChannel={isGeneralChannel}
+            disabled={isMessageSending}
           />
 
           <div className="bg-input/30 flex w-full items-center rounded-3xl px-2">
@@ -259,12 +382,16 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
                 <Textarea
                   {...field}
                   placeholder={t('messages.placeholders.sendMessage')}
-                  className="min-h-12 resize-none border-none bg-transparent py-3 shadow-none focus-visible:border-none focus-visible:ring-0 md:py-3.5 dark:bg-transparent"
+                  className={cn(
+                    'min-h-12 resize-none border-none bg-transparent py-3 shadow-none focus-visible:border-none focus-visible:ring-0 md:py-3.5 dark:bg-transparent',
+                    isMessageSending && 'opacity-50',
+                  )}
                   onKeyDown={handleInputKeyDown}
                   onChange={(e) => {
                     saveDraft(e.target.value);
                     field.onChange(e);
                   }}
+                  disabled={isMessageSending}
                   ref={inputRef}
                   rows={1}
                 />
@@ -274,6 +401,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             <ImageInput
               key={imagesInputKey}
               setImages={setImages}
+              disabled={isMessageSending}
               iconClassName="text-muted-foreground size-6 self-center"
               multiple
             />
@@ -313,6 +441,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           <AttachedImagePreview
             handleRemove={handleRemoveSelectedImage}
             selectedImages={images}
+            disabled={isMessageSending}
             className="ml-1.5"
           />
         )}

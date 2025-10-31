@@ -15,6 +15,7 @@
     "types": "tsc -b",
     "test": "vitest run --config vitest.src.config.mts",
     "test:client": "vitest run --config vite.config.mts",
+    "test:llm": "vitest run --config src/chat-analysis/__tests__/vitest.llm.config.mts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
   },
@@ -37,12 +38,13 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-visually-hidden": "^1.2.3",
     "@tailwindcss/vite": "^4.1.11",
-    "@tanstack/react-query": "^5.62.11",
+    "@tanstack/react-query": "^5.90.5",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.0.2",
+    "bull": "^4.16.5",
     "chroma-js": "^3.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -62,6 +64,7 @@
     "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.1",
     "next-themes": "^0.4.6",
+    "ollama": "^0.6.0",
     "path": "^0.12.7",
     "pg": "^8.16.3",
     "react": "^18.3.1",
@@ -79,17 +82,19 @@
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.5",
     "typeorm": "^0.3.14",
+    "undici": "^6.22.0",
     "unique-names-generator": "^4.7.1",
     "uuid": "^10.0.0",
     "vaul": "^1.1.2",
     "vitest": "^3.2.4",
     "ws": "^8.18.0",
-    "zod": "^4.0.5",
+    "zod": "^4.1.12",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",
     "@types/bcrypt": "^5.0.2",
+    "@types/bull": "^3.15.9",
     "@types/chroma-js": "^2.4.5",
     "@types/color-hash": "^2.0.0",
     "@types/cors": "^2.8.17",
@@ -105,7 +110,7 @@
     "@types/ws": "^8.5.12",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
@@ -118,6 +123,6 @@
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
-    "vite": "^6.3.5"
+    "vite": "^6.4.1"
   }
 }

@@ -2,6 +2,7 @@
 
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import * as crypto from 'crypto';
+import * as dotenv from 'dotenv';
 import { FindManyOptions, In, QueryFailedError } from 'typeorm';
 import {
   AES_256_GCM_ALGORITHM,
@@ -16,6 +17,8 @@ import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
 import { Channel } from './entities/channel.entity';
+
+dotenv.config();
 
 export interface CreateChannelDto {
   name: string;

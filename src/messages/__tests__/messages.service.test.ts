@@ -48,6 +48,11 @@ vi.mock('../../pub-sub/pub-sub.service', () => ({
   publish: vi.fn(),
 }));
 
+vi.mock('../../commands/commands.service', () => ({
+  isCommandMessage: vi.fn().mockReturnValue(false),
+  queueCommandJob: vi.fn(),
+}));
+
 vi.mock('../../common/common.utils', () => ({
   sanitizeText: vi.fn((text?: string) => text?.trim() || ''),
 }));
@@ -62,6 +67,13 @@ vi.mock('../../images/entities/image.entity', () => ({
 
 vi.mock('../../users/user.entity', () => ({
   User: function User() {},
+}));
+
+vi.mock('../../bots/bots.service', () => ({
+  getDefaultBot: vi.fn().mockResolvedValue({
+    id: 'bot-1',
+    name: 'praxis-bot',
+  }),
 }));
 
 // Import the service after mocks
@@ -103,6 +115,7 @@ describe('Messages Service', () => {
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
           user: { id: 'user-1', name: 'Test User', displayName: 'Test User' },
+          bot: null,
           images: [
             {
               id: 'image-1',
@@ -159,6 +172,8 @@ describe('Messages Service', () => {
         'message.keyId',
         'message.tag',
         'message.iv',
+        'message.botId',
+        'message.commandStatus',
         'message.createdAt',
       ]);
       expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith([
@@ -175,6 +190,15 @@ describe('Messages Service', () => {
         'message.user',
         'messageUser',
       );
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'message.bot',
+        'messageBot',
+      );
+      expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith([
+        'messageBot.id',
+        'messageBot.name',
+        'messageBot.displayName',
+      ]);
       expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
         'message.images',
         'messageImage',
@@ -202,6 +226,7 @@ describe('Messages Service', () => {
           createdAt: new Date('2023-01-01'),
         },
       ]);
+      expect(result[0].bot).toBeNull();
     });
   });
 
@@ -297,6 +322,7 @@ describe('Messages Service', () => {
           type: 'message',
           message: expect.objectContaining({
             body: 'Test message',
+            bot: null,
             user: {
               id: 'user-1',
               name: 'Test User',

@@ -1,4 +1,3 @@
-import { Box } from '@/components/ui/box';
 import { useImageSrc } from '@/hooks/use-image-src';
 import { cn } from '@/lib/shared.utils';
 import {
@@ -86,38 +85,50 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
     const { t } = useTranslation();
 
     const resolvedSrc = src || srcFromImageId;
-    const showImage = resolvedSrc && !isPlaceholder && !failed;
-    const elementType = showImage ? 'img' : 'div';
-    const showFileMissing = failed && elementType === 'div' && !isPlaceholder;
+    const showImage = !!resolvedSrc && !failed && (!isPlaceholder || !!src);
+    const showFileMissing = failed && !showImage && !isPlaceholder;
 
-    const imageClassName = cn(
-      'object-cover',
-      !skipAnimation && 'transition-all duration-300',
-      !skipAnimation && (loaded ? 'blur-0 opacity-100' : 'blur-sm opacity-0'),
-      className,
-    );
+    const shouldShowPlaceholderBackground =
+      isPlaceholder || !loaded || !showImage;
 
     const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
       onLoad && onLoad(event);
       setLoaded(true);
     };
 
+    const handleError = () => {
+      setFailed(true);
+      onError?.();
+    };
+
     return (
       <>
-        <Box
+        <div
           ref={setRef}
-          alt={alt}
-          as={elementType}
-          loading={resolvedSrc ? 'lazy' : undefined}
-          onLoad={handleLoad}
-          onError={() => {
-            setFailed(true);
-            onError?.();
-          }}
-          src={resolvedSrc}
-          className={imageClassName}
-          {...imgProps}
-        />
+          className={cn(
+            'relative overflow-hidden transition-colors duration-200',
+            shouldShowPlaceholderBackground && 'bg-muted',
+            className, // TODO: Determine if this is also needed for the container
+          )}
+        >
+          {showImage ? (
+            <img
+              alt={alt}
+              onLoad={handleLoad}
+              onError={handleError}
+              src={resolvedSrc}
+              loading={resolvedSrc ? 'lazy' : undefined}
+              className={cn(
+                'h-full w-full object-cover',
+                !skipAnimation && 'transition-[filter,opacity] duration-300',
+                !skipAnimation && !loaded && 'opacity-0 blur-sm',
+                !skipAnimation && loaded && 'blur-0 opacity-100',
+                className,
+              )}
+              {...imgProps}
+            />
+          ) : null}
+        </div>
         {showFileMissing && (
           <div className="text-muted-foreground text-sm">
             {t('images.errors.fileMissing')}
