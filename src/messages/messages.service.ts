@@ -155,7 +155,7 @@ export const createMessage = async (
   }));
 
   const messagePayload = {
-    ...message,
+    id: message.id,
     body: plaintext,
     images: attachedImages,
     user: {
@@ -164,7 +164,12 @@ export const createMessage = async (
       displayName: user.displayName,
       profilePicture,
     },
+    userId: user.id,
+    botId: null,
     bot: null,
+    commandStatus: message.commandStatus,
+    createdAt: message.createdAt,
+    updatedAt: message.updatedAt,
   };
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
