@@ -131,6 +131,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
           id: `temp-img-${i}-${crypto.randomUUID()}`,
           isPlaceholder: true,
           createdAt: new Date().toISOString(),
+
+          // TODO: Ensure image file isn't fetched from BE if its already cached
           src,
         }),
       );
