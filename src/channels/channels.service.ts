@@ -12,6 +12,7 @@ import { sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
+import { ServerMember } from '../servers/entities/server-member.entity';
 import { getServerSafely } from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
@@ -34,6 +35,7 @@ const userRepository = dataSource.getRepository(User);
 const channelRepository = dataSource.getRepository(Channel);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const channelKeyRepository = dataSource.getRepository(ChannelKey);
+const serverMemberRepository = dataSource.getRepository(ServerMember);
 
 export const getChannel = (channelId: string) => {
   return channelRepository.findOneOrFail({
@@ -179,10 +181,10 @@ export const addMemberToAllServerChannels = async (
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = async (
-  { name, description }: CreateChannelDto,
-  currentUserId: string,
-) => {
+export const createChannel = async ({
+  name,
+  description,
+}: CreateChannelDto) => {
   const sanitizedName = sanitizeText(name);
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
@@ -191,10 +193,14 @@ export const createChannel = async (
   const { wrappedKey, tag, iv } = generateChannelKey();
 
   const server = await getServerSafely();
+  const serverMembers = await serverMemberRepository.find({
+    where: { serverId: server.id },
+  });
+
   const channel = await channelRepository.save({
     name: normalizedName,
     description: sanitizedDescription,
-    members: [{ userId: currentUserId }],
+    members: serverMembers.map((member) => ({ userId: member.userId })),
     keys: [{ wrappedKey, tag, iv }],
     server,
   });

@@ -49,10 +49,7 @@ export const getGeneralChannelFeed = async (req: Request, res: Response) => {
 };
 
 export const createChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.createChannel(
-    req.body,
-    res.locals.user.id,
-  );
+  const channel = await channelsService.createChannel(req.body);
   res.json({ channel });
 };
 
