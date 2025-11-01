@@ -35,11 +35,7 @@ export class ServerRole {
   permissions: ServerRolePermission[];
 
   @ManyToMany(() => User, (user) => user.serverRoles)
-  @JoinTable({
-    name: 'role_members_user',
-    joinColumn: { name: 'roleId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
-  })
+  @JoinTable()
   members: User[];
 
   @OneToMany(
