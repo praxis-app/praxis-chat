@@ -17,7 +17,7 @@ export const ServerRole = ({
   const { t } = useTranslation();
   const isAboveMd = useIsDesktop();
 
-  const editRolePath = `${NavigationPaths.Roles}/${id}/edit`;
+  const editRolePath = `${NavigationPaths.ServerRoles}/${id}/edit`;
 
   return (
     <Link to={editRolePath}>

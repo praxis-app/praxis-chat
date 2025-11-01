@@ -149,7 +149,7 @@ export const getInlinePolls = async (
 
     const actionRole = poll.action.serverRole
       ? {
-          ...poll.action.role,
+          ...poll.action.serverRole,
           permissions: rowsForPoll.map((r) => ({
             changeType: r.pollActionPermission_changeType,
             subject: r.pollActionPermission_subject,
@@ -163,7 +163,7 @@ export const getInlinePolls = async (
       stage: poll.stage,
       action: {
         ...poll.action,
-        role: actionRole,
+        serverRole: actionRole,
       },
       images: poll.images.map((image) => ({
         id: image.id,

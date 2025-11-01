@@ -43,7 +43,7 @@ export const createPollActionRole = async (
     serverRoleToUpdateId,
     members,
     permissions,
-    ...serverRole,
+    ...serverRole
   }: PollActionRoleDto,
 ) => {
   const roleToUpdate = await serverRolesRepository.findOneOrFail({
