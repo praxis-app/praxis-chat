@@ -24,7 +24,7 @@ const DialogContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex h-screen min-w-full translate-x-[-50%] translate-y-[-50%] flex-col gap-6 overflow-y-auto p-6 pt-12 shadow-lg duration-200 supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh] supports-[height:100svh]:h-[100svh] supports-[height:100svh]:min-h-[100svh] md:grid md:h-auto md:min-w-auto md:gap-4 md:rounded-lg md:border',
+        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex h-screen min-w-full translate-x-[-50%] translate-y-[-50%] flex-col gap-6 overflow-y-auto p-6 pt-12 shadow-lg duration-200 supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh] supports-[height:100svh]:h-[100svh] supports-[height:100svh]:min-h-[100svh] md:grid md:h-auto md:min-w-auto md:gap-4 md:rounded-lg md:border md:p-8 supports-[height:100dvh]:md:h-auto supports-[height:100dvh]:md:min-h-0 supports-[height:100svh]:md:h-auto supports-[height:100svh]:md:min-h-0',
         className,
       )}
       {...props}
