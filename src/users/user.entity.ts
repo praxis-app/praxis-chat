@@ -15,7 +15,7 @@ import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { Role } from '../roles/entities/role.entity';
+import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { Vote } from '../votes/vote.entity';
 
@@ -72,10 +72,10 @@ export class User {
   })
   serverMembers: ServerMember[];
 
-  @ManyToMany(() => Role, (role) => role.members, {
+  @ManyToMany(() => ServerRole, (serverRole) => serverRole.members, {
     onDelete: 'CASCADE',
   })
-  roles: Role[];
+  serverRoles: ServerRole[];
 
   @OneToMany(() => Invite, (invite) => invite.user, {
     cascade: true,

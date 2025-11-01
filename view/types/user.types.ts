@@ -1,5 +1,5 @@
 import { ImageRes } from './image.types';
-import { Permission } from './role.types';
+import { Permission } from './server-role.types';
 
 export interface UserRes {
   id: string;

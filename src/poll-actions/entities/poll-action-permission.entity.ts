@@ -4,7 +4,7 @@ import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
-} from '@common/roles/role.constants';
+} from '@common/roles/server-role.constants';
 import {
   Column,
   CreateDateColumn,

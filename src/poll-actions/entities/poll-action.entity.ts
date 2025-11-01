@@ -20,11 +20,15 @@ export class PollAction {
   @Column({ type: 'enum', enum: POLL_ACTION_TYPE })
   actionType: PollActionType;
 
-  @OneToOne(() => PollActionRole, (proposedRole) => proposedRole.pollAction, {
-    cascade: true,
-    nullable: true,
-  })
-  role?: PollActionRole;
+  @OneToOne(
+    () => PollActionRole,
+    (proposedServerRole) => proposedServerRole.pollAction,
+    {
+      cascade: true,
+      nullable: true,
+    },
+  )
+  serverRole?: PollActionRole;
 
   @OneToOne(() => Poll, (poll) => poll.action, {
     onDelete: 'CASCADE',

@@ -1,4 +1,4 @@
-import { EditRolePage } from '@/pages/settings/edit-role-page';
+import { EditServerRolePage } from '@/pages/settings/edit-server-role-page';
 import { PollSettings } from '@/pages/settings/poll-settings';
 import { ServerRoles } from '@/pages/settings/server-roles';
 import { ServerSettings } from '@/pages/settings/server-settings';
@@ -28,8 +28,8 @@ export const settingsRouter: RouteObject = {
           element: <ServerRoles />,
         },
         {
-          path: ':roleId/edit',
-          element: <EditRolePage />,
+          path: ':serverRoleId/edit',
+          element: <EditServerRolePage />,
         },
       ],
     },

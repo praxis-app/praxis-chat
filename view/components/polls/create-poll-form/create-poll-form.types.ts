@@ -1,6 +1,6 @@
-import { PERMISSION_KEYS } from '@/constants/role.constants';
+import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { t } from '@/lib/shared.utils';
-import { RoleRes } from '@/types/role.types';
+import { ServerRoleRes } from '@/types/server-role.types';
 import { UserRes } from '@/types/user.types';
 import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import * as zod from 'zod';
@@ -15,14 +15,14 @@ export const createPollFormSchema = zod
         message: t('polls.errors.longBody'),
       })
       .optional(),
-    roleName: zod.string().optional(),
-    roleColor: zod.string().optional(),
+    serverRoleName: zod.string().optional(),
+    serverRoleColor: zod.string().optional(),
     action: zod.enum([...POLL_ACTION_TYPE, '']),
     permissions: zod
       .record(zod.enum(PERMISSION_KEYS), zod.boolean().optional())
       .optional(),
-    roleMembers: zod.array(zod.string()).optional(),
-    selectedRoleId: zod.string().optional(),
+    serverRoleMembers: zod.array(zod.string()).optional(),
+    selectedServerRoleId: zod.string().optional(),
   })
   .refine(
     (data) => {
@@ -44,6 +44,6 @@ export const createPollFormSchema = zod
 export type CreatePollFormSchema = zod.infer<typeof createPollFormSchema>;
 
 export interface CreatePollWizardContext {
-  selectedRole?: RoleRes;
-  usersEligibleForRole?: UserRes[];
+  selectedServerRole?: ServerRoleRes;
+  usersEligibleForServerRole?: UserRes[];
 }

@@ -1,12 +1,12 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
-import { getPermissionValuesMap } from '@/lib/role.utils';
+import { getPermissionValuesMap } from '@/lib/server-role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
-  CreatePollActionRoleMemberReq,
-  CreatePollActionRolePermissionReq,
+  CreatePollActionServerRoleMemberReq,
+  CreatePollActionServerRolePermissionReq,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/role.types';
+import { PermissionKeys } from '@/types/server-role.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -18,10 +18,10 @@ import { toast } from 'sonner';
 import { Wizard } from '../../shared/wizard/wizard';
 import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
 import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
-import { RoleAttributesStep } from './create-poll-form-steps/role-attributes-step';
-import { RoleMembersStep } from './create-poll-form-steps/role-members-step';
-import { RoleSelectionStep } from './create-poll-form-steps/role-selection-step';
-import { RolesPermissionsStep } from './create-poll-form-steps/roles-permissions-step';
+import { ServerRoleAttributesStep } from './create-poll-form-steps/server-role-attributes-step';
+import { ServerRoleMembersStep } from './create-poll-form-steps/server-role-members-step';
+import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
+import { ServerRolePermissionsStep } from './create-poll-form-steps/server-role-permissions-step';
 import {
   CreatePollFormSchema,
   createPollFormSchema,
@@ -50,32 +50,32 @@ export const CreatePollForm = ({
     defaultValues: {
       body: '',
       action: '',
-      roleName: '',
-      roleColor: '',
+      serverRoleName: '',
+      serverRoleColor: '',
       permissions: {},
-      roleMembers: [],
-      selectedRoleId: '',
+      serverRoleMembers: [],
+      selectedServerRoleId: '',
     },
   });
 
-  const selectedRoleId = form.watch('selectedRoleId');
+  const selectedServerRoleId = form.watch('selectedServerRoleId');
   const actionType = form.watch('action');
 
   const isRolePoll =
     actionType === 'change-role' || actionType === 'create-role';
 
-  const { data: roleData, isLoading: isRoleLoading } = useQuery({
-    queryKey: ['role', selectedRoleId],
-    queryFn: () => api.getRole(selectedRoleId!),
-    enabled: isRolePoll && !!selectedRoleId && currentStep > 1,
+  const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
+    queryKey: ['serverRole', selectedServerRoleId],
+    queryFn: () => api.getServerRole(selectedServerRoleId!),
+    enabled: isRolePoll && !!selectedServerRoleId && currentStep > 1,
   });
 
   // Get eligible users for the selected role
   const { data: eligibleUsersData, isLoading: isEligibleUsersLoading } =
     useQuery({
-      queryKey: ['role', selectedRoleId, 'members', 'eligible'],
-      queryFn: () => api.getUsersEligibleForRole(selectedRoleId!),
-      enabled: isRolePoll && !!selectedRoleId && currentStep > 2,
+      queryKey: ['serverRole', selectedServerRoleId, 'members', 'eligible'],
+      queryFn: () => api.getUsersEligibleForServerRole(selectedServerRoleId!),
+      enabled: isRolePoll && !!selectedServerRoleId && currentStep > 2,
     });
 
   const { mutate: createPoll, isPending } = useMutation({
@@ -88,20 +88,22 @@ export const CreatePollForm = ({
       }
 
       const nameChange =
-        values.roleName !== roleData?.role?.name ? values.roleName : undefined;
+        values.serverRoleName !== serverRoleData?.serverRole?.name
+          ? values.serverRoleName
+          : undefined;
 
       const colorChange =
-        values.roleColor !== roleData?.role?.color
-          ? values.roleColor
+        values.serverRoleColor !== serverRoleData?.serverRole?.color
+          ? values.serverRoleColor
           : undefined;
 
       const shapedRolePermissions = getPermissionValuesMap(
-        roleData?.role?.permissions || [],
+        serverRoleData?.serverRole?.permissions || [],
       );
 
       // Shape permissions from form format to API format and remove unchanged entries
       const permissionChanges = Object.entries(values.permissions || {}).reduce<
-        CreatePollActionRolePermissionReq[]
+        CreatePollActionServerRolePermissionReq[]
       >((result, [permissionName, permissionValue]) => {
         if (shapedRolePermissions[permissionName] === permissionValue) {
           return result;
@@ -131,7 +133,7 @@ export const CreatePollForm = ({
             break;
           case 'manageRoles':
             result.push({
-              subject: 'Role',
+              subject: 'ServerRole',
               actions: [
                 {
                   action: 'manage',
@@ -170,26 +172,26 @@ export const CreatePollForm = ({
         return result;
       }, []);
 
-      const memberChanges: CreatePollActionRoleMemberReq[] = [];
+      const memberChanges: CreatePollActionServerRoleMemberReq[] = [];
       for (const user of eligibleUsersData?.users || []) {
-        if (values.roleMembers?.includes(user.id)) {
+        if (values.serverRoleMembers?.includes(user.id)) {
           memberChanges.push({ userId: user.id, changeType: 'add' });
         }
       }
-      for (const member of roleData?.role?.members || []) {
-        if (!values.roleMembers?.includes(member.id)) {
+      for (const member of serverRoleData?.serverRole?.members || []) {
+        if (!values.serverRoleMembers?.includes(member.id)) {
           memberChanges.push({ userId: member.id, changeType: 'remove' });
         }
       }
 
-      const role =
+      const serverRolePayload =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
               name: nameChange,
               color: colorChange,
               permissions: permissionChanges,
               members: memberChanges,
-              roleToUpdateId: values.selectedRoleId,
+              serverRoleToUpdateId: values.selectedServerRoleId,
             }
           : undefined;
 
@@ -197,7 +199,7 @@ export const CreatePollForm = ({
         body: values.body?.trim(),
         action: {
           actionType: values.action,
-          role,
+          serverRole: serverRolePayload,
         },
       });
     },
@@ -262,24 +264,26 @@ export const CreatePollForm = ({
     ...(showChangeRoleSteps
       ? [
           {
-            id: 'role-selection',
-            component: RoleSelectionStep,
+            id: 'server-role-selection',
+            component: ServerRoleSelectionStep,
             props: { isLoading: false },
           },
           {
-            id: 'role-attributes',
-            component: RoleAttributesStep,
-            props: { isLoading: isRoleLoading },
+            id: 'server-role-attributes',
+            component: ServerRoleAttributesStep,
+            props: { isLoading: isServerRoleLoading },
           },
           {
-            id: 'roles-permissions',
-            component: RolesPermissionsStep,
-            props: { isLoading: isRoleLoading },
+            id: 'server-role-permissions',
+            component: ServerRolePermissionsStep,
+            props: { isLoading: isServerRoleLoading },
           },
           {
-            id: 'role-members',
-            component: RoleMembersStep,
-            props: { isLoading: isRoleLoading || isEligibleUsersLoading },
+            id: 'server-role-members',
+            component: ServerRoleMembersStep,
+            props: {
+              isLoading: isServerRoleLoading || isEligibleUsersLoading,
+            },
           },
         ]
       : []),
@@ -318,8 +322,8 @@ export const CreatePollForm = ({
       steps={steps}
       currentStep={currentStep}
       context={{
-        selectedRole: roleData?.role,
-        usersEligibleForRole: eligibleUsersData?.users,
+        selectedServerRole: serverRoleData?.serverRole,
+        usersEligibleForServerRole: eligibleUsersData?.users,
       }}
       onNext={handleNext}
       onPrevious={handlePrevious}

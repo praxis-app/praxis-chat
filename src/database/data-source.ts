@@ -13,8 +13,8 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import { PollConfig } from '../polls/entities/poll-config.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { RolePermission } from '../roles/entities/role-permission.entity';
-import { Role } from '../roles/entities/role.entity';
+import { ServerRolePermission } from '../server-roles/entities/server-role-permission.entity';
+import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
@@ -46,8 +46,8 @@ export const dataSource = new DataSource({
     PollActionRole,
     PollActionRoleMember,
     PollConfig,
-    Role,
-    RolePermission,
+    ServerRole,
+    ServerRolePermission,
     Server,
     ServerConfig,
     ServerMember,

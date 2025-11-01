@@ -3,5 +3,5 @@ import { PollActionRoleDto } from './poll-action-role.dto';
 
 export interface PollActionDto {
   actionType: PollActionType;
-  role?: PollActionRoleDto;
+  serverRole?: PollActionRoleDto;
 }

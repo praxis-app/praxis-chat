@@ -1,7 +1,7 @@
-import { PermissionsForm } from '@/components/roles/permissions-form';
-import { RoleForm } from '@/components/roles/role-form';
-import { RoleMember } from '@/components/roles/role-member';
-import { RoleMemberOption } from '@/components/roles/role-member-option';
+import { ServerRolePermissionsForm } from '@/components/server-roles/server-role-permissions-form';
+import { ServerRoleForm } from '@/components/server-roles/server-role-form';
+import { ServerRoleMember } from '@/components/server-roles/server-role-member';
+import { ServerRoleMemberOption } from '@/components/server-roles/server-role-member-option';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
@@ -32,14 +32,14 @@ import {
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
 import { handleError } from '../../lib/error.utils';
-import { RoleRes } from '../../types/role.types';
+import { ServerRoleRes } from '../../types/server-role.types';
 
-enum EditRoleTabName {
+enum EditServerRoleTabName {
   Permissions = 'permissions',
   Members = 'members',
 }
 
-export const EditRolePage = () => {
+export const EditServerRolePage = () => {
   const [activeTab, setActiveTab] = useState('display');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
@@ -47,50 +47,54 @@ export const EditRolePage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const { roleId } = useParams();
+  const { serverRoleId } = useParams<{ serverRoleId: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const ability = useAbility();
-  const canManageRoles = ability.can('manage', 'Role');
+  const canManageServerRoles = ability.can('manage', 'ServerRole');
 
   const {
-    data: roleData,
-    isPending: isRolePending,
-    error: roleError,
+    data: serverRoleData,
+    isPending: isServerRolePending,
+    error: serverRoleError,
   } = useQuery({
-    queryKey: ['role', roleId],
-    queryFn: () => api.getRole(roleId!),
-    enabled: !!roleId && canManageRoles,
+    queryKey: ['serverRole', serverRoleId],
+    queryFn: () => api.getServerRole(serverRoleId!),
+    enabled: !!serverRoleId && canManageServerRoles,
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
-    queryKey: ['role', roleId, 'members', 'eligible'],
-    queryFn: () => api.getUsersEligibleForRole(roleId!),
-    enabled: !!roleId && activeTab === 'members' && canManageRoles,
+    queryKey: ['serverRole', serverRoleId, 'members', 'eligible'],
+    queryFn: () => api.getUsersEligibleForServerRole(serverRoleId!),
+    enabled:
+      !!serverRoleId && activeTab === 'members' && canManageServerRoles,
   });
 
   const { mutate: addMembers } = useMutation({
     mutationFn: async () => {
-      if (!roleId || !roleData || !eligibleUsersData) {
+      if (!serverRoleId || !serverRoleData || !eligibleUsersData) {
         return;
       }
-      await api.addRoleMembers(roleId, selectedUserIds);
+      await api.addServerRoleMembers(serverRoleId, selectedUserIds);
 
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
       );
-      queryClient.setQueryData(['role', roleId], {
-        role: {
-          ...roleData.role,
-          members: roleData.role.members.concat(membersToAdd),
+      queryClient.setQueryData(['serverRole', serverRoleId], {
+        serverRole: {
+          ...serverRoleData.serverRole,
+          members: serverRoleData.serverRole.members.concat(membersToAdd),
         },
       });
-      queryClient.setQueryData(['role', roleId, 'members', 'eligible'], {
-        users: eligibleUsersData?.users.filter(
-          (user) => !selectedUserIds.includes(user.id),
-        ),
-      });
+      queryClient.setQueryData(
+        ['serverRole', serverRoleId, 'members', 'eligible'],
+        {
+          users: eligibleUsersData?.users.filter(
+            (user) => !selectedUserIds.includes(user.id),
+          ),
+        },
+      );
       queryClient.invalidateQueries({ queryKey: ['me'] });
       setSelectedUserIds([]);
       setIsAddMemberDialogOpen(false);
@@ -100,33 +104,39 @@ export const EditRolePage = () => {
     },
   });
 
-  const { mutate: deleteRole, isPending: isDeletePending } = useMutation({
-    mutationFn: async () => {
-      if (!roleId) {
-        return;
-      }
-      await api.deleteRole(roleId);
-
-      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
-        if (!oldData) {
-          return { roles: [] };
+  const { mutate: deleteServerRole, isPending: isDeletePending } =
+    useMutation({
+      mutationFn: async () => {
+        if (!serverRoleId) {
+          return;
         }
-        return {
-          roles: oldData.roles.filter((role) => role.id !== roleId),
-        };
-      });
-      queryClient.invalidateQueries({ queryKey: ['me'] });
-    },
-  });
+        await api.deleteServerRole(serverRoleId);
+
+        queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
+          ['serverRoles'],
+          (oldData) => {
+            if (!oldData) {
+              return { serverRoles: [] };
+            }
+            return {
+              serverRoles: oldData.serverRoles.filter(
+                (role) => role.id !== serverRoleId,
+              ),
+            };
+          },
+        );
+        queryClient.invalidateQueries({ queryKey: ['me'] });
+      },
+    });
 
   const tabParam = searchParams.get('tab');
 
   useEffect(() => {
-    if (tabParam === EditRoleTabName.Permissions) {
+    if (tabParam === EditServerRoleTabName.Permissions) {
       setActiveTab('permissions');
       return;
     }
-    if (tabParam === EditRoleTabName.Members) {
+    if (tabParam === EditServerRoleTabName.Members) {
       setActiveTab('members');
       return;
     }
@@ -136,22 +146,22 @@ export const EditRolePage = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     if (value === 'permissions') {
-      setSearchParams({ tab: EditRoleTabName.Permissions });
+      setSearchParams({ tab: EditServerRoleTabName.Permissions });
       return;
     }
     if (value === 'members') {
-      setSearchParams({ tab: EditRoleTabName.Members });
+      setSearchParams({ tab: EditServerRoleTabName.Members });
       return;
     }
     setSearchParams({});
   };
 
   const handleDeleteBtnClick = async () => {
-    await navigate(NavigationPaths.Roles);
-    deleteRole();
+    await navigate(NavigationPaths.ServerRoles);
+    deleteServerRole();
   };
 
-  if (!canManageRoles) {
+  if (!canManageServerRoles) {
     return (
       <PermissionDenied
         topNavProps={{
@@ -162,19 +172,19 @@ export const EditRolePage = () => {
     );
   }
 
-  if (isRolePending) {
+  if (isServerRolePending) {
     return null;
   }
 
-  if (!roleData || roleError || eligibleUsersError) {
+  if (!serverRoleData || serverRoleError || eligibleUsersError) {
     return <p>{t('errors.somethingWentWrong')}</p>;
   }
 
   return (
     <>
       <TopNav
-        header={roleData.role.name}
-        onBackClick={() => navigate(NavigationPaths.Roles)}
+        header={serverRoleData.serverRole.name}
+        onBackClick={() => navigate(NavigationPaths.ServerRoles)}
       />
 
       <Container>
@@ -188,7 +198,7 @@ export const EditRolePage = () => {
           </TabsList>
 
           <TabsContent value="display">
-            <RoleForm editRole={roleData.role} />
+            <ServerRoleForm editRole={serverRoleData.serverRole} />
 
             <DeleteButton onClick={() => setIsConfirmDialogOpen(true)}>
               {t('roles.actions.delete')}
@@ -204,7 +214,9 @@ export const EditRolePage = () => {
                     {t('prompts.deleteItem', { itemType: 'role' })}
                   </DialogTitle>
                 </DialogHeader>
-                <DialogDescription>{roleData.role.name}</DialogDescription>
+                <DialogDescription>
+                  {serverRoleData.serverRole.name}
+                </DialogDescription>
 
                 <DialogFooter className="flex flex-row justify-end gap-2">
                   <Button
@@ -226,7 +238,7 @@ export const EditRolePage = () => {
           </TabsContent>
 
           <TabsContent value="permissions">
-            <PermissionsForm role={roleData.role} />
+            <ServerRolePermissionsForm serverRole={serverRoleData.serverRole} />
           </TabsContent>
 
           <TabsContent value="members">
@@ -243,13 +255,13 @@ export const EditRolePage = () => {
               </CardContent>
             </Card>
 
-            {!!roleData.role.members.length && (
+            {!!serverRoleData.serverRole.members.length && (
               <Card className="py-5">
                 <CardContent className="px-5">
-                  {roleData.role.members.map((member) => (
-                    <RoleMember
-                      roleId={roleData.role.id}
-                      roleMember={member}
+                  {serverRoleData.serverRole.members.map((member) => (
+                    <ServerRoleMember
+                      serverRoleId={serverRoleData.serverRole.id}
+                      serverRoleMember={member}
                       key={member.id}
                     />
                   ))}
@@ -272,7 +284,7 @@ export const EditRolePage = () => {
                 </DialogHeader>
                 <div className="space-y-0.5">
                   {eligibleUsersData?.users.map((user) => (
-                    <RoleMemberOption
+                    <ServerRoleMemberOption
                       key={user.id}
                       selectedUserIds={selectedUserIds}
                       setSelectedUserIds={setSelectedUserIds}

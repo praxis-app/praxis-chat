@@ -11,6 +11,6 @@ export const ABILITY_SUBJECTS = [
   'Channel',
   'Invite',
   'Message',
-  'Role',
+  'ServerRole',
   'all',
 ] as const;

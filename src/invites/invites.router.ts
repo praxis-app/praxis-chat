@@ -6,7 +6,7 @@ import {
   getInvite,
   getInvites,
 } from './invites.controller';
-import { can } from '../roles/middleware/can.middleware';
+import { can } from '../server-roles/middleware/can.middleware';
 
 export const invitesRouter = express.Router();
 

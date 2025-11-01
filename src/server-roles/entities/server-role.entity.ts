@@ -12,10 +12,10 @@ import {
 import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
 import { Server } from '../../servers/entities/server.entity';
 import { User } from '../../users/user.entity';
-import { RolePermission } from './role-permission.entity';
+import { ServerRolePermission } from './server-role-permission.entity';
 
 @Entity()
-export class Role {
+export class ServerRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -25,19 +25,26 @@ export class Role {
   @Column({ type: 'varchar' })
   color: string;
 
-  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {
-    cascade: true,
-  })
-  permissions: RolePermission[];
+  @OneToMany(
+    () => ServerRolePermission,
+    (rolePermission) => rolePermission.serverRole,
+    {
+      cascade: true,
+    },
+  )
+  permissions: ServerRolePermission[];
 
-  @ManyToMany(() => User, (user) => user.roles)
+  @ManyToMany(() => User, (user) => user.serverRoles)
   @JoinTable()
   members: User[];
 
-  @OneToMany(() => PollActionRole, (pollActionRole) => pollActionRole.role)
+  @OneToMany(
+    () => PollActionRole,
+    (pollActionRole) => pollActionRole.serverRole,
+  )
   pollActionRoles: PollActionRole[];
 
-  @ManyToOne(() => Server, (server) => server.roles, {
+  @ManyToOne(() => Server, (server) => server.serverRoles, {
     onDelete: 'CASCADE',
   })
   server: Server;

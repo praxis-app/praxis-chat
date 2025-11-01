@@ -6,5 +6,5 @@ export interface PollActionRoleDto {
   color?: string;
   members?: PollActionRoleMemberDto[];
   permissions?: PollActionRolePermissionDto[];
-  roleToUpdateId?: string;
+  serverRoleToUpdateId?: string;
 }

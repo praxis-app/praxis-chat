@@ -2,7 +2,7 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { RoleMemberOption } from '../../../roles/role-member-option';
+import { ServerRoleMemberOption } from '../../../server-roles/server-role-member-option';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
@@ -12,9 +12,9 @@ import {
   CreatePollWizardContext,
 } from '../create-poll-form.types';
 
-export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
+export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
   const {
-    context: { selectedRole, usersEligibleForRole },
+    context: { selectedServerRole, usersEligibleForServerRole },
     onNext,
     onPrevious,
   } = useWizardContext<CreatePollWizardContext>();
@@ -22,8 +22,8 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const form = useFormContext<CreatePollFormSchema>();
-  const selectedMembers = form.watch('roleMembers') || [];
-  const selectedRoleId = form.watch('selectedRoleId');
+  const selectedMembers = form.watch('serverRoleMembers') || [];
+  const selectedServerRoleId = form.watch('selectedServerRoleId');
 
   const { t } = useTranslation();
 
@@ -38,11 +38,14 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
   };
 
   const handleMemberChange = (memberChanges: string[]) => {
-    setFieldValue('roleMembers', memberChanges);
+    setFieldValue('serverRoleMembers', memberChanges);
   };
 
   const filteredUsers =
-    [...(selectedRole?.members || []), ...(usersEligibleForRole || [])].filter(
+    [
+      ...(selectedServerRole?.members || []),
+      ...(usersEligibleForServerRole || []),
+    ].filter(
       (user) =>
         (user.displayName || user.name)
           .toLowerCase()
@@ -69,7 +72,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
       </div>
 
       <div className="space-y-4">
-        {selectedRoleId && (
+        {selectedServerRoleId && (
           <>
             <Input
               placeholder={t('polls.placeholders.searchMembersPlaceholder')}
@@ -87,7 +90,7 @@ export const RoleMembersStep = ({ isLoading }: WizardStepProps) => {
               <CardContent className="space-y-2">
                 <div className="min-h-48 space-y-0.5">
                   {filteredUsers.map((user) => (
-                    <RoleMemberOption
+                    <ServerRoleMemberOption
                       key={user.id}
                       user={user}
                       selectedUserIds={selectedMembers}

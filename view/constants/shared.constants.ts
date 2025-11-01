@@ -30,7 +30,7 @@ export enum NavigationPaths {
   Invites = '/settings/invites',
   ProposalSettings = '/settings/proposals',
   UsersEdit = '/users/edit',
-  Roles = '/settings/roles',
+  ServerRoles = '/settings/roles',
   Settings = '/settings',
 }
 
