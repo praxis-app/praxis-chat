@@ -72,7 +72,7 @@ export const MessageFormMenu = ({
       </DropdownMenu>
 
       <DialogContent
-        className="overflow-y-auto pt-10 md:max-h-[90vh] md:w-xl md:pt-6"
+        className="overflow-y-auto md:max-h-[90vh] md:w-xl"
         ref={dialogContentRef}
       >
         <DialogHeader>
