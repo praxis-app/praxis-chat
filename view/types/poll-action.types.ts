@@ -11,24 +11,24 @@ import { UserRes } from './user.types';
 
 export interface PollActionReq {
   actionType: PollActionType;
-  role?: PollActionRoleReq;
+  serverRole?: PollActionServerRoleReq;
 }
 
-export interface PollActionRoleReq {
+export interface PollActionServerRoleReq {
   name?: string;
   color?: string;
   prevName?: string;
   prevColor?: string;
-  members?: PollActionRoleMemberReq[];
-  permissions?: PollActionRolePermissionReq[];
+  members?: PollActionServerRoleMemberReq[];
+  permissions?: PollActionServerRolePermissionReq[];
 }
 
-export interface PollActionRoleMemberReq {
+export interface PollActionServerRoleMemberReq {
   userId: string;
   changeType: RoleAttributeChangeType;
 }
 
-export interface PollActionRolePermissionReq {
+export interface PollActionServerRolePermissionReq {
   subject: AbilitySubject;
   action: AbilityAction;
   changeType: RoleAttributeChangeType;
@@ -36,23 +36,23 @@ export interface PollActionRolePermissionReq {
 
 export interface CreatePollActionReq {
   actionType: PollActionType;
-  role?: CreatePollActionRoleReq;
+  serverRole?: CreatePollActionServerRoleReq;
 }
 
-export interface CreatePollActionRoleReq {
+export interface CreatePollActionServerRoleReq {
   name?: string;
   color?: string;
-  members?: CreatePollActionRoleMemberReq[];
-  permissions?: CreatePollActionRolePermissionReq[];
-  roleToUpdateId?: string;
+  members?: CreatePollActionServerRoleMemberReq[];
+  permissions?: CreatePollActionServerRolePermissionReq[];
+  serverRoleToUpdateId?: string;
 }
 
-export interface CreatePollActionRoleMemberReq {
+export interface CreatePollActionServerRoleMemberReq {
   userId: string;
   changeType: RoleAttributeChangeType;
 }
 
-export interface CreatePollActionRolePermissionReq {
+export interface CreatePollActionServerRolePermissionReq {
   subject: AbilitySubject;
   actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
 }
@@ -64,26 +64,26 @@ export interface CreatePollActionRolePermissionReq {
 export interface PollActionRes {
   id: string;
   actionType: PollActionType;
-  role?: PollActionRoleRes;
+  serverRole?: PollActionServerRoleRes;
 }
 
-export interface PollActionRoleRes {
+export interface PollActionServerRoleRes {
   id: string;
   name?: string;
   color?: string;
   prevName?: string;
   prevColor?: string;
-  roleId: string;
-  members?: PollActionRoleMemberRes[];
-  permissions?: PollActionRolePermissionRes[];
+  serverRoleId: string;
+  members?: PollActionServerRoleMemberRes[];
+  permissions?: PollActionServerRolePermissionRes[];
 }
 
-export interface PollActionRoleMemberRes {
+export interface PollActionServerRoleMemberRes {
   changeType: RoleAttributeChangeType;
   user: UserRes;
 }
 
-export interface PollActionRolePermissionRes {
+export interface PollActionServerRolePermissionRes {
   subject: AbilitySubject;
   action: AbilityAction;
   changeType: RoleAttributeChangeType;

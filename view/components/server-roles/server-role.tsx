@@ -5,13 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { NavigationPaths } from '../../constants/shared.constants';
-import { RoleRes as RoleType } from '../../types/role.types';
+import { ServerRoleRes } from '../../types/server-role.types';
 
 interface Props {
-  role: RoleType;
+  serverRole: ServerRoleRes;
 }
 
-export const Role = ({ role: { id, color, name, memberCount } }: Props) => {
+export const ServerRole = ({
+  serverRole: { id, color, name, memberCount },
+}: Props) => {
   const { t } = useTranslation();
   const isAboveMd = useIsDesktop();
 

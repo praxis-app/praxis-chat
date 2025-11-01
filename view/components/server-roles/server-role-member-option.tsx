@@ -11,7 +11,7 @@ interface Props {
   user: UserRes;
 }
 
-export const RoleMemberOption = ({
+export const ServerRoleMemberOption = ({
   selectedUserIds,
   setSelectedUserIds,
   className,

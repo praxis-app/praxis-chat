@@ -1,6 +1,7 @@
 // TODO: Add remaining layout and functionality - the following is a WIP
 
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ColorPicker } from '../../../shared/color-picker';
@@ -19,13 +20,14 @@ import {
   CreatePollFormSchema,
   CreatePollWizardContext,
 } from '../create-poll-form.types';
-import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 
-export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
+export const ServerRoleAttributesStep = ({
+  isLoading,
+}: WizardStepProps) => {
   const {
     onNext,
     onPrevious,
-    context: { selectedRole },
+    context: { selectedServerRole },
   } = useWizardContext<CreatePollWizardContext>();
 
   const form = useFormContext<CreatePollFormSchema>();
@@ -60,7 +62,7 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
-              name="roleName"
+              name="serverRoleName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('roles.form.name')}</FormLabel>
@@ -78,7 +80,7 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
 
             <FormField
               control={form.control}
-              name="roleColor"
+              name="serverRoleColor"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -95,7 +97,7 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
           </CardContent>
         </Card>
 
-        {selectedRole && (
+        {selectedServerRole && (
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
@@ -106,15 +108,17 @@ export const RoleAttributesStep = ({ isLoading }: WizardStepProps) => {
               <div className="flex items-center space-x-2">
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: selectedRole.color }}
+                  style={{ backgroundColor: selectedServerRole.color }}
                 />
-                <span className="font-medium">{selectedRole.name}</span>
+                <span className="font-medium">
+                  {selectedServerRole.name}
+                </span>
                 <span className="text-muted-foreground text-sm">
                   {MIDDOT_WITH_SPACES}
                 </span>
                 <p className="text-muted-foreground text-sm">
                   {t('roles.labels.membersCount', {
-                    count: selectedRole.memberCount,
+                    count: selectedServerRole.memberCount,
                   })}
                 </p>
               </div>

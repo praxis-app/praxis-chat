@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
-import { Role } from '@/components/roles/role';
-import { RoleForm } from '@/components/roles/role-form';
+import { ServerRole } from '@/components/server-roles/server-role';
+import { ServerRoleForm } from '@/components/server-roles/server-role-form';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
@@ -13,15 +13,15 @@ import { useNavigate } from 'react-router-dom';
 
 export const ServerRoles = () => {
   const { data, isPending, error } = useQuery({
-    queryKey: ['roles'],
-    queryFn: api.getRoles,
+    queryKey: ['serverRoles'],
+    queryFn: api.getServerRoles,
   });
 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const ability = useAbility();
 
-  if (!ability.can('manage', 'Role')) {
+  if (!ability.can('manage', 'ServerRole')) {
     return (
       <PermissionDenied
         topNavProps={{
@@ -43,13 +43,13 @@ export const ServerRoles = () => {
         onBackClick={() => navigate(NavigationPaths.Settings)}
       />
       <Container>
-        <RoleForm />
+        <ServerRoleForm />
 
         {data && (
           <Card className="py-3">
             <CardContent className="flex flex-col gap-2 px-3">
-              {data.roles.map((role) => (
-                <Role key={role.id} role={role} />
+              {data.serverRoles.map((role) => (
+                <ServerRole key={role.id} serverRole={role} />
               ))}
             </CardContent>
           </Card>

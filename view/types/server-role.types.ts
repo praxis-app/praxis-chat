@@ -1,5 +1,5 @@
 import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
-import { PERMISSION_KEYS } from '../constants/role.constants';
+import { PERMISSION_KEYS } from '../constants/server-role.constants';
 import { UserRes } from './user.types';
 
 export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
@@ -13,12 +13,12 @@ export interface Permission {
 // Requests
 // -------------------------------------------------------------------------
 
-export interface CreateRoleReq {
+export interface CreateServerRoleReq {
   name: string;
   color: string;
 }
 
-export interface UpdateRolePermissionsReq {
+export interface UpdateServerRolePermissionsReq {
   permissions: Permission[];
 }
 
@@ -26,7 +26,7 @@ export interface UpdateRolePermissionsReq {
 // Responses
 // -------------------------------------------------------------------------
 
-export interface RoleRes {
+export interface ServerRoleRes {
   id: string;
   name: string;
   color: string;

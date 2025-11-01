@@ -7,22 +7,25 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
-import { CreateRoleReq, RoleRes } from '../../types/role.types';
+import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
+import {
+  CreateServerRoleReq,
+  ServerRoleRes,
+} from '../../types/server-role.types';
 import { ColorPicker } from '../shared/color-picker';
 
 interface Props {
-  editRole?: RoleRes;
+  editRole?: ServerRoleRes;
 }
 
-export const RoleForm = ({ editRole }: Props) => {
+export const ServerRoleForm = ({ editRole }: Props) => {
   const [colorPickerKey, setColorPickerKey] = useState(0);
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { handleSubmit, register, setValue, watch, reset, formState } =
-    useForm<CreateRoleReq>({
+    useForm<CreateServerRoleReq>({
       defaultValues: {
         color: editRole?.color || ROLE_COLOR_OPTIONS[0],
         name: editRole?.name || '',
@@ -30,16 +33,19 @@ export const RoleForm = ({ editRole }: Props) => {
       mode: 'onChange',
     });
 
-  const { mutate: createRole, isPending: isCreatePending } = useMutation({
-    mutationFn: async (data: CreateRoleReq) => {
-      const { role } = await api.createRole(data);
+  const { mutate: createServerRole, isPending: isCreatePending } = useMutation({
+    mutationFn: async (data: CreateServerRoleReq) => {
+      const { serverRole } = await api.createServerRole(data);
 
-      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
-        if (!oldData) {
-          return { roles: [] };
-        }
-        return { roles: [role, ...oldData.roles] };
-      });
+      queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
+        ['serverRoles'],
+        (oldData) => {
+          if (!oldData) {
+            return { serverRoles: [] };
+          }
+          return { serverRoles: [serverRole, ...oldData.serverRoles] };
+        },
+      );
     },
     onSuccess: () => {
       setColorPickerKey(Date.now());
@@ -47,29 +53,35 @@ export const RoleForm = ({ editRole }: Props) => {
     },
   });
 
-  const { mutate: updateRole, isPending: isUpdatePending } = useMutation({
-    mutationFn: async (data: CreateRoleReq) => {
+  const { mutate: updateServerRole, isPending: isUpdatePending } = useMutation({
+    mutationFn: async (data: CreateServerRoleReq) => {
       if (!editRole) {
         return;
       }
-      await api.updateRole(editRole.id, data);
+      await api.updateServerRole(editRole.id, data);
 
-      const role = { ...editRole, ...data };
-      queryClient.setQueryData<{ role: RoleRes }>(['role', editRole.id], {
-        role,
-      });
-      queryClient.setQueryData<{ roles: RoleRes[] }>(['roles'], (oldData) => {
-        if (!oldData) {
-          return { roles: [] };
-        }
-        return {
-          roles: oldData.roles.map((r) => {
-            return r.id === role.id ? role : r;
-          }),
-        };
-      });
+      const serverRole = { ...editRole, ...data };
+      queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
+        ['serverRole', editRole.id],
+        {
+          serverRole,
+        },
+      );
+      queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
+        ['serverRoles'],
+        (oldData) => {
+          if (!oldData) {
+            return { serverRoles: [] };
+          }
+          return {
+            serverRoles: oldData.serverRoles.map((r) =>
+              r.id === serverRole.id ? serverRole : r,
+            ),
+          };
+        },
+      );
 
-      return role;
+      return serverRole;
     },
     onSuccess: (data) => {
       setColorPickerKey(Date.now());
@@ -77,11 +89,11 @@ export const RoleForm = ({ editRole }: Props) => {
     },
   });
 
-  const handleSubmitForm = (data: CreateRoleReq) => {
+  const handleSubmitForm = (data: CreateServerRoleReq) => {
     if (editRole) {
-      updateRole(data);
+      updateServerRole(data);
     } else {
-      createRole(data);
+      createServerRole(data);
     }
   };
 
