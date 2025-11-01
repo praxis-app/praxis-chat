@@ -62,7 +62,7 @@ export class PollActionRole {
   })
   serverRole?: ServerRole;
 
-  @Column({ name: 'roleId', type: 'uuid', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   serverRoleId?: string;
 
   @CreateDateColumn()

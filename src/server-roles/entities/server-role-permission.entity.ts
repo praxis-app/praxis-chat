@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import { ServerRole } from './server-role.entity';
 
-@Entity({ name: 'role_permission' })
+@Entity()
 @Unique(['serverRoleId', 'action', 'subject'])
 export class ServerRolePermission {
   @PrimaryGeneratedColumn('uuid')
@@ -31,7 +31,7 @@ export class ServerRolePermission {
   })
   serverRole: ServerRole;
 
-  @Column({ name: 'roleId', type: 'uuid' })
+  @Column({ type: 'uuid' })
   serverRoleId: string;
 
   @CreateDateColumn()

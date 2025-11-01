@@ -14,7 +14,7 @@ import { Server } from '../../servers/entities/server.entity';
 import { User } from '../../users/user.entity';
 import { ServerRolePermission } from './server-role-permission.entity';
 
-@Entity({ name: 'role' })
+@Entity()
 export class ServerRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
