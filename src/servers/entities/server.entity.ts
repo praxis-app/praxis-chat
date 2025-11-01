@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Invite } from '../../invites/invite.entity';
-import { Role } from '../../roles/entities/role.entity';
+import { ServerRole } from '../../server-roles/entities/server-role.entity';
 import { ServerConfig } from '../../server-configs/entities/server-config.entity';
 import { ServerMember } from './server-member.entity';
 
@@ -30,8 +30,8 @@ export class Server {
   @OneToMany(() => Channel, (channel) => channel.server)
   channels: Channel[];
 
-  @OneToMany(() => Role, (role) => role.server)
-  roles: Role[];
+  @OneToMany(() => ServerRole, (serverRole) => serverRole.server)
+  serverRoles: ServerRole[];
 
   @OneToMany(() => Invite, (invite) => invite.server)
   invites: Invite[];

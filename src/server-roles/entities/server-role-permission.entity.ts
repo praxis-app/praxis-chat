@@ -2,7 +2,7 @@ import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
-} from '@common/roles/role.constants';
+} from '@common/roles/server-role.constants';
 import {
   Column,
   CreateDateColumn,
@@ -12,11 +12,11 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
+import { ServerRole } from './server-role.entity';
 
-@Entity()
-@Unique(['roleId', 'action', 'subject'])
-export class RolePermission {
+@Entity({ name: 'role_permission' })
+@Unique(['serverRoleId', 'action', 'subject'])
+export class ServerRolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -26,13 +26,13 @@ export class RolePermission {
   @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
   subject: AbilitySubject;
 
-  @ManyToOne(() => Role, (role) => role.permissions, {
+  @ManyToOne(() => ServerRole, (serverRole) => serverRole.permissions, {
     onDelete: 'CASCADE',
   })
-  role: Role;
+  serverRole: ServerRole;
 
-  @Column({ type: 'uuid' })
-  roleId: string;
+  @Column({ name: 'roleId', type: 'uuid' })
+  serverRoleId: string;
 
   @CreateDateColumn()
   createdAt: Date;

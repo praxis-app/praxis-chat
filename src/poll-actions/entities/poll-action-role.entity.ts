@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from '../../roles/entities/role.entity';
+import { ServerRole } from '../../server-roles/entities/server-role.entity';
 import { PollActionPermission } from './poll-action-permission.entity';
 import { PollActionRoleMember } from './poll-action-role-member.entity';
 import { PollAction } from './poll-action.entity';
@@ -47,7 +47,7 @@ export class PollActionRole {
   })
   members?: PollActionRoleMember[];
 
-  @OneToOne(() => PollAction, (pollAction) => pollAction.role, {
+  @OneToOne(() => PollAction, (pollAction) => pollAction.serverRole, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
@@ -56,14 +56,14 @@ export class PollActionRole {
   @Column({ type: 'uuid' })
   pollActionId: string;
 
-  @ManyToOne(() => Role, (role) => role.pollActionRoles, {
+  @ManyToOne(() => ServerRole, (role) => role.pollActionRoles, {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  role?: Role;
+  serverRole?: ServerRole;
 
-  @Column({ type: 'uuid', nullable: true })
-  roleId?: string;
+  @Column({ name: 'roleId', type: 'uuid', nullable: true })
+  serverRoleId?: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -11,45 +11,47 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
-import { RolePermission } from './entities/role-permission.entity';
-import { Role } from './entities/role.entity';
+import { ServerRolePermission } from './entities/server-role-permission.entity';
+import { ServerRole } from './entities/server-role.entity';
 
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
 type PermissionMap = Record<string, AbilityAction[]>;
 
-interface CreateRoleDto {
+interface CreateServerRoleDto {
   name: string;
   color: string;
 }
 
-interface UpdateRoleDto {
+interface UpdateServerRoleDto {
   name?: string;
   color?: string;
 }
 
-interface UpdateRolePermissionsDto {
+interface UpdateServerRolePermissionsDto {
   permissions: RawRuleOf<AppAbility>[];
 }
 
 const userRepository = dataSource.getRepository(User);
-const roleRepository = dataSource.getRepository(Role);
-const rolePermissionRepository = dataSource.getRepository(RolePermission);
+const serverRoleRepository = dataSource.getRepository(ServerRole);
+const serverRolePermissionRepository = dataSource.getRepository(
+  ServerRolePermission,
+);
 
-export const getRole = async (roleId: string) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
+export const getServerRole = async (serverRoleId: string) => {
+  const serverRole = await serverRoleRepository.findOne({
+    where: { id: serverRoleId },
     relations: ['permissions'],
   });
-  if (!role) {
-    throw new Error('Role not found');
+  if (!serverRole) {
+    throw new Error('Server role not found');
   }
   const members = await userRepository.find({
-    where: { roles: { id: roleId } },
+    where: { serverRoles: { id: serverRoleId } },
     select: ['id', 'name', 'displayName'],
   });
-  const permissions = buildPermissionRules([role]);
+  const permissions = buildPermissionRules([serverRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
@@ -60,15 +62,15 @@ export const getRole = async (roleId: string) => {
   }));
 
   return {
-    ...role,
+    ...serverRole,
     permissions,
     members: shapedMembers,
     memberCount: members.length,
   };
 };
 
-export const getRoles = async () => {
-  const roles = await roleRepository.find({
+export const getServerRoles = async () => {
+  const serverRoles = await serverRoleRepository.find({
     relations: ['members', 'permissions'],
     select: {
       id: true,
@@ -87,17 +89,19 @@ export const getRoles = async () => {
   });
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
-    roles.flatMap((role) => role.members.map((member) => member.id)),
+    serverRoles.flatMap((serverRole) =>
+      serverRole.members.map((member) => member.id),
+    ),
   );
 
-  return roles.map((role) => ({
-    ...role,
-    members: role.members.map((member) => ({
+  return serverRoles.map((serverRole) => ({
+    ...serverRole,
+    members: serverRole.members.map((member) => ({
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules([role]),
-    memberCount: role.members.length,
+    permissions: buildPermissionRules([serverRole]),
+    memberCount: serverRole.members.length,
   }));
 };
 
@@ -105,7 +109,7 @@ export const getRoles = async () => {
 export const getUserPermissions = async (
   userId: string,
 ): Promise<RawRuleOf<AppAbility>[]> => {
-  const roles = await roleRepository.find({
+  const serverRoles = await serverRoleRepository.find({
     relations: ['permissions'],
     where: {
       members: {
@@ -113,19 +117,19 @@ export const getUserPermissions = async (
       },
     },
   });
-  return buildPermissionRules(roles);
+  return buildPermissionRules(serverRoles);
 };
 
-export const getUsersEligibleForRole = async (roleId: string) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
+export const getUsersEligibleForServerRole = async (serverRoleId: string) => {
+  const serverRole = await serverRoleRepository.findOne({
+    where: { id: serverRoleId },
     relations: ['members'],
   });
-  if (!role) {
-    throw new Error('Role not found');
+  if (!serverRole) {
+    throw new Error('Server role not found');
   }
 
-  const userIds = role.members.map(({ id }) => id);
+  const userIds = serverRole.members.map(({ id }) => id);
   const users = await userRepository.find({
     where: {
       id: Not(In(userIds)),
@@ -149,16 +153,19 @@ export const getUsersEligibleForRole = async (roleId: string) => {
   return shapedUsers;
 };
 
-export const createRole = async ({ name, color }: CreateRoleDto) => {
+export const createServerRole = async ({
+  name,
+  color,
+}: CreateServerRoleDto) => {
   const server = await serversService.getServerSafely();
-  const role = await roleRepository.save({ name, color, server });
-  return { ...role, memberCount: 0 };
+  const serverRole = await serverRoleRepository.save({ name, color, server });
+  return { ...serverRole, memberCount: 0 };
 };
 
-export const createAdminRole = async (userId: string) => {
+export const createAdminServerRole = async (userId: string) => {
   const server = await serversService.getServerSafely();
 
-  await roleRepository.save({
+  await serverRoleRepository.save({
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
     permissions: [
@@ -166,52 +173,54 @@ export const createAdminRole = async (userId: string) => {
       { subject: 'Channel', action: 'manage' },
       { subject: 'Invite', action: 'create' },
       { subject: 'Invite', action: 'manage' },
-      { subject: 'Role', action: 'manage' },
+      { subject: 'ServerRole', action: 'manage' },
     ],
     members: [{ id: userId }],
     server,
   });
 };
 
-export const updateRole = async (
+export const updateServerRole = async (
   id: string,
-  { name, color }: UpdateRoleDto,
+  { name, color }: UpdateServerRoleDto,
 ) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedColor = sanitizeText(color);
 
-  return roleRepository.update(id, {
+  return serverRoleRepository.update(id, {
     name: sanitizedName,
     color: sanitizedColor,
   });
 };
 
-export const updateRolePermissions = async (
-  roleId: string,
-  { permissions }: UpdateRolePermissionsDto,
+export const updateServerRolePermissions = async (
+  serverRoleId: string,
+  { permissions }: UpdateServerRolePermissionsDto,
 ) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
+  const serverRole = await serverRoleRepository.findOne({
+    where: { id: serverRoleId },
     relations: ['permissions'],
   });
-  if (!role) {
-    throw new Error('Role not found');
+  if (!serverRole) {
+    throw new Error('Server role not found');
   }
 
-  const permissionsToSave = permissions.reduce<Partial<RolePermission>[]>(
+  const permissionsToSave = permissions.reduce<
+    Partial<ServerRolePermission>[]
+  >(
     (result, { action, subject }) => {
       const actions = Array.isArray(action) ? action : [action];
 
       for (const a of actions) {
         // Account for existing permissions
-        const permission = role.permissions.find(
+        const permission = serverRole.permissions.find(
           (p) => p.subject === subject && p.action === a,
         );
         result.push({
           id: permission?.id,
           subject: subject as AbilitySubject,
           action: a,
-          role,
+          serverRole,
         });
       }
       return result;
@@ -219,7 +228,7 @@ export const updateRolePermissions = async (
     [],
   );
 
-  const permissionsToDelete = role.permissions.reduce<string[]>(
+  const permissionsToDelete = serverRole.permissions.reduce<string[]>(
     (result, currentPermission) => {
       const found = permissions.find(
         (p) =>
@@ -235,18 +244,21 @@ export const updateRolePermissions = async (
   );
 
   if (permissionsToDelete.length) {
-    await rolePermissionRepository.delete(permissionsToDelete);
+    await serverRolePermissionRepository.delete(permissionsToDelete);
   }
-  await rolePermissionRepository.save(permissionsToSave);
+  await serverRolePermissionRepository.save(permissionsToSave);
 };
 
-export const addRoleMembers = async (roleId: string, userIds: string[]) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
+export const addServerRoleMembers = async (
+  serverRoleId: string,
+  userIds: string[],
+) => {
+  const serverRole = await serverRoleRepository.findOne({
+    where: { id: serverRoleId },
     relations: ['members'],
   });
-  if (!role) {
-    throw new Error('Role not found');
+  if (!serverRole) {
+    throw new Error('Server role not found');
   }
   const newMembers = await userRepository.find({
     where: {
@@ -256,7 +268,7 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
     },
   });
 
-  const members = [...role.members, ...newMembers];
+  const members = [...serverRole.members, ...newMembers];
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
   );
@@ -265,26 +277,31 @@ export const addRoleMembers = async (roleId: string, userIds: string[]) => {
     profilePicture: profilePictures[member.id],
   }));
 
-  await roleRepository.save({
-    ...role,
+  await serverRoleRepository.save({
+    ...serverRole,
     members: shapedMembers,
   });
 };
 
-export const removeRoleMembers = async (roleId: string, userIds: string[]) => {
-  const role = await roleRepository.findOne({
-    where: { id: roleId },
+export const removeServerRoleMembers = async (
+  serverRoleId: string,
+  userIds: string[],
+) => {
+  const serverRole = await serverRoleRepository.findOne({
+    where: { id: serverRoleId },
     relations: ['members'],
   });
-  if (!role) {
-    throw new Error('Role not found');
+  if (!serverRole) {
+    throw new Error('Server role not found');
   }
-  role.members = role.members.filter((member) => !userIds.includes(member.id));
-  await roleRepository.save(role);
+  serverRole.members = serverRole.members.filter(
+    (member) => !userIds.includes(member.id),
+  );
+  await serverRoleRepository.save(serverRole);
 };
 
-export const deleteRole = async (id: string) => {
-  return roleRepository.delete(id);
+export const deleteServerRole = async (id: string) => {
+  return serverRoleRepository.delete(id);
 };
 
 /**
@@ -292,17 +309,20 @@ export const deleteRole = async (id: string) => {
  * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
  */
 export const buildPermissionRules = (
-  roles: Role[] | PollActionRole[],
+  serverRoles: ServerRole[] | PollActionRole[],
 ): RawRuleOf<AppAbility>[] => {
-  const permissionMap = roles.reduce<PermissionMap>((result, role) => {
-    for (const permission of role.permissions || []) {
-      if (!result[permission.subject]) {
-        result[permission.subject] = [];
+  const permissionMap = serverRoles.reduce<PermissionMap>(
+    (result, serverRole) => {
+      for (const permission of serverRole.permissions || []) {
+        if (!result[permission.subject]) {
+          result[permission.subject] = [];
+        }
+        result[permission.subject].push(permission.action);
       }
-      result[permission.subject].push(permission.action);
-    }
-    return result;
-  }, {});
+      return result;
+    },
+    {},
+  );
 
   return Object.entries(permissionMap).map(([subject, action]) => ({
     subject: subject as AbilitySubject,

@@ -72,7 +72,7 @@ export const getInlinePolls = async (
       'pollActionRole.color',
       'pollActionRole.prevName',
       'pollActionRole.prevColor',
-      'pollActionRole.roleId',
+      'pollActionRole.serverRoleId',
     ])
     .addSelect([
       'pollActionPermission.subject',
@@ -93,7 +93,7 @@ export const getInlinePolls = async (
     .leftJoin('poll.images', 'pollImage')
     .leftJoin('poll.action', 'pollAction')
     .leftJoin('poll.config', 'pollConfig')
-    .leftJoin('pollAction.role', 'pollActionRole')
+    .leftJoin('pollAction.serverRole', 'pollActionRole')
     .leftJoin('pollActionRole.permissions', 'pollActionPermission')
     .leftJoin('pollActionRole.members', 'pollActionRoleMember')
     .leftJoin('pollActionRoleMember.user', 'pollActionRoleMemberUser')
@@ -147,7 +147,7 @@ export const getInlinePolls = async (
       return r.poll_id === poll.id;
     });
 
-    const actionRole = poll.action.role
+    const actionRole = poll.action.serverRole
       ? {
           ...poll.action.role,
           permissions: rowsForPoll.map((r) => ({
@@ -264,10 +264,10 @@ export const createPoll = async (
   );
 
   let pollActionRole: PollActionRole | undefined;
-  if (action.role) {
+  if (action.serverRole) {
     pollActionRole = await pollActionsService.createPollActionRole(
       poll.action.id,
-      action.role,
+      action.serverRole,
     );
   }
 
@@ -297,7 +297,7 @@ export const createPoll = async (
     channelId: poll.channelId,
     action: {
       actionType: poll.action?.actionType,
-      role: pollActionRole,
+      serverRole: pollActionRole,
     },
     user: {
       id: user.id,

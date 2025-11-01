@@ -13,7 +13,7 @@ import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { normalizeText, sanitizeText } from '../common/common.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
-import * as rolesService from '../roles/roles.service';
+import * as serverRolesService from '../server-roles/server-roles.service';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
@@ -36,7 +36,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       return user;
     }
 
-    const permissions = await rolesService.getUserPermissions(userId);
+    const permissions = await serverRolesService.getUserPermissions(userId);
     const profilePicture = await getUserProfilePicture(userId);
 
     return {
@@ -86,7 +86,7 @@ export const createUser = async (
   });
 
   if (isFirst) {
-    await rolesService.createAdminRole(user.id);
+    await serverRolesService.createAdminServerRole(user.id);
   }
   await serversService.addMemberToServer(user.id);
 
@@ -116,7 +116,7 @@ export const createAnonUser = async () => {
   const isFirst = await isFirstUser();
 
   if (isFirst) {
-    await rolesService.createAdminRole(user.id);
+    await serverRolesService.createAdminServerRole(user.id);
     await serversService.addMemberToServer(user.id);
   } else {
     await channelsService.addMemberToGeneralChannel(user.id);

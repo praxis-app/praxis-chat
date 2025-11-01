@@ -1,8 +1,8 @@
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
-import { RolePermission } from '../roles/entities/role-permission.entity';
-import { Role } from '../roles/entities/role.entity';
-import * as rolesService from '../roles/roles.service';
+import { ServerRolePermission } from '../server-roles/entities/server-role-permission.entity';
+import { ServerRole } from '../server-roles/entities/server-role.entity';
+import * as serverRolesService from '../server-roles/server-roles.service';
 import { User } from '../users/user.entity';
 import { PollActionRoleDto } from './dtos/poll-action-role.dto';
 import { PollActionPermission } from './entities/poll-action-permission.entity';
@@ -11,8 +11,9 @@ import { PollActionRole } from './entities/poll-action-role.entity';
 import { PollAction } from './entities/poll-action.entity';
 
 const usersRepository = dataSource.getRepository(User);
-const rolesRepository = dataSource.getRepository(Role);
-const rolePermissionRepository = dataSource.getRepository(RolePermission);
+const serverRolesRepository = dataSource.getRepository(ServerRole);
+const serverRolePermissionRepository =
+  dataSource.getRepository(ServerRolePermission);
 
 const pollActionRepository = dataSource.getRepository(PollAction);
 const pollActionRoleRepository = dataSource.getRepository(PollActionRole);
@@ -29,28 +30,33 @@ export const implementPollAction = async (pollId: string) => {
   });
 
   if (actionType === 'change-role') {
-    await implementChangeRole(id);
+    await implementChangeServerRole(id);
   }
   if (actionType === 'create-role') {
-    await implementCreateRole(id);
+    await implementCreateServerRole(id);
   }
 };
 
 export const createPollActionRole = async (
   pollActionId: string,
-  { roleToUpdateId, members, permissions, ...role }: PollActionRoleDto,
+  {
+    serverRoleToUpdateId,
+    members,
+    permissions,
+    ...serverRole,
+  }: PollActionRoleDto,
 ) => {
-  const roleToUpdate = await rolesRepository.findOneOrFail({
-    where: { id: roleToUpdateId },
+  const roleToUpdate = await serverRolesRepository.findOneOrFail({
+    where: { id: serverRoleToUpdateId },
   });
 
-  const name = role.name?.trim();
-  const color = role.color?.trim();
+  const name = serverRole.name?.trim();
+  const color = serverRole.color?.trim();
   const prevName = name ? roleToUpdate.name : undefined;
   const prevColor = color ? roleToUpdate.color : undefined;
 
   const savedRole = await pollActionRoleRepository.save({
-    roleId: roleToUpdateId,
+    serverRoleId: serverRoleToUpdateId,
     name,
     color,
     prevName,
@@ -105,13 +111,13 @@ export const createPollActionRole = async (
   return savedRole;
 };
 
-export const implementChangeRole = async (pollActionId: string) => {
+export const implementChangeServerRole = async (pollActionId: string) => {
   const actionRole = await pollActionRoleRepository.findOneOrFail({
     where: { pollActionId },
     relations: ['permissions', 'members'],
   });
-  const roleToUpdate = await rolesRepository.findOneOrFail({
-    where: { id: actionRole.roleId },
+  const roleToUpdate = await serverRolesRepository.findOneOrFail({
+    where: { id: actionRole.serverRoleId },
     relations: ['permissions'],
   });
 
@@ -124,7 +130,7 @@ export const implementChangeRole = async (pollActionId: string) => {
     .map(({ userId }) => userId);
 
   // Update role itself
-  await rolesService.updateRole(roleToUpdate.id, {
+  await serverRolesService.updateServerRole(roleToUpdate.id, {
     name: actionRole.name,
     color: actionRole.color,
   });
@@ -137,7 +143,7 @@ export const implementChangeRole = async (pollActionId: string) => {
       (permission) => permission.changeType === 'remove',
     );
     if (toRemove.length > 0) {
-      await rolePermissionRepository.remove(
+      await serverRolePermissionRepository.remove(
         roleToUpdate.permissions.filter((permission) =>
           toRemove.some(
             (p) =>
@@ -148,9 +154,9 @@ export const implementChangeRole = async (pollActionId: string) => {
       );
     }
     if (toAdd.length > 0) {
-      await rolePermissionRepository.save(
+      await serverRolePermissionRepository.save(
         toAdd.map(({ action, subject }) => ({
-          roleId: roleToUpdate.id,
+          serverRoleId: roleToUpdate.id,
           action,
           subject,
         })),
@@ -159,11 +165,17 @@ export const implementChangeRole = async (pollActionId: string) => {
   }
   // Add role members
   if (userIdsToAdd?.length) {
-    await rolesService.addRoleMembers(roleToUpdate.id, userIdsToAdd);
+    await serverRolesService.addServerRoleMembers(
+      roleToUpdate.id,
+      userIdsToAdd,
+    );
   }
   // Remove role members
   if (userIdsToRemove?.length) {
-    await rolesService.removeRoleMembers(roleToUpdate.id, userIdsToRemove);
+    await serverRolesService.removeServerRoleMembers(
+      roleToUpdate.id,
+      userIdsToRemove,
+    );
   }
   // Update poll action role old name and color
   if (actionRole.name || actionRole.color) {
@@ -174,7 +186,7 @@ export const implementChangeRole = async (pollActionId: string) => {
   }
 };
 
-export const implementCreateRole = async (pollActionId: string) => {
+export const implementCreateServerRole = async (pollActionId: string) => {
   const actionRole = await pollActionRoleRepository.findOneOrFail({
     where: { pollActionId },
     relations: ['permissions', 'members'],
@@ -189,7 +201,7 @@ export const implementCreateRole = async (pollActionId: string) => {
     });
   }
 
-  await rolesRepository.save({
+  await serverRolesRepository.save({
     name,
     color,
     permissions,
