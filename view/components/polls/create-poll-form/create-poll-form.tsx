@@ -184,7 +184,7 @@ export const CreatePollForm = ({
         }
       }
 
-      const serverRolePayload =
+      const serverRole =
         values.action === 'change-role' || values.action === 'create-role'
           ? {
               name: nameChange,
@@ -199,7 +199,7 @@ export const CreatePollForm = ({
         body: values.body?.trim(),
         action: {
           actionType: values.action,
-          serverRole: serverRolePayload,
+          serverRole,
         },
       });
     },
