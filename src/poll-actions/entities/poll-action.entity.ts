@@ -22,7 +22,7 @@ export class PollAction {
 
   @OneToOne(
     () => PollActionRole,
-    (proposedServerRole) => proposedServerRole.pollAction,
+    (pollActionRole) => pollActionRole.pollAction,
     {
       cascade: true,
       nullable: true,
