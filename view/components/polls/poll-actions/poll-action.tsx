@@ -7,7 +7,7 @@ interface Props {
 
 export const PollAction = ({ action }: Props) => {
   if (
-    action.role &&
+    action.serverRole &&
     (action.actionType === 'change-role' || action.actionType === 'create-role')
   ) {
     return <PollActionRole action={action} />;

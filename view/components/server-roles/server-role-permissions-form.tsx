@@ -1,12 +1,16 @@
-import { getPermissionValues } from '@/lib/role.utils';
+import { getPermissionValues } from '@/lib/server-role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { PERMISSION_KEYS } from '../../constants/role.constants';
-import { Permission, PermissionKeys, RoleRes } from '../../types/role.types';
+import { PERMISSION_KEYS } from '../../constants/server-role.constants';
+import {
+  Permission,
+  PermissionKeys,
+  ServerRoleRes,
+} from '../../types/server-role.types';
 import { Button } from '../ui/button';
-import { PermissionToggle } from './permission-toggle';
+import { ServerRolePermissionToggle } from './server-role-permission-toggle';
 
 // TODO: Add form schema with zod
 
@@ -19,13 +23,13 @@ interface FormValues {
 }
 
 interface Props {
-  role: RoleRes;
+  serverRole: ServerRoleRes;
 }
 
-export const PermissionsForm = ({ role }: Props) => {
+export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {
-      permissions: getPermissionValues(role.permissions),
+      permissions: getPermissionValues(serverRole.permissions),
     },
   });
 
@@ -50,23 +54,23 @@ export const PermissionsForm = ({ role }: Props) => {
             result.push({ subject: 'Invite', action: ['manage'] });
           }
           if (permission.name === 'manageRoles') {
-            result.push({ subject: 'Role', action: ['manage'] });
+            result.push({ subject: 'ServerRole', action: ['manage'] });
           }
           return result;
         },
         [],
       );
-      await api.updateRolePermissions(role.id, {
+      await api.updateServerRolePermissions(serverRole.id, {
         permissions,
       });
 
-      queryClient.setQueryData<{ role: RoleRes }>(
-        ['role', role.id],
+      queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
+        ['serverRole', serverRole.id],
         (oldData) => {
           if (!oldData) {
-            return { role };
+            return { serverRole };
           }
-          return { role: { ...oldData.role, permissions } };
+          return { serverRole: { ...oldData.serverRole, permissions } };
         },
       );
       reset({ permissions: getPermissionValues(permissions) });
@@ -83,7 +87,7 @@ export const PermissionsForm = ({ role }: Props) => {
         render={({ field: { onChange, value } }) => (
           <>
             {PERMISSION_KEYS.map((permissionName, index) => (
-              <PermissionToggle
+              <ServerRolePermissionToggle
                 key={permissionName}
                 permissionName={permissionName}
                 checked={value[index].value}

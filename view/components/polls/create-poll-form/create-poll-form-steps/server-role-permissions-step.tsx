@@ -1,5 +1,5 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
-import { PERMISSION_KEYS } from '@/constants/role.constants';
+import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { ProposePermissionToggle } from '../../poll-actions/propose-permission-toggle';
 import { CreatePollFormSchema } from '../create-poll-form.types';
 
-export const RolesPermissionsStep = ({ isLoading }: WizardStepProps) => {
+export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreatePollFormSchema>();
   const formPermissions = form.watch('permissions')!;
 

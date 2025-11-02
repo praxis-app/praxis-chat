@@ -7,13 +7,13 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { PERMISSION_KEYS } from '@/constants/role.constants';
+import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import {
   PollActionRes,
-  PollActionRoleMemberRes,
+  PollActionServerRoleMemberRes,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/role.types';
+import { PermissionKeys } from '@/types/server-role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,15 +27,17 @@ interface Props {
 export const PollActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
-  const { data: roleData, isLoading: isRoleLoading } = useQuery({
-    queryKey: ['role', action.role?.roleId],
+  const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
+    queryKey: ['serverRole', action.serverRole?.serverRoleId],
     queryFn: () => {
-      if (!action.role?.roleId) {
-        throw new Error('Role ID is required');
+      if (!action.serverRole?.serverRoleId) {
+        throw new Error('Server role ID is required');
       }
-      return api.getRole(action.role.roleId);
+      return api.getServerRole(action.serverRole.serverRoleId);
     },
-    enabled: accordionValue === ACCORDION_ITEM_VALUE && !!action.role?.roleId,
+    enabled:
+      accordionValue === ACCORDION_ITEM_VALUE &&
+      !!action.serverRole?.serverRoleId,
   });
 
   const permissionChanges = PERMISSION_KEYS.reduce<
@@ -45,7 +47,7 @@ export const PollActionRole = ({ action }: Props) => {
     }[]
   >((result, name) => {
     if (name === 'manageChannels') {
-      const match = action.role?.permissions?.find(
+      const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'Channel' && p.action.includes('manage'),
       );
       if (match) {
@@ -56,7 +58,7 @@ export const PollActionRole = ({ action }: Props) => {
       }
     }
     if (name === 'manageSettings') {
-      const match = action.role?.permissions?.find(
+      const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
       );
       if (match) {
@@ -67,8 +69,8 @@ export const PollActionRole = ({ action }: Props) => {
       }
     }
     if (name === 'manageRoles') {
-      const match = action.role?.permissions?.find(
-        (p) => p.subject === 'Role' && p.action.includes('manage'),
+      const match = action.serverRole?.permissions?.find(
+        (p) => p.subject === 'ServerRole' && p.action.includes('manage'),
       );
       if (match) {
         result.push({
@@ -78,10 +80,10 @@ export const PollActionRole = ({ action }: Props) => {
       }
     }
     if (name === 'createInvites') {
-      const readMatch = action.role?.permissions?.find(
+      const readMatch = action.serverRole?.permissions?.find(
         (p) => p.subject === 'Invite' && p.action.includes('read'),
       );
-      const createMatch = action.role?.permissions?.find(
+      const createMatch = action.serverRole?.permissions?.find(
         (p) => p.subject === 'Invite' && p.action.includes('create'),
       );
       if (readMatch && createMatch) {
@@ -93,7 +95,7 @@ export const PollActionRole = ({ action }: Props) => {
       }
     }
     if (name === 'manageInvites') {
-      const match = action.role?.permissions?.find(
+      const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'Invite' && p.action.includes('manage'),
       );
       if (match) {
@@ -122,7 +124,7 @@ export const PollActionRole = ({ action }: Props) => {
     return t(`permissions.names.${name}`);
   };
 
-  if (!action.role) {
+  if (!action.serverRole) {
     return null;
   }
 
@@ -139,13 +141,13 @@ export const PollActionRole = ({ action }: Props) => {
           {getAccordionLabel()}
         </AccordionTrigger>
         <AccordionContent className="space-y-4">
-          {isRoleLoading && (
+          {isServerRoleLoading && (
             <div className="text-muted-foreground p-2 text-sm">
               {t('actions.loading')}
             </div>
           )}
 
-          {roleData && (
+          {serverRoleData && (
             <div className="space-y-3">
               <div className="text-sm font-medium">
                 {t('polls.headers.selectedRole')}
@@ -153,22 +155,24 @@ export const PollActionRole = ({ action }: Props) => {
               <div className="flex items-center space-x-2">
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: roleData.role.color }}
+                  style={{ backgroundColor: serverRoleData.serverRole.color }}
                 />
-                <span className="font-medium">{roleData.role.name}</span>
+                <span className="font-medium">
+                  {serverRoleData.serverRole.name}
+                </span>
                 <span className="text-muted-foreground text-sm">
                   {MIDDOT_WITH_SPACES}
                 </span>
                 <p className="text-muted-foreground text-sm">
                   {t('roles.labels.membersCount', {
-                    count: roleData.role.memberCount,
+                    count: serverRoleData.serverRole.memberCount,
                   })}
                 </p>
               </div>
             </div>
           )}
 
-          {!!action.role.name && (
+          {!!action.serverRole.name && (
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
@@ -176,15 +180,17 @@ export const PollActionRole = ({ action }: Props) => {
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-muted-foreground text-sm">
-                  {action.role.prevName}
+                  {action.serverRole.prevName}
                 </span>
                 <span className="text-sm">→</span>
-                <span className="text-sm font-medium">{action.role.name}</span>
+                <span className="text-sm font-medium">
+                  {action.serverRole.name}
+                </span>
               </div>
             </div>
           )}
 
-          {!!action.role.color && (
+          {!!action.serverRole.color && (
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
@@ -193,17 +199,19 @@ export const PollActionRole = ({ action }: Props) => {
               <div className="flex items-center space-x-2">
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: action.role.prevColor }}
+                  style={{ backgroundColor: action.serverRole.prevColor }}
                 />
                 <span className="text-muted-foreground text-sm">
-                  {action.role.prevColor}
+                  {action.serverRole.prevColor}
                 </span>
                 <span className="text-sm">→</span>
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: action.role.color }}
+                  style={{ backgroundColor: action.serverRole.color }}
                 />
-                <span className="text-sm font-medium">{action.role.color}</span>
+                <span className="text-sm font-medium">
+                  {action.serverRole.color}
+                </span>
               </div>
             </div>
           )}
@@ -237,42 +245,43 @@ export const PollActionRole = ({ action }: Props) => {
             </div>
           )}
 
-          {action.role.members && action.role.members.length > 0 && (
-            <div className="space-y-3">
-              <Separator className="mb-4" />
-              <div className="text-sm font-medium">
-                {t('polls.headers.memberChanges')}
-              </div>
-              <div>
-                <div className="space-y-2">
-                  {action.role.members.map(
-                    (member: PollActionRoleMemberRes) => (
-                      <div
-                        key={member.user.id}
-                        className="flex items-center justify-between"
-                      >
-                        <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
-                          {member.user.displayName || member.user.name}
-                        </span>
-                        <Badge
-                          variant={
-                            member.changeType === 'add'
-                              ? 'default'
-                              : 'destructive'
-                          }
-                          className="w-16"
+          {action.serverRole.members &&
+            action.serverRole.members.length > 0 && (
+              <div className="space-y-3">
+                <Separator className="mb-4" />
+                <div className="text-sm font-medium">
+                  {t('polls.headers.memberChanges')}
+                </div>
+                <div>
+                  <div className="space-y-2">
+                    {action.serverRole.members.map(
+                      (member: PollActionServerRoleMemberRes) => (
+                        <div
+                          key={member.user.id}
+                          className="flex items-center justify-between"
                         >
-                          {member.changeType === 'add'
-                            ? t('actions.add')
-                            : t('actions.remove')}
-                        </Badge>
-                      </div>
-                    ),
-                  )}
+                          <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
+                            {member.user.displayName || member.user.name}
+                          </span>
+                          <Badge
+                            variant={
+                              member.changeType === 'add'
+                                ? 'default'
+                                : 'destructive'
+                            }
+                            className="w-16"
+                          >
+                            {member.changeType === 'add'
+                              ? t('actions.add')
+                              : t('actions.remove')}
+                          </Badge>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

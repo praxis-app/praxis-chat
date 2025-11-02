@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LuX } from 'react-icons/lu';
 import { api } from '../../client/api-client';
 import { truncate } from '../../lib/text.utils';
-import { RoleRes } from '../../types/role.types';
+import { ServerRoleRes } from '../../types/server-role.types';
 import { UserRes } from '../../types/user.types';
 import { Button } from '../ui/button';
 import {
@@ -18,11 +18,11 @@ import {
 import { UserAvatar } from '../users/user-avatar';
 
 interface Props {
-  roleId: string;
-  roleMember: UserRes;
+  serverRoleId: string;
+  serverRoleMember: UserRes;
 }
 
-export const RoleMember = ({ roleId, roleMember }: Props) => {
+export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const { t } = useTranslation();
@@ -30,40 +30,48 @@ export const RoleMember = ({ roleId, roleMember }: Props) => {
 
   const { mutate: removeMember, isPending } = useMutation({
     async mutationFn() {
-      await api.removeRoleMember(roleId, roleMember.id);
+      await api.removeServerRoleMember(serverRoleId, serverRoleMember.id);
       setIsConfirmModalOpen(false);
 
-      queryClient.setQueryData(['role', roleId], (data: { role: RoleRes }) => {
-        const filteredMembers = data.role.members.filter(
-          (member) => member.id !== roleMember.id,
-        );
-        return { role: { ...data.role, members: filteredMembers } };
-      });
-      queryClient.setQueryData(['roles'], (data: { roles: RoleRes[] }) => ({
-        roles: data.roles.map((role) => ({
-          ...role,
-          memberCount: Math.max(0, role.memberCount - 1),
-        })),
-      }));
       queryClient.setQueryData(
-        ['role', roleId, 'members', 'eligible'],
+        ['serverRole', serverRoleId],
+        (data: { serverRole: ServerRoleRes }) => {
+          const filteredMembers = data.serverRole.members.filter(
+            (member) => member.id !== serverRoleMember.id,
+          );
+          return {
+            serverRole: { ...data.serverRole, members: filteredMembers },
+          };
+        },
+      );
+      queryClient.setQueryData(
+        ['serverRoles'],
+        (data: { serverRoles: ServerRoleRes[] }) => ({
+          serverRoles: data.serverRoles.map((role) => ({
+            ...role,
+            memberCount: Math.max(0, role.memberCount - 1),
+          })),
+        }),
+      );
+      queryClient.setQueryData(
+        ['serverRole', serverRoleId, 'members', 'eligible'],
         (data: { users: UserRes[] }) => {
-          return { users: [roleMember, ...data.users] };
+          return { users: [serverRoleMember, ...data.users] };
         },
       );
     },
   });
 
-  const name = roleMember.displayName || roleMember.name;
+  const name = serverRoleMember.displayName || serverRoleMember.name;
   const truncatedName = truncate(name, 18);
 
   return (
     <div className="mb-4 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
         <UserAvatar
-          userId={roleMember.id}
+          userId={serverRoleMember.id}
           name={name}
-          imageId={roleMember.profilePicture?.id}
+          imageId={serverRoleMember.profilePicture?.id}
           className="mr-4"
         />
         <span className="max-w-48 truncate">{truncatedName}</span>

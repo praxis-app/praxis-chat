@@ -5,7 +5,7 @@ import {
 import {
   ABILITY_ACTIONS,
   ABILITY_SUBJECTS,
-} from '@common/roles/role.constants';
+} from '@common/roles/server-role.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { PollDto } from '../dtos/poll.dto';
@@ -30,32 +30,32 @@ const pollActionRoleSchema = zod.object({
   color: zod.string().optional(),
   members: zod.array(pollActionRoleMemberSchema).optional(),
   permissions: zod.array(pollActionPermissionSchema).optional(),
-  roleToUpdateId: zod.string().optional(),
+  serverRoleToUpdateId: zod.string().optional(),
 });
 
 const pollActionSchema = zod
   .object({
     actionType: zod.enum(POLL_ACTION_TYPE),
-    role: pollActionRoleSchema.optional(),
+    serverRole: pollActionRoleSchema.optional(),
   })
   .refine(
     (data) => {
       if (data.actionType === 'change-role') {
-        return data.role !== undefined;
+        return data.serverRole !== undefined;
       }
       return true;
     },
     {
-      message: 'Polls to change roles must include a role',
+      message: 'Polls to change server roles must include a server role',
     },
   )
   .refine(
     (data) => {
       if (data.actionType === 'change-role') {
-        const hasNameChange = data.role?.name !== undefined;
-        const hasColorChange = data.role?.color !== undefined;
-        const hasMembersChange = !!data.role?.members?.length;
-        const hasPermissionsChange = !!data.role?.permissions?.length;
+        const hasNameChange = data.serverRole?.name !== undefined;
+        const hasColorChange = data.serverRole?.color !== undefined;
+        const hasMembersChange = !!data.serverRole?.members?.length;
+        const hasPermissionsChange = !!data.serverRole?.permissions?.length;
 
         return (
           hasNameChange ||
@@ -67,7 +67,7 @@ const pollActionSchema = zod
       return true;
     },
     {
-      message: 'Polls to change roles must include at least 1 change',
+      message: 'Polls to change server roles must include at least 1 change',
     },
   );
 

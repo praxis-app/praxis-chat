@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/role.utils';
+import { getPermissionValuesMap } from '@/lib/server-role.utils';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -23,33 +23,35 @@ import {
 } from '../../../ui/select';
 import { CreatePollFormSchema } from '../create-poll-form.types';
 
-export const RoleSelectionStep = () => {
+export const ServerRoleSelectionStep = () => {
   const form = useFormContext<CreatePollFormSchema>();
   const { onNext, onPrevious } = useWizardContext();
 
   const { t } = useTranslation();
 
-  const { data: rolesData, isLoading } = useQuery({
-    queryKey: ['roles'],
-    queryFn: () => api.getRoles(),
+  const { data: serverRolesData, isLoading } = useQuery({
+    queryKey: ['serverRoles'],
+    queryFn: () => api.getServerRoles(),
   });
-  const roles = rolesData?.roles || [];
+  const serverRoles = serverRolesData?.serverRoles || [];
 
   const handleValueChange = (value: string) => {
-    const selectedRole = roles.find((role) => role.id === value);
+    const selectedServerRole = serverRoles.find(
+      (serverRole) => serverRole.id === value,
+    );
 
-    if (selectedRole) {
-      form.setValue('selectedRoleId', value);
-      form.setValue('roleName', selectedRole.name);
-      form.setValue('roleColor', selectedRole.color);
+    if (selectedServerRole) {
+      form.setValue('selectedServerRoleId', value);
+      form.setValue('serverRoleName', selectedServerRole.name);
+      form.setValue('serverRoleColor', selectedServerRole.color);
 
       form.setValue(
         'permissions',
-        getPermissionValuesMap(selectedRole.permissions),
+        getPermissionValuesMap(selectedServerRole.permissions),
       );
       form.setValue(
-        'roleMembers',
-        selectedRole.members.map((member) => member.id),
+        'serverRoleMembers',
+        selectedServerRole.members.map((member) => member.id),
       );
     }
   };
@@ -75,7 +77,7 @@ export const RoleSelectionStep = () => {
           <CardContent>
             <FormField
               control={form.control}
-              name="selectedRoleId"
+              name="selectedServerRoleId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('polls.labels.roleSelection')}</FormLabel>
@@ -97,14 +99,17 @@ export const RoleSelectionStep = () => {
                             {t('actions.loading')}
                           </div>
                         ) : (
-                          roles.map((role) => (
-                            <SelectItem key={role.id} value={role.id}>
+                          serverRoles.map((serverRole) => (
+                            <SelectItem
+                              key={serverRole.id}
+                              value={serverRole.id}
+                            >
                               <div className="flex items-center space-x-2">
                                 <div
                                   className="h-3 w-3 rounded-full"
-                                  style={{ backgroundColor: role.color }}
+                                  style={{ backgroundColor: serverRole.color }}
                                 />
-                                <span>{role.name}</span>
+                                <span>{serverRole.name}</span>
                               </div>
                             </SelectItem>
                           ))
@@ -119,7 +124,7 @@ export const RoleSelectionStep = () => {
           </CardContent>
         </Card>
 
-        {form.watch('selectedRoleId') && (
+        {form.watch('selectedServerRoleId') && (
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
@@ -128,10 +133,11 @@ export const RoleSelectionStep = () => {
             </CardHeader>
             <CardContent>
               {(() => {
-                const selectedRole = roles.find(
-                  (role) => role.id === form.watch('selectedRoleId'),
+                const selectedServerRole = serverRoles.find(
+                  (serverRole) =>
+                    serverRole.id === form.watch('selectedServerRoleId'),
                 );
-                if (!selectedRole) {
+                if (!selectedServerRole) {
                   return null;
                 }
 
@@ -139,15 +145,17 @@ export const RoleSelectionStep = () => {
                   <div className="flex items-center space-x-2">
                     <div
                       className="h-4 w-4 rounded-full"
-                      style={{ backgroundColor: selectedRole.color }}
+                      style={{ backgroundColor: selectedServerRole.color }}
                     />
-                    <span className="font-medium">{selectedRole.name}</span>
+                    <span className="font-medium">
+                      {selectedServerRole.name}
+                    </span>
                     <span className="text-muted-foreground text-sm">
                       {MIDDOT_WITH_SPACES}
                     </span>
                     <p className="text-muted-foreground text-sm">
                       {t('roles.labels.membersCount', {
-                        count: selectedRole.memberCount,
+                        count: selectedServerRole.memberCount,
                       })}
                     </p>
                   </div>
@@ -162,7 +170,7 @@ export const RoleSelectionStep = () => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button onClick={onNext} disabled={!form.watch('selectedRoleId')}>
+        <Button onClick={onNext} disabled={!form.watch('selectedServerRoleId')}>
           {t('actions.next')}
         </Button>
       </div>

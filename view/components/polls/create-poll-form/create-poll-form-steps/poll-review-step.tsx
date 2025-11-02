@@ -1,7 +1,7 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/role.utils';
-import { PermissionKeys } from '@/types/role.types';
+import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { PermissionKeys } from '@/types/server-role.types';
 import { UserRes } from '@/types/user.types';
 import {
   PollActionType,
@@ -20,7 +20,7 @@ import {
 
 export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const {
-    context: { selectedRole, usersEligibleForRole },
+    context: { selectedServerRole, usersEligibleForServerRole },
     onSubmit,
     onPrevious,
     isSubmitting,
@@ -29,14 +29,20 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreatePollFormSchema>();
 
   const formValues = form.getValues();
-  const { action, body, permissions, roleMembers, roleName, roleColor } =
-    formValues;
+  const {
+    action,
+    body,
+    permissions,
+    serverRoleMembers,
+    serverRoleName,
+    serverRoleColor,
+  } = formValues;
 
-  const nameChanged = roleName !== selectedRole?.name;
-  const colorChanged = roleColor !== selectedRole?.color;
+  const nameChanged = serverRoleName !== selectedServerRole?.name;
+  const colorChanged = serverRoleColor !== selectedServerRole?.color;
 
   const shapedRolePermissions = getPermissionValuesMap(
-    selectedRole?.permissions || [],
+    selectedServerRole?.permissions || [],
   );
 
   const permissionChanges = Object.entries(permissions || {}).reduce<
@@ -51,13 +57,13 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const memberChanges = (() => {
     const changes: { user: UserRes; changeType: RoleAttributeChangeType }[] =
       [];
-    for (const user of selectedRole?.members || []) {
-      if (!roleMembers?.includes(user.id)) {
+    for (const user of selectedServerRole?.members || []) {
+      if (!serverRoleMembers?.includes(user.id)) {
         changes.push({ user, changeType: 'remove' });
       }
     }
-    for (const user of usersEligibleForRole || []) {
-      if (roleMembers?.includes(user.id)) {
+    for (const user of usersEligibleForServerRole || []) {
+      if (serverRoleMembers?.includes(user.id)) {
         changes.push({ user, changeType: 'add' });
       }
     }
@@ -149,7 +155,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
           </CardContent>
         </Card>
 
-        {action === 'change-role' && selectedRole && (
+        {action === 'change-role' && selectedServerRole && (
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
@@ -160,15 +166,15 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
               <div className="flex items-center space-x-2">
                 <div
                   className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: selectedRole.color }}
+                  style={{ backgroundColor: selectedServerRole.color }}
                 />
-                <span className="font-medium">{selectedRole.name}</span>
+                <span className="font-medium">{selectedServerRole.name}</span>
                 <span className="text-muted-foreground text-sm">
                   {MIDDOT_WITH_SPACES}
                 </span>
                 <p className="text-muted-foreground text-sm">
                   {t('roles.labels.membersCount', {
-                    count: selectedRole.memberCount,
+                    count: selectedServerRole.memberCount,
                   })}
                 </p>
               </div>
@@ -177,7 +183,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
         )}
 
         {action === 'change-role' &&
-          selectedRole &&
+          selectedServerRole &&
           (nameChanged || colorChanged) && (
             <Card className="gap-3 py-5">
               <CardHeader>
@@ -194,10 +200,12 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                       </span>
                       <div className="flex items-center space-x-2">
                         <span className="text-muted-foreground text-sm">
-                          {selectedRole.name}
+                          {selectedServerRole.name}
                         </span>
                         <span className="text-sm">→</span>
-                        <span className="text-sm font-medium">{roleName}</span>
+                        <span className="text-sm font-medium">
+                          {serverRoleName}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -209,17 +217,19 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                       <div className="flex items-center space-x-2">
                         <div
                           className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: selectedRole.color }}
+                          style={{ backgroundColor: selectedServerRole.color }}
                         />
                         <span className="text-muted-foreground text-sm">
-                          {selectedRole.color}
+                          {selectedServerRole.color}
                         </span>
                         <span className="text-sm">→</span>
                         <div
                           className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: roleColor }}
+                          style={{ backgroundColor: serverRoleColor }}
                         />
-                        <span className="text-sm font-medium">{roleColor}</span>
+                        <span className="text-sm font-medium">
+                          {serverRoleColor}
+                        </span>
                       </div>
                     </div>
                   )}

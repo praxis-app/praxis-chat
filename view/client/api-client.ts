@@ -22,10 +22,10 @@ import { ImageRes } from '../types/image.types';
 import { CreateInviteReq, InviteRes } from '../types/invite.types';
 import { MessageRes } from '../types/message.types';
 import {
-  CreateRoleReq,
-  RoleRes,
-  UpdateRolePermissionsReq,
-} from '../types/role.types';
+  CreateServerRoleReq,
+  ServerRoleRes,
+  UpdateServerRolePermissionsReq,
+} from '../types/server-role.types';
 import {
   CurrentUserRes,
   UpdateUserProfileReq,
@@ -255,62 +255,65 @@ class ApiClient {
   };
 
   // -------------------------------------------------------------------------
-  // Roles & Permissions
+  // Server Roles & Permissions
   // -------------------------------------------------------------------------
 
-  getRole = async (roleId: string) => {
-    const path = `/roles/${roleId}`;
-    return this.executeRequest<{ role: RoleRes }>('get', path);
+  getServerRole = async (serverRoleId: string) => {
+    const path = `/server-roles/${serverRoleId}`;
+    return this.executeRequest<{ serverRole: ServerRoleRes }>('get', path);
   };
 
-  getRoles = async () => {
-    const path = '/roles';
-    return this.executeRequest<{ roles: RoleRes[] }>('get', path);
+  getServerRoles = async () => {
+    const path = '/server-roles';
+    return this.executeRequest<{ serverRoles: ServerRoleRes[] }>('get', path);
   };
 
-  getUsersEligibleForRole = async (roleId: string) => {
-    const path = `/roles/${roleId}/members/eligible`;
+  getUsersEligibleForServerRole = async (serverRoleId: string) => {
+    const path = `/server-roles/${serverRoleId}/members/eligible`;
     return this.executeRequest<{ users: UserRes[] }>('get', path);
   };
 
-  createRole = async (data: CreateRoleReq) => {
-    const path = '/roles';
-    return this.executeRequest<{ role: RoleRes }>('post', path, {
+  createServerRole = async (data: CreateServerRoleReq) => {
+    const path = '/server-roles';
+    return this.executeRequest<{ serverRole: ServerRoleRes }>('post', path, {
       data,
     });
   };
 
-  updateRole = async (roleId: string, data: CreateRoleReq) => {
-    const path = `/roles/${roleId}`;
-    return this.executeRequest<void>('put', path, {
-      data,
-    });
-  };
-
-  updateRolePermissions = async (
-    roleId: string,
-    data: UpdateRolePermissionsReq,
+  updateServerRole = async (
+    serverRoleId: string,
+    data: CreateServerRoleReq,
   ) => {
-    const path = `/roles/${roleId}/permissions`;
+    const path = `/server-roles/${serverRoleId}`;
     return this.executeRequest<void>('put', path, {
       data,
     });
   };
 
-  addRoleMembers = async (roleId: string, userIds: string[]) => {
-    const path = `/roles/${roleId}/members`;
+  updateServerRolePermissions = async (
+    serverRoleId: string,
+    data: UpdateServerRolePermissionsReq,
+  ) => {
+    const path = `/server-roles/${serverRoleId}/permissions`;
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  addServerRoleMembers = async (serverRoleId: string, userIds: string[]) => {
+    const path = `/server-roles/${serverRoleId}/members`;
     return this.executeRequest<void>('post', path, {
       data: { userIds },
     });
   };
 
-  removeRoleMember = async (roleId: string, userId: string) => {
-    const path = `/roles/${roleId}/members/${userId}`;
+  removeServerRoleMember = async (serverRoleId: string, userId: string) => {
+    const path = `/server-roles/${serverRoleId}/members/${userId}`;
     return this.executeRequest<void>('delete', path);
   };
 
-  deleteRole = async (roleId: string) => {
-    const path = `/roles/${roleId}`;
+  deleteServerRole = async (serverRoleId: string) => {
+    const path = `/server-roles/${serverRoleId}`;
     return this.executeRequest<void>('delete', path);
   };
 
