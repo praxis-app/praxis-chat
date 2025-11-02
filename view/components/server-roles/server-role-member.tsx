@@ -22,10 +22,7 @@ interface Props {
   serverRoleMember: UserRes;
 }
 
-export const ServerRoleMember = ({
-  serverRoleId,
-  serverRoleMember,
-}: Props) => {
+export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const { t } = useTranslation();

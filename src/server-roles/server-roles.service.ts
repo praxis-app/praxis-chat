@@ -35,9 +35,8 @@ interface UpdateServerRolePermissionsDto {
 
 const userRepository = dataSource.getRepository(User);
 const serverRoleRepository = dataSource.getRepository(ServerRole);
-const serverRolePermissionRepository = dataSource.getRepository(
-  ServerRolePermission,
-);
+const serverRolePermissionRepository =
+  dataSource.getRepository(ServerRolePermission);
 
 export const getServerRole = async (serverRoleId: string) => {
   const serverRole = await serverRoleRepository.findOne({
@@ -205,9 +204,7 @@ export const updateServerRolePermissions = async (
     throw new Error('Server role not found');
   }
 
-  const permissionsToSave = permissions.reduce<
-    Partial<ServerRolePermission>[]
-  >(
+  const permissionsToSave = permissions.reduce<Partial<ServerRolePermission>[]>(
     (result, { action, subject }) => {
       const actions = Array.isArray(action) ? action : [action];
 

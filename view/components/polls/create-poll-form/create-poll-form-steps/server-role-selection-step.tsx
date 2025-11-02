@@ -100,7 +100,10 @@ export const ServerRoleSelectionStep = () => {
                           </div>
                         ) : (
                           serverRoles.map((serverRole) => (
-                            <SelectItem key={serverRole.id} value={serverRole.id}>
+                            <SelectItem
+                              key={serverRole.id}
+                              value={serverRole.id}
+                            >
                               <div className="flex items-center space-x-2">
                                 <div
                                   className="h-3 w-3 rounded-full"
@@ -167,10 +170,7 @@ export const ServerRoleSelectionStep = () => {
         <Button variant="outline" onClick={onPrevious}>
           {t('actions.previous')}
         </Button>
-        <Button
-          onClick={onNext}
-          disabled={!form.watch('selectedServerRoleId')}
-        >
+        <Button onClick={onNext} disabled={!form.watch('selectedServerRoleId')}>
           {t('actions.next')}
         </Button>
       </div>

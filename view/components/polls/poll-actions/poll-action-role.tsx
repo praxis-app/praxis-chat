@@ -245,42 +245,43 @@ export const PollActionRole = ({ action }: Props) => {
             </div>
           )}
 
-          {action.serverRole.members && action.serverRole.members.length > 0 && (
-            <div className="space-y-3">
-              <Separator className="mb-4" />
-              <div className="text-sm font-medium">
-                {t('polls.headers.memberChanges')}
-              </div>
-              <div>
-                <div className="space-y-2">
-                  {action.serverRole.members.map(
-                    (member: PollActionServerRoleMemberRes) => (
-                      <div
-                        key={member.user.id}
-                        className="flex items-center justify-between"
-                      >
-                        <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
-                          {member.user.displayName || member.user.name}
-                        </span>
-                        <Badge
-                          variant={
-                            member.changeType === 'add'
-                              ? 'default'
-                              : 'destructive'
-                          }
-                          className="w-16"
+          {action.serverRole.members &&
+            action.serverRole.members.length > 0 && (
+              <div className="space-y-3">
+                <Separator className="mb-4" />
+                <div className="text-sm font-medium">
+                  {t('polls.headers.memberChanges')}
+                </div>
+                <div>
+                  <div className="space-y-2">
+                    {action.serverRole.members.map(
+                      (member: PollActionServerRoleMemberRes) => (
+                        <div
+                          key={member.user.id}
+                          className="flex items-center justify-between"
                         >
-                          {member.changeType === 'add'
-                            ? t('actions.add')
-                            : t('actions.remove')}
-                        </Badge>
-                      </div>
-                    ),
-                  )}
+                          <span className="max-w-[150px] truncate text-sm md:max-w-[220px]">
+                            {member.user.displayName || member.user.name}
+                          </span>
+                          <Badge
+                            variant={
+                              member.changeType === 'add'
+                                ? 'default'
+                                : 'destructive'
+                            }
+                            className="w-16"
+                          >
+                            {member.changeType === 'add'
+                              ? t('actions.add')
+                              : t('actions.remove')}
+                          </Badge>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

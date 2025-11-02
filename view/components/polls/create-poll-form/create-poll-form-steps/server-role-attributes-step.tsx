@@ -21,9 +21,7 @@ import {
   CreatePollWizardContext,
 } from '../create-poll-form.types';
 
-export const ServerRoleAttributesStep = ({
-  isLoading,
-}: WizardStepProps) => {
+export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const {
     onNext,
     onPrevious,
@@ -110,9 +108,7 @@ export const ServerRoleAttributesStep = ({
                   className="h-4 w-4 rounded-full"
                   style={{ backgroundColor: selectedServerRole.color }}
                 />
-                <span className="font-medium">
-                  {selectedServerRole.name}
-                </span>
+                <span className="font-medium">{selectedServerRole.name}</span>
                 <span className="text-muted-foreground text-sm">
                   {MIDDOT_WITH_SPACES}
                 </span>

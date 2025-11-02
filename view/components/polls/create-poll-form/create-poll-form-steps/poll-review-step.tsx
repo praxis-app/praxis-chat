@@ -168,9 +168,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                   className="h-4 w-4 rounded-full"
                   style={{ backgroundColor: selectedServerRole.color }}
                 />
-                <span className="font-medium">
-                  {selectedServerRole.name}
-                </span>
+                <span className="font-medium">{selectedServerRole.name}</span>
                 <span className="text-muted-foreground text-sm">
                   {MIDDOT_WITH_SPACES}
                 </span>

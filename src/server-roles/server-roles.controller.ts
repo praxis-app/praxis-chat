@@ -55,14 +55,10 @@ export const addServerRoleMembers = async (req: Request, res: Response) => {
   res.sendStatus(204);
 };
 
-export const removeServerRoleMember = async (
-  req: Request,
-  res: Response,
-) => {
-  await serverRolesService.removeServerRoleMembers(
-    req.params.serverRoleId,
-    [req.params.userId],
-  );
+export const removeServerRoleMember = async (req: Request, res: Response) => {
+  await serverRolesService.removeServerRoleMembers(req.params.serverRoleId, [
+    req.params.userId,
+  ]);
   res.sendStatus(204);
 };
 

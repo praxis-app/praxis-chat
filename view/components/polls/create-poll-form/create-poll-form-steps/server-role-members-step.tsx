@@ -45,11 +45,10 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
     [
       ...(selectedServerRole?.members || []),
       ...(usersEligibleForServerRole || []),
-    ].filter(
-      (user) =>
-        (user.displayName || user.name)
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()),
+    ].filter((user) =>
+      (user.displayName || user.name)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
     ) || [];
 
   if (isLoading) {

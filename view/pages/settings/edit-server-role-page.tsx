@@ -67,8 +67,7 @@ export const EditServerRolePage = () => {
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
     queryKey: ['serverRole', serverRoleId, 'members', 'eligible'],
     queryFn: () => api.getUsersEligibleForServerRole(serverRoleId!),
-    enabled:
-      !!serverRoleId && activeTab === 'members' && canManageServerRoles,
+    enabled: !!serverRoleId && activeTab === 'members' && canManageServerRoles,
   });
 
   const { mutate: addMembers } = useMutation({
@@ -104,30 +103,29 @@ export const EditServerRolePage = () => {
     },
   });
 
-  const { mutate: deleteServerRole, isPending: isDeletePending } =
-    useMutation({
-      mutationFn: async () => {
-        if (!serverRoleId) {
-          return;
-        }
-        await api.deleteServerRole(serverRoleId);
+  const { mutate: deleteServerRole, isPending: isDeletePending } = useMutation({
+    mutationFn: async () => {
+      if (!serverRoleId) {
+        return;
+      }
+      await api.deleteServerRole(serverRoleId);
 
-        queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-          ['serverRoles'],
-          (oldData) => {
-            if (!oldData) {
-              return { serverRoles: [] };
-            }
-            return {
-              serverRoles: oldData.serverRoles.filter(
-                (role) => role.id !== serverRoleId,
-              ),
-            };
-          },
-        );
-        queryClient.invalidateQueries({ queryKey: ['me'] });
-      },
-    });
+      queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
+        ['serverRoles'],
+        (oldData) => {
+          if (!oldData) {
+            return { serverRoles: [] };
+          }
+          return {
+            serverRoles: oldData.serverRoles.filter(
+              (role) => role.id !== serverRoleId,
+            ),
+          };
+        },
+      );
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+    },
+  });
 
   const tabParam = searchParams.get('tab');
 

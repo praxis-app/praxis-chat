@@ -8,9 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { ProposePermissionToggle } from '../../poll-actions/propose-permission-toggle';
 import { CreatePollFormSchema } from '../create-poll-form.types';
 
-export const ServerRolePermissionsStep = ({
-  isLoading,
-}: WizardStepProps) => {
+export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
   const form = useFormContext<CreatePollFormSchema>();
   const formPermissions = form.watch('permissions')!;
 
