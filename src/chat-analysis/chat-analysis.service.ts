@@ -26,7 +26,7 @@ import {
   proposalReadinessSchema,
 } from './prompts/proposal-readiness.prompt';
 
-const CHAT_ANALYSIS_MODEL: Model = 'llama3.2:1b';
+const CHAT_ANALYSIS_MODEL: Model = 'gemma2:2b';
 
 interface Message {
   sender: string;
