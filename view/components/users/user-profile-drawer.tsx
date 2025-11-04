@@ -45,7 +45,7 @@ export const UserProfileDrawer = ({ trigger, userId, me, name }: Props) => {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="p-0">
+        <DialogContent className="md:p-0">
           <VisuallyHidden>
             <DialogHeader>
               <DialogTitle>{name}</DialogTitle>
