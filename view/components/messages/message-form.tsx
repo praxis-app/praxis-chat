@@ -368,7 +368,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
     // inline height entirely when the value becomes empty so the Tailwind `min-h`
     // baseline kicks back in after sending a message.
     textarea.style.height = 'auto';
-    if (!textarea.value) {
+    if (!bodyValue) {
       textarea.style.removeProperty('height');
       return;
     }
