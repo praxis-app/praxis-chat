@@ -51,7 +51,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
   const { t } = useTranslation();
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const fieldSizingSupportedRef = useRef(true);
+  const isFieldSizingSupportedRef = useRef(true);
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
@@ -315,32 +315,37 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       return;
     }
 
+    // Chrome-based browsers support `field-sizing: content`, but Firefox/Zen do not.
+    // Detect the feature once so we can fall back to manual resize logic only where needed.
     if (
       typeof window !== 'undefined' &&
       typeof window.CSS !== 'undefined' &&
       typeof window.CSS.supports === 'function'
     ) {
-      fieldSizingSupportedRef.current = window.CSS.supports(
+      isFieldSizingSupportedRef.current = window.CSS.supports(
         'field-sizing',
         'content',
       );
     } else {
-      fieldSizingSupportedRef.current = false;
+      isFieldSizingSupportedRef.current = false;
     }
 
-    if (fieldSizingSupportedRef.current) {
+    if (isFieldSizingSupportedRef.current) {
       textarea.style.removeProperty('overflow-y');
       textarea.style.removeProperty('height');
       return;
     }
 
+    // In browsers without field-sizing support, keep the native scroll hidden and
+    // mirror the auto-grow sizing as the user types. We listen for native `input`
+    // events here to capture user edits (programmatic updates are handled below).
     const resizeTextarea = () => {
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
-    textarea.style.overflowY = 'hidden';
     resizeTextarea();
+    textarea.style.overflowY = 'hidden';
     textarea.addEventListener('input', resizeTextarea);
 
     return () => {
@@ -349,7 +354,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (fieldSizingSupportedRef.current) {
+    if (isFieldSizingSupportedRef.current) {
       return;
     }
 
@@ -358,6 +363,10 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       return;
     }
 
+    // Complete the fallback by reacting to programmatic value changes
+    // (e.g., draft restore, form reset). We expand to scrollHeight and clear the
+    // inline height entirely when the value becomes empty so the Tailwind `min-h`
+    // baseline kicks back in after sending a message.
     textarea.style.height = 'auto';
     if (!textarea.value) {
       textarea.style.removeProperty('height');
