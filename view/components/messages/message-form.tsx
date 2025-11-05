@@ -51,6 +51,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
   const { t } = useTranslation();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fieldSizingSupportedRef = useRef(true);
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
@@ -64,6 +65,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const isEmptyBody = !getValues('body') && !formState.dirtyFields.body;
   const isEmpty = isEmptyBody && !images.length;
   const draftKey = `message-draft-${channelId}`;
+  const bodyValue = form.watch('body');
 
   const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
     return [...feed].sort(
@@ -306,6 +308,63 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       setValue('body', draft);
     }
   }, [draftKey, setValue]);
+
+  useEffect(() => {
+    const textarea = inputRef.current;
+    if (!textarea) {
+      return;
+    }
+
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.CSS !== 'undefined' &&
+      typeof window.CSS.supports === 'function'
+    ) {
+      fieldSizingSupportedRef.current = window.CSS.supports(
+        'field-sizing',
+        'content',
+      );
+    } else {
+      fieldSizingSupportedRef.current = false;
+    }
+
+    if (fieldSizingSupportedRef.current) {
+      textarea.style.removeProperty('overflow-y');
+      textarea.style.removeProperty('height');
+      return;
+    }
+
+    const resizeTextarea = () => {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    };
+
+    textarea.style.overflowY = 'hidden';
+    resizeTextarea();
+    textarea.addEventListener('input', resizeTextarea);
+
+    return () => {
+      textarea.removeEventListener('input', resizeTextarea);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (fieldSizingSupportedRef.current) {
+      return;
+    }
+
+    const textarea = inputRef.current;
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = 'auto';
+    if (!textarea.value) {
+      textarea.style.removeProperty('height');
+      return;
+    }
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [bodyValue]);
 
   const saveDraft = debounce((draft: string) => {
     if (draft && draft.trim() !== '') {
