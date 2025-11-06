@@ -91,6 +91,6 @@ describe('getDisagreements', () => {
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
-    300000, // 5-minute timeout for each test case to accommodate slow gpt-oss:20b model
+    90000, // 90-second timeout for each test case
   );
 });

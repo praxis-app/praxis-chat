@@ -91,6 +91,6 @@ describe('isReadyForProposal', () => {
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
-    60000, // 60-second timeout for each test case
+    90000, // 90-second timeout for each test case
   );
 });

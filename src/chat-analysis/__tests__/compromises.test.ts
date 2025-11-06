@@ -108,6 +108,6 @@ describe('getCompromises', () => {
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
-    90000,
+    90000, // 90-second timeout for each test case
   );
 });
