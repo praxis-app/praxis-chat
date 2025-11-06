@@ -39,13 +39,10 @@ describe('getDisagreements', () => {
       expectedDisagreementKeywords,
       messages,
     }) => {
-      console.info(description);
-
       let passingAttempts = 0;
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
         const result = await getDisagreements({ messages });
-        console.info({ attempt: attempt + 1, result });
 
         // Ensure the result has the correct shape
         expect(result).toHaveProperty('disagreements');
@@ -90,7 +87,7 @@ describe('getDisagreements', () => {
       }
 
       const passRate = passingAttempts / MAX_ATTEMPTS;
-      console.info({ passingAttempts, passRate });
+      console.info({ description, passingAttempts, passRate });
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },

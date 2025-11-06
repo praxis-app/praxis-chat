@@ -35,13 +35,10 @@ describe('getChatSummary', () => {
   test.each(scenarios)(
     '$description',
     async ({ description, messages, expectedSummaryKeywords }) => {
-      console.info(description);
-
       let passingAttempts = 0;
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
         const summary = await getChatSummary({ messages });
-        console.info({ attempt: attempt + 1, result: summary });
 
         expect(typeof summary).toBe('string');
         expect(summary.length).toBeGreaterThan(0);
@@ -79,7 +76,7 @@ describe('getChatSummary', () => {
       }
 
       const passRate = passingAttempts / MAX_ATTEMPTS;
-      console.info({ passingAttempts, passRate });
+      console.info({ description, passingAttempts, passRate });
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },

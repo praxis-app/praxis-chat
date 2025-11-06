@@ -86,13 +86,11 @@ export const getDisagreements = async ({ messages }: Chat) => {
       template: DISAGREEMENTS_PROMPT,
       variables: { chatData },
     });
-    console.log('Raw model response:', content);
     const parsedContent = JSON.parse(content);
     const response = disagreementsSchema.parse(parsedContent);
 
     return { disagreements: response.disagreements };
   } catch (e) {
-    console.log('Error in getDisagreements:', e);
     return { disagreements: [], error: JSON.stringify(e) };
   }
 };

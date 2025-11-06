@@ -57,13 +57,10 @@ describe('isReadyForProposal', () => {
   test.each(scenarios)(
     '$description',
     async ({ description, messages, expected, reasonContains }) => {
-      console.info(description);
-
       let passingAttempts = 0;
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
         const result = await isReadyForProposal({ messages });
-        console.info({ attempt: attempt + 1, result });
 
         // Ensure the response has the correct shape
         expect(result).toHaveProperty('isReady');
@@ -90,7 +87,7 @@ describe('isReadyForProposal', () => {
       }
 
       const passRate = passingAttempts / MAX_ATTEMPTS;
-      console.info({ passingAttempts, passRate });
+      console.info({ description, passingAttempts, passRate });
 
       expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
