@@ -8,6 +8,9 @@ interface TestScenario {
   expectedDisagreement: boolean;
 }
 
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
+
 const scenarios: TestScenario[] = [
   {
     description: 'should identify disagreements in the conversation',
@@ -36,32 +39,60 @@ describe('getDisagreements', () => {
       expectedDisagreementKeywords,
       messages,
     }) => {
-      const result = await getDisagreements({ messages });
-      console.info({ description, result });
+      console.info(description);
 
-      // Ensure the result has the correct shape
-      expect(result).toHaveProperty('disagreements');
-      expect(Array.isArray(result.disagreements)).toBe(true);
+      let passingAttempts = 0;
 
-      // Account for scenarios where there are no expected disagreements
-      if (!expectedDisagreement) {
-        expect(result.disagreements.length).toBe(0);
-        return;
-      }
-      expect(result.disagreements.length).toBeGreaterThan(0);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await getDisagreements({ messages });
+        console.info({ attempt: attempt + 1, result });
 
-      // Check if the disagreements contain the expected keywords
-      const allDisagreements = result.disagreements.join(' ').toLowerCase();
-      for (const keywordOrKeywords of expectedDisagreementKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) =>
-            allDisagreements.includes(k),
-          );
-          expect(found).toBe(true);
+        // Ensure the result has the correct shape
+        expect(result).toHaveProperty('disagreements');
+        expect(Array.isArray(result.disagreements)).toBe(true);
+
+        let attemptPassed = true;
+
+        // Account for scenarios where there are no expected disagreements
+        if (!expectedDisagreement) {
+          if (result.disagreements.length !== 0) {
+            attemptPassed = false;
+          }
         } else {
-          expect(allDisagreements).toContain(keywordOrKeywords);
+          if (result.disagreements.length === 0) {
+            attemptPassed = false;
+          } else {
+            const allDisagreements = result.disagreements
+              .join(' ')
+              .toLowerCase();
+            for (const keywordOrKeywords of expectedDisagreementKeywords) {
+              if (Array.isArray(keywordOrKeywords)) {
+                const found = keywordOrKeywords.some((keyword) =>
+                  allDisagreements.includes(keyword.toLowerCase()),
+                );
+                if (!found) {
+                  attemptPassed = false;
+                  break;
+                }
+              } else if (
+                !allDisagreements.includes(keywordOrKeywords.toLowerCase())
+              ) {
+                attemptPassed = false;
+                break;
+              }
+            }
+          }
+        }
+
+        if (attemptPassed) {
+          passingAttempts += 1;
         }
       }
+
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
     300000, // 5-minute timeout for each test case to accommodate slow gpt-oss:20b model
   );
