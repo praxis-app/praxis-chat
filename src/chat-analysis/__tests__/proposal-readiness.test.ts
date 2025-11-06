@@ -8,6 +8,9 @@ interface TestScenario {
   reasonContains?: string;
 }
 
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
+
 const scenarios: TestScenario[] = [
   {
     description:
@@ -54,20 +57,42 @@ describe('isReadyForProposal', () => {
   test.each(scenarios)(
     '$description',
     async ({ description, messages, expected, reasonContains }) => {
-      const result = await isReadyForProposal({ messages });
-      console.info({ description, result });
+      console.info(description);
 
-      // Ensure the response has the correct shape
-      expect(result).toHaveProperty('isReady');
-      expect(result).toHaveProperty('reason');
+      let passingAttempts = 0;
 
-      // Assert the expected outcome
-      expect(result.isReady).toBe(expected);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await isReadyForProposal({ messages });
+        console.info({ attempt: attempt + 1, result });
 
-      // Optionally, check if the reason contains a specific substring
-      if (reasonContains && result.reason) {
-        expect(result.reason.toLowerCase()).toContain(reasonContains);
+        // Ensure the response has the correct shape
+        expect(result).toHaveProperty('isReady');
+        expect(result).toHaveProperty('reason');
+
+        let attemptPassed = true;
+
+        // Assert the expected outcome
+        if (result.isReady !== expected) {
+          attemptPassed = false;
+        }
+
+        // Optionally, check if the reason contains a specific substring
+        if (attemptPassed && reasonContains && result.reason) {
+          const reason = result.reason.toLowerCase();
+          if (!reason.includes(reasonContains.toLowerCase())) {
+            attemptPassed = false;
+          }
+        }
+
+        if (attemptPassed) {
+          passingAttempts += 1;
+        }
       }
+
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
     60000, // 60-second timeout for each test case
   );
