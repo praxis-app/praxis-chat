@@ -63,12 +63,8 @@ export const ensureModel = async (model: Model) => {
     return;
   }
   try {
-    console.info(`Checking for model: ${model}`);
     const { models } = await ollama.list();
     const availableModels = models.map((m) => m.name);
-
-    // TODO: Remove when no longer needed for debugging
-    console.info(`Available models: ${JSON.stringify(availableModels)}`);
 
     const modelExists = availableModels.includes(model);
     if (!modelExists) {
