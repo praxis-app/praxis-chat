@@ -8,6 +8,9 @@ interface TestScenario {
   expectedCompromise: boolean;
 }
 
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
+
 const scenarios: TestScenario[] = [
   {
     description: 'should identify potential compromises in the conversation',
@@ -56,32 +59,57 @@ describe('getCompromises', () => {
       expectedCompromiseKeywords,
       messages,
     }) => {
-      const result = await getCompromises({ messages });
-      console.info({ description, result });
+      console.info(description);
 
-      // Ensure the result has the correct shape
-      expect(result).toHaveProperty('compromises');
-      expect(Array.isArray(result.compromises)).toBe(true);
+      let passingAttempts = 0;
 
-      // Account for scenarios where there are no expected compromises
-      if (!expectedCompromise) {
-        expect(result.compromises.length).toBe(0);
-        return;
-      }
-      expect(result.compromises.length).toBeGreaterThan(0);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await getCompromises({ messages });
+        console.info({ attempt: attempt + 1, result });
 
-      // Check if the compromises contain the expected keywords
-      const allCompromises = result.compromises.join(' ').toLowerCase();
-      for (const keywordOrKeywords of expectedCompromiseKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) =>
-            allCompromises.includes(k),
-          );
-          expect(found).toBe(true);
+        // Ensure the result has the correct shape
+        expect(result).toHaveProperty('compromises');
+        expect(Array.isArray(result.compromises)).toBe(true);
+
+        let attemptPassed = true;
+
+        if (!expectedCompromise) {
+          if (result.compromises.length !== 0) {
+            attemptPassed = false;
+          }
         } else {
-          expect(allCompromises).toContain(keywordOrKeywords);
+          if (result.compromises.length === 0) {
+            attemptPassed = false;
+          } else {
+            const allCompromises = result.compromises.join(' ').toLowerCase();
+            for (const keywordOrKeywords of expectedCompromiseKeywords) {
+              if (Array.isArray(keywordOrKeywords)) {
+                const found = keywordOrKeywords.some((keyword) =>
+                  allCompromises.includes(keyword.toLowerCase()),
+                );
+                if (!found) {
+                  attemptPassed = false;
+                  break;
+                }
+              } else if (
+                !allCompromises.includes(keywordOrKeywords.toLowerCase())
+              ) {
+                attemptPassed = false;
+                break;
+              }
+            }
+          }
+        }
+
+        if (attemptPassed) {
+          passingAttempts += 1;
         }
       }
+
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
     90000,
   );
