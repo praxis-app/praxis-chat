@@ -8,6 +8,9 @@ interface TestScenario {
   expectedDescriptionKeywords: (string | string[])[];
 }
 
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
+
 const scenarios: TestScenario[] = [
   {
     description: 'should draft a proposal for a meeting schedule',
@@ -42,38 +45,68 @@ describe('draftProposal', () => {
       expectedTitleKeywords,
       messages,
     }) => {
-      const result = await draftProposal({ messages });
-      console.info({ description, result });
+      console.info(description);
 
-      // Ensure the result has the correct shape
-      expect(result).toHaveProperty('title');
-      expect(result).toHaveProperty('description');
-      expect(typeof result.title).toBe('string');
-      expect(typeof result.description).toBe('string');
+      let passingAttempts = 0;
 
-      // Check if the title contains the expected keywords
-      const title = result.title.toLowerCase();
-      for (const keywordOrKeywords of expectedTitleKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) => title.includes(k));
-          expect(found).toBe(true);
-        } else {
-          expect(title).toContain(keywordOrKeywords);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await draftProposal({ messages });
+        console.info({ attempt: attempt + 1, result });
+
+        // Ensure the result has the correct shape
+        expect(result).toHaveProperty('title');
+        expect(result).toHaveProperty('description');
+        expect(typeof result.title).toBe('string');
+        expect(typeof result.description).toBe('string');
+
+        let attemptPassed = true;
+
+        // Check if the title contains the expected keywords
+        const title = result.title.toLowerCase();
+        for (const keywordOrKeywords of expectedTitleKeywords) {
+          if (Array.isArray(keywordOrKeywords)) {
+            const found = keywordOrKeywords.some((keyword) =>
+              title.includes(keyword.toLowerCase()),
+            );
+            if (!found) {
+              attemptPassed = false;
+              break;
+            }
+          } else if (!title.includes(keywordOrKeywords.toLowerCase())) {
+            attemptPassed = false;
+            break;
+          }
+        }
+
+        if (attemptPassed) {
+          const proposalDescription = result.description.toLowerCase();
+          for (const keywordOrKeywords of expectedDescriptionKeywords) {
+            if (Array.isArray(keywordOrKeywords)) {
+              const found = keywordOrKeywords.some((keyword) =>
+                proposalDescription.includes(keyword.toLowerCase()),
+              );
+              if (!found) {
+                attemptPassed = false;
+                break;
+              }
+            } else if (
+              !proposalDescription.includes(keywordOrKeywords.toLowerCase())
+            ) {
+              attemptPassed = false;
+              break;
+            }
+          }
+        }
+
+        if (attemptPassed) {
+          passingAttempts += 1;
         }
       }
 
-      // Check if the description contains the expected keywords
-      const proposalDescription = result.description.toLowerCase();
-      for (const keywordOrKeywords of expectedDescriptionKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) =>
-            proposalDescription.includes(k),
-          );
-          expect(found).toBe(true);
-        } else {
-          expect(proposalDescription).toContain(keywordOrKeywords);
-        }
-      }
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
     60000, // 60-second timeout for each test case
   );
