@@ -18,19 +18,22 @@ export const COMPROMISES_PROMPT: PromptTemplate = {
 
     Example with compromise(s) for scheduling conflict - if someone wants morning and another wants afternoon:
     {
-      "compromises": ["Meet at noon", "Schedule for lunch time around 12pm", "Try late morning or early afternoon"]
+      "compromises": ["Let's meet right at noon", "Try late morning or early afternoon", "Meet at 11:30am"]
     }
 
     Example with no compromises:
     {
       "compromises": []
     }
+
+    IMPORTANT: If there are no realistic compromises, return an empty array for the "compromises" key.
   `,
   user: 'Analyze this conversation for disagreements and suggest specific compromise solutions:\n{chatData}',
   options: {
-    temperature: 0,
-    num_predict: 500,
-    repeat_penalty: 1.3,
+    temperature: 0.1, // Lower creativity
+    num_predict: 200, // Limit max tokens
+    repeat_penalty: 1.2, // Prevent repetition
+    top_k: 20, // Reduce nonsense
   },
   format: toJSONSchema(compromisesSchema),
 };
