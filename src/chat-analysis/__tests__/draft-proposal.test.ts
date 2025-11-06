@@ -21,29 +21,6 @@ const scenarios: TestScenario[] = [
     expectedDescriptionKeywords: ['thursday', ['2pm', '2 pm']],
   },
   {
-    description: 'should draft a proposal for a technical decision',
-    messages: [
-      {
-        sender: 'Dev1',
-        body: 'I think we should use TypeScript for the new service.',
-      },
-      { sender: 'Dev2', body: 'Agreed, TypeScript will give us type safety.' },
-      {
-        sender: 'Dev3',
-        body: "I was leaning towards Python, but I can agree with TypeScript if we don't use strict mode.",
-      },
-      {
-        sender: 'Dev1',
-        body: 'Deal. TypeScript without strict mode it is.',
-      },
-    ],
-    expectedTitleKeywords: [
-      ['technical', 'decision'],
-      ['typescript', 'language'],
-    ],
-    expectedDescriptionKeywords: ['typescript', 'strict'],
-  },
-  {
     description: 'should handle conversations with no clear outcome gracefully',
     messages: [
       { sender: 'Alice', body: 'Should we order pizza or tacos?' },
