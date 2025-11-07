@@ -27,6 +27,17 @@ const scenarios: TestScenario[] = [
     ],
     expectedDisagreement: true,
   },
+  {
+    description:
+      'should not identify disagreements when there are no disagreements',
+    messages: [
+      { sender: 'Alice', body: 'Should we meet at 2pm tomorrow?' },
+      { sender: 'Bob', body: 'Yes, 2pm works perfectly for me.' },
+      { sender: 'Alice', body: 'Great! See you then.' },
+    ],
+    expectedDisagreementKeywords: [],
+    expectedDisagreement: false,
+  },
 ];
 
 describe('getDisagreements', () => {
