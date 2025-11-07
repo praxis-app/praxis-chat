@@ -8,8 +8,11 @@ interface TestScenario {
   isCompromiseExpected: boolean;
 }
 
-const MAX_ATTEMPTS = 3;
+// TODO: Set MAX_ATTEMPTS to 3 after testing
+const MAX_ATTEMPTS = 10;
+
 const MIN_PASS_RATE = 0.6;
+const INVALID_COMPROMISES = [', '];
 
 const scenarios: TestScenario[] = [
   {
@@ -66,9 +69,6 @@ describe('getCompromises', () => {
         const isResultEmpty = result.compromises.length === 0;
         const allCompromises = result.compromises.join(' ').toLowerCase();
 
-        // TODO: Remove this after testing
-        console.log('result', result);
-
         // Check result shape
         expect(result).toHaveProperty('compromises');
         expect(Array.isArray(result.compromises)).toBe(true);
@@ -76,7 +76,16 @@ describe('getCompromises', () => {
         const isValidResult = () => {
           if (!isCompromiseExpected) {
             return isResultEmpty;
-          } else if (isResultEmpty) {
+          }
+          if (isResultEmpty) {
+            return false;
+          }
+
+          const hasInvalidCompromise = INVALID_COMPROMISES.some(
+            (invalidCompromise) =>
+              allCompromises.includes(invalidCompromise.toLowerCase()),
+          );
+          if (hasInvalidCompromise) {
             return false;
           }
 
@@ -93,6 +102,9 @@ describe('getCompromises', () => {
 
         if (isValidResult()) {
           passingAttempts += 1;
+          console.log('✅ Valid result:', result);
+        } else {
+          console.log('❌ Invalid result:', result);
         }
       }
 
