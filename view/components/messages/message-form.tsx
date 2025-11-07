@@ -286,7 +286,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       }
 
       if (
-        ['Space', 'Enter', 'Key', 'Digit'].some((key) =>
+        ['Space', 'Enter', 'Key', 'Digit', 'Slash'].some((key) =>
           e.code.includes(key),
         ) &&
         // Allow for Ctrl + C to copy
