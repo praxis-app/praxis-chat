@@ -82,17 +82,14 @@ describe('getCompromises', () => {
           } else {
             const allCompromises = result.compromises.join(' ').toLowerCase();
             for (const keywordOrKeywords of expectedCompromiseKeywords) {
-              if (Array.isArray(keywordOrKeywords)) {
-                const found = keywordOrKeywords.some((keyword) =>
-                  allCompromises.includes(keyword.toLowerCase()),
-                );
-                if (!found) {
-                  attemptPassed = false;
-                  break;
-                }
-              } else if (
-                !allCompromises.includes(keywordOrKeywords.toLowerCase())
-              ) {
+              const keywords = Array.isArray(keywordOrKeywords)
+                ? keywordOrKeywords
+                : [keywordOrKeywords];
+
+              const found = keywords.some((keyword) =>
+                allCompromises.includes(keyword.toLowerCase()),
+              );
+              if (!found) {
                 attemptPassed = false;
                 break;
               }
