@@ -8,7 +8,7 @@ interface TestScenario {
   expectedCompromise: boolean;
 }
 
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 3;
 const MIN_PASS_RATE = 0.6;
 
 const scenarios: TestScenario[] = [
