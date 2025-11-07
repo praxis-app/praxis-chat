@@ -8,8 +8,7 @@ interface TestScenario {
   isCompromiseExpected: boolean;
 }
 
-// TODO: Set MAX_ATTEMPTS to 3 after testing
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 3;
 const MIN_PASS_RATE = 0.6;
 
 const scenarios: TestScenario[] = [
@@ -92,9 +91,6 @@ describe('getCompromises', () => {
 
         if (isValidResult()) {
           passingAttempts += 1;
-          console.log('✅ Valid result:', result);
-        } else {
-          console.log('❌ Invalid result:', result);
         }
       }
 
