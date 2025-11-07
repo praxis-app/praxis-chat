@@ -108,7 +108,11 @@ export const getCompromises = async ({ messages }: Chat) => {
     const parsedContent = JSON.parse(content);
     const response = compromisesSchema.parse(parsedContent);
 
-    return { compromises: response.compromises };
+    const sanitizedCompromises = response.compromises
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0 && !/^[,;:&]+$/.test(entry));
+
+    return { compromises: sanitizedCompromises };
   } catch (e) {
     return { compromises: [], error: JSON.stringify(e) };
   }

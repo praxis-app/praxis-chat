@@ -12,6 +12,11 @@ export const COMPROMISES_PROMPT: PromptTemplate = {
     Rules:
     - Analyze the conversation for disagreements or conflicting preferences
     - If disagreements exist, suggest specific compromise solutions that could satisfy both parties
+    - For every compromise, explicitly reference the competing preferences or constraints it resolves
+      (e.g., different budgets or feature requests) and describe a concrete middle-ground solution
+      that satisfies both sides
+    - Include actionable specifics (resource splits, alternating ownership, phased rollouts, etc.)
+      so the compromise feels implementable
     - Do NOT just repeat the conflicting statements - generate actual middle-ground solutions
     - Ensure each entry in the "compromises" array is a valid sentence or phrase
     - Return an empty array if there are no disagreements

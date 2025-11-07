@@ -10,9 +10,7 @@ interface TestScenario {
 
 // TODO: Set MAX_ATTEMPTS to 3 after testing
 const MAX_ATTEMPTS = 10;
-
 const MIN_PASS_RATE = 0.6;
-const INVALID_COMPROMISES = [', '];
 
 const scenarios: TestScenario[] = [
   {
@@ -78,14 +76,6 @@ describe('getCompromises', () => {
             return isResultEmpty;
           }
           if (isResultEmpty) {
-            return false;
-          }
-
-          const hasInvalidCompromise = INVALID_COMPROMISES.some(
-            (invalidCompromise) =>
-              allCompromises.includes(invalidCompromise.toLowerCase()),
-          );
-          if (hasInvalidCompromise) {
             return false;
           }
 
