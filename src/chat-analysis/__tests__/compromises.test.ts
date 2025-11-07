@@ -8,7 +8,7 @@ interface TestScenario {
   expectedCompromise: boolean;
 }
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 10;
 const MIN_PASS_RATE = 0.6;
 
 const scenarios: TestScenario[] = [
@@ -63,6 +63,8 @@ describe('getCompromises', () => {
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
         const result = await getCompromises({ messages });
+
+        console.log('result', result);
 
         // Ensure the result has the correct shape
         expect(result).toHaveProperty('compromises');
