@@ -17,13 +17,13 @@ export const COMPROMISES_PROMPT: PromptTemplate = {
     - Return an empty array if there are no disagreements
     - Return a valid JSON object with no other text
 
-    IMPORTANT: 
+    IMPORTANT:
     - If there are no realistic compromises, return an empty array for the "compromises" key
     - Avoid including delimiter entries in the "compromises" array, such as ", ", "and", etc
 
     Example with compromise(s) for scheduling conflict - if someone wants morning and another wants afternoon:
     {
-      "compromises": ["Let's meet right at noon", "Try late morning or early afternoon", "Meet at 11:30am"]
+      "compromises": ["Try late morning or early afternoon", "Meet at 11:30am"]
     }
 
     Example with no compromises:

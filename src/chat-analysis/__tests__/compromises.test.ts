@@ -4,8 +4,8 @@ import { getCompromises } from '../chat-analysis.service';
 interface TestScenario {
   description: string;
   messages: { sender: string; body: string }[];
-  expectedCompromiseKeywords: (string | string[])[];
-  expectedCompromise: boolean;
+  expectedKeywords: (string | string[])[];
+  isCompromiseExpected: boolean;
 }
 
 const MAX_ATTEMPTS = 3;
@@ -23,7 +23,7 @@ const scenarios: TestScenario[] = [
         body: 'Sorry, I have meetings all morning every day this week.',
       },
     ],
-    expectedCompromiseKeywords: [
+    expectedKeywords: [
       [
         'noon',
         'lunch',
@@ -34,7 +34,7 @@ const scenarios: TestScenario[] = [
         'early afternoon',
       ],
     ],
-    expectedCompromise: true,
+    isCompromiseExpected: true,
   },
   {
     description:
@@ -44,8 +44,8 @@ const scenarios: TestScenario[] = [
       { sender: 'Bob', body: 'Yes, 2pm works perfectly for me.' },
       { sender: 'Alice', body: 'Great! See you then.' },
     ],
-    expectedCompromiseKeywords: [],
-    expectedCompromise: false,
+    expectedKeywords: [],
+    isCompromiseExpected: false,
   },
 ];
 
@@ -55,49 +55,43 @@ describe('getCompromises', () => {
     '$description',
     async ({
       description,
-      expectedCompromise,
-      expectedCompromiseKeywords,
+      isCompromiseExpected,
+      expectedKeywords,
       messages,
     }) => {
       let passingAttempts = 0;
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
         const result = await getCompromises({ messages });
+        const isResultEmpty = result.compromises.length === 0;
+        const allCompromises = result.compromises.join(' ').toLowerCase();
 
+        // TODO: Remove this after testing
         console.log('result', result);
 
-        // Ensure the result has the correct shape
+        // Check result shape
         expect(result).toHaveProperty('compromises');
         expect(Array.isArray(result.compromises)).toBe(true);
 
-        let attemptPassed = true;
-
-        if (!expectedCompromise) {
-          if (result.compromises.length !== 0) {
-            attemptPassed = false;
+        const isValidResult = () => {
+          if (!isCompromiseExpected) {
+            return isResultEmpty;
+          } else if (isResultEmpty) {
+            return false;
           }
-        } else {
-          if (result.compromises.length === 0) {
-            attemptPassed = false;
-          } else {
-            const allCompromises = result.compromises.join(' ').toLowerCase();
-            for (const keywordOrKeywords of expectedCompromiseKeywords) {
-              const keywords = Array.isArray(keywordOrKeywords)
-                ? keywordOrKeywords
-                : [keywordOrKeywords];
 
-              const found = keywords.some((keyword) =>
-                allCompromises.includes(keyword.toLowerCase()),
-              );
-              if (!found) {
-                attemptPassed = false;
-                break;
-              }
-            }
-          }
-        }
+          return expectedKeywords.every((keywordOrKeywords) => {
+            const keywords = Array.isArray(keywordOrKeywords)
+              ? keywordOrKeywords
+              : [keywordOrKeywords];
 
-        if (attemptPassed) {
+            return keywords.some((keyword) =>
+              allCompromises.includes(keyword.toLowerCase()),
+            );
+          });
+        };
+
+        if (isValidResult()) {
           passingAttempts += 1;
         }
       }
