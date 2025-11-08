@@ -4,8 +4,8 @@ import { getDisagreements } from '../chat-analysis.service';
 interface TestScenario {
   description: string;
   messages: { sender: string; body: string }[];
-  expectedDisagreementKeywords: (string | string[])[];
-  expectedDisagreement: boolean;
+  expectedKeywords: (string | string[])[];
+  isDisagreementExpected: boolean;
 }
 
 const MAX_ATTEMPTS = 3;
@@ -22,10 +22,8 @@ const scenarios: TestScenario[] = [
         body: 'I disagree with both, green would be the best option.',
       },
     ],
-    expectedDisagreementKeywords: [
-      ['blue', 'red', 'green', 'color', 'disagree'],
-    ],
-    expectedDisagreement: true,
+    expectedKeywords: [['blue', 'red', 'green', 'color', 'disagree']],
+    isDisagreementExpected: true,
   },
   {
     description:
@@ -35,8 +33,8 @@ const scenarios: TestScenario[] = [
       { sender: 'Bob', body: 'Yes, 2pm works perfectly for me.' },
       { sender: 'Alice', body: 'Great! See you then.' },
     ],
-    expectedDisagreementKeywords: [],
-    expectedDisagreement: false,
+    expectedKeywords: [],
+    isDisagreementExpected: false,
   },
 ];
 
@@ -46,8 +44,8 @@ describe('getDisagreements', () => {
     '$description',
     async ({
       description,
-      expectedDisagreement,
-      expectedDisagreementKeywords,
+      expectedKeywords,
+      isDisagreementExpected,
       messages,
     }) => {
       let passingAttempts = 0;
@@ -59,40 +57,30 @@ describe('getDisagreements', () => {
         expect(result).toHaveProperty('disagreements');
         expect(Array.isArray(result.disagreements)).toBe(true);
 
-        let attemptPassed = true;
+        const isResultEmpty = result.disagreements.length === 0;
+        const allDisagreements = result.disagreements.join(' ').toLowerCase();
 
-        // Account for scenarios where there are no expected disagreements
-        if (!expectedDisagreement) {
-          if (result.disagreements.length !== 0) {
-            attemptPassed = false;
+        const isValidResult = () => {
+          if (!isDisagreementExpected) {
+            return isResultEmpty;
           }
-        } else {
-          if (result.disagreements.length === 0) {
-            attemptPassed = false;
-          } else {
-            const allDisagreements = result.disagreements
-              .join(' ')
-              .toLowerCase();
-            for (const keywordOrKeywords of expectedDisagreementKeywords) {
-              if (Array.isArray(keywordOrKeywords)) {
-                const found = keywordOrKeywords.some((keyword) =>
-                  allDisagreements.includes(keyword.toLowerCase()),
-                );
-                if (!found) {
-                  attemptPassed = false;
-                  break;
-                }
-              } else if (
-                !allDisagreements.includes(keywordOrKeywords.toLowerCase())
-              ) {
-                attemptPassed = false;
-                break;
-              }
-            }
-          }
-        }
 
-        if (attemptPassed) {
+          if (isResultEmpty) {
+            return false;
+          }
+
+          return expectedKeywords.every((keywordOrKeywords) => {
+            const keywords = Array.isArray(keywordOrKeywords)
+              ? keywordOrKeywords
+              : [keywordOrKeywords];
+
+            return keywords.some((keyword) =>
+              allDisagreements.includes(keyword.toLowerCase()),
+            );
+          });
+        };
+
+        if (isValidResult()) {
           passingAttempts += 1;
         }
       }
