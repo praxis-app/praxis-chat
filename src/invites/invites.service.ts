@@ -67,7 +67,7 @@ export const getValidInvites = async () => {
 };
 
 export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
-  const server = await serversService.getServerSafely();
+  const server = await serversService.getInitialServerSafely();
   const token = cryptoRandomString({ length: 8 });
 
   const invite = await inviteRepository.save({

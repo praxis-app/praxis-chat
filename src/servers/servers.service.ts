@@ -13,7 +13,7 @@ const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 
-export const getServerSafely = async () => {
+export const getInitialServerSafely = async () => {
   const servers = await serverRepository.find();
   if (!servers.length) {
     return createInitialServer();
@@ -50,7 +50,7 @@ export const createInitialServer = async () => {
 };
 
 export const addMemberToServer = async (userId: string) => {
-  const server = await getServerSafely();
+  const server = await getInitialServerSafely();
   await serverMemberRepository.save({
     serverId: server.id,
     userId,

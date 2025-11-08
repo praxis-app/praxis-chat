@@ -13,7 +13,7 @@ import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
-import { getServerSafely } from '../servers/servers.service';
+import { getInitialServerSafely } from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
@@ -192,7 +192,7 @@ export const createChannel = async ({
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
-  const server = await getServerSafely();
+  const server = await getInitialServerSafely();
   const serverMembers = await serverMemberRepository.find({
     where: { serverId: server.id },
   });
@@ -271,7 +271,7 @@ const getChannelKeyMaster = () => {
 };
 
 const initializeGeneralChannel = async () => {
-  const server = await getServerSafely();
+  const server = await getInitialServerSafely();
 
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();

@@ -156,13 +156,13 @@ export const createServerRole = async ({
   name,
   color,
 }: CreateServerRoleDto) => {
-  const server = await serversService.getServerSafely();
+  const server = await serversService.getInitialServerSafely();
   const serverRole = await serverRoleRepository.save({ name, color, server });
   return { ...serverRole, memberCount: 0 };
 };
 
 export const createAdminServerRole = async (userId: string) => {
-  const server = await serversService.getServerSafely();
+  const server = await serversService.getInitialServerSafely();
 
   await serverRoleRepository.save({
     name: ADMIN_ROLE_NAME,
