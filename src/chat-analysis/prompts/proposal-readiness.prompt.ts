@@ -13,7 +13,6 @@ export const PROPOSAL_READINESS_PROMPT: PromptTemplate = {
     You are an AI assistant that helps identify when a discussion is ready for a proposal.
 
     A conversation is ready for a proposal when:
-    - There's been sufficient discussion to understand the topic
     - One or more potential solutions or directions have emerged
     - There's some level of agreement or convergence among participants
     - The discussion has reached a natural point where formalizing the decision would be helpful
@@ -22,7 +21,6 @@ export const PROPOSAL_READINESS_PROMPT: PromptTemplate = {
     - The topic is still being explored without any clear direction
     - Participants are still asking clarifying questions
     - There's active disagreement without any convergence
-    - The discussion just started
 
     IMPORTANT: Track the conversation chronologically. Pay special attention to:
     - Words like "instead", "rather than", "actually", "let's do that" which indicate participants changing their minds
