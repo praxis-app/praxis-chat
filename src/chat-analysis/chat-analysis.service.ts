@@ -26,7 +26,7 @@ import {
   proposalReadinessSchema,
 } from './prompts/proposal-readiness.prompt';
 
-const CHAT_ANALYSIS_MODEL: Model = 'llama3.2:1b';
+const CHAT_ANALYSIS_MODEL: Model = 'gemma2:2b';
 
 interface Message {
   sender: string;
@@ -86,13 +86,11 @@ export const getDisagreements = async ({ messages }: Chat) => {
       template: DISAGREEMENTS_PROMPT,
       variables: { chatData },
     });
-    console.log('Raw model response:', content);
     const parsedContent = JSON.parse(content);
     const response = disagreementsSchema.parse(parsedContent);
 
     return { disagreements: response.disagreements };
   } catch (e) {
-    console.log('Error in getDisagreements:', e);
     return { disagreements: [], error: JSON.stringify(e) };
   }
 };
@@ -110,7 +108,11 @@ export const getCompromises = async ({ messages }: Chat) => {
     const parsedContent = JSON.parse(content);
     const response = compromisesSchema.parse(parsedContent);
 
-    return { compromises: response.compromises };
+    const sanitizedCompromises = response.compromises
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0 && !/^[,;:&]+$/.test(entry));
+
+    return { compromises: sanitizedCompromises };
   } catch (e) {
     return { compromises: [], error: JSON.stringify(e) };
   }

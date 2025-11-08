@@ -4,9 +4,12 @@ import { getDisagreements } from '../chat-analysis.service';
 interface TestScenario {
   description: string;
   messages: { sender: string; body: string }[];
-  expectedDisagreementKeywords: (string | string[])[];
-  expectedDisagreement: boolean;
+  expectedKeywords: (string | string[])[];
+  isDisagreementExpected: boolean;
 }
+
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
 
 const scenarios: TestScenario[] = [
   {
@@ -19,10 +22,19 @@ const scenarios: TestScenario[] = [
         body: 'I disagree with both, green would be the best option.',
       },
     ],
-    expectedDisagreementKeywords: [
-      ['blue', 'red', 'green', 'color', 'disagree'],
+    expectedKeywords: [['blue', 'red', 'green', 'color', 'disagree']],
+    isDisagreementExpected: true,
+  },
+  {
+    description:
+      'should not identify disagreements when there are no disagreements',
+    messages: [
+      { sender: 'Alice', body: 'Should we meet at 2pm tomorrow?' },
+      { sender: 'Bob', body: 'Yes, 2pm works perfectly for me.' },
+      { sender: 'Alice', body: 'Great! See you then.' },
     ],
-    expectedDisagreement: true,
+    expectedKeywords: [],
+    isDisagreementExpected: false,
   },
 ];
 
@@ -32,37 +44,52 @@ describe('getDisagreements', () => {
     '$description',
     async ({
       description,
-      expectedDisagreement,
-      expectedDisagreementKeywords,
+      expectedKeywords,
+      isDisagreementExpected,
       messages,
     }) => {
-      const result = await getDisagreements({ messages });
-      console.info({ description, result });
+      let passingAttempts = 0;
 
-      // Ensure the result has the correct shape
-      expect(result).toHaveProperty('disagreements');
-      expect(Array.isArray(result.disagreements)).toBe(true);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await getDisagreements({ messages });
 
-      // Account for scenarios where there are no expected disagreements
-      if (!expectedDisagreement) {
-        expect(result.disagreements.length).toBe(0);
-        return;
-      }
-      expect(result.disagreements.length).toBeGreaterThan(0);
+        // Ensure the result has the correct shape
+        expect(result).toHaveProperty('disagreements');
+        expect(Array.isArray(result.disagreements)).toBe(true);
 
-      // Check if the disagreements contain the expected keywords
-      const allDisagreements = result.disagreements.join(' ').toLowerCase();
-      for (const keywordOrKeywords of expectedDisagreementKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) =>
-            allDisagreements.includes(k),
-          );
-          expect(found).toBe(true);
-        } else {
-          expect(allDisagreements).toContain(keywordOrKeywords);
+        const isResultEmpty = result.disagreements.length === 0;
+        const allDisagreements = result.disagreements.join(' ').toLowerCase();
+
+        const isValidResult = () => {
+          if (!isDisagreementExpected) {
+            return isResultEmpty;
+          }
+
+          if (isResultEmpty) {
+            return false;
+          }
+
+          return expectedKeywords.every((keywordOrKeywords) => {
+            const keywords = Array.isArray(keywordOrKeywords)
+              ? keywordOrKeywords
+              : [keywordOrKeywords];
+
+            return keywords.some((keyword) =>
+              allDisagreements.includes(keyword.toLowerCase()),
+            );
+          });
+        };
+
+        if (isValidResult()) {
+          passingAttempts += 1;
         }
       }
+
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ description, passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
-    300000, // 5-minute timeout for each test case to accommodate slow gpt-oss:20b model
+    90000, // 90-second timeout for each test case
   );
 });

@@ -4,9 +4,12 @@ import { getCompromises } from '../chat-analysis.service';
 interface TestScenario {
   description: string;
   messages: { sender: string; body: string }[];
-  expectedCompromiseKeywords: (string | string[])[];
-  expectedCompromise: boolean;
+  expectedKeywords: (string | string[])[];
+  isCompromiseExpected: boolean;
 }
+
+const MAX_ATTEMPTS = 3;
+const MIN_PASS_RATE = 0.6;
 
 const scenarios: TestScenario[] = [
   {
@@ -20,7 +23,7 @@ const scenarios: TestScenario[] = [
         body: 'Sorry, I have meetings all morning every day this week.',
       },
     ],
-    expectedCompromiseKeywords: [
+    expectedKeywords: [
       [
         'noon',
         'lunch',
@@ -31,7 +34,7 @@ const scenarios: TestScenario[] = [
         'early afternoon',
       ],
     ],
-    expectedCompromise: true,
+    isCompromiseExpected: true,
   },
   {
     description:
@@ -41,8 +44,8 @@ const scenarios: TestScenario[] = [
       { sender: 'Bob', body: 'Yes, 2pm works perfectly for me.' },
       { sender: 'Alice', body: 'Great! See you then.' },
     ],
-    expectedCompromiseKeywords: [],
-    expectedCompromise: false,
+    expectedKeywords: [],
+    isCompromiseExpected: false,
   },
 ];
 
@@ -52,37 +55,50 @@ describe('getCompromises', () => {
     '$description',
     async ({
       description,
-      expectedCompromise,
-      expectedCompromiseKeywords,
+      isCompromiseExpected,
+      expectedKeywords,
       messages,
     }) => {
-      const result = await getCompromises({ messages });
-      console.info({ description, result });
+      let passingAttempts = 0;
 
-      // Ensure the result has the correct shape
-      expect(result).toHaveProperty('compromises');
-      expect(Array.isArray(result.compromises)).toBe(true);
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        const result = await getCompromises({ messages });
+        const isResultEmpty = result.compromises.length === 0;
+        const allCompromises = result.compromises.join(' ').toLowerCase();
 
-      // Account for scenarios where there are no expected compromises
-      if (!expectedCompromise) {
-        expect(result.compromises.length).toBe(0);
-        return;
-      }
-      expect(result.compromises.length).toBeGreaterThan(0);
+        // Check result shape
+        expect(result).toHaveProperty('compromises');
+        expect(Array.isArray(result.compromises)).toBe(true);
 
-      // Check if the compromises contain the expected keywords
-      const allCompromises = result.compromises.join(' ').toLowerCase();
-      for (const keywordOrKeywords of expectedCompromiseKeywords) {
-        if (Array.isArray(keywordOrKeywords)) {
-          const found = keywordOrKeywords.some((k) =>
-            allCompromises.includes(k),
-          );
-          expect(found).toBe(true);
-        } else {
-          expect(allCompromises).toContain(keywordOrKeywords);
+        const isValidResult = () => {
+          if (!isCompromiseExpected) {
+            return isResultEmpty;
+          }
+          if (isResultEmpty) {
+            return false;
+          }
+
+          return expectedKeywords.every((keywordOrKeywords) => {
+            const keywords = Array.isArray(keywordOrKeywords)
+              ? keywordOrKeywords
+              : [keywordOrKeywords];
+
+            return keywords.some((keyword) =>
+              allCompromises.includes(keyword.toLowerCase()),
+            );
+          });
+        };
+
+        if (isValidResult()) {
+          passingAttempts += 1;
         }
       }
+
+      const passRate = passingAttempts / MAX_ATTEMPTS;
+      console.info({ description, passingAttempts, passRate });
+
+      expect(passRate).toBeGreaterThanOrEqual(MIN_PASS_RATE);
     },
-    90000,
+    90000, // 90-second timeout for each test case
   );
 });

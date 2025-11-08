@@ -51,6 +51,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
   const { t } = useTranslation();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const isFieldSizingSupportedRef = useRef(true);
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
@@ -284,7 +285,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       }
 
       if (
-        ['Space', 'Enter', 'Key', 'Digit'].some((key) =>
+        ['Space', 'Enter', 'Key', 'Digit', 'Slash'].some((key) =>
           e.code.includes(key),
         ) &&
         // Allow for Ctrl + C to copy
@@ -306,6 +307,49 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       setValue('body', draft);
     }
   }, [draftKey, setValue]);
+
+  useEffect(() => {
+    const textarea = inputRef.current;
+    if (!textarea) {
+      return;
+    }
+
+    // Chrome-based browsers support `field-sizing: content`, but Firefox/Zen do not.
+    // Detect the feature once so we can fall back to manual resize logic only where needed.
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.CSS !== 'undefined' &&
+      typeof window.CSS.supports === 'function'
+    ) {
+      isFieldSizingSupportedRef.current = window.CSS.supports(
+        'field-sizing',
+        'content',
+      );
+    } else {
+      isFieldSizingSupportedRef.current = false;
+    }
+
+    if (isFieldSizingSupportedRef.current) {
+      textarea.style.removeProperty('overflow-y');
+      textarea.style.removeProperty('height');
+      return;
+    }
+
+    // In browsers without field-sizing support, keep the native scroll hidden and
+    // mirror the auto-grow sizing as the user types. We listen for native `input`
+    // events here to capture user edits.
+    const resizeTextarea = () => {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    };
+
+    textarea.style.overflowY = 'hidden';
+    textarea.addEventListener('input', resizeTextarea);
+
+    return () => {
+      textarea.removeEventListener('input', resizeTextarea);
+    };
+  }, []);
 
   const saveDraft = debounce((draft: string) => {
     if (draft && draft.trim() !== '') {

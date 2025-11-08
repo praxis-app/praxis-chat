@@ -30,7 +30,7 @@ const ollama = new Ollama({
  * have already been confirmed to exist locally. Without this cache, we would need to
  * call `ollama.list()` on every request to verify model availability
  *
- * TODO: Consider moving this to Redis
+ * TODO: Move this to Redis
  */
 const verifiedModels = new Set<Model>();
 
@@ -63,10 +63,10 @@ export const ensureModel = async (model: Model) => {
     return;
   }
   try {
-    const models = await ollama.list();
-    const modelExists = models.models.some(
-      (m) => m.name === model || m.name.startsWith(model + ':'),
-    );
+    const { models } = await ollama.list();
+    const availableModels = models.map((m) => m.name);
+
+    const modelExists = availableModels.includes(model);
     if (!modelExists) {
       const start = Date.now();
       console.info(`Pulling model: ${model}`);

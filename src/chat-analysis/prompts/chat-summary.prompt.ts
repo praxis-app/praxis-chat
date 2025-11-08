@@ -16,7 +16,7 @@ export const CHAT_SUMMARY_PROMPT: PromptTemplate = {
   user: 'Summarize this conversation:\n{chatData}',
   // Decision-making focused options
   options: {
-    temperature: 0.2, // Lower creativity
+    temperature: 0.1, // Lower creativity
     num_predict: 200, // Limit max tokens
     repeat_penalty: 1.2, // Prevent repetition
     top_k: 20, // Reduce nonsense
