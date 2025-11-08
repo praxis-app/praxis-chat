@@ -65,7 +65,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const isEmptyBody = !getValues('body') && !formState.dirtyFields.body;
   const isEmpty = isEmptyBody && !images.length;
   const draftKey = `message-draft-${channelId}`;
-  const bodyValue = form.watch('body');
 
   const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
     return [...feed].sort(
@@ -338,13 +337,12 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
     // In browsers without field-sizing support, keep the native scroll hidden and
     // mirror the auto-grow sizing as the user types. We listen for native `input`
-    // events here to capture user edits (programmatic updates are handled below).
+    // events here to capture user edits.
     const resizeTextarea = () => {
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
-    resizeTextarea();
     textarea.style.overflowY = 'hidden';
     textarea.addEventListener('input', resizeTextarea);
 
@@ -352,28 +350,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       textarea.removeEventListener('input', resizeTextarea);
     };
   }, []);
-
-  useEffect(() => {
-    if (isFieldSizingSupportedRef.current) {
-      return;
-    }
-
-    const textarea = inputRef.current;
-    if (!textarea) {
-      return;
-    }
-
-    // Complete the fallback by reacting to programmatic value changes
-    // (e.g., draft restore, form reset). We expand to scrollHeight and clear the
-    // inline height entirely when the value becomes empty so the Tailwind `min-h`
-    // baseline kicks back in after sending a message.
-    textarea.style.height = 'auto';
-    if (!bodyValue) {
-      textarea.style.removeProperty('height');
-      return;
-    }
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }, [bodyValue]);
 
   const saveDraft = debounce((draft: string) => {
     if (draft && draft.trim() !== '') {
