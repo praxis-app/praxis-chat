@@ -11,11 +11,12 @@ import { usersRouter } from '../users/users.router';
 export const appRouter = express.Router();
 
 // Register routers
-appRouter.use('/auth', authRouter);
-appRouter.use('/users', usersRouter);
-appRouter.use('/channels', channelsRouter);
-appRouter.use('/invites', invitesRouter);
-appRouter.use('/servers', serversRouter);
-appRouter.use('/server-roles', serverRolesRouter);
-appRouter.use('/server-configs', serverConfigsRouter);
-appRouter.use('/health', healthRouter);
+appRouter
+  .use('/auth', authRouter)
+  .use('/users', usersRouter)
+  .use('/channels', channelsRouter)
+  .use('/invites', invitesRouter)
+  .use('/servers', serversRouter)
+  .use('/server-roles', serverRolesRouter)
+  .use('/server-configs', serverConfigsRouter)
+  .use('/health', healthRouter);
