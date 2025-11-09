@@ -26,6 +26,7 @@ import {
   ServerRoleRes,
   UpdateServerRolePermissionsReq,
 } from '../types/server-role.types';
+import { ServerReq, ServerRes } from '../types/server.types';
 import {
   CurrentUserRes,
   UpdateUserProfileReq,
@@ -251,6 +252,39 @@ class ApiClient {
 
   deleteVote = async (channelId: string, pollId: string, voteId: string) => {
     const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
+    return this.executeRequest<void>('delete', path);
+  };
+
+  // -------------------------------------------------------------------------
+  // Servers
+  // -------------------------------------------------------------------------
+
+  getServers = async () => {
+    const path = '/servers';
+    return this.executeRequest<{ servers: ServerRes[] }>('get', path);
+  };
+
+  getServerBySlug = async (slug: string) => {
+    const path = `/servers/${slug}`;
+    return this.executeRequest<{ server: ServerRes }>('get', path);
+  };
+
+  createServer = async (data: ServerReq) => {
+    const path = '/servers';
+    return this.executeRequest<{ server: ServerRes }>('post', path, {
+      data,
+    });
+  };
+
+  updateServer = async (serverId: string, data: ServerReq) => {
+    const path = `/servers/${serverId}`;
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  deleteServer = async (serverId: string) => {
+    const path = `/servers/${serverId}`;
     return this.executeRequest<void>('delete', path);
   };
 
