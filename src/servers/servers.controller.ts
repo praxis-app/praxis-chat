@@ -10,3 +10,13 @@ export const getServerBySlug = async (req: Request, res: Response) => {
   const server = await serversService.getServerBySlug(req.params.slug);
   res.json({ server });
 };
+
+export const createServer = async (req: Request, res: Response) => {
+  const server = await serversService.createServer(
+    req.body.name,
+    req.body.slug,
+    req.body.description,
+    res.locals.user.id,
+  );
+  res.json({ server });
+};

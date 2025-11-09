@@ -35,6 +35,22 @@ export const getInitialServerSafely = async () => {
   return servers[0];
 };
 
+export const createServer = async (
+  name: string,
+  slug: string,
+  description: string | undefined,
+  currentUserId: string,
+) => {
+  const server = await serverRepository.save({
+    name,
+    slug,
+    description,
+    members: [{ userId: currentUserId }],
+    config: serverConfigRepository.create(),
+  });
+  return server;
+};
+
 export const createInitialServer = async () => {
   try {
     const server = await serverRepository.save({
