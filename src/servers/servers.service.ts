@@ -19,22 +19,6 @@ export const getServers = async () => {
   });
 };
 
-export const getServerBySlug = async (slug: string) => {
-  const server = await serverRepository.findOne({ where: { slug } });
-  if (!server) {
-    throw new Error(`Server with slug ${slug} not found`);
-  }
-  return server;
-};
-
-export const getInitialServerSafely = async () => {
-  const servers = await getServers();
-  if (!servers.length) {
-    return createInitialServer();
-  }
-  return servers[0];
-};
-
 export const createServer = async (
   name: string,
   slug: string,
@@ -66,6 +50,22 @@ export const updateServer = async (
     slug,
     description,
   });
+};
+
+export const getServerBySlug = async (slug: string) => {
+  const server = await serverRepository.findOne({ where: { slug } });
+  if (!server) {
+    throw new Error(`Server with slug ${slug} not found`);
+  }
+  return server;
+};
+
+export const getInitialServerSafely = async () => {
+  const servers = await getServers();
+  if (!servers.length) {
+    return createInitialServer();
+  }
+  return servers[0];
 };
 
 export const createInitialServer = async () => {
