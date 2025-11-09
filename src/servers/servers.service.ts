@@ -13,18 +13,18 @@ const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 
+export const getServers = async () => {
+  return serverRepository.find({
+    order: { createdAt: 'ASC' },
+  });
+};
+
 export const getServerBySlug = async (slug: string) => {
   const server = await serverRepository.findOne({ where: { slug } });
   if (!server) {
     throw new Error(`Server with slug ${slug} not found`);
   }
   return server;
-};
-
-export const getServers = async () => {
-  return serverRepository.find({
-    order: { createdAt: 'ASC' },
-  });
 };
 
 export const getInitialServerSafely = async () => {
