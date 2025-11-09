@@ -51,6 +51,23 @@ export const createServer = async (
   return server;
 };
 
+export const updateServer = async (
+  serverId: string,
+  name: string,
+  slug: string,
+  description: string | undefined,
+) => {
+  const server = await serverRepository.findOne({ where: { id: serverId } });
+  if (!server) {
+    throw new Error(`Server with id ${serverId} not found`);
+  }
+  return serverRepository.update(serverId, {
+    name,
+    slug,
+    description,
+  });
+};
+
 export const createInitialServer = async () => {
   try {
     const server = await serverRepository.save({

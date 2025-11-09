@@ -20,3 +20,13 @@ export const createServer = async (req: Request, res: Response) => {
   );
   res.json({ server });
 };
+
+export const updateServer = async (req: Request, res: Response) => {
+  const result = await serversService.updateServer(
+    req.params.serverId,
+    req.body.name,
+    req.body.slug,
+    req.body.description,
+  );
+  res.json(result);
+};

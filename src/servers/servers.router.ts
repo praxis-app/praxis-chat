@@ -6,6 +6,7 @@ import {
   createServer,
   getServerBySlug,
   getServers,
+  updateServer,
 } from './servers.controller';
 
 export const serversRouter = express.Router();
@@ -14,4 +15,5 @@ serversRouter
   .use(authenticate)
   .get('/', getServers)
   .get('/:slug', getServerBySlug)
-  .post('/', createServer);
+  .post('/', createServer)
+  .put('/:serverId', updateServer);
