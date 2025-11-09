@@ -4,6 +4,7 @@ import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import {
   createServer,
+  deleteServer,
   getServerBySlug,
   getServers,
   updateServer,
@@ -16,4 +17,5 @@ serversRouter
   .get('/', getServers)
   .get('/:slug', getServerBySlug)
   .post('/', createServer)
-  .put('/:serverId', updateServer);
+  .put('/:serverId', updateServer)
+  .delete('/:serverId', deleteServer);

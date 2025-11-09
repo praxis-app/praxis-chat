@@ -1,5 +1,5 @@
-import * as serversService from './servers.service';
 import { Request, Response } from 'express';
+import * as serversService from './servers.service';
 
 export const getServers = async (_req: Request, res: Response) => {
   const servers = await serversService.getServers();
@@ -28,5 +28,10 @@ export const updateServer = async (req: Request, res: Response) => {
     req.body.slug,
     req.body.description,
   );
+  res.json(result);
+};
+
+export const deleteServer = async (req: Request, res: Response) => {
+  const result = await serversService.deleteServer(req.params.serverId);
   res.json(result);
 };
