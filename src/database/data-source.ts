@@ -5,6 +5,8 @@ import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
+import { InstanceRolePermission } from '../instance-roles/instance-role-permission.entity';
+import { InstanceRole } from '../instance-roles/instance-role.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionPermission } from '../poll-actions/entities/poll-action-permission.entity';
@@ -38,6 +40,8 @@ export const dataSource = new DataSource({
     ChannelKey,
     ChannelMember,
     Image,
+    InstanceRole,
+    InstanceRolePermission,
     Invite,
     Message,
     Poll,
