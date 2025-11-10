@@ -5,7 +5,7 @@ import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
 import * as commandsService from '../commands/commands.service';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';

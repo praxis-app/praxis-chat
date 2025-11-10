@@ -78,7 +78,7 @@ vi.mock('../../bots/bots.service', () => ({
 
 // Import the service after mocks
 import * as channelsService from '../../channels/channels.service';
-import { sanitizeText } from '../../common/common.utils';
+import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
 import { Image } from '../../images/entities/image.entity';
 import * as pubSubService from '../../pub-sub/pub-sub.service';

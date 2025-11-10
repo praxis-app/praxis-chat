@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { dataSource } from '../../database/data-source';
 import { User } from '../../users/user.entity';
-import { normalizeText } from '../../common/common.utils';
+import { normalizeText } from '../../common/text.utils';
 
 const TEN_MINUTES = 60 * 1000 * 10;
 

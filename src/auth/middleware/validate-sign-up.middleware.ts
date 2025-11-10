@@ -8,7 +8,7 @@ import {
 } from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
-import { normalizeText } from '../../common/common.utils';
+import { normalizeText } from '../../common/text.utils';
 import { getValidInvite } from '../../invites/invites.service';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';

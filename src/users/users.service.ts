@@ -10,7 +10,7 @@ import {
 } from 'unique-names-generator';
 import * as channelsService from '../channels/channels.service';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
-import { normalizeText, sanitizeText } from '../common/common.utils';
+import { normalizeText, sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as serverRolesService from '../server-roles/server-roles.service';

@@ -1,7 +1,7 @@
 // TODO: Leverage zod to validate the request body
 
 import { NextFunction, Request, Response } from 'express';
-import { sanitizeText } from '../../common/common.utils';
+import { sanitizeText } from '../../common/text.utils';
 import { CreateMessageDto } from '../message.types';
 
 const MESSAGE_BODY_MAX = 6000;

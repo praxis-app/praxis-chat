@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcrypt';
 import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import { normalizeText } from '../common/common.utils';
+import { normalizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import * as invitesService from '../invites/invites.service';
 import { User } from '../users/user.entity';

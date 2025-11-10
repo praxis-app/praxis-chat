@@ -8,7 +8,7 @@ import {
   AES_256_GCM_ALGORITHM,
   AES_256_GCM_IV_LENGTH,
 } from '../common/common.constants';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';

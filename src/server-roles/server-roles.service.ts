@@ -5,7 +5,7 @@ import {
   AppAbility,
 } from '@common/roles/app-ability';
 import { In, Not } from 'typeorm';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import * as serversService from '../servers/servers.service';

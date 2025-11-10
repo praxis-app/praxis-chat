@@ -1,7 +1,7 @@
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
