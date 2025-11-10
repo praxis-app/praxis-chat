@@ -104,7 +104,11 @@ export const getServerRoles = async () => {
   }));
 };
 
-/** Get permissions from assigned roles */
+/**
+ * Get permissions from assigned roles
+ *
+ * TODO: This should return a map keyed by server ID
+ */
 export const getUserPermissions = async (
   userId: string,
 ): Promise<RawRuleOf<ServerAbility>[]> => {

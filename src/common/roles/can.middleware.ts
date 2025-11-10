@@ -10,17 +10,16 @@ import {
   ForbiddenError,
   ForcedSubject,
   MongoAbility,
-  RawRuleOf,
 } from '@casl/ability';
+import {
+  InstanceAbilityAction,
+  InstanceAbilitySubject,
+} from '@common/instance-roles/instance-ability';
 import {
   ServerAbilityAction,
   ServerAbilitySubject,
 } from '@common/server-roles/server-ability';
 import { NextFunction, Request, Response } from 'express';
-import {
-  InstanceAbilityAction,
-  InstanceAbilitySubject,
-} from '@common/instance-roles/instance-ability';
 
 type RoleAbilityAction = ServerAbilityAction | InstanceAbilityAction;
 type RoleAbilitySubject = ServerAbilitySubject | InstanceAbilitySubject;
@@ -39,9 +38,7 @@ export const can =
   ) =>
   (_req: Request, res: Response, next: NextFunction) => {
     const actions = Array.isArray(action) ? action : [action];
-    const permissions =
-      (res.locals.user?.permissions as RawRuleOf<RoleAbility>[] | undefined) ||
-      [];
+    const permissions = res.locals.user?.permissions || [];
     const currentUserAbility = createMongoAbility<RoleAbility>(permissions);
 
     if (currentUserAbility.can('manage', subject)) {
