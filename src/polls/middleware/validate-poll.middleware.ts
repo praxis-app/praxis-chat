@@ -5,7 +5,7 @@ import {
 import {
   SERVER_ABILITY_ACTIONS,
   SERVER_ABILITY_SUBJECTS,
-} from '@common/roles/server-role.constants';
+} from '@common/server-roles/server-role.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { PollDto } from '../dtos/poll.dto';

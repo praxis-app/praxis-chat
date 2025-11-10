@@ -1,10 +1,10 @@
 import { RawRuleOf } from '@casl/ability';
-import {
-  ServerAbilityAction,
-  ServerAbilitySubject,
-  ServerAbility,
-} from '@common/roles/server-ability';
 import { In, Not } from 'typeorm';
+import {
+  InstanceAbility,
+  InstanceAbilityAction,
+  InstanceAbilitySubject,
+} from '../../common/instance-roles/instance-ability';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
@@ -17,7 +17,7 @@ import { InstanceRole } from './instance-role.entity';
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
-type PermissionMap = Record<string, ServerAbilityAction[]>;
+type PermissionMap = Record<string, InstanceAbilityAction[]>;
 
 interface CreateInstanceRoleDto {
   name: string;
@@ -30,7 +30,7 @@ interface UpdateInstanceRoleDto {
 }
 
 interface UpdateInstanceRolePermissionsDto {
-  permissions: RawRuleOf<ServerAbility>[];
+  permissions: RawRuleOf<InstanceAbility>[];
 }
 
 const userRepository = dataSource.getRepository(User);
@@ -108,7 +108,7 @@ export const getInstanceRoles = async () => {
 /** Get permissions from assigned roles */
 export const getUserPermissions = async (
   userId: string,
-): Promise<RawRuleOf<ServerAbility>[]> => {
+): Promise<RawRuleOf<InstanceAbility>[]> => {
   const instanceRoles = await instanceRoleRepository.find({
     relations: ['permissions'],
     where: {
@@ -169,11 +169,9 @@ export const createAdminInstanceRole = async (userId: string) => {
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
     permissions: [
-      { subject: 'ServerConfig', action: 'manage' },
-      { subject: 'Channel', action: 'manage' },
-      { subject: 'Invite', action: 'create' },
-      { subject: 'Invite', action: 'manage' },
-      { subject: 'ServerRole', action: 'manage' },
+      { subject: 'InstanceRole', action: 'manage' },
+      { subject: 'Server', action: 'manage' },
+      { subject: 'all', action: 'manage' },
     ],
     members: [{ id: userId }],
   });
@@ -216,7 +214,7 @@ export const updateInstanceRolePermissions = async (
       );
       result.push({
         id: permission?.id,
-        subject: subject as ServerAbilitySubject,
+        subject: subject as InstanceAbilitySubject,
         action: a,
         instanceRole,
       });
@@ -306,7 +304,7 @@ export const deleteInstanceRole = async (id: string) => {
  */
 export const buildPermissionRules = (
   instanceRoles: InstanceRole[] | PollActionRole[],
-): RawRuleOf<ServerAbility>[] => {
+): RawRuleOf<InstanceAbility>[] => {
   const permissionMap = instanceRoles.reduce<PermissionMap>(
     (result, instanceRole) => {
       for (const permission of instanceRole.permissions || []) {
@@ -321,7 +319,7 @@ export const buildPermissionRules = (
   );
 
   return Object.entries(permissionMap).map(([subject, action]) => ({
-    subject: subject as ServerAbilitySubject,
+    subject: subject as InstanceAbilitySubject,
     action,
   }));
 };

@@ -1,5 +1,5 @@
 import { createMongoAbility } from '@casl/ability';
-import { ServerAbility } from '@common/roles/server-ability';
+import { ServerAbility } from '@common/server-roles/server-ability';
 import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 

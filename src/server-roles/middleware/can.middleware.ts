@@ -10,7 +10,7 @@ import {
   ServerAbilityAction,
   ServerAbilitySubject,
   ServerAbility,
-} from '@common/roles/server-ability';
+} from '@common/server-roles/server-ability';
 import { NextFunction, Request, Response } from 'express';
 
 export const can =

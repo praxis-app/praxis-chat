@@ -1,12 +1,4 @@
 import {
-  ServerAbilityAction,
-  ServerAbilitySubject,
-} from '@common/roles/server-ability';
-import {
-  SERVER_ABILITY_ACTIONS,
-  SERVER_ABILITY_SUBJECTS,
-} from '@common/roles/server-role.constants';
-import {
   Column,
   CreateDateColumn,
   Entity,
@@ -15,6 +7,14 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import {
+  InstanceAbilityAction,
+  InstanceAbilitySubject,
+} from '../../common/instance-roles/instance-ability';
+import {
+  INSTANCE_ROLE_ABILITY_ACTIONS,
+  INSTANCE_ROLE_ABILITY_SUBJECTS,
+} from '../../common/instance-roles/instance-role.constants';
 import { InstanceRole } from './instance-role.entity';
 
 @Entity()
@@ -23,11 +23,11 @@ export class InstanceRolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: SERVER_ABILITY_ACTIONS })
-  action: ServerAbilityAction;
+  @Column({ type: 'enum', enum: INSTANCE_ROLE_ABILITY_ACTIONS })
+  action: InstanceAbilityAction;
 
-  @Column({ type: 'enum', enum: SERVER_ABILITY_SUBJECTS })
-  subject: ServerAbilitySubject;
+  @Column({ type: 'enum', enum: INSTANCE_ROLE_ABILITY_SUBJECTS })
+  subject: InstanceAbilitySubject;
 
   @ManyToOne(() => InstanceRole, (instanceRole) => instanceRole.permissions, {
     onDelete: 'CASCADE',

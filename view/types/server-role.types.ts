@@ -1,7 +1,7 @@
 import {
   ServerAbilityAction,
   ServerAbilitySubject,
-} from '@common/roles/server-ability';
+} from '@common/server-roles/server-ability';
 import { PERMISSION_KEYS } from '../constants/server-role.constants';
 import { UserRes } from './user.types';
 

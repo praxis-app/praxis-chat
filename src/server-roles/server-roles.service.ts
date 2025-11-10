@@ -3,7 +3,7 @@ import {
   ServerAbilityAction,
   ServerAbilitySubject,
   ServerAbility,
-} from '@common/roles/server-ability';
+} from '@common/server-roles/server-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
