@@ -3,6 +3,7 @@ import { authRouter } from '../auth/auth.router';
 import { channelsRouter } from '../channels/channels.router';
 import { healthRouter } from '../health/health.router';
 import { invitesRouter } from '../invites/invites.router';
+import { instanceRolesRouter } from '../instance-roles/instance-roles.router';
 import { serverConfigsRouter } from '../server-configs/server-configs.router';
 import { serverRolesRouter } from '../server-roles/server-roles.router';
 import { serversRouter } from '../servers/servers.router';
@@ -16,6 +17,7 @@ appRouter
   .use('/channels', channelsRouter)
   .use('/invites', invitesRouter)
   .use('/servers', serversRouter)
+  .use('/instance-roles', instanceRolesRouter)
   .use('/server-roles', serverRolesRouter)
   .use('/server-configs', serverConfigsRouter)
   .use('/health', healthRouter);
