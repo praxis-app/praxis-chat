@@ -163,7 +163,6 @@ export const createInstanceRole = async ({
   return { ...instanceRole, memberCount: 0 };
 };
 
-// TODO: Update to use new permissions for instance roles
 export const createAdminInstanceRole = async (userId: string) => {
   await instanceRoleRepository.save({
     name: ADMIN_ROLE_NAME,
