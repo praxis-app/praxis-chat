@@ -7,7 +7,7 @@ import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { messagesRouter } from '../messages/messages.router';
 import { synchronizePolls } from '../polls/middleware/synchronize-polls.middleware';
 import { pollsRouter } from '../polls/polls.router';
-import { can } from '../server-roles/middleware/can.middleware';
+import { can } from '../common/roles/can.middleware';
 import {
   createChannel,
   deleteChannel,

@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
-import { can } from '../server-roles/middleware/can.middleware';
+import { can } from '../common/roles/can.middleware';
 import { validateServerConfig } from './middleware/validate-server-config.middleware';
 import * as serverConfigsController from './server-configs.controller';
 
