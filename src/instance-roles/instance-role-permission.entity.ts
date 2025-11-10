@@ -1,7 +1,10 @@
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
+  ServerAbilityAction,
+  ServerAbilitySubject,
+} from '@common/roles/server-ability';
+import {
+  SERVER_ABILITY_ACTIONS,
+  SERVER_ABILITY_SUBJECTS,
 } from '@common/roles/server-role.constants';
 import {
   Column,
@@ -20,11 +23,11 @@ export class InstanceRolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: ABILITY_ACTIONS })
-  action: AbilityAction;
+  @Column({ type: 'enum', enum: SERVER_ABILITY_ACTIONS })
+  action: ServerAbilityAction;
 
-  @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
-  subject: AbilitySubject;
+  @Column({ type: 'enum', enum: SERVER_ABILITY_SUBJECTS })
+  subject: ServerAbilitySubject;
 
   @ManyToOne(() => InstanceRole, (instanceRole) => instanceRole.permissions, {
     onDelete: 'CASCADE',

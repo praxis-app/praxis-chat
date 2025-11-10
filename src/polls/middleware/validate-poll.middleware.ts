@@ -3,8 +3,8 @@ import {
   ROLE_ATTRIBUTE_CHANGE_TYPE,
 } from '@common/poll-actions/poll-action.constants';
 import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
+  SERVER_ABILITY_ACTIONS,
+  SERVER_ABILITY_SUBJECTS,
 } from '@common/roles/server-role.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
@@ -16,10 +16,10 @@ const pollActionRoleMemberSchema = zod.object({
 });
 
 const pollActionPermissionSchema = zod.object({
-  subject: zod.enum(ABILITY_SUBJECTS),
+  subject: zod.enum(SERVER_ABILITY_SUBJECTS),
   actions: zod.array(
     zod.object({
-      action: zod.enum(ABILITY_ACTIONS),
+      action: zod.enum(SERVER_ABILITY_ACTIONS),
       changeType: zod.enum(ROLE_ATTRIBUTE_CHANGE_TYPE),
     }),
   ),

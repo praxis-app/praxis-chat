@@ -1,9 +1,9 @@
 import { RawRuleOf } from '@casl/ability';
 import {
-  AbilityAction,
-  AbilitySubject,
-  AppAbility,
-} from '@common/roles/app-ability';
+  ServerAbilityAction,
+  ServerAbilitySubject,
+  ServerAbility,
+} from '@common/roles/server-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
@@ -17,7 +17,7 @@ import { ServerRole } from './entities/server-role.entity';
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
-type PermissionMap = Record<string, AbilityAction[]>;
+type PermissionMap = Record<string, ServerAbilityAction[]>;
 
 interface CreateServerRoleDto {
   name: string;
@@ -30,7 +30,7 @@ interface UpdateServerRoleDto {
 }
 
 interface UpdateServerRolePermissionsDto {
-  permissions: RawRuleOf<AppAbility>[];
+  permissions: RawRuleOf<ServerAbility>[];
 }
 
 const userRepository = dataSource.getRepository(User);
@@ -107,7 +107,7 @@ export const getServerRoles = async () => {
 /** Get permissions from assigned roles */
 export const getUserPermissions = async (
   userId: string,
-): Promise<RawRuleOf<AppAbility>[]> => {
+): Promise<RawRuleOf<ServerAbility>[]> => {
   const serverRoles = await serverRoleRepository.find({
     relations: ['permissions'],
     where: {
@@ -215,7 +215,7 @@ export const updateServerRolePermissions = async (
         );
         result.push({
           id: permission?.id,
-          subject: subject as AbilitySubject,
+          subject: subject as ServerAbilitySubject,
           action: a,
           serverRole,
         });
@@ -307,7 +307,7 @@ export const deleteServerRole = async (id: string) => {
  */
 export const buildPermissionRules = (
   serverRoles: ServerRole[] | PollActionRole[],
-): RawRuleOf<AppAbility>[] => {
+): RawRuleOf<ServerAbility>[] => {
   const permissionMap = serverRoles.reduce<PermissionMap>(
     (result, serverRole) => {
       for (const permission of serverRole.permissions || []) {
@@ -322,7 +322,7 @@ export const buildPermissionRules = (
   );
 
   return Object.entries(permissionMap).map(([subject, action]) => ({
-    subject: subject as AbilitySubject,
+    subject: subject as ServerAbilitySubject,
     action,
   }));
 };

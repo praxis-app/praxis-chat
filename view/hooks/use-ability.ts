@@ -1,5 +1,5 @@
 import { createMongoAbility } from '@casl/ability';
-import { AppAbility } from '@common/roles/app-ability';
+import { ServerAbility } from '@common/roles/server-ability';
 import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 
@@ -10,7 +10,7 @@ export const useAbility = () => {
   });
 
   const permissions = meData?.user.permissions ?? [];
-  const ability = createMongoAbility<AppAbility>(permissions);
+  const ability = createMongoAbility<ServerAbility>(permissions);
 
   return ability;
 };

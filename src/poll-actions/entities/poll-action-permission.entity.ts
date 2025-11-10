@@ -1,9 +1,12 @@
 import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/poll-actions/poll-action.constants';
 import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
 import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
+  ServerAbilityAction,
+  ServerAbilitySubject,
+} from '@common/roles/server-ability';
+import {
+  SERVER_ABILITY_ACTIONS,
+  SERVER_ABILITY_SUBJECTS,
 } from '@common/roles/server-role.constants';
 import {
   Column,
@@ -22,11 +25,11 @@ export class PollActionPermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: ABILITY_ACTIONS })
-  action: AbilityAction;
+  @Column({ type: 'enum', enum: SERVER_ABILITY_ACTIONS })
+  action: ServerAbilityAction;
 
-  @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
-  subject: AbilitySubject;
+  @Column({ type: 'enum', enum: SERVER_ABILITY_SUBJECTS })
+  subject: ServerAbilitySubject;
 
   @Column({ type: 'enum', enum: ROLE_ATTRIBUTE_CHANGE_TYPE })
   changeType: RoleAttributeChangeType;

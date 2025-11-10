@@ -1,7 +1,13 @@
 import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
+import {
+  ServerAbilityAction,
+  ServerAbilitySubject,
+} from '@common/roles/server-ability';
 
 export interface PollActionRolePermissionDto {
-  subject: AbilitySubject;
-  actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
+  subject: ServerAbilitySubject;
+  actions: {
+    action: ServerAbilityAction;
+    changeType: RoleAttributeChangeType;
+  }[];
 }

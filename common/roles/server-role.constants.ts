@@ -1,4 +1,4 @@
-export const ABILITY_ACTIONS = [
+export const SERVER_ABILITY_ACTIONS = [
   'delete',
   'create',
   'read',
@@ -6,7 +6,7 @@ export const ABILITY_ACTIONS = [
   'manage',
 ] as const;
 
-export const ABILITY_SUBJECTS = [
+export const SERVER_ABILITY_SUBJECTS = [
   'ServerConfig',
   'Channel',
   'Invite',

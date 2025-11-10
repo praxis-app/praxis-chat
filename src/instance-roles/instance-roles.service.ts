@@ -1,9 +1,9 @@
 import { RawRuleOf } from '@casl/ability';
 import {
-  AbilityAction,
-  AbilitySubject,
-  AppAbility,
-} from '@common/roles/app-ability';
+  ServerAbilityAction,
+  ServerAbilitySubject,
+  ServerAbility,
+} from '@common/roles/server-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
@@ -17,7 +17,7 @@ import { InstanceRole } from './instance-role.entity';
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
-type PermissionMap = Record<string, AbilityAction[]>;
+type PermissionMap = Record<string, ServerAbilityAction[]>;
 
 interface CreateInstanceRoleDto {
   name: string;
@@ -30,7 +30,7 @@ interface UpdateInstanceRoleDto {
 }
 
 interface UpdateInstanceRolePermissionsDto {
-  permissions: RawRuleOf<AppAbility>[];
+  permissions: RawRuleOf<ServerAbility>[];
 }
 
 const userRepository = dataSource.getRepository(User);
@@ -108,7 +108,7 @@ export const getInstanceRoles = async () => {
 /** Get permissions from assigned roles */
 export const getUserPermissions = async (
   userId: string,
-): Promise<RawRuleOf<AppAbility>[]> => {
+): Promise<RawRuleOf<ServerAbility>[]> => {
   const instanceRoles = await instanceRoleRepository.find({
     relations: ['permissions'],
     where: {
@@ -216,7 +216,7 @@ export const updateInstanceRolePermissions = async (
       );
       result.push({
         id: permission?.id,
-        subject: subject as AbilitySubject,
+        subject: subject as ServerAbilitySubject,
         action: a,
         instanceRole,
       });
@@ -306,7 +306,7 @@ export const deleteInstanceRole = async (id: string) => {
  */
 export const buildPermissionRules = (
   instanceRoles: InstanceRole[] | PollActionRole[],
-): RawRuleOf<AppAbility>[] => {
+): RawRuleOf<ServerAbility>[] => {
   const permissionMap = instanceRoles.reduce<PermissionMap>(
     (result, instanceRole) => {
       for (const permission of instanceRole.permissions || []) {
@@ -321,7 +321,7 @@ export const buildPermissionRules = (
   );
 
   return Object.entries(permissionMap).map(([subject, action]) => ({
-    subject: subject as AbilitySubject,
+    subject: subject as ServerAbilitySubject,
     action,
   }));
 };

@@ -53,7 +53,7 @@ vi.mock('../../commands/commands.service', () => ({
   queueCommandJob: vi.fn(),
 }));
 
-vi.mock('../../common/common.utils', () => ({
+vi.mock('../../common/text.utils', () => ({
   sanitizeText: vi.fn((text?: string) => text?.trim() || ''),
 }));
 

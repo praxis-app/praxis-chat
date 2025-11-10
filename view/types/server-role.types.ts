@@ -1,12 +1,15 @@
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
+import {
+  ServerAbilityAction,
+  ServerAbilitySubject,
+} from '@common/roles/server-ability';
 import { PERMISSION_KEYS } from '../constants/server-role.constants';
 import { UserRes } from './user.types';
 
 export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
 
 export interface Permission {
-  subject: AbilitySubject;
-  action: AbilityAction[];
+  subject: ServerAbilitySubject;
+  action: ServerAbilityAction[];
 }
 
 // -------------------------------------------------------------------------

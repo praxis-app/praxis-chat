@@ -7,18 +7,21 @@
 
 import { createMongoAbility, ForbiddenError } from '@casl/ability';
 import {
-  AbilityAction,
-  AbilitySubject,
-  AppAbility,
-} from '@common/roles/app-ability';
+  ServerAbilityAction,
+  ServerAbilitySubject,
+  ServerAbility,
+} from '@common/roles/server-ability';
 import { NextFunction, Request, Response } from 'express';
 
 export const can =
-  (action: AbilityAction | AbilityAction[], subject: AbilitySubject) =>
+  (
+    action: ServerAbilityAction | ServerAbilityAction[],
+    subject: ServerAbilitySubject,
+  ) =>
   (_req: Request, res: Response, next: NextFunction) => {
     const actions = Array.isArray(action) ? action : [action];
     const permissions = res.locals.user?.permissions || [];
-    const currentUserAbility = createMongoAbility<AppAbility>(permissions);
+    const currentUserAbility = createMongoAbility<ServerAbility>(permissions);
 
     if (currentUserAbility.can('manage', subject)) {
       return next();

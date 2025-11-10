@@ -2,7 +2,10 @@ import {
   PollActionType,
   RoleAttributeChangeType,
 } from '@common/poll-actions/poll-action.types';
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
+import {
+  ServerAbilityAction,
+  ServerAbilitySubject,
+} from '@common/roles/server-ability';
 import { UserRes } from './user.types';
 
 // -------------------------------------------------------------------------
@@ -29,8 +32,8 @@ export interface PollActionServerRoleMemberReq {
 }
 
 export interface PollActionServerRolePermissionReq {
-  subject: AbilitySubject;
-  action: AbilityAction;
+  subject: ServerAbilitySubject;
+  action: ServerAbilityAction;
   changeType: RoleAttributeChangeType;
 }
 
@@ -53,8 +56,11 @@ export interface CreatePollActionServerRoleMemberReq {
 }
 
 export interface CreatePollActionServerRolePermissionReq {
-  subject: AbilitySubject;
-  actions: { action: AbilityAction; changeType: RoleAttributeChangeType }[];
+  subject: ServerAbilitySubject;
+  actions: {
+    action: ServerAbilityAction;
+    changeType: RoleAttributeChangeType;
+  }[];
 }
 
 // -------------------------------------------------------------------------
@@ -84,7 +90,7 @@ export interface PollActionServerRoleMemberRes {
 }
 
 export interface PollActionServerRolePermissionRes {
-  subject: AbilitySubject;
-  action: AbilityAction;
+  subject: ServerAbilitySubject;
+  action: ServerAbilityAction;
   changeType: RoleAttributeChangeType;
 }
