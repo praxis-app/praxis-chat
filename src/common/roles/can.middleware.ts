@@ -3,6 +3,8 @@
  * and instance roles once they're implemented. This middleware should
  * likely be moved to a more generic location and updated to support
  * both types of roles at that point.
+ *
+ * TODO: Test fully before merging
  */
 
 import {
@@ -29,24 +31,47 @@ type RoleAbilities = [
   RoleAbilitySubject | ForcedSubject<Exclude<RoleAbilitySubject, 'all'>>,
 ];
 
-type RoleAbility = MongoAbility<RoleAbilities>;
-
 export const can =
   (
     action: RoleAbilityAction | RoleAbilityAction[],
     subject: RoleAbilitySubject,
+    scope: 'instance' | 'server' = 'server',
   ) =>
-  (_req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const actions = Array.isArray(action) ? action : [action];
-    const permissions = res.locals.user?.permissions || [];
-    const currentUserAbility = createMongoAbility<RoleAbility>(permissions);
+    const permissions = res.locals.user?.permissions || {};
 
-    if (currentUserAbility.can('manage', subject)) {
-      return next();
+    if (scope === 'instance') {
+      const instanceAbility = createMongoAbility<MongoAbility<RoleAbilities>>(
+        permissions.instance,
+      );
+
+      if (!instanceAbility.can('manage', subject)) {
+        for (const currentAction of actions) {
+          ForbiddenError.from(instanceAbility).throwUnlessCan(
+            currentAction,
+            subject,
+          );
+        }
+      }
+      next();
+      return;
     }
 
-    for (const action of actions) {
-      ForbiddenError.from(currentUserAbility).throwUnlessCan(action, subject);
+    const serverId =
+      req.params?.serverId ?? req.body?.serverId ?? req.query?.serverId;
+
+    const serverAbility = createMongoAbility<MongoAbility<RoleAbilities>>(
+      permissions.servers?.[serverId] ?? [],
+    );
+
+    if (!serverAbility.can('manage', subject)) {
+      for (const currentAction of actions) {
+        ForbiddenError.from(serverAbility).throwUnlessCan(
+          currentAction,
+          subject,
+        );
+      }
     }
 
     next();

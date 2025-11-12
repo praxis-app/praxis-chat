@@ -17,7 +17,8 @@ import { ServerRole } from './entities/server-role.entity';
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
-type PermissionMap = Record<string, ServerAbilityAction[]>;
+type RulesMap = Record<string, ServerAbilityAction[]>;
+type ServerPermissionsMap = Record<string, RawRuleOf<ServerAbility>[]>;
 
 interface CreateServerRoleDto {
   name: string;
@@ -104,14 +105,10 @@ export const getServerRoles = async () => {
   }));
 };
 
-/**
- * Get permissions from assigned roles
- *
- * TODO: This should return a map keyed by server ID
- */
+/** Get permissions from assigned server roles keyed by server ID */
 export const getUserPermissions = async (
   userId: string,
-): Promise<RawRuleOf<ServerAbility>[]> => {
+): Promise<ServerPermissionsMap> => {
   const serverRoles = await serverRoleRepository.find({
     relations: ['permissions'],
     where: {
@@ -120,7 +117,29 @@ export const getUserPermissions = async (
       },
     },
   });
-  return buildPermissionRules(serverRoles);
+
+  const serverRolesByServerId = serverRoles.reduce<
+    Record<string, ServerRole[]>
+  >((result, serverRole) => {
+    if (!serverRole.serverId) {
+      return result;
+    }
+
+    if (!result[serverRole.serverId]) {
+      result[serverRole.serverId] = [];
+    }
+
+    result[serverRole.serverId].push(serverRole);
+    return result;
+  }, {});
+
+  return Object.entries(serverRolesByServerId).reduce<ServerPermissionsMap>(
+    (permissionsByServerId, [serverId, roles]) => {
+      permissionsByServerId[serverId] = buildPermissionRules(roles);
+      return permissionsByServerId;
+    },
+    {},
+  );
 };
 
 export const getUsersEligibleForServerRole = async (serverRoleId: string) => {
@@ -312,20 +331,17 @@ export const deleteServerRole = async (id: string) => {
 export const buildPermissionRules = (
   serverRoles: ServerRole[] | PollActionRole[],
 ): RawRuleOf<ServerAbility>[] => {
-  const permissionMap = serverRoles.reduce<PermissionMap>(
-    (result, serverRole) => {
-      for (const permission of serverRole.permissions || []) {
-        if (!result[permission.subject]) {
-          result[permission.subject] = [];
-        }
-        result[permission.subject].push(permission.action);
+  const rulesMap = serverRoles.reduce<RulesMap>((result, serverRole) => {
+    for (const permission of serverRole.permissions || []) {
+      if (!result[permission.subject]) {
+        result[permission.subject] = [];
       }
-      return result;
-    },
-    {},
-  );
+      result[permission.subject].push(permission.action);
+    }
+    return result;
+  }, {});
 
-  return Object.entries(permissionMap).map(([subject, action]) => ({
+  return Object.entries(rulesMap).map(([subject, action]) => ({
     subject: subject as ServerAbilitySubject,
     action,
   }));

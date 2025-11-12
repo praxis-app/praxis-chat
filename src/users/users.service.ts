@@ -13,6 +13,7 @@ import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { normalizeText, sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
+import * as instanceRolesService from '../instance-roles/instance-roles.service';
 import * as serverRolesService from '../server-roles/server-roles.service';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
@@ -39,14 +40,19 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       return user;
     }
 
-    const permissions = await serverRolesService.getUserPermissions(userId);
-    const profilePicture = await getUserProfilePicture(userId);
+    const [instancePermissions, serverPermissions, profilePicture] =
+      await Promise.all([
+        instanceRolesService.getUserPermissions(userId),
+        serverRolesService.getUserPermissions(userId),
+        getUserProfilePicture(userId),
+      ]);
 
-    return {
-      ...user,
-      permissions,
-      profilePicture,
+    const permissions = {
+      instance: instancePermissions,
+      servers: serverPermissions,
     };
+
+    return { ...user, profilePicture, permissions };
   } catch (error) {
     console.error(error);
     return null;
