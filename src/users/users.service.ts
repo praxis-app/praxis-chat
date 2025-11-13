@@ -45,13 +45,13 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
     const [
       instancePermissions,
       serverPermissions,
-      lastUsedServerSlug,
       profilePicture,
+      lastUsedServer,
     ] = await Promise.all([
       instanceRolesService.getInstancePermissionsByUser(userId),
       serverRolesService.getServerPermissionsByUser(userId),
-      getLastUsedServerSlug(userId),
       getUserProfilePicture(userId),
+      getLastUsedServer(userId),
     ]);
 
     const permissions = {
@@ -62,8 +62,8 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
     return {
       ...user,
       permissions,
-      lastUsedServerSlug,
       profilePicture,
+      lastUsedServer,
     };
   } catch (error) {
     console.error(error);
@@ -87,7 +87,7 @@ export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
 };
 
-export const getLastUsedServerSlug = async (userId: string) => {
+export const getLastUsedServer = async (userId: string) => {
   const server = await serverRepository.findOne({
     where: { members: { userId, lastActiveAt: Not(IsNull()) } },
     order: { members: { lastActiveAt: 'DESC' } },
@@ -97,7 +97,10 @@ export const getLastUsedServerSlug = async (userId: string) => {
   if (!server) {
     return null;
   }
-  return server.slug;
+  return {
+    id: server.id,
+    slug: server.slug,
+  };
 };
 
 export const isFirstUser = async () => {
