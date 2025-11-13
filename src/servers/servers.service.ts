@@ -108,6 +108,7 @@ export const addMemberToServer = async (userId: string) => {
   const server = await getInitialServerSafely();
   await serverMemberRepository.save({
     serverId: server.id,
+    lastActiveAt: new Date(),
     userId,
   });
   await channelsService.addMemberToAllServerChannels(userId, server.id);
