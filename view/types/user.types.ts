@@ -15,6 +15,7 @@ export interface CurrentUserRes {
   anonymous: boolean;
   permissions: Permission[];
   profilePicture: ImageRes | null;
+  lastUsedServerSlug: string | null;
 }
 
 export interface UserProfileRes {
