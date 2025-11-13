@@ -5,14 +5,13 @@ Colorful, read-only Rust CLI for inspecting proposal and vote throughput in your
 ## Quick start
 
 ```bash
-# from repo root
-export DATABASE_URL=postgres://user:pass@localhost:5432/praxis
+# from repo root (relies on DB_* vars from your .env)
 npm run stats:reports -- proposal-funnel --days 14
 # or run the binary directly
 cd rust/stats-cli && cargo run -- vote-stats --channel-id d2f7...
 ```
 
-The CLI defaults to a 30‑day window and will refuse to run without `DATABASE_URL`. Every pooled connection sets `SET default_transaction_read_only = on` to protect the production database.
+The CLI derives its PostgreSQL connection string from `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, and `DB_PORT`. Every pooled connection sets `SET default_transaction_read_only = on` to guard the production database.
 
 ## Subcommands
 
@@ -26,6 +25,7 @@ Both subcommands share `--days <int>` to control the lookback window (max 5 year
 Because the CLI uses dynamic `sqlx` queries, you can still verify them via:
 
 ```bash
+export DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_SCHEMA}"
 cd rust/stats-cli
 cargo sqlx prepare -- --database-url "$DATABASE_URL"
 # or, if you prefer, dry-run your existing migrations
@@ -37,7 +37,7 @@ sqlx migrate run \
 
 ## Environment variables
 
-- `DATABASE_URL` – PostgreSQL connection string (same format as the rest of the Praxis stack).
+- `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, `DB_PORT` – same variables used by the rest of the Praxis stack.
 
 Optional vars are surfaced as CLI flags so developers can override per invocation.
 

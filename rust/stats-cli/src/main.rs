@@ -19,9 +19,6 @@ const MAX_DAYS: i64 = 365 * 5;
     arg_required_else_help = true
 )]
 struct Cli {
-    /// PostgreSQL connection string; falls back to DATABASE_URL
-    #[arg(long, env = "DATABASE_URL")]
-    database_url: Option<String>,
     /// Lookback window in days for commands that support it
     #[arg(long, global = true, default_value_t = 30)]
     days: i64,
@@ -59,10 +56,7 @@ async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let cli = Cli::parse();
 
-    let database_url = cli
-        .database_url
-        .or_else(|| env::var("DATABASE_URL").ok())
-        .context("DATABASE_URL must be provided via flag or environment")?;
+    let database_url = build_database_url_from_env()?;
 
     let day_window = normalize_window(cli.days);
     let pool = PgPoolOptions::new()
@@ -97,6 +91,25 @@ async fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn build_database_url_from_env() -> Result<String> {
+    let username = env_required("DB_USERNAME")?;
+    let password = env_required("DB_PASSWORD")?;
+    let schema = env_required("DB_SCHEMA")?;
+    let host = env_required("DB_HOST")?;
+    let port: u16 = env_required("DB_PORT")?
+        .parse()
+        .context("DB_PORT must be a valid integer")?;
+
+    Ok(format!(
+        "postgres://{}:{}@{}:{}/{}",
+        username, password, host, port, schema
+    ))
+}
+
+fn env_required(key: &str) -> Result<String> {
+    env::var(key).with_context(|| format!("{} must be set in the environment", key))
 }
 
 async fn run_proposal_funnel(
