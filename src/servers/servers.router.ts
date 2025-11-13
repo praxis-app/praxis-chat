@@ -6,6 +6,7 @@ import { channelsRouter } from '../channels/channels.router';
 import { invitesRouter } from '../invites/invites.router';
 import { serverConfigsRouter } from '../server-configs/server-configs.router';
 import { serverRolesRouter } from '../server-roles/server-roles.router';
+import { setServerMemberLastActiveAt } from './middleware/set-server-member-last-active-at.middleware';
 import {
   createServer,
   deleteServer,
@@ -17,7 +18,7 @@ import {
 export const serversRouter = express.Router();
 
 serversRouter
-  .use(authenticate)
+  .use(authenticate, setServerMemberLastActiveAt)
   .get('/', getServers)
   .get('/:slug', getServerBySlug)
   .post('/', createServer)
