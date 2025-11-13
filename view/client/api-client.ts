@@ -127,87 +127,104 @@ class ApiClient {
   // Channels & Messages
   // -------------------------------------------------------------------------
 
-  getChannel = async (channelId: string) => {
-    const path = `/channels/${channelId}`;
+  getChannel = async (serverId: string, channelId: string) => {
+    const path = `/servers/${serverId}/channels/${channelId}`;
     return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
-  getChannels = async () => {
-    const path = '/channels';
+  getChannels = async (serverId: string) => {
+    const path = `/servers/${serverId}/channels`;
     return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 
-  getJoinedChannels = async () => {
-    const path = '/channels/joined';
+  getJoinedChannels = async (serverId: string) => {
+    const path = `/servers/${serverId}/channels/joined`;
     return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 
-  getGeneralChannel = async () => {
-    const path = '/channels/general';
+  getGeneralChannel = async (serverId: string) => {
+    const path = `/servers/${serverId}/channels/general`;
     return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
   getGeneralChannelFeed = async (
+    serverId: string,
     offset: number,
     limit = MESSAGES_PAGE_SIZE,
   ) => {
-    const path = '/channels/general/feed';
+    const path = `/servers/${serverId}/channels/general/feed`;
     return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
       params: { offset, limit },
     });
   };
 
   getChannelFeed = async (
+    serverId: string,
     channelId: string,
     offset: number,
     limit = MESSAGES_PAGE_SIZE,
   ) => {
-    const path = `/channels/${channelId}/feed`;
+    const path = `/servers/${serverId}/channels/${channelId}/feed`;
     return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
       params: { offset, limit },
     });
   };
 
-  createChannel = async (data: CreateChannelReq) => {
-    const path = '/channels';
+  createChannel = async (serverId: string, data: CreateChannelReq) => {
+    const path = `/servers/${serverId}/channels`;
     return this.executeRequest<{ channel: ChannelRes }>('post', path, {
       data,
     });
   };
 
-  updateChannel = async (channelId: string, data: UpdateChannelReq) => {
-    const path = `/channels/${channelId}`;
+  updateChannel = async (
+    serverId: string,
+    channelId: string,
+    data: UpdateChannelReq,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}`;
     return this.executeRequest<void>('put', path, {
       data,
     });
   };
 
-  deleteChannel = async (channelId: string) => {
-    const path = `/channels/${channelId}`;
+  deleteChannel = async (serverId: string, channelId: string) => {
+    const path = `/servers/${serverId}/channels/${channelId}`;
     return this.executeRequest<void>('delete', path);
   };
 
-  sendMessage = async (channelId: string, body: string, imageCount: number) => {
-    const path = `/channels/${channelId}/messages`;
+  sendMessage = async (
+    serverId: string,
+    channelId: string,
+    body: string,
+    imageCount: number,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/messages`;
     return this.executeRequest<{ message: MessageRes }>('post', path, {
       data: { body, imageCount },
     });
   };
 
   uploadMessageImage = async (
+    serverId: string,
     channelId: string,
     messageId: string,
     imageId: string,
     formData: FormData,
   ) => {
-    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}/upload`;
+    const path = `/servers/${serverId}/channels/${channelId}/messages/${messageId}/images/${imageId}/upload`;
     return this.executeRequest<{ image: ImageRes }>('post', path, {
       data: formData,
     });
   };
 
-  getMessageImage = (channelId: string, messageId: string, imageId: string) => {
-    const path = `/channels/${channelId}/messages/${messageId}/images/${imageId}`;
+  getMessageImage = (
+    serverId: string,
+    channelId: string,
+    messageId: string,
+    imageId: string,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/messages/${messageId}/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
@@ -215,43 +232,59 @@ class ApiClient {
   // Polls & Votes
   // -------------------------------------------------------------------------
 
-  createPoll = async (channelId: string, data: CreatePollReq) => {
-    const path = `/channels/${channelId}/polls`;
+  createPoll = async (
+    serverId: string,
+    channelId: string,
+    data: CreatePollReq,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls`;
     return this.executeRequest<{ poll: PollRes }>('post', path, {
       data,
     });
   };
 
-  getPollImage = (channelId: string, pollId: string, imageId: string) => {
-    const path = `/channels/${channelId}/polls/${pollId}/images/${imageId}`;
+  getPollImage = (
+    serverId: string,
+    channelId: string,
+    pollId: string,
+    imageId: string,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/images/${imageId}`;
     return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
   };
 
   createVote = async (
+    serverId: string,
     channelId: string,
     pollId: string,
     data: CreateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/polls/${pollId}/votes`;
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes`;
     return this.executeRequest<{ vote: CreateVoteRes }>('post', path, {
       data,
     });
   };
 
   updateVote = async (
+    serverId: string,
     channelId: string,
     pollId: string,
     voteId: string,
     data: UpdateVoteReq,
   ) => {
-    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<UpdateVoteRes>('put', path, {
       data,
     });
   };
 
-  deleteVote = async (channelId: string, pollId: string, voteId: string) => {
-    const path = `/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
+  deleteVote = async (
+    serverId: string,
+    channelId: string,
+    pollId: string,
+    voteId: string,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
   };
 
@@ -292,62 +325,75 @@ class ApiClient {
   // Server Roles & Permissions
   // -------------------------------------------------------------------------
 
-  getServerRole = async (serverRoleId: string) => {
-    const path = `/server-roles/${serverRoleId}`;
+  getServerRole = async (serverId: string, serverRoleId: string) => {
+    const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<{ serverRole: ServerRoleRes }>('get', path);
   };
 
-  getServerRoles = async () => {
-    const path = '/server-roles';
+  getServerRoles = async (serverId: string) => {
+    const path = `/servers/${serverId}/roles`;
     return this.executeRequest<{ serverRoles: ServerRoleRes[] }>('get', path);
   };
 
-  getUsersEligibleForServerRole = async (serverRoleId: string) => {
-    const path = `/server-roles/${serverRoleId}/members/eligible`;
+  getUsersEligibleForServerRole = async (
+    serverId: string,
+    serverRoleId: string,
+  ) => {
+    const path = `/servers/${serverId}/roles/${serverRoleId}/members/eligible`;
     return this.executeRequest<{ users: UserRes[] }>('get', path);
   };
 
-  createServerRole = async (data: CreateServerRoleReq) => {
-    const path = '/server-roles';
+  createServerRole = async (serverId: string, data: CreateServerRoleReq) => {
+    const path = `/servers/${serverId}/roles`;
     return this.executeRequest<{ serverRole: ServerRoleRes }>('post', path, {
       data,
     });
   };
 
   updateServerRole = async (
+    serverId: string,
     serverRoleId: string,
     data: CreateServerRoleReq,
   ) => {
-    const path = `/server-roles/${serverRoleId}`;
+    const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<void>('put', path, {
       data,
     });
   };
 
   updateServerRolePermissions = async (
+    serverId: string,
     serverRoleId: string,
     data: UpdateServerRolePermissionsReq,
   ) => {
-    const path = `/server-roles/${serverRoleId}/permissions`;
+    const path = `/servers/${serverId}/roles/${serverRoleId}/permissions`;
     return this.executeRequest<void>('put', path, {
       data,
     });
   };
 
-  addServerRoleMembers = async (serverRoleId: string, userIds: string[]) => {
-    const path = `/server-roles/${serverRoleId}/members`;
+  addServerRoleMembers = async (
+    serverId: string,
+    serverRoleId: string,
+    userIds: string[],
+  ) => {
+    const path = `/servers/${serverId}/roles/${serverRoleId}/members`;
     return this.executeRequest<void>('post', path, {
       data: { userIds },
     });
   };
 
-  removeServerRoleMember = async (serverRoleId: string, userId: string) => {
-    const path = `/server-roles/${serverRoleId}/members/${userId}`;
+  removeServerRoleMember = async (
+    serverId: string,
+    serverRoleId: string,
+    userId: string,
+  ) => {
+    const path = `/servers/${serverId}/roles/${serverRoleId}/members/${userId}`;
     return this.executeRequest<void>('delete', path);
   };
 
-  deleteServerRole = async (serverRoleId: string) => {
-    const path = `/server-roles/${serverRoleId}`;
+  deleteServerRole = async (serverId: string, serverRoleId: string) => {
+    const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<void>('delete', path);
   };
 
@@ -355,13 +401,13 @@ class ApiClient {
   // Server Configs
   // -------------------------------------------------------------------------
 
-  getServerConfig = async () => {
-    const path = '/server-configs';
+  getServerConfig = async (serverId: string) => {
+    const path = `/servers/${serverId}/configs`;
     return this.executeRequest<{ serverConfig: ServerConfigRes }>('get', path);
   };
 
-  updateServerConfig = async (data: ServerConfigReq) => {
-    const path = '/server-configs';
+  updateServerConfig = async (serverId: string, data: ServerConfigReq) => {
+    const path = `/servers/${serverId}/configs`;
     return this.executeRequest<void>('put', path, {
       data,
     });
@@ -371,25 +417,25 @@ class ApiClient {
   // Invites
   // -------------------------------------------------------------------------
 
-  getInvites = async () => {
-    const path = '/invites';
+  getInvites = async (serverId: string) => {
+    const path = `/servers/${serverId}/invites`;
     return this.executeRequest<{ invites: InviteRes[] }>('get', path);
   };
 
-  getInvite = async (token: string) => {
-    const path = `/invites/${token}`;
+  getInvite = async (serverId: string, token: string) => {
+    const path = `/servers/${serverId}/invites/${token}`;
     return this.executeRequest<{ invite: InviteRes }>('get', path);
   };
 
-  createInvite = async (data: CreateInviteReq) => {
-    const path = '/invites';
+  createInvite = async (serverId: string, data: CreateInviteReq) => {
+    const path = `/servers/${serverId}/invites`;
     return this.executeRequest<{ invite: InviteRes }>('post', path, {
       data,
     });
   };
 
-  deleteInvite = async (inviteId: string) => {
-    const path = `/invites/${inviteId}`;
+  deleteInvite = async (serverId: string, inviteId: string) => {
+    const path = `/servers/${serverId}/invites/${inviteId}`;
     return this.executeRequest<void>('delete', path);
   };
 

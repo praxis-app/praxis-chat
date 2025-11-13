@@ -2,6 +2,10 @@
 
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
+import { channelsRouter } from '../channels/channels.router';
+import { invitesRouter } from '../invites/invites.router';
+import { serverConfigsRouter } from '../server-configs/server-configs.router';
+import { serverRolesRouter } from '../server-roles/server-roles.router';
 import {
   createServer,
   deleteServer,
@@ -19,3 +23,9 @@ serversRouter
   .post('/', createServer)
   .put('/:serverId', updateServer)
   .delete('/:serverId', deleteServer);
+
+serversRouter
+  .use('/:serverId/channels', channelsRouter)
+  .use('/:serverId/configs', serverConfigsRouter)
+  .use('/:serverId/roles', serverRolesRouter)
+  .use('/:serverId/invites', invitesRouter);
