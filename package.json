@@ -6,7 +6,6 @@
     "start:dev": "nodemon --config ./nodemon.json",
     "start:client": "vite --host",
     "stats:reports": "node ./scripts/stats-reports.mjs",
-    "analytics:reports": "npm run stats:reports --",
     "build": "tsc -b && eslint src --ext ts && tsc --project ./tsconfig.src.json && tsc-alias -p ./tsconfig.src.json",
     "build:client": "tsc -b && eslint view --ext ts,tsx && vite build --emptyOutDir true",
     "typeorm": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
