@@ -106,7 +106,7 @@ export const getServerRoles = async () => {
 };
 
 /** Get permissions from assigned server roles keyed by server ID */
-export const getUserPermissions = async (
+export const getServerPermissions = async (
   userId: string,
 ): Promise<ServerPermissionsMap> => {
   const serverRoles = await serverRoleRepository.find({

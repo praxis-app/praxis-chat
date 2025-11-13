@@ -42,8 +42,8 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
 
     const [instancePermissions, serverPermissions, profilePicture] =
       await Promise.all([
-        instanceRolesService.getUserPermissions(userId),
-        serverRolesService.getUserPermissions(userId),
+        instanceRolesService.getInstancePermissions(userId),
+        serverRolesService.getServerPermissions(userId),
         getUserProfilePicture(userId),
       ]);
 

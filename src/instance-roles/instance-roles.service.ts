@@ -105,8 +105,8 @@ export const getInstanceRoles = async () => {
   }));
 };
 
-/** Get permissions from assigned roles */
-export const getUserPermissions = async (
+/** Get permissions from assigned instance roles */
+export const getInstancePermissions = async (
   userId: string,
 ): Promise<RawRuleOf<InstanceAbility>[]> => {
   const instanceRoles = await instanceRoleRepository.find({
