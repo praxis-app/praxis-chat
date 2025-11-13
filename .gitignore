@@ -29,3 +29,6 @@ lerna-debug.log*
 # Uploaded content
 /content/*
 !/content/README.md
+
+# Rust
+/rust/stats-cli/target
