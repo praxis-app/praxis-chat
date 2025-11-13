@@ -2,7 +2,7 @@
 
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
-import { FindManyOptions, In, Like } from 'typeorm';
+import { FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -15,6 +15,7 @@ import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as instanceRolesService from '../instance-roles/instance-roles.service';
 import * as serverRolesService from '../server-roles/server-roles.service';
+import { Server } from '../servers/entities/server.entity';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
@@ -23,6 +24,7 @@ import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const serverRepository = dataSource.getRepository(Server);
 
 export const getCurrentUser = async (userId: string, includePerms = true) => {
   try {
@@ -40,19 +42,29 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       return user;
     }
 
-    const [instancePermissions, serverPermissions, profilePicture] =
-      await Promise.all([
-        instanceRolesService.getInstancePermissionsByUser(userId),
-        serverRolesService.getServerPermissionsByUser(userId),
-        getUserProfilePicture(userId),
-      ]);
+    const [
+      instancePermissions,
+      serverPermissions,
+      lastUsedServerSlug,
+      profilePicture,
+    ] = await Promise.all([
+      instanceRolesService.getInstancePermissionsByUser(userId),
+      serverRolesService.getServerPermissionsByUser(userId),
+      getLastUsedServerSlug(userId),
+      getUserProfilePicture(userId),
+    ]);
 
     const permissions = {
       instance: instancePermissions,
       servers: serverPermissions,
     };
 
-    return { ...user, profilePicture, permissions };
+    return {
+      ...user,
+      permissions,
+      lastUsedServerSlug,
+      profilePicture,
+    };
   } catch (error) {
     console.error(error);
     return null;
@@ -73,6 +85,19 @@ export const getUserProfile = async (userId: string) => {
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
+};
+
+export const getLastUsedServerSlug = async (userId: string) => {
+  const server = await serverRepository.findOne({
+    where: { members: { userId, lastActiveAt: Not(IsNull()) } },
+    order: { members: { lastActiveAt: 'DESC' } },
+    relations: ['members'],
+    select: ['id', 'slug'],
+  });
+  if (!server) {
+    return null;
+  }
+  return server.slug;
 };
 
 export const isFirstUser = async () => {
