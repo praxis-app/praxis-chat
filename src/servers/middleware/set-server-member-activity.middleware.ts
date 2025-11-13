@@ -5,7 +5,7 @@ import { ServerMember } from '../entities/server-member.entity';
 
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 
-export const setServerMemberLastActiveAt = async (
+export const setServerMemberActivity = async (
   req: Request,
   res: Response,
   next: NextFunction,
