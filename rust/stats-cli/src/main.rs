@@ -147,7 +147,7 @@ async fn run_proposal_funnel(
 
     let stage_counts: Vec<StageCount> = sqlx::query_as(
         r#"
-        SELECT stage, COUNT(*)::bigint AS count
+        SELECT stage::text AS stage, COUNT(*)::bigint AS count
         FROM poll
         WHERE "pollType" = 'proposal'
           AND "createdAt" >= NOW() - ($1::int * INTERVAL '1 day')
