@@ -1,7 +1,7 @@
 use std::env;
 
 use anyhow::{Context, Result};
-use chrono::{DateTime, Duration, NaiveDate, Utc};
+use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime, Utc};
 use clap::{Parser, Subcommand};
 use owo_colors::OwoColorize;
 use sqlx::postgres::PgPoolOptions;
@@ -329,7 +329,7 @@ async fn run_vote_stats(
 
     let vote_mix: Vec<VoteTypeCount> = sqlx::query_as(
         r#"
-        SELECT v."voteType" AS vote_type,
+        SELECT v."voteType"::text AS vote_type,
                COUNT(*)::bigint AS count
         FROM vote v
         JOIN poll p ON p.id = v."pollId"
@@ -397,7 +397,10 @@ async fn run_vote_stats(
             } in poll_participation
             {
                 let freshness = last_vote_at
-                    .map(|ts| format!("last vote {}", humanize(ts)))
+                    .map(|ts| {
+                        let ts_utc = DateTime::from_naive_utc_and_offset(ts, Utc);
+                        format!("last vote {}", humanize(ts_utc))
+                    })
                     .unwrap_or_else(|| "no votes yet".into());
                 println!(
                     "{} poll {} (channel {}) — {} votes, {}",
@@ -443,7 +446,7 @@ struct PollParticipation {
     poll_id: Uuid,
     channel_id: Uuid,
     votes: i64,
-    last_vote_at: Option<DateTime<Utc>>,
+    last_vote_at: Option<NaiveDateTime>,
 }
 
 fn normalize_window(days: i64) -> i32 {
