@@ -23,6 +23,7 @@ import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Initial1762107499573 } from './migrations/1762107499573-Initial';
+import { InstanceConfig } from '../instance/instance-config.entity';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ export const dataSource = new DataSource({
     ChannelKey,
     ChannelMember,
     Image,
+    InstanceConfig,
     InstanceRole,
     InstanceRolePermission,
     Invite,
