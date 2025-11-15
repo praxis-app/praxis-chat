@@ -12,6 +12,15 @@ export const getInstanceConfigSafely = async () => {
   return instanceConfigs[0];
 };
 
+export const initializeInstance = async () => {
+  const instanceConfigCount = await instanceConfigRepository.count();
+  if (instanceConfigCount > 0) {
+    return;
+  }
+  await initializeInstanceConfig();
+  console.info('Instance initialized');
+};
+
 const initializeInstanceConfig = async () => {
   const initialServer = await getInitialServerSafely();
 
