@@ -10,6 +10,7 @@ import { setServerMemberActivity } from './middleware/set-server-member-activity
 import {
   createServer,
   deleteServer,
+  getDefaultServer,
   getServerBySlug,
   getServers,
   updateServer,
@@ -21,6 +22,7 @@ serversRouter
   .use(authenticate, setServerMemberActivity)
   .get('/', getServers)
   .get('/:slug', getServerBySlug)
+  .get('/default', getDefaultServer)
   .post('/', createServer)
   .put('/:serverId', updateServer)
   .delete('/:serverId', deleteServer);

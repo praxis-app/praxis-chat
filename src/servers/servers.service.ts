@@ -3,6 +3,7 @@
 import { QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
+import { getInstanceConfigSafely } from '../instance/instance.service';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
@@ -16,6 +17,16 @@ const serverMemberRepository = dataSource.getRepository(ServerMember);
 export const getServers = async () => {
   return serverRepository.find({
     order: { createdAt: 'ASC' },
+  });
+};
+
+export const getDefaultServer = async () => {
+  const instanceConfig = await getInstanceConfigSafely();
+  if (!instanceConfig.defaultServerId) {
+    return null;
+  }
+  return serverRepository.findOne({
+    where: { id: instanceConfig.defaultServerId },
   });
 };
 

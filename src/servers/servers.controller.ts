@@ -11,6 +11,15 @@ export const getServerBySlug = async (req: Request, res: Response) => {
   res.json({ server });
 };
 
+export const getDefaultServer = async (_req: Request, res: Response) => {
+  const server = await serversService.getDefaultServer();
+  if (!server) {
+    res.status(404).json({ error: 'Default server not found' });
+    return;
+  }
+  res.json({ server });
+};
+
 export const createServer = async (req: Request, res: Response) => {
   const server = await serversService.createServer(
     req.body.name,
