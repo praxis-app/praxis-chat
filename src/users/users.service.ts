@@ -42,17 +42,22 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       return user;
     }
 
-    const [
+    let [
       instancePermissions,
       serverPermissions,
       profilePicture,
-      lastUsedServer,
+      currentServer,
     ] = await Promise.all([
       instanceRolesService.getInstancePermissionsByUser(userId),
       serverRolesService.getServerPermissionsByUser(userId),
       getUserProfilePicture(userId),
       getLastUsedServer(userId),
     ]);
+
+    if (!currentServer) {
+      const defaultServer = await serversService.getDefaultServer();
+      currentServer = defaultServer;
+    }
 
     const permissions = {
       instance: instancePermissions,
@@ -63,7 +68,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       ...user,
       permissions,
       profilePicture,
-      lastUsedServer,
+      currentServer,
     };
   } catch (error) {
     console.error(error);

@@ -1,5 +1,6 @@
 import { ImageRes } from './image.types';
 import { Permission } from './server-role.types';
+import { ServerRes } from './server.types';
 
 export interface UserRes {
   id: string;
@@ -15,7 +16,7 @@ export interface CurrentUserRes {
   anonymous: boolean;
   permissions: Permission[];
   profilePicture: ImageRes | null;
-  lastUsedServerSlug: string | null;
+  currentServer: ServerRes | null;
 }
 
 export interface UserProfileRes {

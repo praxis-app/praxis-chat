@@ -147,17 +147,6 @@ class ApiClient {
     return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
-  getGeneralChannelFeed = async (
-    serverId: string,
-    offset: number,
-    limit = MESSAGES_PAGE_SIZE,
-  ) => {
-    const path = `/servers/${serverId}/channels/general/feed`;
-    return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
-      params: { offset, limit },
-    });
-  };
-
   getChannelFeed = async (
     serverId: string,
     channelId: string,
@@ -299,6 +288,11 @@ class ApiClient {
 
   getServerBySlug = async (slug: string) => {
     const path = `/servers/${slug}`;
+    return this.executeRequest<{ server: ServerRes }>('get', path);
+  };
+
+  getDefaultServer = async () => {
+    const path = '/servers/default';
     return this.executeRequest<{ server: ServerRes }>('get', path);
   };
 

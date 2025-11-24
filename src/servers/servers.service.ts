@@ -91,6 +91,7 @@ export const createInitialServer = async () => {
   try {
     const server = await serverRepository.save({
       name: INITIAL_SERVER_NAME,
+      slug: INITIAL_SERVER_NAME,
     });
     await serverConfigRepository.save({
       serverId: server.id,

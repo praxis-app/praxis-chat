@@ -18,17 +18,21 @@ import {
 
 export const serversRouter = express.Router();
 
-serversRouter
-  .use(authenticate, setServerMemberActivity)
-  .get('/', getServers)
-  .get('/:slug', getServerBySlug)
-  .get('/default', getDefaultServer)
-  .post('/', createServer)
-  .put('/:serverId', updateServer)
-  .delete('/:serverId', deleteServer);
-
+// Child routes
 serversRouter
   .use('/:serverId/channels', channelsRouter)
   .use('/:serverId/configs', serverConfigsRouter)
   .use('/:serverId/roles', serverRolesRouter)
   .use('/:serverId/invites', invitesRouter);
+
+// Public routes
+serversRouter.get('/default', getDefaultServer);
+
+// Protected routes
+serversRouter
+  .use(authenticate, setServerMemberActivity)
+  .get('/', getServers)
+  .get('/:slug', getServerBySlug)
+  .post('/', createServer)
+  .put('/:serverId', updateServer)
+  .delete('/:serverId', deleteServer);
