@@ -2,14 +2,9 @@ import { Request, Response } from 'express';
 import * as channelsService from './channels.service';
 
 export const getChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.getChannel(req.params.channelId);
+  const { serverId, channelId } = req.params;
+  const channel = await channelsService.getChannel(serverId, channelId);
   res.json({ channel });
-};
-
-// TODO: This is currently unused on the FE - consider removing
-export const getChannels = async (_: Request, res: Response) => {
-  const channels = await channelsService.getChannelsSafely();
-  res.json({ channels });
 };
 
 export const getJoinedChannels = async (_: Request, res: Response) => {

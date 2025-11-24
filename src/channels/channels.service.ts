@@ -37,9 +37,9 @@ const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const channelKeyRepository = dataSource.getRepository(ChannelKey);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 
-export const getChannel = (channelId: string) => {
+export const getChannel = (serverId: string, channelId: string) => {
   return channelRepository.findOneOrFail({
-    where: { id: channelId },
+    where: { id: channelId, serverId },
   });
 };
 

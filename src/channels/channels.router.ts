@@ -13,7 +13,6 @@ import {
   deleteChannel,
   getChannel,
   getChannelFeed,
-  getChannels,
   getGeneralChannel,
   getGeneralChannelFeed,
   getJoinedChannels,
@@ -34,10 +33,9 @@ channelsRouter
 // Protected routes
 channelsRouter
   .use(authenticate, synchronizePolls)
-  .get('/', isRegistered, getChannels)
   .get('/joined', isRegistered, getJoinedChannels)
   .get('/:channelId', isRegistered, isChannelMember, getChannel)
+  .get('/:channelId/feed', isChannelMember, getChannelFeed)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
-  .delete('/:channelId', can('delete', 'Channel'), deleteChannel)
-  .get('/:channelId/feed', isChannelMember, getChannelFeed);
+  .delete('/:channelId', can('delete', 'Channel'), deleteChannel);

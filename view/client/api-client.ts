@@ -132,11 +132,6 @@ class ApiClient {
     return this.executeRequest<{ channel: ChannelRes }>('get', path);
   };
 
-  getChannels = async (serverId: string) => {
-    const path = `/servers/${serverId}/channels`;
-    return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
-  };
-
   getJoinedChannels = async (serverId: string) => {
     const path = `/servers/${serverId}/channels/joined`;
     return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
