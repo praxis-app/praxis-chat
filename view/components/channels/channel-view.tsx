@@ -51,14 +51,27 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     ? GENERAL_CHANNEL_NAME
     : channel?.id;
 
-  const { data: meData } = useMeQuery({
+  const {
+    data: meData,
+    isSuccess: isMeSuccess,
+    isError: isMeError,
+  } = useMeQuery({
     enabled: isLoggedIn,
   });
 
   const { data: feedData, fetchNextPage } = useInfiniteQuery({
     queryKey: ['feed', resolvedChannelId],
     queryFn: async ({ pageParam }) => {
-      const result = await api.getChannelFeed(resolvedChannelId!, pageParam);
+      let serverId = meData?.user.currentServer?.id;
+      if (!serverId) {
+        const { server } = await api.getDefaultServer();
+        serverId = server.id;
+      }
+      const result = await api.getChannelFeed(
+        serverId,
+        resolvedChannelId!,
+        pageParam,
+      );
       const isLast = result.feed.length === 0;
       if (isLast) {
         setIsLastPage(true);
@@ -69,7 +82,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
-    enabled: !!resolvedChannelId,
+    enabled: (isMeSuccess || isMeError) && !!resolvedChannelId,
   });
 
   useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {
