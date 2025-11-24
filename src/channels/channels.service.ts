@@ -54,9 +54,10 @@ export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
   });
 };
 
-export const getJoinedChannels = async (userId: string) => {
+export const getJoinedChannels = async (serverId: string, userId: string) => {
   return getChannelsSafely({
     where: {
+      serverId,
       members: { userId },
     },
   });
@@ -68,9 +69,9 @@ export const getChannelMembers = (channelId: string) => {
   });
 };
 
-export const getGeneralChannel = async () => {
+export const getGeneralChannel = async (serverId: string) => {
   const generalChannel = await channelRepository.findOne({
-    where: { name: GENERAL_CHANNEL_NAME },
+    where: { name: GENERAL_CHANNEL_NAME, serverId },
   });
   if (!generalChannel) {
     return initializeGeneralChannel();
@@ -107,11 +108,12 @@ export const getChannelFeed = async (
 };
 
 export const getGeneralChannelFeed = async (
+  serverId: string,
   offset?: number,
   limit?: number,
   currentUserId?: string,
 ) => {
-  const channel = await getGeneralChannel();
+  const channel = await getGeneralChannel(serverId);
   return getChannelFeed(channel.id, offset, limit, currentUserId);
 };
 
@@ -143,8 +145,11 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   return { ...channelKey, unwrappedKey };
 };
 
-export const addMemberToGeneralChannel = async (userId: string) => {
-  const generalChannel = await getGeneralChannel();
+export const addMemberToGeneralChannel = async (
+  serverId: string,
+  userId: string,
+) => {
+  const generalChannel = await getGeneralChannel(serverId);
   await channelMemberRepository.save({
     channelId: generalChannel.id,
     userId,

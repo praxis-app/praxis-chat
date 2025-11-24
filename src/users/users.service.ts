@@ -150,7 +150,7 @@ export const updateUserProfile = async (
   });
 };
 
-export const createAnonUser = async () => {
+export const createAnonUser = async (serverId: string) => {
   const user = await userRepository.save({
     name: generateName(),
     anonymous: true,
@@ -161,7 +161,7 @@ export const createAnonUser = async () => {
     await serverRolesService.createAdminServerRole(user.id);
     await serversService.addMemberToServer(user.id);
   } else {
-    await channelsService.addMemberToGeneralChannel(user.id);
+    await channelsService.addMemberToGeneralChannel(serverId, user.id);
   }
 
   return user;

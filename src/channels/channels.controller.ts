@@ -8,12 +8,15 @@ export const getChannel = async (req: Request, res: Response) => {
 };
 
 export const getJoinedChannels = async (_: Request, res: Response) => {
-  const channels = await channelsService.getJoinedChannels(res.locals.user.id);
+  const channels = await channelsService.getJoinedChannels(
+    res.locals.serverId,
+    res.locals.user.id,
+  );
   res.json({ channels });
 };
 
 export const getGeneralChannel = async (_: Request, res: Response) => {
-  const channel = await channelsService.getGeneralChannel();
+  const channel = await channelsService.getGeneralChannel(res.locals.serverId);
   res.json({ channel });
 };
 
@@ -36,6 +39,7 @@ export const getGeneralChannelFeed = async (req: Request, res: Response) => {
   const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
   const feed = await channelsService.getGeneralChannelFeed(
+    req.params.serverId,
     offset,
     limit,
     res.locals.user?.id,
