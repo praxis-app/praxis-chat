@@ -1,5 +1,5 @@
 import { dataSource } from '../database/data-source';
-import { getInitialServerSafely } from '../servers/servers.service';
+import { createInitialServer } from '../servers/servers.service';
 import { InstanceConfig } from './instance-config.entity';
 
 const instanceConfigRepository = dataSource.getRepository(InstanceConfig);
@@ -22,7 +22,7 @@ export const initializeInstance = async () => {
 };
 
 const initializeInstanceConfig = async () => {
-  const initialServer = await getInitialServerSafely();
+  const initialServer = await createInitialServer();
 
   return instanceConfigRepository.save({
     defaultServerId: initialServer.id,
