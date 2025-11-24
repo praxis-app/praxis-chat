@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { NavigationPaths } from '../../constants/shared.constants';
+import { useGeneralChannel } from '../../hooks/use-general-channel';
 import { CurrentUserRes } from '../../types/user.types';
 import { ChannelListItemDesktop } from './channel-list-item-desktop';
 
@@ -24,14 +25,17 @@ export const ChannelListDesktop = ({ me }: Props) => {
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
     queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
+    queryFn: async () => {
+      if (!me?.currentServer?.id) {
+        throw new Error('No current server found');
+      }
+      return api.getJoinedChannels(me.currentServer.id);
+    },
     enabled: isRegistered,
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useQuery({
-      queryKey: ['channels', GENERAL_CHANNEL_NAME],
-      queryFn: () => api.getGeneralChannel(),
+    useGeneralChannel({
       enabled: !isRegistered,
     });
 

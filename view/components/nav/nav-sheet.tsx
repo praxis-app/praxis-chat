@@ -3,7 +3,6 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAppStore } from '@/store/app.store';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -12,6 +11,7 @@ import { LuChevronRight } from 'react-icons/lu';
 import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import appIconImg from '../../assets/images/app-icon.png';
+import { useGeneralChannel } from '../../hooks/use-general-channel';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import {
@@ -42,13 +42,16 @@ export const NavSheet = ({ trigger }: Props) => {
 
   const { data: channelsData } = useQuery({
     queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
+    queryFn: async () => {
+      if (!me?.currentServer?.id) {
+        throw new Error('No current server found');
+      }
+      return api.getJoinedChannels(me.currentServer.id);
+    },
     enabled: !isDesktop && isRegistered,
   });
 
-  const { data: generalChannelData } = useQuery({
-    queryKey: ['channels', GENERAL_CHANNEL_NAME],
-    queryFn: () => api.getGeneralChannel(),
+  const { data: generalChannelData } = useGeneralChannel({
     enabled: !isMeLoading && !isRegistered,
   });
 
