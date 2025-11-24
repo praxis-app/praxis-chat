@@ -3,7 +3,7 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { channelsRouter } from '../channels/channels.router';
-import { invitesRouter } from '../invites/invites.router';
+import { serverInvitesRouter } from '../invites/invites.router';
 import { serverConfigsRouter } from '../server-configs/server-configs.router';
 import { serverRolesRouter } from '../server-roles/server-roles.router';
 import { setServerMemberActivity } from './middleware/set-server-member-activity.middleware';
@@ -23,7 +23,7 @@ serversRouter
   .use('/:serverId/channels', channelsRouter)
   .use('/:serverId/configs', serverConfigsRouter)
   .use('/:serverId/roles', serverRolesRouter)
-  .use('/:serverId/invites', invitesRouter);
+  .use('/:serverId/invites', serverInvitesRouter);
 
 // Public routes
 serversRouter.get('/default', getDefaultServer);

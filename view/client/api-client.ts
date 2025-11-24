@@ -411,14 +411,14 @@ class ApiClient {
   // Invites
   // -------------------------------------------------------------------------
 
+  getInvite = async (token: string) => {
+    const path = `/invites/${token}`;
+    return this.executeRequest<{ invite: InviteRes }>('get', path);
+  };
+
   getInvites = async (serverId: string) => {
     const path = `/servers/${serverId}/invites`;
     return this.executeRequest<{ invites: InviteRes[] }>('get', path);
-  };
-
-  getInvite = async (serverId: string, token: string) => {
-    const path = `/servers/${serverId}/invites/${token}`;
-    return this.executeRequest<{ invite: InviteRes }>('get', path);
   };
 
   createInvite = async (serverId: string, data: CreateInviteReq) => {

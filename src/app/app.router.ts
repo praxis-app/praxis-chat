@@ -2,6 +2,7 @@ import express from 'express';
 import { authRouter } from '../auth/auth.router';
 import { healthRouter } from '../health/health.router';
 import { instanceRolesRouter } from '../instance-roles/instance-roles.router';
+import { invitesRouter } from '../invites/invites.router';
 import { serversRouter } from '../servers/servers.router';
 import { usersRouter } from '../users/users.router';
 
@@ -12,4 +13,5 @@ appRouter
   .use('/users', usersRouter)
   .use('/servers', serversRouter)
   .use('/instance-roles', instanceRolesRouter)
+  .use('/invites', invitesRouter)
   .use('/health', healthRouter);
