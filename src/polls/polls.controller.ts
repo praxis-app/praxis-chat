@@ -4,8 +4,9 @@ import { getUploadsPath } from '../images/images.utils';
 import * as pollsService from './polls.service';
 
 export const createPoll = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
+  const { serverId, channelId } = req.params;
   const poll = await pollsService.createPoll(
+    serverId,
     channelId,
     req.body,
     res.locals.user,

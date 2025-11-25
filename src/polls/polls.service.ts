@@ -1,8 +1,8 @@
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
-import { sanitizeText } from '../common/text.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
+import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
@@ -10,7 +10,7 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
-import { getServerConfigSafely } from '../server-configs/server-configs.service';
+import * as serverConfigsService from '../server-configs/server-configs.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
@@ -208,6 +208,7 @@ export const isPollRatifiable = async (pollId: string) => {
 };
 
 export const createPoll = async (
+  serverId: string,
   channelId: string,
   { body, closingAt, action, imageCount }: PollDto,
   user: User,
@@ -217,7 +218,7 @@ export const createPoll = async (
     throw new Error('Polls must be 8000 characters or less');
   }
 
-  const serverConfig = await getServerConfigSafely();
+  const serverConfig = await serverConfigsService.getServerConfig(serverId);
   const configClosingAt = serverConfig.votingTimeLimit
     ? new Date(Date.now() + serverConfig.votingTimeLimit * 60 * 1000)
     : undefined;
