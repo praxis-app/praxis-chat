@@ -1,14 +1,13 @@
 import { RawRuleOf } from '@casl/ability';
 import {
+  ServerAbility,
   ServerAbilityAction,
   ServerAbilitySubject,
-  ServerAbility,
 } from '@common/server-roles/server-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
-import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { ServerRolePermission } from './entities/server-role-permission.entity';
@@ -191,9 +190,10 @@ export const createServerRole = async (
   return { ...serverRole, memberCount: 0 };
 };
 
-export const createAdminServerRole = async (userId: string) => {
-  const server = await serversService.getInitialServerSafely();
-
+export const createAdminServerRole = async (
+  serverId: string,
+  userId: string,
+) => {
   await serverRoleRepository.save({
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
@@ -205,7 +205,7 @@ export const createAdminServerRole = async (userId: string) => {
       { subject: 'ServerRole', action: 'manage' },
     ],
     members: [{ id: userId }],
-    server,
+    serverId,
   });
 };
 

@@ -14,6 +14,7 @@ import { normalizeText, sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as instanceRolesService from '../instance-roles/instance-roles.service';
+import { Invite } from '../invites/invite.entity';
 import * as serverRolesService from '../server-roles/server-roles.service';
 import { Server } from '../servers/entities/server.entity';
 import * as serversService from '../servers/servers.service';
@@ -25,6 +26,7 @@ const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const serverRepository = dataSource.getRepository(Server);
+const inviteRepository = dataSource.getRepository(Invite);
 
 export const getCurrentUser = async (userId: string, includePerms = true) => {
   try {
@@ -119,6 +121,7 @@ export const createUser = async (
   email: string,
   name: string | undefined,
   password: string,
+  inviteToken?: string,
 ) => {
   const isFirst = await isFirstUser();
   const user = await userRepository.save({
@@ -128,9 +131,18 @@ export const createUser = async (
   });
 
   if (isFirst) {
-    await serverRolesService.createAdminServerRole(user.id);
+    const server = await serversService.getDefaultServer();
+    await serverRolesService.createAdminServerRole(server.id, user.id);
+    return user;
   }
-  await serversService.addMemberToServer(user.id);
+
+  if (!inviteToken) {
+    throw new Error('Invite token is required for non-first users');
+  }
+  const invite = await inviteRepository.findOneOrFail({
+    where: { token: inviteToken },
+  });
+  await serversService.addMemberToServer(invite.serverId, user.id);
 
   return user;
 };
@@ -158,8 +170,8 @@ export const createAnonUser = async (serverId: string) => {
   const isFirst = await isFirstUser();
 
   if (isFirst) {
-    await serverRolesService.createAdminServerRole(user.id);
-    await serversService.addMemberToServer(user.id);
+    await serverRolesService.createAdminServerRole(serverId, user.id);
+    await serversService.addMemberToServer(serverId, user.id);
   } else {
     await channelsService.addMemberToGeneralChannel(serverId, user.id);
   }
@@ -188,7 +200,12 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  await serversService.addMemberToServer(user.id);
+  const lastUsedServer = await getLastUsedServer(userId);
+  if (!lastUsedServer) {
+    throw new Error('Last used server not found for user');
+  } else {
+    await serversService.addMemberToServer(lastUsedServer.id, user.id);
+  }
 };
 
 export const getUserProfilePicture = async (userId: string) => {

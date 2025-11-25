@@ -14,12 +14,12 @@ export class InstanceConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Server, { nullable: true })
+  @OneToOne(() => Server)
   @JoinColumn()
-  defaultServer: Server | null;
+  defaultServer: Server;
 
-  @Column({ type: 'uuid', nullable: true })
-  defaultServerId: string | null;
+  @Column({ type: 'uuid' })
+  defaultServerId: string;
 
   @CreateDateColumn()
   createdAt: Date;

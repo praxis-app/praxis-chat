@@ -61,7 +61,12 @@ export const signUp = async ({
   inviteToken,
 }: SignUpDto) => {
   const passwordHash = await hash(password, SALT_ROUNDS);
-  const user = await usersService.createUser(email, name, passwordHash);
+  const user = await usersService.createUser(
+    email,
+    name,
+    passwordHash,
+    inviteToken,
+  );
 
   if (inviteToken) {
     await invitesService.redeemInvite(inviteToken);

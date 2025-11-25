@@ -22,12 +22,14 @@ export const getServers = async () => {
 
 export const getDefaultServer = async () => {
   const instanceConfig = await getInstanceConfigSafely();
-  if (!instanceConfig.defaultServerId) {
-    return null;
-  }
-  return serverRepository.findOne({
+
+  const server = await serverRepository.findOne({
     where: { id: instanceConfig.defaultServerId },
   });
+  if (!server) {
+    throw new Error('Default server not found');
+  }
+  return server;
 };
 
 export const createServer = async (
@@ -116,12 +118,11 @@ export const createInitialServer = async () => {
   }
 };
 
-export const addMemberToServer = async (userId: string) => {
-  const server = await getInitialServerSafely();
+export const addMemberToServer = async (serverId: string, userId: string) => {
   await serverMemberRepository.save({
-    serverId: server.id,
     lastActiveAt: new Date(),
+    serverId,
     userId,
   });
-  await channelsService.addMemberToAllServerChannels(userId, server.id);
+  await channelsService.addMemberToAllServerChannels(userId, serverId);
 };
