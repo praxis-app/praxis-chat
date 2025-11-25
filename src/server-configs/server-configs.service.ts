@@ -7,6 +7,10 @@ dotenv.config();
 
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
 
+export const getServerConfig = async (serverId: string) => {
+  return serverConfigRepository.findOne({ where: { serverId } });
+};
+
 export const getServerConfigSafely = async () => {
   const serverConfigs = await serverConfigRepository.find();
   if (!serverConfigs.length) {
@@ -15,9 +19,21 @@ export const getServerConfigSafely = async () => {
   return serverConfigs[0];
 };
 
-export const updateServerConfig = async (data: ServerConfigDto) => {
-  const serverConfig = await getServerConfigSafely();
-  return serverConfigRepository.update(serverConfig.id, data);
+export const updateServerConfig = async (
+  serverId: string,
+  data: ServerConfigDto,
+) => {
+  const serverConfig = await getServerConfig(serverId);
+  if (!serverConfig) {
+    throw new Error('Server config not found');
+  }
+  return serverConfigRepository.update(
+    {
+      id: serverConfig.id,
+      serverId,
+    },
+    data,
+  );
 };
 
 const initializeServerConfig = async () => {
