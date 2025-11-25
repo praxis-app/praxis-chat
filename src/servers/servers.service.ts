@@ -81,14 +81,6 @@ export const getServerBySlug = async (slug: string) => {
   return server;
 };
 
-export const getInitialServerSafely = async () => {
-  const servers = await getServers();
-  if (!servers.length) {
-    return createInitialServer();
-  }
-  return servers[0];
-};
-
 export const createInitialServer = async () => {
   try {
     const server = await serverRepository.save({
