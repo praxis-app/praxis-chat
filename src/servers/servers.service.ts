@@ -45,6 +45,7 @@ export const createServer = async (
     members: [{ userId: currentUserId }],
     config: serverConfigRepository.create(),
   });
+  await channelsService.initializeGeneralChannel(server.id);
   return server;
 };
 
@@ -90,6 +91,7 @@ export const createInitialServer = async () => {
     await serverConfigRepository.save({
       serverId: server.id,
     });
+    await channelsService.initializeGeneralChannel(server.id);
     return server;
   } catch (error) {
     // Handle race condition: if another request created the server concurrently,

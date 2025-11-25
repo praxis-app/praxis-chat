@@ -3,7 +3,7 @@
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
-import { FindManyOptions, In, QueryFailedError } from 'typeorm';
+import { In, QueryFailedError } from 'typeorm';
 import {
   AES_256_GCM_ALGORITHM,
   AES_256_GCM_IV_LENGTH,
@@ -42,26 +42,10 @@ export const getChannel = (serverId: string, channelId: string) => {
   });
 };
 
-export const getChannelsSafely = async (
-  serverId: string,
-  options?: FindManyOptions<Channel>,
-) => {
-  const channelCount = await channelRepository.count();
-  if (channelCount === 0) {
-    await initializeGeneralChannel(serverId);
-  }
-  return channelRepository.find({
-    order: { createdAt: 'ASC', ...options?.order },
-    ...options,
-  });
-};
-
 export const getJoinedChannels = async (serverId: string, userId: string) => {
-  return getChannelsSafely(serverId, {
-    where: {
-      serverId,
-      members: { userId },
-    },
+  return channelRepository.find({
+    where: { serverId, members: { userId } },
+    order: { createdAt: 'ASC' },
   });
 };
 
@@ -76,7 +60,7 @@ export const getGeneralChannel = async (serverId: string) => {
     where: { name: GENERAL_CHANNEL_NAME, serverId },
   });
   if (!generalChannel) {
-    return initializeGeneralChannel(serverId);
+    throw new Error('General channel not found');
   }
   return generalChannel;
 };
@@ -163,11 +147,6 @@ export const addMemberToAllServerChannels = async (
   userId: string,
   serverId: string,
 ) => {
-  const channelCount = await channelRepository.count();
-  if (channelCount === 0) {
-    await initializeGeneralChannel(serverId);
-  }
-
   const channels = await channelRepository
     .createQueryBuilder('channel')
     .leftJoin('channel.members', 'member', 'member.userId = :userId', {
@@ -280,7 +259,7 @@ const getChannelKeyMaster = () => {
   return Buffer.from(channelKeyMaster, 'base64');
 };
 
-const initializeGeneralChannel = async (serverId: string) => {
+export const initializeGeneralChannel = async (serverId: string) => {
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
