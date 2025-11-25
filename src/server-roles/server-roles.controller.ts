@@ -3,13 +3,16 @@ import * as serverRolesService from './server-roles.service';
 
 export const getServerRole = async (req: Request, res: Response) => {
   const serverRole = await serverRolesService.getServerRole(
+    req.params.serverId,
     req.params.serverRoleId,
   );
   res.json({ serverRole });
 };
 
-export const getServerRoles = async (_req: Request, res: Response) => {
-  const serverRoles = await serverRolesService.getServerRoles();
+export const getServerRoles = async (req: Request, res: Response) => {
+  const serverRoles = await serverRolesService.getServerRoles(
+    req.params.serverId,
+  );
   res.json({ serverRoles });
 };
 
@@ -18,18 +21,23 @@ export const getUsersEligibleForServerRole = async (
   res: Response,
 ) => {
   const users = await serverRolesService.getUsersEligibleForServerRole(
+    req.params.serverId,
     req.params.serverRoleId,
   );
   res.json({ users });
 };
 
 export const createServerRole = async (req: Request, res: Response) => {
-  const serverRole = await serverRolesService.createServerRole(req.body);
+  const serverRole = await serverRolesService.createServerRole(
+    req.params.serverId,
+    req.body,
+  );
   res.json({ serverRole });
 };
 
 export const updateServerRole = async (req: Request, res: Response) => {
   const result = await serverRolesService.updateServerRole(
+    req.params.serverId,
     req.params.serverRoleId,
     req.body,
   );

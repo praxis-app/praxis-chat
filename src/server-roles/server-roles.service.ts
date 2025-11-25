@@ -39,9 +39,9 @@ const serverRoleRepository = dataSource.getRepository(ServerRole);
 const serverRolePermissionRepository =
   dataSource.getRepository(ServerRolePermission);
 
-export const getServerRole = async (serverRoleId: string) => {
+export const getServerRole = async (serverId: string, serverRoleId: string) => {
   const serverRole = await serverRoleRepository.findOne({
-    where: { id: serverRoleId },
+    where: { id: serverRoleId, serverId },
     relations: ['permissions'],
   });
   if (!serverRole) {
@@ -69,8 +69,9 @@ export const getServerRole = async (serverRoleId: string) => {
   };
 };
 
-export const getServerRoles = async () => {
+export const getServerRoles = async (serverId: string) => {
   const serverRoles = await serverRoleRepository.find({
+    where: { serverId },
     relations: ['members', 'permissions'],
     select: {
       id: true,
@@ -142,9 +143,12 @@ export const getServerPermissionsByUser = async (
   );
 };
 
-export const getUsersEligibleForServerRole = async (serverRoleId: string) => {
+export const getUsersEligibleForServerRole = async (
+  serverId: string,
+  serverRoleId: string,
+) => {
   const serverRole = await serverRoleRepository.findOne({
-    where: { id: serverRoleId },
+    where: { id: serverRoleId, serverId },
     relations: ['members'],
   });
   if (!serverRole) {
@@ -175,12 +179,15 @@ export const getUsersEligibleForServerRole = async (serverRoleId: string) => {
   return shapedUsers;
 };
 
-export const createServerRole = async ({
-  name,
-  color,
-}: CreateServerRoleDto) => {
-  const server = await serversService.getInitialServerSafely();
-  const serverRole = await serverRoleRepository.save({ name, color, server });
+export const createServerRole = async (
+  serverId: string,
+  { name, color }: CreateServerRoleDto,
+) => {
+  const serverRole = await serverRoleRepository.save({
+    name,
+    color,
+    serverId,
+  });
   return { ...serverRole, memberCount: 0 };
 };
 
@@ -203,16 +210,20 @@ export const createAdminServerRole = async (userId: string) => {
 };
 
 export const updateServerRole = async (
-  id: string,
+  serverId: string,
+  serverRoleId: string,
   { name, color }: UpdateServerRoleDto,
 ) => {
   const sanitizedName = sanitizeText(name);
   const sanitizedColor = sanitizeText(color);
 
-  return serverRoleRepository.update(id, {
-    name: sanitizedName,
-    color: sanitizedColor,
-  });
+  return serverRoleRepository.update(
+    { id: serverRoleId, serverId },
+    {
+      name: sanitizedName,
+      color: sanitizedColor,
+    },
+  );
 };
 
 export const updateServerRolePermissions = async (

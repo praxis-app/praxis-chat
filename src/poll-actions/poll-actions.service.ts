@@ -130,10 +130,14 @@ export const implementChangeServerRole = async (pollActionId: string) => {
     .map(({ userId }) => userId);
 
   // Update role itself
-  await serverRolesService.updateServerRole(roleToUpdate.id, {
-    name: actionRole.name,
-    color: actionRole.color,
-  });
+  await serverRolesService.updateServerRole(
+    roleToUpdate.serverId,
+    roleToUpdate.id,
+    {
+      name: actionRole.name,
+      color: actionRole.color,
+    },
+  );
   // Update role permissions
   if (actionRole.permissions) {
     const toAdd = actionRole.permissions.filter(
