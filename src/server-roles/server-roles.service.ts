@@ -227,11 +227,12 @@ export const updateServerRole = async (
 };
 
 export const updateServerRolePermissions = async (
+  serverId: string,
   serverRoleId: string,
   { permissions }: UpdateServerRolePermissionsDto,
 ) => {
   const serverRole = await serverRoleRepository.findOne({
-    where: { id: serverRoleId },
+    where: { id: serverRoleId, serverId },
     relations: ['permissions'],
   });
   if (!serverRole) {
@@ -281,11 +282,12 @@ export const updateServerRolePermissions = async (
 };
 
 export const addServerRoleMembers = async (
+  serverId: string,
   serverRoleId: string,
   userIds: string[],
 ) => {
   const serverRole = await serverRoleRepository.findOne({
-    where: { id: serverRoleId },
+    where: { id: serverRoleId, serverId },
     relations: ['members'],
   });
   if (!serverRole) {
@@ -315,11 +317,12 @@ export const addServerRoleMembers = async (
 };
 
 export const removeServerRoleMembers = async (
+  serverId: string,
   serverRoleId: string,
   userIds: string[],
 ) => {
   const serverRole = await serverRoleRepository.findOne({
-    where: { id: serverRoleId },
+    where: { id: serverRoleId, serverId },
     relations: ['members'],
   });
   if (!serverRole) {
@@ -331,8 +334,11 @@ export const removeServerRoleMembers = async (
   await serverRoleRepository.save(serverRole);
 };
 
-export const deleteServerRole = async (id: string) => {
-  return serverRoleRepository.delete(id);
+export const deleteServerRole = async (
+  serverId: string,
+  serverRoleId: string,
+) => {
+  return serverRoleRepository.delete({ id: serverRoleId, serverId });
 };
 
 /**

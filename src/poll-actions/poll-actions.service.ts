@@ -170,6 +170,7 @@ export const implementChangeServerRole = async (pollActionId: string) => {
   // Add role members
   if (userIdsToAdd?.length) {
     await serverRolesService.addServerRoleMembers(
+      roleToUpdate.serverId,
       roleToUpdate.id,
       userIdsToAdd,
     );
@@ -177,6 +178,7 @@ export const implementChangeServerRole = async (pollActionId: string) => {
   // Remove role members
   if (userIdsToRemove?.length) {
     await serverRolesService.removeServerRoleMembers(
+      roleToUpdate.serverId,
       roleToUpdate.id,
       userIdsToRemove,
     );

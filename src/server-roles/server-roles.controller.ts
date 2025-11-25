@@ -49,6 +49,7 @@ export const updateServerRolePermissions = async (
   res: Response,
 ) => {
   await serverRolesService.updateServerRolePermissions(
+    req.params.serverId,
     req.params.serverRoleId,
     req.body,
   );
@@ -57,6 +58,7 @@ export const updateServerRolePermissions = async (
 
 export const addServerRoleMembers = async (req: Request, res: Response) => {
   await serverRolesService.addServerRoleMembers(
+    req.params.serverId,
     req.params.serverRoleId,
     req.body.userIds,
   );
@@ -64,14 +66,17 @@ export const addServerRoleMembers = async (req: Request, res: Response) => {
 };
 
 export const removeServerRoleMember = async (req: Request, res: Response) => {
-  await serverRolesService.removeServerRoleMembers(req.params.serverRoleId, [
-    req.params.userId,
-  ]);
+  await serverRolesService.removeServerRoleMembers(
+    req.params.serverId,
+    req.params.serverRoleId,
+    [req.params.userId],
+  );
   res.sendStatus(204);
 };
 
 export const deleteServerRole = async (req: Request, res: Response) => {
   const result = await serverRolesService.deleteServerRole(
+    req.params.serverId,
     req.params.serverRoleId,
   );
   res.json(result);
