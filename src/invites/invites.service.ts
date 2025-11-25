@@ -1,6 +1,5 @@
 import cryptoRandomString from 'crypto-random-string';
 import { dataSource } from '../database/data-source';
-import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Invite } from './invite.entity';
@@ -28,9 +27,10 @@ export const getValidInvite = async (token: string) => {
   return invite;
 };
 
-export const getValidInvites = async () => {
+export const getValidInvites = async (serverId: string) => {
   const invites = await inviteRepository
     .createQueryBuilder('invite')
+    .where('invite.serverId = :serverId', { serverId })
     .leftJoinAndSelect('invite.user', 'user')
     .select([
       'invite.id',
@@ -66,14 +66,17 @@ export const getValidInvites = async () => {
   return shapedInvites.slice(0, INVITES_PAGE_SIZE);
 };
 
-export const createInvite = async (inviteData: CreateInviteDto, user: User) => {
-  const server = await serversService.getInitialServerSafely();
+export const createInvite = async (
+  serverId: string,
+  inviteData: CreateInviteDto,
+  user: User,
+) => {
   const token = cryptoRandomString({ length: 8 });
 
   const invite = await inviteRepository.save({
     ...inviteData,
     userId: user.id,
-    server,
+    serverId,
     token,
   });
 
@@ -92,8 +95,8 @@ export const redeemInvite = async (token: string) => {
   await inviteRepository.increment({ token }, 'uses', 1);
 };
 
-export const deleteInvite = async (inviteId: string) => {
-  return inviteRepository.delete(inviteId);
+export const deleteInvite = async (serverId: string, inviteId: string) => {
+  return inviteRepository.delete({ id: inviteId, serverId });
 };
 
 export const validateInvite = (invite: Invite) => {
