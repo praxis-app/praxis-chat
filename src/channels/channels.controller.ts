@@ -48,12 +48,16 @@ export const getGeneralChannelFeed = async (req: Request, res: Response) => {
 };
 
 export const createChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.createChannel(req.body);
+  const channel = await channelsService.createChannel(
+    req.params.serverId,
+    req.body,
+  );
   res.json({ channel });
 };
 
 export const updateChannel = async (req: Request, res: Response) => {
   const result = await channelsService.updateChannel(
+    req.params.serverId,
     req.params.channelId,
     req.body,
   );
@@ -61,6 +65,9 @@ export const updateChannel = async (req: Request, res: Response) => {
 };
 
 export const deleteChannel = async (req: Request, res: Response) => {
-  const result = await channelsService.deleteChannel(req.params.channelId);
+  const result = await channelsService.deleteChannel(
+    req.params.serverId,
+    req.params.channelId,
+  );
   res.json(result);
 };

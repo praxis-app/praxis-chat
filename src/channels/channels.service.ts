@@ -186,10 +186,10 @@ export const addMemberToAllServerChannels = async (
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = async ({
-  name,
-  description,
-}: CreateChannelDto) => {
+export const createChannel = async (
+  serverId: string,
+  { name, description }: CreateChannelDto,
+) => {
   const sanitizedName = sanitizeText(name);
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
@@ -197,9 +197,8 @@ export const createChannel = async ({
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
-  const server = await getInitialServerSafely();
   const serverMembers = await serverMemberRepository.find({
-    where: { serverId: server.id },
+    where: { serverId },
   });
 
   const channel = await channelRepository.save({
@@ -207,7 +206,7 @@ export const createChannel = async ({
     description: sanitizedDescription,
     members: serverMembers.map((member) => ({ userId: member.userId })),
     keys: [{ wrappedKey, tag, iv }],
-    server,
+    serverId,
   });
 
   return channel;
@@ -229,6 +228,7 @@ export const generateChannelKey = () => {
 };
 
 export const updateChannel = async (
+  serverId: string,
   channelId: string,
   { name, description }: UpdateChannelDto,
 ) => {
@@ -236,14 +236,17 @@ export const updateChannel = async (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
-  return channelRepository.update(channelId, {
-    name: normalizedName,
-    description: sanitizedDescription,
-  });
+  return channelRepository.update(
+    { id: channelId, serverId },
+    {
+      name: normalizedName,
+      description: sanitizedDescription,
+    },
+  );
 };
 
-export const deleteChannel = async (channelId: string) => {
-  return channelRepository.delete(channelId);
+export const deleteChannel = async (serverId: string, channelId: string) => {
+  return channelRepository.delete({ id: channelId, serverId });
 };
 
 // -------------------------------------------------------------------------
