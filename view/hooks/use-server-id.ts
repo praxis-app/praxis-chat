@@ -13,20 +13,18 @@ export const useServerId = () => {
     isLoading: isMeLoading,
   } = useMeQuery({ enabled: !serverSlug });
 
-  const {
-    data: serverBySlugData,
-    isLoading: isServerBySlugLoading,
-    isError: isServerBySlugError,
-  } = useQuery({
-    queryKey: ['servers', serverSlug],
-    queryFn: () => {
-      if (!serverSlug) {
-        throw new Error('Server slug is missing in URL');
-      }
-      return api.getServerBySlug(serverSlug);
+  const { data: serverBySlugData, isLoading: isServerBySlugLoading } = useQuery(
+    {
+      queryKey: ['servers', serverSlug],
+      queryFn: () => {
+        if (!serverSlug) {
+          throw new Error('Server slug is missing in URL');
+        }
+        return api.getServerBySlug(serverSlug);
+      },
+      enabled: !!serverSlug,
     },
-    enabled: !!serverSlug,
-  });
+  );
 
   const isDefaultServerQueryEnabled = () => {
     if (serverSlug) {
@@ -38,15 +36,12 @@ export const useServerId = () => {
     return isMeSuccess && !meData?.user.currentServer?.id;
   };
 
-  const {
-    data: defaultServerData,
-    isLoading: isDefaultServerLoading,
-    isError: isDefaultServerError,
-  } = useQuery({
-    queryKey: ['servers', 'default'],
-    queryFn: api.getDefaultServer,
-    enabled: isDefaultServerQueryEnabled(),
-  });
+  const { data: defaultServerData, isLoading: isDefaultServerLoading } =
+    useQuery({
+      queryKey: ['servers', 'default'],
+      queryFn: api.getDefaultServer,
+      enabled: isDefaultServerQueryEnabled(),
+    });
 
   const serverId =
     serverBySlugData?.server.id ||
@@ -56,6 +51,5 @@ export const useServerId = () => {
   return {
     serverId,
     isLoading: isMeLoading || isDefaultServerLoading || isServerBySlugLoading,
-    isError: isMeError || isDefaultServerError || isServerBySlugError,
   };
 };
