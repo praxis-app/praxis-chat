@@ -117,6 +117,7 @@ export const isFirstUser = async () => {
   return userCount === 0;
 };
 
+// TODO: Refactor - simplify `createUser`
 export const createUser = async (
   email: string,
   name: string | undefined,
@@ -133,6 +134,7 @@ export const createUser = async (
   if (isFirst) {
     const server = await serversService.getDefaultServer();
     await serverRolesService.createAdminServerRole(server.id, user.id);
+    await serversService.addMemberToServer(server.id, user.id);
     return user;
   }
 
