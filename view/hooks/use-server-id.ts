@@ -13,7 +13,7 @@ export const useServerId = () => {
   } = useMeQuery({ enabled: !serverSlug });
 
   const { data: serverBySlugData } = useQuery({
-    queryKey: ['servers', meData?.user.currentServer?.slug],
+    queryKey: ['servers', serverSlug],
     queryFn: () => {
       if (!serverSlug) {
         throw new Error('Server slug is missing in URL');
