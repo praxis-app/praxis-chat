@@ -26,6 +26,7 @@ import { Button } from '../ui/button';
 import { Form, FormField } from '../ui/form';
 import { Textarea } from '../ui/textarea';
 import { MessageFormMenu } from './message-form-menu';
+import { useServerId } from '../../hooks/use-server-id';
 
 const MESSAGE_BODY_MAX = 6000;
 
@@ -55,6 +56,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
+  const serverId = useServerId();
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,6 +77,9 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
     mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
@@ -82,6 +87,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       validateImageInput(currentImages);
 
       const { message } = await api.sendMessage(
+        serverId,
         channelId,
         body,
         currentImages.length,
@@ -95,6 +101,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
           const placeholder = message.images[i];
           const { image } = await api.uploadMessageImage(
+            serverId,
             channelId,
             message.id,
             placeholder.id,
