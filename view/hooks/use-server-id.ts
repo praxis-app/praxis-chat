@@ -10,9 +10,14 @@ export const useServerId = () => {
     data: meData,
     isSuccess: isMeSuccess,
     isError: isMeError,
+    isLoading: isMeLoading,
   } = useMeQuery({ enabled: !serverSlug });
 
-  const { data: serverBySlugData } = useQuery({
+  const {
+    data: serverBySlugData,
+    isLoading: isServerBySlugLoading,
+    isError: isServerBySlugError,
+  } = useQuery({
     queryKey: ['servers', serverSlug],
     queryFn: () => {
       if (!serverSlug) {
@@ -33,7 +38,11 @@ export const useServerId = () => {
     return isMeSuccess && !meData?.user.currentServer?.id;
   };
 
-  const { data: defaultServerData } = useQuery({
+  const {
+    data: defaultServerData,
+    isLoading: isDefaultServerLoading,
+    isError: isDefaultServerError,
+  } = useQuery({
     queryKey: ['servers', 'default'],
     queryFn: api.getDefaultServer,
     enabled: isDefaultServerQueryEnabled(),
@@ -44,5 +53,9 @@ export const useServerId = () => {
     meData?.user.currentServer?.id ||
     defaultServerData?.server.id;
 
-  return serverId;
+  return {
+    serverId,
+    isLoading: isMeLoading || isDefaultServerLoading || isServerBySlugLoading,
+    isError: isMeError || isDefaultServerError || isServerBySlugError,
+  };
 };

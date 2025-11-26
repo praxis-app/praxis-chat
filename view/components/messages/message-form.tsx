@@ -56,7 +56,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
-  const serverId = useServerId();
+  const { serverId } = useServerId();
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
