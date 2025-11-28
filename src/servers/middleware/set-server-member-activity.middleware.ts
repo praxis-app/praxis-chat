@@ -2,20 +2,37 @@ import { NextFunction, Request, Response } from 'express';
 import { dataSource } from '../../database/data-source';
 import { User } from '../../users/user.entity';
 import { ServerMember } from '../entities/server-member.entity';
+import { Server } from '../entities/server.entity';
 
 const serverMemberRepository = dataSource.getRepository(ServerMember);
+const serverRepository = dataSource.getRepository(Server);
 
 export const setServerMemberActivity = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const currentUser: User = res.locals.user;
-  const { serverId } = req.params;
+  const currentUser: User | undefined = res.locals.user;
+  let { serverId, slug } = req.params as { serverId?: string; slug?: string };
 
-  if (!currentUser.id || !serverId) {
-    res.status(400).send('Current user ID and server ID are required');
+  if (!currentUser?.id) {
+    res.status(400).send('Current user ID is required');
     return;
+  }
+
+  // Allow slug-only routes: resolve serverId from slug when serverId is missing
+  if (!serverId && slug) {
+    const server = await serverRepository.findOne({ where: { slug } });
+    serverId = server?.id;
+    if (!serverId) {
+      res.status(404).send('Server not found');
+      return;
+    }
+  }
+
+  // If serverId is still missing (e.g., route without server context), skip activity update
+  if (!serverId) {
+    return next();
   }
 
   const serverMember = await serverMemberRepository.findOne({
