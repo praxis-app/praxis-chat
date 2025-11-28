@@ -30,7 +30,8 @@ serversRouter.get('/default', getDefaultServer);
 
 // Protected routes
 serversRouter
-  .use(authenticate, setServerMemberActivity)
+  .use(authenticate)
+  .use(['/:slug', '/:serverId'], setServerMemberActivity)
   .get('/', getServers)
   .get('/:slug', getServerBySlug)
   .post('/', createServer)
