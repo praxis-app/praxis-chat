@@ -14,7 +14,10 @@ export interface CurrentUserRes {
   name: string;
   displayName?: string;
   anonymous: boolean;
-  permissions: Permission[];
+  permissions: {
+    instance: Permission[];
+    servers: Record<string, Permission[]>;
+  };
   profilePicture: ImageRes | null;
   currentServer: ServerRes | null;
 }
