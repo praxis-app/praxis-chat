@@ -2,13 +2,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../client/api-client';
 import { handleError } from '../lib/error.utils';
 import { InviteRes } from '../types/invite.types';
+import { useServerId } from './use-server-id';
 
 export const useDeleteInviteMutation = (inviteId: string) => {
   const queryClient = useQueryClient();
+  const { serverId } = useServerId();
 
   return useMutation({
     mutationFn: async () => {
-      await api.deleteInvite(inviteId);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      await api.deleteInvite(serverId, inviteId);
 
       queryClient.setQueryData<{ invites: InviteRes[] }>(
         ['invites'],
