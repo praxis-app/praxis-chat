@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuX } from 'react-icons/lu';
 import { api } from '../../client/api-client';
+import { useServerId } from '../../hooks/use-server-id';
 import { truncate } from '../../lib/text.utils';
 import { ServerRoleRes } from '../../types/server-role.types';
 import { UserRes } from '../../types/user.types';
@@ -28,9 +29,18 @@ export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
+  const { serverId } = useServerId();
+
   const { mutate: removeMember, isPending } = useMutation({
     async mutationFn() {
-      await api.removeServerRoleMember(serverRoleId, serverRoleMember.id);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      await api.removeServerRoleMember(
+        serverId,
+        serverRoleId,
+        serverRoleMember.id,
+      );
       setIsConfirmModalOpen(false);
 
       queryClient.setQueryData(

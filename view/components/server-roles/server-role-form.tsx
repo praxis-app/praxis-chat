@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
+import { useServerId } from '../../hooks/use-server-id';
 import {
   CreateServerRoleReq,
   ServerRoleRes,
@@ -24,6 +25,8 @@ export const ServerRoleForm = ({ editRole }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
+  const { serverId } = useServerId();
+
   const { handleSubmit, register, setValue, watch, reset, formState } =
     useForm<CreateServerRoleReq>({
       defaultValues: {
@@ -35,10 +38,13 @@ export const ServerRoleForm = ({ editRole }: Props) => {
 
   const { mutate: createServerRole, isPending: isCreatePending } = useMutation({
     mutationFn: async (data: CreateServerRoleReq) => {
-      const { serverRole } = await api.createServerRole(data);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      const { serverRole } = await api.createServerRole(serverId, data);
 
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['serverRoles'],
+        [serverId, 'server-roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };
@@ -55,10 +61,10 @@ export const ServerRoleForm = ({ editRole }: Props) => {
 
   const { mutate: updateServerRole, isPending: isUpdatePending } = useMutation({
     mutationFn: async (data: CreateServerRoleReq) => {
-      if (!editRole) {
+      if (!editRole || !serverId) {
         return;
       }
-      await api.updateServerRole(editRole.id, data);
+      await api.updateServerRole(serverId, editRole.id, data);
 
       const serverRole = { ...editRole, ...data };
       queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
@@ -68,7 +74,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
         },
       );
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['serverRoles'],
+        [serverId, 'server-roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };
