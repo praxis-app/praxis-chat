@@ -3,7 +3,7 @@ import { RouteObject } from 'react-router-dom';
 import { ChannelPage } from '../pages/channels/channel-page';
 
 export const channelsRouter: RouteObject = {
-  path: '/channels',
+  path: '/s/:serverSlug/channels',
   children: [
     {
       path: ':channelId',

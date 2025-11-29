@@ -31,12 +31,14 @@ interface Props {
   channel: ChannelRes;
   isActive: boolean;
   isGeneralChannel?: boolean;
+  serverSlug?: string;
 }
 
 export const ChannelListItemDesktop = ({
   channel,
   isActive,
   isGeneralChannel,
+  serverSlug,
 }: Props) => {
   const [showDeleteChannelDialog, setShowDeleteChannelDialog] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -48,7 +50,8 @@ export const ChannelListItemDesktop = ({
   const canManageChannels = ability.can('manage', 'Channel');
   const canDeleteChannel = ability.can('delete', 'Channel');
   const showSettingsBtn = canManageChannels && (isHovering || isActive);
-  const channelPath = `${NavigationPaths.Channels}/${channel.id}`;
+
+  const channelPath = `/s/${serverSlug}${NavigationPaths.Channels}/${channel.id}`;
   const settingsPath = `${channelPath}/settings`;
 
   const truncatedChannelName = truncate(

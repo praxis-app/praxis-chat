@@ -18,9 +18,10 @@ interface Props {
 export const ChannelListDesktop = ({ me }: Props) => {
   const { isAppLoading } = useAppStore();
 
-  const { channelId } = useParams();
+  const { serverSlug, channelId } = useParams();
   const { pathname } = useLocation();
 
+  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
   const isRegistered = !!me && !me.anonymous;
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
@@ -66,6 +67,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
             key={channel.id}
             channel={channel}
             isActive={isActive}
+            serverSlug={resolvedServerSlug}
           />
         );
       })}

@@ -6,7 +6,7 @@ import { CurrentUserRes } from '@/types/user.types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdAddCircle, MdExpandMore, MdSettings } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import appIconImg from '../../assets/images/app-icon.png';
 import { useAbility } from '../../hooks/use-ability';
@@ -41,13 +41,17 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const { isLoggedIn, isAppLoading } = useAppStore();
   const [showRoomFormDialog, setShowRoomFormDialog] = useState(false);
 
-  const { signUpPath } = useAuthData();
   const { t } = useTranslation();
+  const { serverSlug } = useParams();
+  const { signUpPath } = useAuthData();
 
   const ability = useAbility();
   const canManageChannels = ability.can('manage', 'Channel');
   const canManageSettings = ability.can('manage', 'ServerConfig');
   const isServerMenuBtnDisabled = !canManageSettings && !canManageChannels;
+
+  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
+  const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
@@ -84,7 +88,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </DropdownMenuItem>
             </DialogTrigger>
 
-            <Link to={NavigationPaths.Settings}>
+            <Link to={settingsPath}>
               <DropdownMenuItem className="text-md">
                 <MdSettings className="text-foreground size-5" />
                 {t('navigation.labels.serverSettings')}

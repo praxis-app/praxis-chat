@@ -9,7 +9,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuChevronRight } from 'react-icons/lu';
 import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import appIconImg from '../../assets/images/app-icon.png';
 import { useGeneralChannel } from '../../hooks/use-general-channel';
 import { Button } from '../ui/button';
@@ -34,11 +34,15 @@ export const NavSheet = ({ trigger }: Props) => {
   const { isLoggedIn, isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { serverSlug } = useParams();
   const isDesktop = useIsDesktop();
+  const navigate = useNavigate();
 
   const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
+
+  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
+  const channelsPath = `/s/${resolvedServerSlug}${NavigationPaths.Channels}`;
 
   const { data: channelsData } = useQuery({
     queryKey: ['channels'],
@@ -108,7 +112,7 @@ export const NavSheet = ({ trigger }: Props) => {
           {channelsData?.channels.map((channel) => (
             <Link
               key={channel.id}
-              to={`${NavigationPaths.Channels}/${channel.id}`}
+              to={`${channelsPath}/${channel.id}`}
               onClick={() => setIsNavSheetOpen(false)}
               className="flex items-center gap-1.5 font-light tracking-[0.01em]"
             >

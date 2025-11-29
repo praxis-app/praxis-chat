@@ -6,7 +6,7 @@ import { RouteObject } from 'react-router-dom';
 import { InvitesPage } from '../pages/invites/invites-page';
 
 export const settingsRouter: RouteObject = {
-  path: '/settings',
+  path: '/s/:serverSlug/settings',
   children: [
     {
       index: true,
