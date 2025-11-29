@@ -10,11 +10,20 @@ import { useAbility } from '@/hooks/use-ability';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useServerId } from '../../hooks/use-server-id';
 
 export const ServerRoles = () => {
+  const { serverId } = useServerId();
+
   const { data, isPending, error } = useQuery({
-    queryKey: ['serverRoles'],
-    queryFn: api.getServerRoles,
+    queryKey: [serverId, 'server-roles'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerRoles(serverId);
+    },
+    enabled: !!serverId,
   });
 
   const { t } = useTranslation();

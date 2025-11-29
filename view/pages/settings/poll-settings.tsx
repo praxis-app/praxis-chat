@@ -7,14 +7,23 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useServerId } from '../../hooks/use-server-id';
 
 export const PollSettings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { serverId } = useServerId();
+
   const { data, isPending, error } = useQuery({
-    queryKey: ['server-configs'],
-    queryFn: () => api.getServerConfig(),
+    queryKey: [serverId, 'server-configs'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerConfig(serverId);
+    },
+    enabled: !!serverId,
   });
 
   if (error) {
