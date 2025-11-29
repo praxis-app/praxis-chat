@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useServerId } from '@/hooks/use-server-id';
 import { Wizard } from '../../shared/wizard/wizard';
 import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
 import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
@@ -42,8 +43,9 @@ export const CreatePollForm = ({
 }: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { serverId } = useServerId();
+  const queryClient = useQueryClient();
 
   const form = useForm<CreatePollFormSchema>({
     resolver: zodResolver(createPollFormSchema),
@@ -65,21 +67,45 @@ export const CreatePollForm = ({
     actionType === 'change-role' || actionType === 'create-role';
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: ['serverRole', selectedServerRoleId],
-    queryFn: () => api.getServerRole(selectedServerRoleId!),
-    enabled: isRolePoll && !!selectedServerRoleId && currentStep > 1,
+    queryKey: [serverId, 'server-role', selectedServerRoleId],
+    queryFn: () => {
+      if (!serverId || !selectedServerRoleId) {
+        throw new Error('Server ID and server role ID are required');
+      }
+      return api.getServerRole(serverId, selectedServerRoleId);
+    },
+    enabled:
+      isRolePoll && !!serverId && !!selectedServerRoleId && currentStep > 1,
   });
 
   // Get eligible users for the selected role
   const { data: eligibleUsersData, isLoading: isEligibleUsersLoading } =
     useQuery({
-      queryKey: ['serverRole', selectedServerRoleId, 'members', 'eligible'],
-      queryFn: () => api.getUsersEligibleForServerRole(selectedServerRoleId!),
-      enabled: isRolePoll && !!selectedServerRoleId && currentStep > 2,
+      queryKey: [
+        serverId,
+        'server-role',
+        selectedServerRoleId,
+        'members',
+        'eligible',
+      ],
+      queryFn: () => {
+        if (!serverId || !selectedServerRoleId) {
+          throw new Error('Server ID and server role ID are required');
+        }
+        return api.getUsersEligibleForServerRole(
+          serverId,
+          selectedServerRoleId,
+        );
+      },
+      enabled:
+        isRolePoll && !!serverId && !!selectedServerRoleId && currentStep > 2,
     });
 
   const { mutate: createPoll, isPending } = useMutation({
     mutationFn: async (values: CreatePollFormSchema) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
@@ -195,7 +221,7 @@ export const CreatePollForm = ({
             }
           : undefined;
 
-      return api.createPoll(channelId, {
+      return api.createPoll(serverId, channelId, {
         body: values.body?.trim(),
         action: {
           actionType: values.action,

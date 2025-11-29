@@ -68,7 +68,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
 
       const serverRole = { ...editRole, ...data };
       queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
-        ['serverRole', editRole.id],
+        [serverId, 'server-role', editRole.id],
         {
           serverRole,
         },

@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { useServerId } from '@/hooks/use-server-id';
 import { ChannelRes } from '@/types/channel.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +27,8 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
+  const { serverId } = useServerId();
+
   const form = useForm<zod.infer<typeof channelSchema>>({
     resolver: zodResolver(channelSchema),
     defaultValues: {
@@ -37,7 +40,10 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
   const { mutate: updateChannel, isPending: isUpdateChannelPending } =
     useMutation({
       mutationFn: async (values: zod.infer<typeof channelSchema>) => {
-        await api.updateChannel(editChannel.id, {
+        if (!serverId) {
+          throw new Error('Server ID is required');
+        }
+        await api.updateChannel(serverId, editChannel.id, {
           name: values.name,
           description: values.description,
         });

@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
+import { useServerId } from '@/hooks/use-server-id';
 import { ChannelRes } from '@/types/channel.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -36,12 +37,17 @@ export const DeleteChannelForm = ({
   onSubmit,
 }: DeleteChannelFormProps) => {
   const { channelId } = useParams();
+  const { serverId } = useServerId();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { mutate: deleteChannel, isPending } = useMutation({
     mutationFn: async () => {
-      await api.deleteChannel(channel.id);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      await api.deleteChannel(serverId, channel.id);
 
       queryClient.setQueryData<{ channels: ChannelRes[] }>(
         ['channels'],

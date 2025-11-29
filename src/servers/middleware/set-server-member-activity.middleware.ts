@@ -13,7 +13,9 @@ export const setServerMemberActivity = async (
   next: NextFunction,
 ) => {
   const currentUser: User | undefined = res.locals.user;
-  let { serverId, slug } = req.params as { serverId?: string; slug?: string };
+  const params = req.params as { serverId?: string; slug?: string };
+
+  let serverId = params.serverId;
 
   if (!currentUser?.id) {
     res.status(400).send('Current user ID is required');
@@ -21,8 +23,10 @@ export const setServerMemberActivity = async (
   }
 
   // Allow slug-only routes: resolve serverId from slug when serverId is missing
-  if (!serverId && slug) {
-    const server = await serverRepository.findOne({ where: { slug } });
+  if (!serverId && params.slug) {
+    const server = await serverRepository.findOne({
+      where: { slug: params.slug },
+    });
     serverId = server?.id;
     if (!serverId) {
       res.status(404).send('Server not found');

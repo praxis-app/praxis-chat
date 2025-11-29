@@ -63,7 +63,7 @@ export const EditServerRolePage = () => {
     isPending: isServerRolePending,
     error: serverRoleError,
   } = useQuery({
-    queryKey: ['serverRole', serverRoleId],
+    queryKey: [serverId, 'server-role', serverRoleId],
     queryFn: () => {
       if (!serverRoleId || !serverId) {
         throw new Error('Server ID is required');
@@ -74,7 +74,7 @@ export const EditServerRolePage = () => {
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
-    queryKey: ['serverRole', serverRoleId, 'members', 'eligible'],
+    queryKey: [serverId, 'server-role', serverRoleId, 'members', 'eligible'],
     queryFn: () => {
       if (!serverRoleId || !serverId) {
         throw new Error('Server ID is required');
@@ -94,14 +94,14 @@ export const EditServerRolePage = () => {
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
       );
-      queryClient.setQueryData(['serverRole', serverRoleId], {
+      queryClient.setQueryData([serverId, 'server-role', serverRoleId], {
         serverRole: {
           ...serverRoleData.serverRole,
           members: serverRoleData.serverRole.members.concat(membersToAdd),
         },
       });
       queryClient.setQueryData(
-        ['serverRole', serverRoleId, 'members', 'eligible'],
+        [serverId, 'server-role', serverRoleId, 'members', 'eligible'],
         {
           users: eligibleUsersData?.users.filter(
             (user) => !selectedUserIds.includes(user.id),

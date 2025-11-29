@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { useServerId } from '@/hooks/use-server-id';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
@@ -21,12 +22,16 @@ interface Props {
 export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { serverId } = useServerId();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       // Create vote
       if (!myVote) {
-        const { vote } = await api.createVote(channel.id, pollId, {
+        const { vote } = await api.createVote(serverId, channel.id, pollId, {
           voteType,
         });
         return {
@@ -38,7 +43,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       }
       // Delete vote
       if (myVote.voteType === voteType) {
-        await api.deleteVote(channel.id, pollId, myVote.id);
+        await api.deleteVote(serverId, channel.id, pollId, myVote.id);
         return {
           action: 'delete' as const,
           isRatifyingVote: false,
@@ -47,6 +52,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       }
       // Update vote
       const { isRatifyingVote } = await api.updateVote(
+        serverId,
         channel.id,
         pollId,
         myVote.id,

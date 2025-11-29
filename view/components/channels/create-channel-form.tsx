@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as zod from 'zod';
+import { useServerId } from '@/hooks/use-server-id';
 import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
@@ -59,6 +60,8 @@ export const CreateChannelForm = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const { serverId } = useServerId();
+
   const form = useForm<zod.infer<typeof createChannelFormSchema>>({
     resolver: zodResolver(createChannelFormSchema),
     defaultValues: {
@@ -69,7 +72,10 @@ export const CreateChannelForm = ({
 
   const { mutate: createChannel, isPending } = useMutation({
     mutationFn: async (values: CreateChannelReq) => {
-      const { channel } = await api.createChannel(values);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      const { channel } = await api.createChannel(serverId, values);
 
       queryClient.setQueryData<{ channels: ChannelRes[] }>(
         ['channels'],

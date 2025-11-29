@@ -5,6 +5,7 @@ import { MessageForm } from '../message-form';
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
+  useParams: () => ({}),
 }));
 
 vi.mock('@/store/app.store');

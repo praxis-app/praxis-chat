@@ -44,7 +44,7 @@ export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
       setIsConfirmModalOpen(false);
 
       queryClient.setQueryData(
-        ['serverRole', serverRoleId],
+        [serverId, 'server-role', serverRoleId],
         (data: { serverRole: ServerRoleRes }) => {
           const filteredMembers = data.serverRole.members.filter(
             (member) => member.id !== serverRoleMember.id,
@@ -64,7 +64,7 @@ export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
         }),
       );
       queryClient.setQueryData(
-        ['serverRole', serverRoleId, 'members', 'eligible'],
+        [serverId, 'server-role', serverRoleId, 'members', 'eligible'],
         (data: { users: UserRes[] }) => {
           return { users: [serverRoleMember, ...data.users] };
         },

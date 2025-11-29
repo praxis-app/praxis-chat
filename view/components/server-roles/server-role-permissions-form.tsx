@@ -1,3 +1,4 @@
+import { useServerId } from '@/hooks/use-server-id';
 import { getPermissionValues } from '@/lib/server-role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
@@ -27,6 +28,8 @@ interface Props {
 }
 
 export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
+  const { serverId } = useServerId();
+
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       permissions: getPermissionValues(serverRole.permissions),
@@ -60,12 +63,15 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
         },
         [],
       );
-      await api.updateServerRolePermissions(serverRole.id, {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      await api.updateServerRolePermissions(serverId, serverRole.id, {
         permissions,
       });
 
       queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
-        ['serverRole', serverRole.id],
+        [serverId, 'server-role', serverRole.id],
         (oldData) => {
           if (!oldData) {
             return { serverRole };

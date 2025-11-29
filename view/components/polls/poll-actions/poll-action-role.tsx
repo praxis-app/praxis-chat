@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
+import { useServerId } from '@/hooks/use-server-id';
 import {
   PollActionRes,
   PollActionServerRoleMemberRes,
@@ -27,17 +28,20 @@ interface Props {
 export const PollActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
+  const { serverId } = useServerId();
+
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: ['serverRole', action.serverRole?.serverRoleId],
+    queryKey: [serverId, 'server-role', action.serverRole?.serverRoleId],
     queryFn: () => {
-      if (!action.serverRole?.serverRoleId) {
+      if (!action.serverRole?.serverRoleId || !serverId) {
         throw new Error('Server role ID is required');
       }
-      return api.getServerRole(action.serverRole.serverRoleId);
+      return api.getServerRole(serverId, action.serverRole.serverRoleId);
     },
     enabled:
       accordionValue === ACCORDION_ITEM_VALUE &&
-      !!action.serverRole?.serverRoleId,
+      !!action.serverRole?.serverRoleId &&
+      !!serverId,
   });
 
   const permissionChanges = PERMISSION_KEYS.reduce<
