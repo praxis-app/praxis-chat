@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Slider } from '../ui/slider';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 
 interface Props {
   serverConfig: ServerConfigRes;
@@ -39,7 +39,7 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof serverConfigSchema>>({
     resolver: zodResolver(serverConfigSchema),

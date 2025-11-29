@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { Wizard } from '../../shared/wizard/wizard';
 import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
 import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
@@ -44,7 +44,7 @@ export const CreatePollForm = ({
   const [currentStep, setCurrentStep] = useState(0);
 
   const { t } = useTranslation();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
   const queryClient = useQueryClient();
 
   const form = useForm<CreatePollFormSchema>({

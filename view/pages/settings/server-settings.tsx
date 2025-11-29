@@ -12,6 +12,7 @@ import {
   MdLink,
 } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useServerData } from '../../hooks/use-server-data';
 
 export const ServerSettings = () => {
   const { setIsNavSheetOpen } = useAppStore();
@@ -19,6 +20,9 @@ export const ServerSettings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+
+  const { serverSlug } = useServerData();
+  const serverPath = `/s/${serverSlug}`;
 
   const handleBackClick = () => {
     if (isDesktop) {
@@ -41,17 +45,17 @@ export const ServerSettings = () => {
         <SettingsNavItem
           Icon={MdEmojiPeople}
           label={t('navigation.labels.proposals')}
-          to={NavigationPaths.ProposalSettings}
+          to={`${serverPath}${NavigationPaths.ProposalSettings}`}
         />
         <SettingsNavItem
           Icon={MdLink}
           label={t('navigation.labels.invites')}
-          to={NavigationPaths.Invites}
+          to={`${serverPath}${NavigationPaths.Invites}`}
         />
         <SettingsNavItem
           Icon={MdAdminPanelSettings}
           label={t('navigation.labels.roles')}
-          to={NavigationPaths.ServerRoles}
+          to={`${serverPath}${NavigationPaths.ServerRoles}`}
         />
       </Container>
     </>

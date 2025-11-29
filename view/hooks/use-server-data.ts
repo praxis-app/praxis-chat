@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../client/api-client';
 import { useMeQuery } from './use-me-query';
 
-export const useServerId = () => {
+export const useServerData = () => {
   const { serverSlug } = useParams();
 
   const {
@@ -48,8 +48,11 @@ export const useServerId = () => {
     meData?.user.currentServer?.id ||
     defaultServerData?.server.id;
 
+  const resolvedServerSlug = serverSlug ?? meData?.user.currentServer?.slug;
+
   return {
     serverId,
+    serverSlug: resolvedServerSlug,
     isLoading: isMeLoading || isDefaultServerLoading || isServerBySlugLoading,
   };
 };

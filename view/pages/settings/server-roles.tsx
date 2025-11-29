@@ -10,10 +10,10 @@ import { useAbility } from '@/hooks/use-ability';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 
 export const ServerRoles = () => {
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { data, isPending, error } = useQuery({
     queryKey: [serverId, 'server-roles'],

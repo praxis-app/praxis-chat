@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { RefObject } from 'react';
 import { api } from '../client/api-client';
 import { useInView } from './use-in-view';
-import { useServerId } from './use-server-id';
+import { useServerData } from './use-server-data';
 
 interface UseImageSrcProps {
   enabled?: boolean;
@@ -25,7 +25,7 @@ export const useImageSrc = ({
   onError,
   ref,
 }: UseImageSrcProps) => {
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
   const { viewed } = useInView(ref, '100px');
 
   const getImageSrc = async () => {

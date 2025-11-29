@@ -1,12 +1,12 @@
 import { api } from '@/client/api-client';
 import { ChannelView } from '@/components/channels/channel-view';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
   const { channelId } = useParams();
   const navigate = useNavigate();
 

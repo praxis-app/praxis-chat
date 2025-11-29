@@ -1,4 +1,4 @@
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { getPermissionValues } from '@/lib/server-role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {

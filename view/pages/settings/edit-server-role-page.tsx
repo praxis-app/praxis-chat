@@ -33,7 +33,7 @@ import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
 import { handleError } from '../../lib/error.utils';
 import { ServerRoleRes } from '../../types/server-role.types';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 
 enum EditServerRoleTabName {
   Permissions = 'permissions',
@@ -49,7 +49,7 @@ export const EditServerRolePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
   const { serverRoleId } = useParams<{ serverRoleId: string }>();
 
   const { t } = useTranslation();

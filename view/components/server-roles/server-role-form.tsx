@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 import {
   CreateServerRoleReq,
   ServerRoleRes,
@@ -25,7 +25,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { handleSubmit, register, setValue, watch, reset, formState } =
     useForm<CreateServerRoleReq>({

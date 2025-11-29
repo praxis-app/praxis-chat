@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 import { WelcomeMessage } from '../invites/welcome-message';
 import { BotMessage } from '../messages/bot-message';
 import { Message } from '../messages/message';
@@ -39,7 +39,7 @@ export const ChannelFeed = ({
 }: Props) => {
   const { isAppLoading } = useAppStore((state) => state);
   const { me, isAnon, isLoggedIn } = useAuthData();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);

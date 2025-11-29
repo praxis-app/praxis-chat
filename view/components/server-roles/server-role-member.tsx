@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuX } from 'react-icons/lu';
 import { api } from '../../client/api-client';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 import { truncate } from '../../lib/text.utils';
 import { ServerRoleRes } from '../../types/server-role.types';
 import { UserRes } from '../../types/user.types';
@@ -29,7 +29,7 @@ export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { mutate: removeMember, isPending } = useMutation({
     async mutationFn() {

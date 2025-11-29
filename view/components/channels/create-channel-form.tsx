@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as zod from 'zod';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
@@ -60,7 +60,7 @@ export const CreateChannelForm = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof createChannelFormSchema>>({
     resolver: zodResolver(createChannelFormSchema),

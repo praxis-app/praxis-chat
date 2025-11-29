@@ -26,7 +26,7 @@ import { Button } from '../ui/button';
 import { Form, FormField } from '../ui/form';
 import { Textarea } from '../ui/textarea';
 import { MessageFormMenu } from './message-form-menu';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 
 const MESSAGE_BODY_MAX = 6000;
 
@@ -56,7 +56,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

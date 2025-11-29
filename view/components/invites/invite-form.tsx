@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useServerId } from '../../hooks/use-server-id';
+import { useServerData } from '../../hooks/use-server-data';
 
 const MAX_USES_OPTIONS = [1, 5, 10, 25, 50, 100];
 
@@ -33,7 +33,7 @@ export const InviteForm = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof inviteFormSchema>>({
     defaultValues: { expiresAt: '', maxUses: '' },

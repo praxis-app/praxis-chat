@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../client/api-client';
 import { handleError } from '../lib/error.utils';
 import { InviteRes } from '../types/invite.types';
-import { useServerId } from './use-server-id';
+import { useServerData } from './use-server-data';
 
 export const useDeleteInviteMutation = (inviteId: string) => {
   const queryClient = useQueryClient();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   return useMutation({
     mutationFn: async () => {

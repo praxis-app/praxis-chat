@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import {
   PollActionRes,
   PollActionServerRoleMemberRes,
@@ -28,7 +28,7 @@ interface Props {
 export const PollActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
     queryKey: [serverId, 'server-role', action.serverRole?.serverRoleId],

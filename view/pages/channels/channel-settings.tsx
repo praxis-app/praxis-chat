@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelSettings = () => {
   const { channelId } = useParams();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { t } = useTranslation();
   const navigate = useNavigate();

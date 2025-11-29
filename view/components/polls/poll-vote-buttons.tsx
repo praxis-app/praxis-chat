@@ -1,5 +1,5 @@
 import { api } from '@/client/api-client';
-import { useServerId } from '@/hooks/use-server-id';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
@@ -22,7 +22,7 @@ interface Props {
 export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {

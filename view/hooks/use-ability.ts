@@ -4,7 +4,7 @@ import { createMongoAbility } from '@casl/ability';
 import { ServerAbility } from '@common/server-roles/server-ability';
 import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
-import { useServerId } from './use-server-id';
+import { useServerData } from './use-server-data';
 
 interface UseAbilityOptions {
   scope?: 'instance' | 'server';
@@ -12,7 +12,7 @@ interface UseAbilityOptions {
 
 export const useAbility = ({ scope = 'server' }: UseAbilityOptions = {}) => {
   const { isLoggedIn } = useAppStore();
-  const { serverId } = useServerId();
+  const { serverId } = useServerData();
 
   const { data: meData } = useMeQuery({
     enabled: isLoggedIn,
