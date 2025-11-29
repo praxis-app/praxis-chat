@@ -10,6 +10,7 @@ import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useServerId } from '../../hooks/use-server-id';
 
 export const InvitesPage = () => {
   const { isLoggedIn } = useAppStore();
@@ -18,10 +19,17 @@ export const InvitesPage = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
+  const { serverId } = useServerId();
+
   const { data: invitesData } = useQuery({
-    queryKey: ['invites'],
-    queryFn: api.getInvites,
-    enabled: isLoggedIn,
+    queryKey: [serverId, 'invites'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getInvites(serverId);
+    },
+    enabled: isLoggedIn && !!serverId,
   });
 
   if (!invitesData) {
