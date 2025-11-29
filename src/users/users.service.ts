@@ -133,6 +133,7 @@ export const createUser = async (
 
   if (isFirst) {
     const server = await serversService.getDefaultServer();
+    await instanceRolesService.createAdminInstanceRole(user.id);
     await serverRolesService.createAdminServerRole(server.id, user.id);
     await serversService.addMemberToServer(server.id, user.id);
     return user;
@@ -172,6 +173,7 @@ export const createAnonUser = async (serverId: string) => {
   const isFirst = await isFirstUser();
 
   if (isFirst) {
+    await instanceRolesService.createAdminInstanceRole(user.id);
     await serverRolesService.createAdminServerRole(serverId, user.id);
     await serversService.addMemberToServer(serverId, user.id);
   } else {
