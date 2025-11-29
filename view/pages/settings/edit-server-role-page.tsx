@@ -33,6 +33,7 @@ import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
 import { handleError } from '../../lib/error.utils';
 import { ServerRoleRes } from '../../types/server-role.types';
+import { useServerId } from '../../hooks/use-server-id';
 
 enum EditServerRoleTabName {
   Permissions = 'permissions',
@@ -47,7 +48,10 @@ export const EditServerRolePage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+
+  const { serverId } = useServerId();
   const { serverRoleId } = useParams<{ serverRoleId: string }>();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -60,22 +64,32 @@ export const EditServerRolePage = () => {
     error: serverRoleError,
   } = useQuery({
     queryKey: ['serverRole', serverRoleId],
-    queryFn: () => api.getServerRole(serverRoleId!),
+    queryFn: () => {
+      if (!serverRoleId || !serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerRole(serverId, serverRoleId);
+    },
     enabled: !!serverRoleId && canManageServerRoles,
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
     queryKey: ['serverRole', serverRoleId, 'members', 'eligible'],
-    queryFn: () => api.getUsersEligibleForServerRole(serverRoleId!),
+    queryFn: () => {
+      if (!serverRoleId || !serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getUsersEligibleForServerRole(serverId, serverRoleId);
+    },
     enabled: !!serverRoleId && activeTab === 'members' && canManageServerRoles,
   });
 
   const { mutate: addMembers } = useMutation({
     mutationFn: async () => {
-      if (!serverRoleId || !serverRoleData || !eligibleUsersData) {
+      if (!serverRoleId || !serverRoleData || !eligibleUsersData || !serverId) {
         return;
       }
-      await api.addServerRoleMembers(serverRoleId, selectedUserIds);
+      await api.addServerRoleMembers(serverId, serverRoleId, selectedUserIds);
 
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
@@ -105,10 +119,10 @@ export const EditServerRolePage = () => {
 
   const { mutate: deleteServerRole, isPending: isDeletePending } = useMutation({
     mutationFn: async () => {
-      if (!serverRoleId) {
+      if (!serverRoleId || !serverId) {
         return;
       }
-      await api.deleteServerRole(serverRoleId);
+      await api.deleteServerRole(serverId, serverRoleId);
 
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
         ['serverRoles'],
