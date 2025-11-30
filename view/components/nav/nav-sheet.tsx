@@ -2,6 +2,7 @@ import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +10,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuChevronRight } from 'react-icons/lu';
 import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import appIconImg from '../../assets/images/app-icon.png';
 import { useGeneralChannel } from '../../hooks/use-general-channel';
 import { Button } from '../ui/button';
@@ -34,25 +35,24 @@ export const NavSheet = ({ trigger }: Props) => {
   const { isLoggedIn, isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
-  const { serverSlug } = useParams();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
+  const { serverId, serverPath } = useServerData();
   const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
-  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
-  const channelsPath = `/s/${resolvedServerSlug}${NavigationPaths.Channels}`;
+  const channelsPath = `${serverPath}${NavigationPaths.Channels}`;
 
   const { data: channelsData } = useQuery({
-    queryKey: ['channels'],
+    queryKey: ['servers', serverId, 'channels'],
     queryFn: async () => {
-      if (!me?.currentServer?.id) {
+      if (!serverId) {
         throw new Error('No current server found');
       }
-      return api.getJoinedChannels(me.currentServer.id);
+      return api.getJoinedChannels(serverId);
     },
-    enabled: !isDesktop && isRegistered,
+    enabled: !isDesktop && isRegistered && !!serverId,
   });
 
   const { data: generalChannelData } = useGeneralChannel({
