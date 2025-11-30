@@ -23,7 +23,9 @@ import { CreateInviteReq, InviteRes } from '../types/invite.types';
 import { MessageRes } from '../types/message.types';
 import {
   CreateRoleReq,
+  InstanceRoleRes,
   ServerRoleRes,
+  UpdateInstanceRolePermissionsReq,
   UpdateServerRolePermissionsReq,
 } from '../types/role.types';
 import { ServerReq, ServerRes } from '../types/server.types';
@@ -399,6 +401,74 @@ class ApiClient {
 
   deleteServerRole = async (serverId: string, serverRoleId: string) => {
     const path = `/servers/${serverId}/roles/${serverRoleId}`;
+    return this.executeRequest<void>('delete', path);
+  };
+
+  // -------------------------------------------------------------------------
+  // Instance Roles & Permissions
+  // -------------------------------------------------------------------------
+
+  getInstanceRole = async (instanceRoleId: string) => {
+    const path = `/instance-roles/${instanceRoleId}`;
+    return this.executeRequest<{ instanceRole: InstanceRoleRes }>('get', path);
+  };
+
+  getInstanceRoles = async () => {
+    const path = `/instance-roles`;
+    return this.executeRequest<{ instanceRoles: InstanceRoleRes[] }>(
+      'get',
+      path,
+    );
+  };
+
+  getUsersEligibleForInstanceRole = async (instanceRoleId: string) => {
+    const path = `/instance-roles/${instanceRoleId}/members/eligible`;
+    return this.executeRequest<{ users: UserRes[] }>('get', path);
+  };
+
+  createInstanceRole = async (data: CreateRoleReq) => {
+    const path = `/instance-roles`;
+    return this.executeRequest<{ instanceRole: InstanceRoleRes }>(
+      'post',
+      path,
+      { data },
+    );
+  };
+
+  updateInstanceRole = async (instanceRoleId: string, data: CreateRoleReq) => {
+    const path = `/instance-roles/${instanceRoleId}`;
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  updateInstanceRolePermissions = async (
+    instanceRoleId: string,
+    data: UpdateInstanceRolePermissionsReq,
+  ) => {
+    const path = `/instance-roles/${instanceRoleId}/permissions`;
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  addInstanceRoleMembers = async (
+    instanceRoleId: string,
+    userIds: string[],
+  ) => {
+    const path = `/instance-roles/${instanceRoleId}/members`;
+    return this.executeRequest<void>('post', path, {
+      data: { userIds },
+    });
+  };
+
+  removeInstanceRoleMember = async (instanceRoleId: string, userId: string) => {
+    const path = `/instance-roles/${instanceRoleId}/members/${userId}`;
+    return this.executeRequest<void>('delete', path);
+  };
+
+  deleteInstanceRole = async (instanceRoleId: string) => {
+    const path = `/instance-roles/${instanceRoleId}`;
     return this.executeRequest<void>('delete', path);
   };
 

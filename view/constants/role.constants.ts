@@ -6,6 +6,12 @@ export const SERVER_PERMISSION_KEYS = [
   'manageRoles',
 ] as const;
 
+export const INSTANCE_PERMISSION_KEYS = [
+  'manageInstanceSettings',
+  'manageInstanceRoles',
+  'manageServers',
+] as const;
+
 export const ROLE_COLOR_OPTIONS = [
   '#f44336',
   '#e91e63',

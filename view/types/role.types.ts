@@ -6,10 +6,14 @@ import {
   ServerAbilityAction,
   ServerAbilitySubject,
 } from '@common/server-roles/server-ability';
-import { SERVER_PERMISSION_KEYS } from '../constants/role.constants';
+import {
+  INSTANCE_PERMISSION_KEYS,
+  SERVER_PERMISSION_KEYS,
+} from '../constants/role.constants';
 import { UserRes } from './user.types';
 
 export type ServerPermissionKeys = (typeof SERVER_PERMISSION_KEYS)[number];
+export type InstancePermissionKeys = (typeof INSTANCE_PERMISSION_KEYS)[number];
 
 export interface ServerPermission {
   subject: ServerAbilitySubject;
@@ -34,6 +38,10 @@ export interface UpdateServerRolePermissionsReq {
   permissions: ServerPermission[];
 }
 
+export interface UpdateInstanceRolePermissionsReq {
+  permissions: InstancePermission[];
+}
+
 // -------------------------------------------------------------------------
 // Responses
 // -------------------------------------------------------------------------
@@ -43,6 +51,15 @@ export interface ServerRoleRes {
   name: string;
   color: string;
   permissions: ServerPermission[];
+  memberCount: number;
+  members: UserRes[];
+}
+
+export interface InstanceRoleRes {
+  id: string;
+  name: string;
+  color: string;
+  permissions: InstancePermission[];
   memberCount: number;
   members: UserRes[];
 }
