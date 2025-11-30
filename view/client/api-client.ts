@@ -22,7 +22,7 @@ import { ImageRes } from '../types/image.types';
 import { CreateInviteReq, InviteRes } from '../types/invite.types';
 import { MessageRes } from '../types/message.types';
 import {
-  CreateServerRoleReq,
+  CreateRoleReq,
   ServerRoleRes,
   UpdateServerRolePermissionsReq,
 } from '../types/role.types';
@@ -348,7 +348,7 @@ class ApiClient {
     return this.executeRequest<{ users: UserRes[] }>('get', path);
   };
 
-  createServerRole = async (serverId: string, data: CreateServerRoleReq) => {
+  createServerRole = async (serverId: string, data: CreateRoleReq) => {
     const path = `/servers/${serverId}/roles`;
     return this.executeRequest<{ serverRole: ServerRoleRes }>('post', path, {
       data,
@@ -358,7 +358,7 @@ class ApiClient {
   updateServerRole = async (
     serverId: string,
     serverRoleId: string,
-    data: CreateServerRoleReq,
+    data: CreateRoleReq,
   ) => {
     const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<void>('put', path, {

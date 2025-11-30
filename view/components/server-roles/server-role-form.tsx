@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
 import { useServerData } from '../../hooks/use-server-data';
-import { CreateServerRoleReq, ServerRoleRes } from '../../types/role.types';
+import { CreateRoleReq, ServerRoleRes } from '../../types/role.types';
 import { ColorPicker } from '../shared/color-picker';
 
 interface Props {
@@ -25,7 +25,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
   const { serverId } = useServerData();
 
   const { handleSubmit, register, setValue, watch, reset, formState } =
-    useForm<CreateServerRoleReq>({
+    useForm<CreateRoleReq>({
       defaultValues: {
         color: editRole?.color || ROLE_COLOR_OPTIONS[0],
         name: editRole?.name || '',
@@ -34,7 +34,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
     });
 
   const { mutate: createServerRole, isPending: isCreatePending } = useMutation({
-    mutationFn: async (data: CreateServerRoleReq) => {
+    mutationFn: async (data: CreateRoleReq) => {
       if (!serverId) {
         throw new Error('Server ID is required');
       }
@@ -57,7 +57,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
   });
 
   const { mutate: updateServerRole, isPending: isUpdatePending } = useMutation({
-    mutationFn: async (data: CreateServerRoleReq) => {
+    mutationFn: async (data: CreateRoleReq) => {
       if (!editRole || !serverId) {
         return;
       }
@@ -92,7 +92,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
     },
   });
 
-  const handleSubmitForm = (data: CreateServerRoleReq) => {
+  const handleSubmitForm = (data: CreateRoleReq) => {
     if (editRole) {
       updateServerRole(data);
     } else {

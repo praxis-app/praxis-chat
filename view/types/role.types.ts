@@ -25,7 +25,7 @@ export interface InstancePermission {
 // Requests
 // -------------------------------------------------------------------------
 
-export interface CreateServerRoleReq {
+export interface CreateRoleReq {
   name: string;
   color: string;
 }
