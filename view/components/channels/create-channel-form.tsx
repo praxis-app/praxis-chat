@@ -78,7 +78,7 @@ export const CreateChannelForm = ({
       const { channel } = await api.createChannel(serverId, values);
 
       queryClient.setQueryData<{ channels: ChannelRes[] }>(
-        ['channels'],
+        ['servers', serverId, 'channels'],
         (oldData) => {
           if (!oldData) {
             return { channels: [] };

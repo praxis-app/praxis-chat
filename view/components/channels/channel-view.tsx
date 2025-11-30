@@ -1,6 +1,7 @@
 import { api } from '@/client/api-client';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
+import { useServerData } from '@/hooks/use-server-data';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
@@ -44,12 +45,22 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
   const [isLastPage, setIsLastPage] = useState(false);
 
   const queryClient = useQueryClient();
-  const feedBoxRef = useRef<HTMLDivElement>(null);
   const isDesktop = useIsDesktop();
+
+  const { serverId } = useServerData();
+  const feedBoxRef = useRef<HTMLDivElement>(null);
 
   const resolvedChannelId = isGeneralChannel
     ? GENERAL_CHANNEL_NAME
     : channel?.id;
+
+  const feedQueryKey = [
+    'servers',
+    serverId,
+    'channels',
+    resolvedChannelId,
+    'feed',
+  ];
 
   const {
     data: meData,
@@ -60,16 +71,14 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
   });
 
   const { data: feedData, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['feed', resolvedChannelId],
+    queryKey: feedQueryKey,
     queryFn: async ({ pageParam }) => {
-      let serverId = meData?.user.currentServer?.id;
-      if (!serverId) {
-        const { server } = await api.getDefaultServer();
-        serverId = server.id;
+      if (!serverId || !resolvedChannelId) {
+        throw new Error('Server ID and channel ID are required');
       }
       const result = await api.getChannelFeed(
         serverId,
-        resolvedChannelId!,
+        resolvedChannelId,
         pageParam,
       );
       const isLast = result.feed.length === 0;
@@ -82,7 +91,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
-    enabled: (isMeSuccess || isMeError) && !!resolvedChannelId,
+    enabled: !!serverId && !!resolvedChannelId && (isMeSuccess || isMeError),
   });
 
   useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {
@@ -124,90 +133,84 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
           type: 'message',
         });
 
-        queryClient.setQueryData<FeedQuery>(
-          ['feed', resolvedChannelId],
-          (oldData) => {
-            if (!oldData) {
-              return {
-                pages: [{ feed: [buildFeedItem()] }],
-                pageParams: [0],
-              };
-            }
-            const pages = oldData.pages.map((page, index) => {
-              // Check if message already exists (for bot message updates)
-              const existingIndex = page.feed.findIndex(
-                (item) =>
-                  item.type === 'message' && item.id === messagePayload.id,
+        queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
+          if (!oldData) {
+            return {
+              pages: [{ feed: [buildFeedItem()] }],
+              pageParams: [0],
+            };
+          }
+          const pages = oldData.pages.map((page, index) => {
+            // Check if message already exists (for bot message updates)
+            const existingIndex = page.feed.findIndex(
+              (item) =>
+                item.type === 'message' && item.id === messagePayload.id,
+            );
+
+            if (existingIndex !== -1) {
+              // Update existing message (bot message with command result)
+              const updatedFeed = [...page.feed];
+              const existingMessage = page.feed[existingIndex];
+              updatedFeed[existingIndex] = buildFeedItem(existingMessage);
+
+              // Sort by createdAt descending (newest first)
+              updatedFeed.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
               );
+              return { feed: updatedFeed };
+            }
 
-              if (existingIndex !== -1) {
-                // Update existing message (bot message with command result)
-                const updatedFeed = [...page.feed];
-                const existingMessage = page.feed[existingIndex];
-                updatedFeed[existingIndex] = buildFeedItem(existingMessage);
-
-                // Sort by createdAt descending (newest first)
-                updatedFeed.sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                );
-                return { feed: updatedFeed };
-              }
-
-              // Add new message to first page only
-              if (index === 0) {
-                const updatedFeed = [buildFeedItem(), ...page.feed];
-                // Sort by createdAt descending (newest first)
-                updatedFeed.sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                );
-                return { feed: updatedFeed };
-              }
-              return page;
-            });
-            return { pages, pageParams: oldData.pageParams };
-          },
-        );
+            // Add new message to first page only
+            if (index === 0) {
+              const updatedFeed = [buildFeedItem(), ...page.feed];
+              // Sort by createdAt descending (newest first)
+              updatedFeed.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              );
+              return { feed: updatedFeed };
+            }
+            return page;
+          });
+          return { pages, pageParams: oldData.pageParams };
+        });
       }
 
       // Update cache with image status once uploaded
       if (body.type === PubSubMessageType.IMAGE) {
-        queryClient.setQueryData<FeedQuery>(
-          ['feed', resolvedChannelId],
-          (oldData) => {
-            if (!oldData) {
-              return { pages: [], pageParams: [] };
-            }
+        queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
+          if (!oldData) {
+            return { pages: [], pageParams: [] };
+          }
 
-            const pages = oldData.pages.map((page) => {
-              const feed = page.feed.map((item) => {
-                if (item.type !== 'message') {
-                  return item;
-                }
-                if (item.id !== body.messageId || !item.images) {
-                  return item;
-                }
-                const images = item.images.map((image) =>
-                  image.id === body.imageId
-                    ? { ...image, isPlaceholder: false }
-                    : image,
-                );
-                return { ...item, images } as FeedItemRes;
-              });
-              return { feed };
+          const pages = oldData.pages.map((page) => {
+            const feed = page.feed.map((item) => {
+              if (item.type !== 'message') {
+                return item;
+              }
+              if (item.id !== body.messageId || !item.images) {
+                return item;
+              }
+              const images = item.images.map((image) =>
+                image.id === body.imageId
+                  ? { ...image, isPlaceholder: false }
+                  : image,
+              );
+              return { ...item, images } as FeedItemRes;
             });
+            return { feed };
+          });
 
-            return { pages, pageParams: oldData.pageParams };
-          },
-        );
+          return { pages, pageParams: oldData.pageParams };
+        });
       }
 
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!resolvedChannelId,
+    enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
   });
 
   useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
@@ -221,38 +224,35 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
           ...(body.poll as FeedItemRes & { type: 'poll' }),
           type: 'poll',
         };
-        queryClient.setQueryData<FeedQuery>(
-          ['feed', resolvedChannelId],
-          (oldData) => {
-            if (!oldData) {
-              return { pages: [{ feed: [newFeedItem] }], pageParams: [0] };
-            }
-            const pages = oldData.pages.map((page, index) => {
-              if (index === 0) {
-                const exists = page.feed.some(
-                  (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
-                );
-                if (exists) {
-                  return page;
-                }
-                const updatedFeed = [newFeedItem, ...page.feed];
-                // Sort by createdAt descending (newest first)
-                updatedFeed.sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                );
-                return { feed: updatedFeed };
+        queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
+          if (!oldData) {
+            return { pages: [{ feed: [newFeedItem] }], pageParams: [0] };
+          }
+          const pages = oldData.pages.map((page, index) => {
+            if (index === 0) {
+              const exists = page.feed.some(
+                (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
+              );
+              if (exists) {
+                return page;
               }
-              return page;
-            });
-            return { pages, pageParams: oldData.pageParams };
-          },
-        );
+              const updatedFeed = [newFeedItem, ...page.feed];
+              // Sort by createdAt descending (newest first)
+              updatedFeed.sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              );
+              return { feed: updatedFeed };
+            }
+            return page;
+          });
+          return { pages, pageParams: oldData.pageParams };
+        });
       }
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!resolvedChannelId,
+    enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
   });
 
   // Reset isLastPage when switching channels

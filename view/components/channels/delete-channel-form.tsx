@@ -50,7 +50,7 @@ export const DeleteChannelForm = ({
       await api.deleteChannel(serverId, channel.id);
 
       queryClient.setQueryData<{ channels: ChannelRes[] }>(
-        ['channels'],
+        ['servers', serverId, 'channels'],
         (oldData) => {
           if (!oldData) {
             return { channels: [] };
