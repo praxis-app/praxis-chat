@@ -1,12 +1,12 @@
 import { getPermissionText } from '@/lib/server-role.utils';
-import { PermissionKeys } from '@/types/role.types';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { UseFormSetValue } from 'react-hook-form';
 import { Label } from '../../ui/label';
 import { Switch } from '../../ui/switch';
 import { CreatePollFormSchema } from '../create-poll-form/create-poll-form.types';
 
 interface Props {
-  permissionName: PermissionKeys;
+  permissionName: ServerPermissionKeys;
   formPermissions: CreatePollFormSchema['permissions'];
   setValue: UseFormSetValue<CreatePollFormSchema>;
 }

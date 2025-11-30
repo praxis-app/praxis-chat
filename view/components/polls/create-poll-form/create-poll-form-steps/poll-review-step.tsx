@@ -1,7 +1,7 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { getPermissionValuesMap } from '@/lib/server-role.utils';
-import { PermissionKeys } from '@/types/role.types';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import {
   PollActionType,
@@ -91,7 +91,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
     return '';
   };
 
-  const getPermissionName = (name: PermissionKeys | '') => {
+  const getPermissionName = (name: ServerPermissionKeys | '') => {
     if (!name) {
       return '';
     }
@@ -255,7 +255,9 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                         className="flex items-center justify-between"
                       >
                         <span className="text-sm">
-                          {getPermissionName(permissionName as PermissionKeys)}
+                          {getPermissionName(
+                            permissionName as ServerPermissionKeys,
+                          )}
                         </span>
                         <Badge
                           variant={permissionValue ? 'default' : 'destructive'}

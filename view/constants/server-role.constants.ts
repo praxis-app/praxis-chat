@@ -1,4 +1,4 @@
-export const PERMISSION_KEYS = [
+export const SERVER_PERMISSION_KEYS = [
   'manageChannels',
   'manageSettings',
   'createInvites',

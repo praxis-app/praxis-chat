@@ -1,10 +1,10 @@
 import { t } from 'i18next';
 import { getPermissionText } from '../../lib/server-role.utils';
-import { PermissionKeys } from '../../types/role.types';
+import { ServerPermissionKeys } from '../../types/role.types';
 import { Switch } from '../ui/switch';
 
 interface Props {
-  permissionName: PermissionKeys;
+  permissionName: ServerPermissionKeys;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }

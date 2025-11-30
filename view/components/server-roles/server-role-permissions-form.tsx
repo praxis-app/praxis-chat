@@ -4,10 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { PERMISSION_KEYS } from '../../constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '../../constants/server-role.constants';
 import {
   ServerPermission,
-  PermissionKeys,
+  ServerPermissionKeys,
   ServerRoleRes,
 } from '../../types/role.types';
 import { Button } from '../ui/button';
@@ -18,7 +18,7 @@ import { ServerRolePermissionToggle } from './server-role-permission-toggle';
 // TODO: Convert `permissions` to hash map type
 interface FormValues {
   permissions: {
-    name: PermissionKeys;
+    name: ServerPermissionKeys;
     value: boolean;
   }[];
 }
@@ -92,7 +92,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
         control={control}
         render={({ field: { onChange, value } }) => (
           <>
-            {PERMISSION_KEYS.map((permissionName, index) => (
+            {SERVER_PERMISSION_KEYS.map((permissionName, index) => (
               <ServerRolePermissionToggle
                 key={permissionName}
                 permissionName={permissionName}

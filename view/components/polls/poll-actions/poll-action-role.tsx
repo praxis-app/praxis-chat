@@ -7,14 +7,14 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import {
   PollActionRes,
   PollActionServerRoleMemberRes,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/role.types';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,9 +44,9 @@ export const PollActionRole = ({ action }: Props) => {
       !!serverId,
   });
 
-  const permissionChanges = PERMISSION_KEYS.reduce<
+  const permissionChanges = SERVER_PERMISSION_KEYS.reduce<
     {
-      name: PermissionKeys;
+      name: ServerPermissionKeys;
       value: boolean;
     }[]
   >((result, name) => {
@@ -121,7 +121,7 @@ export const PollActionRole = ({ action }: Props) => {
     return t('polls.labels.roleProposal');
   };
 
-  const getPermissionName = (name: PermissionKeys | '') => {
+  const getPermissionName = (name: ServerPermissionKeys | '') => {
     if (!name) {
       return '';
     }
@@ -233,7 +233,9 @@ export const PollActionRole = ({ action }: Props) => {
                     className="flex items-center justify-between"
                   >
                     <span className="text-sm">
-                      {getPermissionName(permission.name as PermissionKeys)}
+                      {getPermissionName(
+                        permission.name as ServerPermissionKeys,
+                      )}
                     </span>
                     <Badge
                       variant={permission.value ? 'default' : 'destructive'}

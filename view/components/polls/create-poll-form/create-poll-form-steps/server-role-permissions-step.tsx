@@ -1,5 +1,5 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
-import { PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
@@ -42,7 +42,7 @@ export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {PERMISSION_KEYS.map((permissionName) => (
+            {SERVER_PERMISSION_KEYS.map((permissionName) => (
               <ProposePermissionToggle
                 key={permissionName}
                 formPermissions={formPermissions}
