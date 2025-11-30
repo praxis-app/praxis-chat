@@ -27,9 +27,18 @@ export const appRouter = createBrowserRouter([
         path: 'i/:token',
         element: <InviteCheck />,
       },
+      {
+        path: 's/:serverSlug',
+        children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
+          settingsRouter,
+          channelsRouter,
+        ],
+      },
       authRouter,
-      settingsRouter,
-      channelsRouter,
       usersRouter,
     ],
   },

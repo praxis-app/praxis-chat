@@ -5,6 +5,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useGeneralChannel } from '../../hooks/use-general-channel';
+import { useServerData } from '../../hooks/use-server-data';
 import { CurrentUserRes } from '../../types/user.types';
 import { ChannelListItemDesktop } from './channel-list-item-desktop';
 
@@ -18,10 +19,10 @@ interface Props {
 export const ChannelListDesktop = ({ me }: Props) => {
   const { isAppLoading } = useAppStore();
 
-  const { serverSlug, channelId } = useParams();
+  const { serverSlug, serverPath } = useServerData();
+  const { channelId } = useParams();
   const { pathname } = useLocation();
 
-  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
   const isRegistered = !!me && !me.anonymous;
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
@@ -58,7 +59,9 @@ export const ChannelListDesktop = ({ me }: Props) => {
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">
       {channelsData?.channels.map((channel) => {
-        const isHome = pathname === NavigationPaths.Home;
+        const isHome =
+          pathname === NavigationPaths.Home || pathname === serverPath;
+
         const isGeneral = channel.name === GENERAL_CHANNEL_NAME;
         const isActive = channelId === channel.id || (isHome && isGeneral);
 
@@ -67,7 +70,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
             key={channel.id}
             channel={channel}
             isActive={isActive}
-            serverSlug={resolvedServerSlug}
+            serverSlug={serverSlug}
           />
         );
       })}
