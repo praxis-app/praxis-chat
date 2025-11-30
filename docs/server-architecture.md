@@ -6,9 +6,9 @@ Praxis runs multiple servers inside a single instance. A `Server` groups channel
 
 ## Initialization & defaults
 
-- `initializeApp` calls `instanceService.initializeInstance()`, which creates an `InstanceConfig` row and an initial server (`name`/`slug` of `praxis`) when none exist.
-- Creating any server also creates its `ServerConfig` row and a `general` channel via `initializeGeneralChannel(serverId)`.
-- The `defaultServerId` on `InstanceConfig` designates the demo/fallback server. Users without an invite are routed here so they can explore the app; once a user follows an invite link, they join that invite’s server instead. `/servers/default` exposes this server so the client can route newcomers appropriately.
+`initializeApp` calls `instanceService.initializeInstance()`, seeding an `InstanceConfig` row and the initial `praxis` server when none exist. Every new server automatically receives its own `ServerConfig` row and `general` channel via `initializeGeneralChannel(serverId)`.
+
+The `defaultServerId` on `InstanceConfig` points to the demo/fallback server used for visitors without an invite; they land there to explore, and once they follow an invite link the context shifts to that invite’s server. The `/servers/default` endpoint lets the client discover this fallback when it lacks server context.
 
 ## Routing shape
 
@@ -20,17 +20,12 @@ Praxis runs multiple servers inside a single instance. A `Server` groups channel
 
 ## Data model
 
-- `Server` includes a unique `slug` alongside `name` and `description`.
-- `ServerMember` includes `lastActiveAt`, used to infer a user’s most recent server.
-- `InstanceConfig` stores `defaultServerId` which points to the demo/fallback server.
+`Server` stores a unique `slug` plus name and description. `ServerMember` tracks `lastActiveAt` to infer the most recent server a user touched. `InstanceConfig` holds `defaultServerId`, which identifies the demo/fallback server.
 
 ## Membership & invites
 
-- `createServer(name, slug, description, currentUserId)` adds the creator as a member and seeds the general channel.
-- `addMemberToServer(serverId, userId)` adds the user to the server and all existing channels.
-- Invites are server-scoped: tokens carry `serverId`, and sign-up for non-first users requires an invite token pointing to the target server.
+Creating a server (`createServer(name, slug, description, currentUserId)`) adds the creator as a member and seeds that server’s general channel. `addMemberToServer(serverId, userId)` joins the user to the server and all current channels. Invites are server-scoped and sign up for non-first users requires an invite for the target server.
 
 ## Permissions
 
-- Permission lookups return a map keyed by `serverId` (`getServerPermissionsByUser`), enabling parallel memberships.
-- Instance-level roles manage cross-server actions (e.g., creating servers); the shared `can` middleware in `src/common/roles` supports both `scope: 'server' | 'instance'` to enforce the correct layer.
+Permission lookups return rules keyed by `serverId` (`getServerPermissionsByUser`), enabling parallel memberships. Instance level roles cover cross-server actions such as creating servers. The shared `can` middleware in `src/common/roles` accepts `scope: 'server' | 'instance'` to enforce the right layer on each route.
