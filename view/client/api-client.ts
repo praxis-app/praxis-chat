@@ -311,6 +311,22 @@ class ApiClient {
   };
 
   // -------------------------------------------------------------------------
+  // Server Configs
+  // -------------------------------------------------------------------------
+
+  getServerConfig = async (serverId: string) => {
+    const path = `/servers/${serverId}/configs`;
+    return this.executeRequest<{ serverConfig: ServerConfigRes }>('get', path);
+  };
+
+  updateServerConfig = async (serverId: string, data: ServerConfigReq) => {
+    const path = `/servers/${serverId}/configs`;
+    return this.executeRequest<void>('put', path, {
+      data,
+    });
+  };
+
+  // -------------------------------------------------------------------------
   // Server Roles & Permissions
   // -------------------------------------------------------------------------
 
@@ -384,22 +400,6 @@ class ApiClient {
   deleteServerRole = async (serverId: string, serverRoleId: string) => {
     const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<void>('delete', path);
-  };
-
-  // -------------------------------------------------------------------------
-  // Server Configs
-  // -------------------------------------------------------------------------
-
-  getServerConfig = async (serverId: string) => {
-    const path = `/servers/${serverId}/configs`;
-    return this.executeRequest<{ serverConfig: ServerConfigRes }>('get', path);
-  };
-
-  updateServerConfig = async (serverId: string, data: ServerConfigReq) => {
-    const path = `/servers/${serverId}/configs`;
-    return this.executeRequest<void>('put', path, {
-      data,
-    });
   };
 
   // -------------------------------------------------------------------------
