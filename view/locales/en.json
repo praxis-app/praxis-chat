@@ -464,7 +464,8 @@
       "navDrawer": "Navigation drawer"
     },
     "headers": {
-      "serverSettings": "Server Settings"
+      "serverSettings": "Server Settings",
+      "instanceSettings": "Instance Settings"
     },
     "labels": {
       "serverSettings": "Server settings",
