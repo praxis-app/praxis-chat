@@ -19,21 +19,21 @@ interface Props {
 export const ChannelListDesktop = ({ me }: Props) => {
   const { isAppLoading } = useAppStore();
 
-  const { serverSlug, serverPath } = useServerData();
+  const { serverId, serverSlug, serverPath } = useServerData();
   const { channelId } = useParams();
   const { pathname } = useLocation();
 
   const isRegistered = !!me && !me.anonymous;
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-    queryKey: ['channels'],
+    queryKey: ['servers', serverId, 'channels'],
     queryFn: async () => {
-      if (!me?.currentServer?.id) {
+      if (!serverId) {
         throw new Error('No current server found');
       }
-      return api.getJoinedChannels(me.currentServer.id);
+      return api.getJoinedChannels(serverId);
     },
-    enabled: isRegistered,
+    enabled: isRegistered && !!serverId,
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
