@@ -1,6 +1,6 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/role.utils';
+import { getServerPermissionValuesMap } from '@/lib/role.utils';
 import { ServerPermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import {
@@ -41,7 +41,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const nameChanged = serverRoleName !== selectedServerRole?.name;
   const colorChanged = serverRoleColor !== selectedServerRole?.color;
 
-  const shapedRolePermissions = getPermissionValuesMap(
+  const shapedRolePermissions = getServerPermissionValuesMap(
     selectedServerRole?.permissions || [],
   );
 

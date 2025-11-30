@@ -1,7 +1,14 @@
-import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
+import {
+  INSTANCE_PERMISSION_KEYS,
+  SERVER_PERMISSION_KEYS,
+} from '@/constants/role.constants';
 import { t } from 'i18next';
 import { Namespace, TFunction } from 'react-i18next';
-import { ServerPermission, ServerPermissionKeys } from '../types/role.types';
+import {
+  InstancePermission,
+  ServerPermission,
+  ServerPermissionKeys,
+} from '../types/role.types';
 
 export const getServerPermissionValues = (permissions: ServerPermission[]) =>
   SERVER_PERMISSION_KEYS.map((name) => {
@@ -51,7 +58,41 @@ export const getServerPermissionValues = (permissions: ServerPermission[]) =>
     };
   });
 
-export const getPermissionValuesMap = (permissions: ServerPermission[]) =>
+export const getInstancePermissionValues = (
+  permissions: InstancePermission[],
+) =>
+  INSTANCE_PERMISSION_KEYS.map((name) => {
+    if (name === 'manageInstanceSettings') {
+      return {
+        value: permissions.some(
+          (p) => p.subject === 'InstanceConfig' && p.action.includes('manage'),
+        ),
+        name,
+      };
+    }
+    if (name === 'manageInstanceRoles') {
+      return {
+        value: permissions.some(
+          (p) => p.subject === 'InstanceRole' && p.action.includes('manage'),
+        ),
+        name,
+      };
+    }
+    if (name === 'manageServers') {
+      return {
+        value: permissions.some(
+          (p) => p.subject === 'Server' && p.action.includes('manage'),
+        ),
+        name,
+      };
+    }
+    return {
+      value: false,
+      name,
+    };
+  });
+
+export const getServerPermissionValuesMap = (permissions: ServerPermission[]) =>
   getServerPermissionValues(permissions).reduce<Record<string, boolean>>(
     (result, permission) => {
       result[permission.name] = permission.value;
@@ -60,6 +101,18 @@ export const getPermissionValuesMap = (permissions: ServerPermission[]) =>
     {},
   );
 
+export const getInstancePermissionValuesMap = (
+  permissions: InstancePermission[],
+) =>
+  getInstancePermissionValues(permissions).reduce<Record<string, boolean>>(
+    (result, permission) => {
+      result[permission.name] = permission.value;
+      return result;
+    },
+    {},
+  );
+
+// TODO: Update to support instance permissions
 export const getPermissionText = (name: ServerPermissionKeys) => {
   const _t: TFunction<Namespace<'translation'>, undefined> = t;
   return {

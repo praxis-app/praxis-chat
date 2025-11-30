@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
-import { getPermissionValuesMap } from '@/lib/role.utils';
+import { getServerPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
   CreatePollActionServerRoleMemberReq,
@@ -124,7 +124,7 @@ export const CreatePollForm = ({
           ? values.serverRoleColor
           : undefined;
 
-      const shapedRolePermissions = getPermissionValuesMap(
+      const shapedRolePermissions = getServerPermissionValuesMap(
         serverRoleData?.serverRole?.permissions || [],
       );
 
