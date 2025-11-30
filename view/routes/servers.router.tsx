@@ -1,7 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 import { HomePage } from '../pages/home-page';
 import { channelsRouter } from './channels.router';
-import { settingsRouter } from './settings.router';
+import { serverSettingsRouter } from './server-settings.router';
 
 export const serversRouter: RouteObject = {
   path: 's/:serverSlug',
@@ -10,7 +10,7 @@ export const serversRouter: RouteObject = {
       index: true,
       element: <HomePage />,
     },
-    settingsRouter,
+    serverSettingsRouter,
     channelsRouter,
   ],
 };
