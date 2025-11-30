@@ -58,7 +58,7 @@ export const InviteForm = () => {
       });
 
       queryClient.setQueryData<{ invites: InviteRes[] }>(
-        ['invites'],
+        ['servers', serverId, 'invites'],
         (oldData) => {
           if (!oldData) {
             return { invites: [] };
