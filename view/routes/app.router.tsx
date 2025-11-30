@@ -5,8 +5,7 @@ import { InviteCheck } from '@/pages/invites/invite-check';
 import { PageNotFound } from '@/pages/page-not-found';
 import { createBrowserRouter } from 'react-router-dom';
 import { authRouter } from './auth.router';
-import { channelsRouter } from './channels.router';
-import { settingsRouter } from './settings.router';
+import { serversRouter } from './servers.router';
 import { usersRouter } from './users.router';
 
 export const appRouter = createBrowserRouter([
@@ -27,19 +26,9 @@ export const appRouter = createBrowserRouter([
         path: 'i/:token',
         element: <InviteCheck />,
       },
-      {
-        path: 's/:serverSlug',
-        children: [
-          {
-            index: true,
-            element: <HomePage />,
-          },
-          settingsRouter,
-          channelsRouter,
-        ],
-      },
       authRouter,
       usersRouter,
+      serversRouter,
     ],
   },
 ]);
