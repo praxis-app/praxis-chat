@@ -59,10 +59,10 @@ export const can =
     }
 
     const serverId =
-      req.params?.serverId ?? req.body?.serverId ?? req.query?.serverId;
+      req.params?.serverId || req.body?.serverId || req.query?.serverId;
 
     const serverAbility = createMongoAbility<MongoAbility<RoleAbilities>>(
-      permissions.servers?.[serverId] ?? [],
+      permissions.servers?.[serverId] || [],
     );
 
     if (!serverAbility.can('manage', subject)) {

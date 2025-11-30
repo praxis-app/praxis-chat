@@ -91,7 +91,7 @@ export const NavSheet = ({ trigger }: Props) => {
               <NavDropdown
                 trigger={
                   <UserAvatar
-                    name={name ?? ''}
+                    name={name || ''}
                     userId={me.id}
                     imageSrc={me.profilePicture?.url}
                     className="size-9"

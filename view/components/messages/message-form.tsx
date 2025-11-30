@@ -162,7 +162,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               profilePicture: meData.user.profilePicture,
             }
           : null,
-        userId: meData?.user?.id ?? null,
+        userId: meData?.user?.id || null,
         botId: null,
         bot: null,
         createdAt: new Date().toISOString(),
@@ -212,7 +212,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
       const newFeedItem: FeedItemRes = {
         ...message,
-        images: imagesWithSrc ?? message.images,
+        images: imagesWithSrc || message.images,
         type: 'message',
       };
 

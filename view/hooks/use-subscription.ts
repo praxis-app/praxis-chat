@@ -10,7 +10,7 @@ export const useSubscription = (
   options?: SubscriptionOptions,
 ) => {
   const isLoggedIn = useAppStore((state) => state.isLoggedIn);
-  const isEnabled = options?.enabled ?? true;
+  const isEnabled = options?.enabled || true;
 
   const getOptions = () => {
     if (!options || !options.onMessage) {

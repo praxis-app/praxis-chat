@@ -9,7 +9,7 @@ export const authenticateOptional = async (
 ) => {
   try {
     const { authorization } = req.headers;
-    const [type, token] = authorization?.split(' ') ?? [];
+    const [type, token] = authorization?.split(' ') || [];
     if (type === 'Bearer' && token) {
       const sub = authService.verifyAccessToken(token);
       const currentUser = await usersService.getCurrentUser(sub);

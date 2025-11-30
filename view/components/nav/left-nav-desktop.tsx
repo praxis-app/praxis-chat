@@ -57,7 +57,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const isServerMenuBtnDisabled =
     !canManageServerSettings && !canManageChannels;
 
-  const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
+  const resolvedServerSlug = serverSlug || me?.currentServer?.slug;
   const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
 
   return (

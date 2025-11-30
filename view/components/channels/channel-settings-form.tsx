@@ -33,7 +33,7 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
     resolver: zodResolver(channelSchema),
     defaultValues: {
       name: editChannel.name,
-      description: editChannel.description ?? '',
+      description: editChannel.description || '',
     },
   });
 
