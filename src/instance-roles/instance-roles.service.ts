@@ -168,6 +168,7 @@ export const createAdminInstanceRole = async (userId: string) => {
     name: ADMIN_ROLE_NAME,
     color: DEFAULT_ROLE_COLOR,
     permissions: [
+      { subject: 'InstanceConfig', action: 'manage' },
       { subject: 'InstanceRole', action: 'manage' },
       { subject: 'Server', action: 'manage' },
       { subject: 'all', action: 'manage' },

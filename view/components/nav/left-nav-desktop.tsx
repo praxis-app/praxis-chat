@@ -50,10 +50,12 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const { serverSlug } = useParams();
   const { signUpPath } = useAuthData();
 
-  const { serverAbility } = useAbility();
+  const { serverAbility, instanceAbility } = useAbility();
   const canManageChannels = serverAbility.can('manage', 'Channel');
-  const canManageSettings = serverAbility.can('manage', 'ServerConfig');
-  const isServerMenuBtnDisabled = !canManageSettings && !canManageChannels;
+  const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
+
+  const isServerMenuBtnDisabled =
+    !canManageServerSettings && !canManageChannels;
 
   const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;
   const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
@@ -100,12 +102,14 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </DropdownMenuItem>
             </Link>
 
-            <Link to={'/'}>
-              <DropdownMenuItem className="text-md">
-                <MdOutlineSettings className="text-foreground size-5" />
-                {t('navigation.labels.instanceSettings')}
-              </DropdownMenuItem>
-            </Link>
+            {instanceAbility.can('manage', 'InstanceConfig') && (
+              <Link to={'/'}>
+                <DropdownMenuItem className="text-md">
+                  <MdOutlineSettings className="text-foreground size-5" />
+                  {t('navigation.labels.instanceSettings')}
+                </DropdownMenuItem>
+              </Link>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 

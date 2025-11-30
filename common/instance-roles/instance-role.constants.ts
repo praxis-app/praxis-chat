@@ -8,6 +8,7 @@ export const INSTANCE_ROLE_ABILITY_ACTIONS = [
 ] as const;
 
 export const INSTANCE_ROLE_ABILITY_SUBJECTS = [
+  'InstanceConfig',
   'InstanceRole',
   'Server',
   'all',
