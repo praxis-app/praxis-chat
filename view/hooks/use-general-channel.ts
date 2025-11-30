@@ -1,7 +1,8 @@
 import { api } from '@/client/api-client';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
+import { GENERAL_CHANNEL_NAME } from '../../common/channels/channel.constants';
 import { useMeQuery } from './use-me-query';
+import { useServerData } from './use-server-data';
 
 interface UseGeneralChannelProps {
   enabled?: boolean;
@@ -10,24 +11,15 @@ interface UseGeneralChannelProps {
 export const useGeneralChannel = ({
   enabled = true,
 }: UseGeneralChannelProps = {}) => {
-  const {
-    data: meData,
-    isSuccess: isMeSuccess,
-    isError: isMeError,
-  } = useMeQuery();
+  const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
+  const { serverId } = useServerData();
 
   const result = useQuery({
-    queryKey: [
-      'channels',
-      GENERAL_CHANNEL_NAME,
-      meData?.user.currentServer?.id,
-    ],
+    queryKey: ['servers', serverId, 'channels', GENERAL_CHANNEL_NAME],
     queryFn: async () => {
       try {
-        let serverId = meData?.user.currentServer?.id;
         if (!serverId) {
-          const { server } = await api.getDefaultServer();
-          serverId = server.id;
+          throw new Error('Server ID is required');
         }
         return api.getGeneralChannel(serverId);
       } catch (error) {
@@ -35,7 +27,7 @@ export const useGeneralChannel = ({
         throw error;
       }
     },
-    enabled: (isMeSuccess || isMeError) && enabled,
+    enabled: (isMeSuccess || isMeError) && !!serverId && enabled,
   });
 
   return result;

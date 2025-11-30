@@ -16,7 +16,7 @@ export const useDeleteInviteMutation = (inviteId: string) => {
       await api.deleteInvite(serverId, inviteId);
 
       queryClient.setQueryData<{ invites: InviteRes[] }>(
-        ['invites'],
+        ['servers', serverId, 'invites'],
         (oldData) => {
           if (!oldData) {
             return { invites: [] };
