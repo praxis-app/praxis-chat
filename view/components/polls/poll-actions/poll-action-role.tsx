@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { SERVER_PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import {

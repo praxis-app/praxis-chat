@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
+import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
 import { useServerData } from '../../hooks/use-server-data';
 import { CreateRoleReq, ServerRoleRes } from '../../types/role.types';
 import { ColorPicker } from '../shared/color-picker';

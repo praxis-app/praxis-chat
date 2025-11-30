@@ -6,7 +6,7 @@ import {
   ServerAbilityAction,
   ServerAbilitySubject,
 } from '@common/server-roles/server-ability';
-import { SERVER_PERMISSION_KEYS } from '../constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '../constants/role.constants';
 import { UserRes } from './user.types';
 
 export type ServerPermissionKeys = (typeof SERVER_PERMISSION_KEYS)[number];

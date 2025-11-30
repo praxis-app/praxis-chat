@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
-import { SERVER_PERMISSION_KEYS } from '../../constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '../../constants/role.constants';
 import {
   ServerPermission,
   ServerPermissionKeys,

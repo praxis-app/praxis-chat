@@ -1,4 +1,4 @@
-import { SERVER_PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { t } from '@/lib/shared.utils';
 import { ServerRoleRes } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';

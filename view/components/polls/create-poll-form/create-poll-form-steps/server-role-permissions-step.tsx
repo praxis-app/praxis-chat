@@ -1,5 +1,5 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
-import { SERVER_PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
