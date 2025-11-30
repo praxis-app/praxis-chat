@@ -16,7 +16,7 @@ export const ServerRoles = () => {
   const { serverId, serverPath } = useServerData();
 
   const { data, isPending, error } = useQuery({
-    queryKey: [serverId, 'server-roles'],
+    queryKey: ['servers', serverId, 'roles'],
     queryFn: () => {
       if (!serverId) {
         throw new Error('Server ID is required');

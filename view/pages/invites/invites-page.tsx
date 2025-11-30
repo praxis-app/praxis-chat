@@ -22,7 +22,7 @@ export const InvitesPage = () => {
   const { serverId, serverPath } = useServerData();
 
   const { data: invitesData } = useQuery({
-    queryKey: [serverId, 'invites'],
+    queryKey: ['servers', serverId, 'invites'],
     queryFn: () => {
       if (!serverId) {
         throw new Error('Server ID is required');

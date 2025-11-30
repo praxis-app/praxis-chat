@@ -11,7 +11,7 @@ export const ChannelPage = () => {
   const navigate = useNavigate();
 
   const { data: channelData } = useQuery({
-    queryKey: ['channels', serverId, channelId],
+    queryKey: ['servers', serverId, 'channels', channelId],
     queryFn: async () => {
       try {
         if (!serverId || !channelId) {

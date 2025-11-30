@@ -63,7 +63,7 @@ export const EditServerRolePage = () => {
     isPending: isServerRolePending,
     error: serverRoleError,
   } = useQuery({
-    queryKey: [serverId, 'server-role', serverRoleId],
+    queryKey: ['servers', serverId, 'roles', serverRoleId],
     queryFn: () => {
       if (!serverRoleId || !serverId) {
         throw new Error('Server ID is required');
@@ -74,7 +74,14 @@ export const EditServerRolePage = () => {
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
-    queryKey: [serverId, 'server-role', serverRoleId, 'members', 'eligible'],
+    queryKey: [
+      'servers',
+      serverId,
+      'roles',
+      serverRoleId,
+      'members',
+      'eligible',
+    ],
     queryFn: () => {
       if (!serverRoleId || !serverId) {
         throw new Error('Server ID is required');
@@ -94,14 +101,17 @@ export const EditServerRolePage = () => {
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
       );
-      queryClient.setQueryData([serverId, 'server-role', serverRoleId], {
-        serverRole: {
-          ...serverRoleData.serverRole,
-          members: serverRoleData.serverRole.members.concat(membersToAdd),
-        },
-      });
       queryClient.setQueryData(
-        [serverId, 'server-role', serverRoleId, 'members', 'eligible'],
+        ['servers', serverId, 'roles', serverRoleId],
+        {
+          serverRole: {
+            ...serverRoleData.serverRole,
+            members: serverRoleData.serverRole.members.concat(membersToAdd),
+          },
+        },
+      );
+      queryClient.setQueryData(
+        ['servers', serverId, 'roles', serverRoleId, 'members', 'eligible'],
         {
           users: eligibleUsersData?.users.filter(
             (user) => !selectedUserIds.includes(user.id),
@@ -125,7 +135,7 @@ export const EditServerRolePage = () => {
       await api.deleteServerRole(serverId, serverRoleId);
 
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['serverRoles'],
+        ['servers', serverId, 'roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };

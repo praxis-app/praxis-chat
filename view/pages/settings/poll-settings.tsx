@@ -16,7 +16,7 @@ export const PollSettings = () => {
   const { serverId, serverPath } = useServerData();
 
   const { data, isPending, error } = useQuery({
-    queryKey: [serverId, 'server-configs'],
+    queryKey: ['servers', serverId, 'configs'],
     queryFn: () => {
       if (!serverId) {
         throw new Error('Server ID is required');

@@ -24,7 +24,7 @@ export const ChannelSettings = () => {
   const navigate = useNavigate();
 
   const { data: channelData } = useQuery({
-    queryKey: ['channels', serverId, channelId],
+    queryKey: ['servers', serverId, 'channels', channelId],
     queryFn: () => {
       if (!serverId || !channelId) {
         throw new Error('Server ID and channel ID are required');
