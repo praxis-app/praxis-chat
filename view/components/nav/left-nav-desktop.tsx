@@ -5,7 +5,12 @@ import { useAppStore } from '@/store/app.store';
 import { CurrentUserRes } from '@/types/user.types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdAddCircle, MdExpandMore, MdSettings } from 'react-icons/md';
+import {
+  MdAddCircle,
+  MdExpandMore,
+  MdOutlineSettings,
+  MdSettings,
+} from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import appIconImg from '../../assets/images/app-icon.png';
@@ -92,6 +97,13 @@ export const LeftNavDesktop = ({ me }: Props) => {
               <DropdownMenuItem className="text-md">
                 <MdSettings className="text-foreground size-5" />
                 {t('navigation.labels.serverSettings')}
+              </DropdownMenuItem>
+            </Link>
+
+            <Link to={'/'}>
+              <DropdownMenuItem className="text-md">
+                <MdOutlineSettings className="text-foreground size-5" />
+                {t('navigation.labels.instanceSettings')}
               </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>

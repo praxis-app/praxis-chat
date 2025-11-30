@@ -468,6 +468,7 @@
     },
     "labels": {
       "serverSettings": "Server settings",
+      "instanceSettings": "Instance settings",
       "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"
