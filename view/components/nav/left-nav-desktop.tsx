@@ -103,7 +103,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
             </Link>
 
             {instanceAbility.can('manage', 'InstanceConfig') && (
-              <Link to={'/'}>
+              <Link to={NavigationPaths.Settings}>
                 <DropdownMenuItem className="text-md">
                   <MdOutlineSettings className="text-foreground size-5" />
                   {t('navigation.labels.instanceSettings')}

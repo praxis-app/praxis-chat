@@ -470,6 +470,7 @@
     "labels": {
       "serverSettings": "Server settings",
       "instanceSettings": "Instance settings",
+      "instanceRoles": "Instance roles",
       "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"

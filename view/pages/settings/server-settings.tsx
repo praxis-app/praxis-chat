@@ -54,7 +54,7 @@ export const ServerSettings = () => {
         <SettingsNavItem
           Icon={MdAdminPanelSettings}
           label={t('navigation.labels.roles')}
-          to={`${serverPath}${NavigationPaths.ServerRoles}`}
+          to={`${serverPath}${NavigationPaths.Roles}`}
         />
       </Container>
     </>

@@ -176,7 +176,7 @@ export const EditServerRolePage = () => {
   };
 
   const handleDeleteBtnClick = async () => {
-    await navigate(`${serverPath}${NavigationPaths.ServerRoles}`);
+    await navigate(`${serverPath}${NavigationPaths.Roles}`);
     deleteServerRole();
   };
 
@@ -204,9 +204,7 @@ export const EditServerRolePage = () => {
     <>
       <TopNav
         header={serverRoleData.serverRole.name}
-        onBackClick={() =>
-          navigate(`${serverPath}${NavigationPaths.ServerRoles}`)
-        }
+        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Roles}`)}
       />
 
       <Container>

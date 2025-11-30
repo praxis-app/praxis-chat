@@ -40,8 +40,8 @@ export const InstanceSettings = () => {
       <Container className="flex flex-col gap-4.5">
         <SettingsNavItem
           Icon={MdAdminPanelSettings}
-          label={t('navigation.labels.roles')}
-          to={NavigationPaths.ServerRoles}
+          label={t('navigation.labels.instanceRoles')}
+          to={NavigationPaths.Roles}
         />
       </Container>
     </>
