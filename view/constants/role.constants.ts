@@ -1,9 +1,9 @@
 export const SERVER_PERMISSION_KEYS = [
   'manageChannels',
-  'manageSettings',
+  'manageServerSettings',
   'createInvites',
   'manageInvites',
-  'manageRoles',
+  'manageServerRoles',
 ] as const;
 
 export const INSTANCE_PERMISSION_KEYS = [

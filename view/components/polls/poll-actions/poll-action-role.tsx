@@ -61,7 +61,7 @@ export const PollActionRole = ({ action }: Props) => {
         });
       }
     }
-    if (name === 'manageSettings') {
+    if (name === 'manageServerSettings') {
       const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
       );
@@ -72,7 +72,7 @@ export const PollActionRole = ({ action }: Props) => {
         });
       }
     }
-    if (name === 'manageRoles') {
+    if (name === 'manageServerRoles') {
       const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'ServerRole' && p.action.includes('manage'),
       );

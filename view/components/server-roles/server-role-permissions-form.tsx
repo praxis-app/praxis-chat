@@ -47,7 +47,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
           if (permission.name === 'manageChannels') {
             result.push({ subject: 'Channel', action: ['manage'] });
           }
-          if (permission.name === 'manageSettings') {
+          if (permission.name === 'manageServerSettings') {
             result.push({ subject: 'ServerConfig', action: ['manage'] });
           }
           if (permission.name === 'createInvites') {
@@ -56,7 +56,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
           if (permission.name === 'manageInvites') {
             result.push({ subject: 'Invite', action: ['manage'] });
           }
-          if (permission.name === 'manageRoles') {
+          if (permission.name === 'manageServerRoles') {
             result.push({ subject: 'ServerRole', action: ['manage'] });
           }
           return result;

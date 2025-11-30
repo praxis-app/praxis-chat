@@ -296,7 +296,7 @@
       "add": "Add",
       "addMembers": "Add members",
       "delete": "Delete role",
-      "manageRoles": "Manage roles",
+      "manageServerRoles": "Manage roles",
       "viewRoles": "View roles"
     },
     "prompts": {
@@ -344,12 +344,11 @@
       "manageInstanceSettings": "Manage instance settings",
       "manageInvites": "Manage invites",
       "managePosts": "Manage posts",
-      "manageQuestionnaires": "Manage questionnaires",
       "manageQuestions": "Manage questions",
-      "manageRoles": "Manage roles",
       "manageRules": "Manage rules",
+      "manageServerRoles": "Manage roles",
+      "manageServerSettings": "Manage settings",
       "manageServers": "Manage servers",
-      "manageSettings": "Manage settings",
       "removeMembers": "Remove members",
       "removeProposals": "Remove proposals"
     },
@@ -363,12 +362,11 @@
       "manageInstanceSettings": "Allows members to make changes to the instance's settings.",
       "manageInvites": "Allows members to create or delete invite links for the server.",
       "managePosts": "Allows members to remove or hide posts by other members.",
-      "manageQuestionnaires": "Allows members vote on, review, and delete questionnaire tickets.",
       "manageQuestions": "Allows members to create, edit, or delete membership questions.",
-      "manageRoles": "Allows members to create new roles as well as edit or delete other roles.",
       "manageRules": "Allows members to create, edit, or delete rules for the server.",
+      "manageServerRoles": "Allows members to create new roles as well as edit or delete other roles.",
+      "manageServerSettings": "Allows members to make changes to the server's settings.",
       "manageServers": "Allows members to create new servers as well as edit or delete other servers.",
-      "manageSettings": "Allows members to make changes to the server's settings.",
       "removeMembers": "Allows members to remove other members from the server.",
       "removeProposals": "Allows members to remove proposals posted by other members."
     },

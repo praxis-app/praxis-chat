@@ -147,7 +147,7 @@ export const CreatePollForm = ({
               ],
             });
             break;
-          case 'manageSettings':
+          case 'manageServerSettings':
             result.push({
               subject: 'ServerConfig',
               actions: [
@@ -158,7 +158,7 @@ export const CreatePollForm = ({
               ],
             });
             break;
-          case 'manageRoles':
+          case 'manageServerRoles':
             result.push({
               subject: 'ServerRole',
               actions: [

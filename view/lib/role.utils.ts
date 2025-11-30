@@ -21,7 +21,7 @@ export const getServerPermissionValues = (permissions: ServerPermission[]) =>
         name,
       };
     }
-    if (name === 'manageSettings') {
+    if (name === 'manageServerSettings') {
       return {
         value: permissions.some(
           (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
@@ -29,7 +29,7 @@ export const getServerPermissionValues = (permissions: ServerPermission[]) =>
         name,
       };
     }
-    if (name === 'manageRoles') {
+    if (name === 'manageServerRoles') {
       return {
         value: permissions.some(
           (p) => p.subject === 'ServerRole' && p.action.includes('manage'),
