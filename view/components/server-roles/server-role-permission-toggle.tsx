@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { getPermissionText } from '../../lib/server-role.utils';
+import { getPermissionText } from '../../lib/role.utils';
 import { ServerPermissionKeys } from '../../types/role.types';
 import { Switch } from '../ui/switch';
 

@@ -1,6 +1,6 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import { ServerPermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import {

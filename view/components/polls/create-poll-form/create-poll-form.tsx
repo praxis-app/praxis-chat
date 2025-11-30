@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
   CreatePollActionServerRoleMemberReq,

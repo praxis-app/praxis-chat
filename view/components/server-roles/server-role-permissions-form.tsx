@@ -1,5 +1,5 @@
 import { useServerData } from '@/hooks/use-server-data';
-import { getPermissionValues } from '@/lib/server-role.utils';
+import { getServerPermissionValues } from '@/lib/role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
 
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {
-      permissions: getPermissionValues(serverRole.permissions),
+      permissions: getServerPermissionValues(serverRole.permissions),
     },
   });
 
@@ -79,7 +79,9 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
           return { serverRole: { ...oldData.serverRole, permissions } };
         },
       );
-      reset({ permissions: getPermissionValues(permissions) });
+      reset({
+        permissions: getServerPermissionValues(permissions),
+      });
     },
   });
 

@@ -1,4 +1,4 @@
-import { getPermissionText } from '@/lib/server-role.utils';
+import { getPermissionText } from '@/lib/role.utils';
 import { ServerPermissionKeys } from '@/types/role.types';
 import { UseFormSetValue } from 'react-hook-form';
 import { Label } from '../../ui/label';

@@ -3,7 +3,7 @@ import { t } from 'i18next';
 import { Namespace, TFunction } from 'react-i18next';
 import { ServerPermission, ServerPermissionKeys } from '../types/role.types';
 
-export const getPermissionValues = (permissions: ServerPermission[]) =>
+export const getServerPermissionValues = (permissions: ServerPermission[]) =>
   SERVER_PERMISSION_KEYS.map((name) => {
     if (name === 'manageChannels') {
       return {
@@ -52,7 +52,7 @@ export const getPermissionValues = (permissions: ServerPermission[]) =>
   });
 
 export const getPermissionValuesMap = (permissions: ServerPermission[]) =>
-  getPermissionValues(permissions).reduce<Record<string, boolean>>(
+  getServerPermissionValues(permissions).reduce<Record<string, boolean>>(
     (result, permission) => {
       result[permission.name] = permission.value;
       return result;

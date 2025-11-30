@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { getPermissionValuesMap } from '@/lib/role.utils';
 import { useServerData } from '@/hooks/use-server-data';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
