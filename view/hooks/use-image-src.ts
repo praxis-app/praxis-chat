@@ -77,7 +77,7 @@ export const useImageSrc = ({
       userId,
     ],
     queryFn: getImageSrc,
-    enabled: enabled && !!imageId && viewed && (!!serverId || !!userId),
+    enabled: !!imageId && viewed && enabled,
   });
 
   return data;
