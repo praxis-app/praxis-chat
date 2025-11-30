@@ -14,8 +14,12 @@ import { useServerData } from '../../hooks/use-server-data';
 
 export const ServerRoles = () => {
   const { serverId, serverPath } = useServerData();
+  const { serverAbility, isLoading: isServerAbilityLoading } = useAbility();
 
-  const { data, isPending, error } = useQuery({
+  const canManageServerRoles = serverAbility.can('manage', 'ServerRole');
+  const serverSettingsPath = `${serverPath}${NavigationPaths.Settings}`;
+
+  const { data: serverRolesData, error: serverRolesError } = useQuery({
     queryKey: ['servers', serverId, 'roles'],
     queryFn: () => {
       if (!serverId) {
@@ -23,16 +27,13 @@ export const ServerRoles = () => {
       }
       return api.getServerRoles(serverId);
     },
-    enabled: !!serverId,
+    enabled: !!serverId && canManageServerRoles,
   });
 
-  const { serverAbility } = useAbility();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const serverSettingsPath = `${serverPath}${NavigationPaths.Settings}`;
-
-  if (!serverAbility.can('manage', 'ServerRole')) {
+  if (!isServerAbilityLoading && !canManageServerRoles) {
     return (
       <PermissionDenied
         topNavProps={{
@@ -43,7 +44,7 @@ export const ServerRoles = () => {
     );
   }
 
-  if (isPending) {
+  if (!serverRolesData) {
     return null;
   }
 
@@ -56,17 +57,17 @@ export const ServerRoles = () => {
       <Container>
         <ServerRoleForm />
 
-        {data && (
+        {serverRolesData && (
           <Card className="py-3">
             <CardContent className="flex flex-col gap-2 px-3">
-              {data.serverRoles.map((role) => (
+              {serverRolesData.serverRoles.map((role) => (
                 <ServerRole key={role.id} serverRole={role} />
               ))}
             </CardContent>
           </Card>
         )}
 
-        {error && <p>{t('errors.somethingWentWrong')}</p>}
+        {serverRolesError && <p>{t('errors.somethingWentWrong')}</p>}
       </Container>
     </>
   );
