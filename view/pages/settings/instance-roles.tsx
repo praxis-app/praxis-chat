@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
-import { InstanceRole } from '@/components/instance-roles/instance-role';
-import { InstanceRoleForm } from '@/components/instance-roles/instance-role-form';
 import { TopNav } from '@/components/nav/top-nav';
+import { InstanceRole } from '@/components/roles/instance-roles/instance-role';
+import { InstanceRoleForm } from '@/components/roles/instance-roles/instance-role-form';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';

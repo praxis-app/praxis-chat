@@ -8,8 +8,8 @@ import {
   InstancePermission,
   InstancePermissionKeys,
   InstanceRoleRes,
-} from '../../types/role.types';
-import { Button } from '../ui/button';
+} from '@/types/role.types';
+import { Button } from '@/components/ui/button';
 import { InstanceRolePermissionToggle } from './instance-role-permission-toggle';
 
 // TODO: Add form schema with zod

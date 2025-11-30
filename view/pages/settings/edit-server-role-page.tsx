@@ -1,7 +1,7 @@
-import { ServerRoleForm } from '@/components/server-roles/server-role-form';
-import { ServerRoleMember } from '@/components/server-roles/server-role-member';
-import { ServerRoleMemberOption } from '@/components/server-roles/server-role-member-option';
-import { ServerRolePermissionsForm } from '@/components/server-roles/server-role-permissions-form';
+import { ServerRoleForm } from '@/components/roles/server-roles/server-role-form';
+import { ServerRoleMember } from '@/components/roles/server-roles/server-role-member';
+import { ServerRoleMemberOption } from '@/components/roles/server-roles/server-role-member-option';
+import { ServerRolePermissionsForm } from '@/components/roles/server-roles/server-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';

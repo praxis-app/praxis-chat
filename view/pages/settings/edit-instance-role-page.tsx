@@ -1,8 +1,8 @@
 import { api } from '@/client/api-client';
-import { InstanceRoleForm } from '@/components/instance-roles/instance-role-form';
-import { InstanceRoleMember } from '@/components/instance-roles/instance-role-member';
-import { InstanceRoleMemberOption } from '@/components/instance-roles/instance-role-member-option';
-import { InstanceRolePermissionsForm } from '@/components/instance-roles/instance-role-permissions-form';
+import { InstanceRoleForm } from '@/components/roles/instance-roles/instance-role-form';
+import { InstanceRoleMember } from '@/components/roles/instance-roles/instance-role-member';
+import { InstanceRoleMemberOption } from '@/components/roles/instance-roles/instance-role-member-option';
+import { InstanceRolePermissionsForm } from '@/components/roles/instance-roles/instance-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';

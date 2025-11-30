@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
-import { ServerRole } from '@/components/server-roles/server-role';
-import { ServerRoleForm } from '@/components/server-roles/server-role-form';
+import { ServerRole } from '@/components/roles/server-roles/server-role';
+import { ServerRoleForm } from '@/components/roles/server-roles/server-role-form';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';

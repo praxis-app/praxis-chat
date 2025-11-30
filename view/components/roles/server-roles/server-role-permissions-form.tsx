@@ -1,16 +1,16 @@
+import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
+import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { getServerPermissionValues } from '@/lib/role.utils';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { api } from '../../client/api-client';
-import { SERVER_PERMISSION_KEYS } from '../../constants/role.constants';
 import {
   ServerPermission,
   ServerPermissionKeys,
   ServerRoleRes,
-} from '../../types/role.types';
-import { Button } from '../ui/button';
+} from '@/types/role.types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { ServerRolePermissionToggle } from './server-role-permission-toggle';
 
 // TODO: Add form schema with zod

@@ -1,12 +1,12 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { NavigationPaths } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { cn } from '@/lib/shared.utils';
 import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { NavigationPaths } from '../../constants/shared.constants';
-import { useServerData } from '../../hooks/use-server-data';
-import { ServerRoleRes } from '../../types/role.types';
+import { useServerData } from '@/hooks/use-server-data';
+import { ServerRoleRes } from '@/types/role.types';
 
 interface Props {
   serverRole: ServerRoleRes;

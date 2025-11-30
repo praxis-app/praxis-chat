@@ -1,3 +1,5 @@
+import { api } from '@/client/api-client';
+import { ROLE_COLOR_OPTIONS } from '@/constants/role.constants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,23 +8,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../client/api-client';
-import { ROLE_COLOR_OPTIONS } from '../../constants/role.constants';
-import { useServerData } from '../../hooks/use-server-data';
-import { CreateRoleReq, ServerRoleRes } from '../../types/role.types';
-import { ColorPicker } from '../shared/color-picker';
+import { ColorPicker } from '@/components/shared/color-picker';
+import { CreateRoleReq, InstanceRoleRes } from '@/types/role.types';
 
 interface Props {
-  editRole?: ServerRoleRes;
+  editRole?: InstanceRoleRes;
 }
 
-export const ServerRoleForm = ({ editRole }: Props) => {
+export const InstanceRoleForm = ({ editRole }: Props) => {
   const [colorPickerKey, setColorPickerKey] = useState(0);
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-
-  const { serverId } = useServerData();
 
   const { handleSubmit, register, setValue, watch, reset, formState } =
     useForm<CreateRoleReq>({
@@ -33,70 +30,67 @@ export const ServerRoleForm = ({ editRole }: Props) => {
       mode: 'onChange',
     });
 
-  const { mutate: createServerRole, isPending: isCreatePending } = useMutation({
-    mutationFn: async (data: CreateRoleReq) => {
-      if (!serverId) {
-        throw new Error('Server ID is required');
-      }
-      const { serverRole } = await api.createServerRole(serverId, data);
+  const { mutate: createInstanceRole, isPending: isCreatePending } =
+    useMutation({
+      mutationFn: async (data: CreateRoleReq) => {
+        const { instanceRole } = await api.createInstanceRole(data);
 
-      queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['servers', serverId, 'roles'],
-        (oldData) => {
-          if (!oldData) {
-            return { serverRoles: [] };
-          }
-          return { serverRoles: [serverRole, ...oldData.serverRoles] };
-        },
-      );
-    },
-    onSuccess: () => {
-      setColorPickerKey(Date.now());
-      reset();
-    },
-  });
+        queryClient.setQueryData<{ instanceRoles: InstanceRoleRes[] }>(
+          ['instance-roles'],
+          (oldData) => {
+            if (!oldData) {
+              return { instanceRoles: [] };
+            }
+            return { instanceRoles: [instanceRole, ...oldData.instanceRoles] };
+          },
+        );
+      },
+      onSuccess: () => {
+        setColorPickerKey(Date.now());
+        reset();
+      },
+    });
 
-  const { mutate: updateServerRole, isPending: isUpdatePending } = useMutation({
-    mutationFn: async (data: CreateRoleReq) => {
-      if (!editRole || !serverId) {
-        return;
-      }
-      await api.updateServerRole(serverId, editRole.id, data);
+  const { mutate: updateInstanceRole, isPending: isUpdatePending } =
+    useMutation({
+      mutationFn: async (data: CreateRoleReq) => {
+        if (!editRole) {
+          return;
+        }
+        await api.updateInstanceRole(editRole.id, data);
 
-      const serverRole = { ...editRole, ...data };
-      queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
-        ['servers', serverId, 'roles', editRole.id],
-        {
-          serverRole,
-        },
-      );
-      queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['servers', serverId, 'roles'],
-        (oldData) => {
-          if (!oldData) {
-            return { serverRoles: [] };
-          }
-          return {
-            serverRoles: oldData.serverRoles.map((r) =>
-              r.id === serverRole.id ? serverRole : r,
-            ),
-          };
-        },
-      );
+        const instanceRole = { ...editRole, ...data };
+        queryClient.setQueryData<{ instanceRole: InstanceRoleRes }>(
+          ['instance-roles', editRole.id],
+          { instanceRole },
+        );
+        queryClient.setQueryData<{ instanceRoles: InstanceRoleRes[] }>(
+          ['instance-roles'],
+          (oldData) => {
+            if (!oldData) {
+              return { instanceRoles: [] };
+            }
+            return {
+              instanceRoles: oldData.instanceRoles.map((r) =>
+                r.id === instanceRole.id ? instanceRole : r,
+              ),
+            };
+          },
+        );
 
-      return serverRole;
-    },
-    onSuccess: (data) => {
-      setColorPickerKey(Date.now());
-      reset(data);
-    },
-  });
+        return instanceRole;
+      },
+      onSuccess: (data) => {
+        setColorPickerKey(Date.now());
+        reset(data);
+      },
+    });
 
   const handleSubmitForm = (data: CreateRoleReq) => {
     if (editRole) {
-      updateServerRole(data);
+      updateInstanceRole(data);
     } else {
-      createServerRole(data);
+      createInstanceRole(data);
     }
   };
 

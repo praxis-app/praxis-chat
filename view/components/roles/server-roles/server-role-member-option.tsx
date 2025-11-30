@@ -1,8 +1,8 @@
 import { cn } from '@/lib/shared.utils';
-import { truncate } from '../../lib/text.utils';
-import { UserRes } from '../../types/user.types';
-import { Checkbox } from '../ui/checkbox';
-import { UserAvatar } from '../users/user-avatar';
+import { Checkbox } from '@/components/ui/checkbox';
+import { UserAvatar } from '@/components/users/user-avatar';
+import { truncate } from '@/lib/text.utils';
+import { UserRes } from '@/types/user.types';
 
 interface Props {
   selectedUserIds: string[];

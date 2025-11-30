@@ -1,13 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { LuX } from 'react-icons/lu';
-import { api } from '../../client/api-client';
-import { useServerData } from '../../hooks/use-server-data';
-import { truncate } from '../../lib/text.utils';
-import { ServerRoleRes } from '../../types/role.types';
-import { UserRes } from '../../types/user.types';
-import { Button } from '../ui/button';
+import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -15,73 +7,83 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { UserAvatar } from '../users/user-avatar';
+} from '@/components/ui/dialog';
+import { UserAvatar } from '@/components/users/user-avatar';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LuX } from 'react-icons/lu';
+import { truncate } from '@/lib/text.utils';
+import { InstanceRoleRes } from '@/types/role.types';
+import { UserRes } from '@/types/user.types';
 
 interface Props {
-  serverRoleId: string;
-  serverRoleMember: UserRes;
+  instanceRoleId: string;
+  instanceRoleMember: UserRes;
 }
 
-export const ServerRoleMember = ({ serverRoleId, serverRoleMember }: Props) => {
+export const InstanceRoleMember = ({
+  instanceRoleId,
+  instanceRoleMember,
+}: Props) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerData();
-
   const { mutate: removeMember, isPending } = useMutation({
     async mutationFn() {
-      if (!serverId) {
-        throw new Error('Server ID is required');
-      }
-      await api.removeServerRoleMember(
-        serverId,
-        serverRoleId,
-        serverRoleMember.id,
-      );
+      await api.removeInstanceRoleMember(instanceRoleId, instanceRoleMember.id);
       setIsConfirmModalOpen(false);
 
       queryClient.setQueryData(
-        ['servers', serverId, 'roles', serverRoleId],
-        (data: { serverRole: ServerRoleRes }) => {
-          const filteredMembers = data.serverRole.members.filter(
-            (member) => member.id !== serverRoleMember.id,
+        ['instance-roles', instanceRoleId],
+        (data: { instanceRole: InstanceRoleRes }) => {
+          const filteredMembers = data.instanceRole.members.filter(
+            (member) => member.id !== instanceRoleMember.id,
           );
           return {
-            serverRole: { ...data.serverRole, members: filteredMembers },
+            instanceRole: {
+              ...data.instanceRole,
+              members: filteredMembers,
+              memberCount: Math.max(0, data.instanceRole.memberCount - 1),
+            },
           };
         },
       );
       queryClient.setQueryData(
-        ['servers', serverId, 'roles'],
-        (data: { serverRoles: ServerRoleRes[] }) => ({
-          serverRoles: data.serverRoles.map((role) => ({
-            ...role,
-            memberCount: Math.max(0, role.memberCount - 1),
-          })),
+        ['instance-roles'],
+        (data: { instanceRoles: InstanceRoleRes[] }) => ({
+          instanceRoles: data.instanceRoles.map((role) => {
+            if (role.id !== instanceRoleId) {
+              return role;
+            }
+            return {
+              ...role,
+              memberCount: Math.max(0, role.memberCount - 1),
+            };
+          }),
         }),
       );
       queryClient.setQueryData(
-        ['servers', serverId, 'roles', serverRoleId, 'members', 'eligible'],
+        ['instance-roles', instanceRoleId, 'members', 'eligible'],
         (data: { users: UserRes[] }) => {
-          return { users: [serverRoleMember, ...data.users] };
+          return { users: [instanceRoleMember, ...data.users] };
         },
       );
     },
   });
 
-  const name = serverRoleMember.displayName || serverRoleMember.name;
+  const name = instanceRoleMember.displayName || instanceRoleMember.name;
   const truncatedName = truncate(name, 18);
 
   return (
     <div className="mb-4 flex items-center justify-between last:mb-0">
       <div className="flex items-center">
         <UserAvatar
-          userId={serverRoleMember.id}
+          userId={instanceRoleMember.id}
           name={name}
-          imageId={serverRoleMember.profilePicture?.id}
+          imageId={instanceRoleMember.profilePicture?.id}
           className="mr-4"
         />
         <span className="max-w-48 truncate">{truncatedName}</span>

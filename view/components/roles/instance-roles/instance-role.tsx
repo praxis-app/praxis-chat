@@ -5,7 +5,7 @@ import { cn } from '@/lib/shared.utils';
 import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { InstanceRoleRes } from '../../types/role.types';
+import { InstanceRoleRes } from '@/types/role.types';
 
 interface Props {
   instanceRole: InstanceRoleRes;
