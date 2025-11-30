@@ -4,7 +4,9 @@ import { can } from '../common/roles/can.middleware';
 import { validateServerConfig } from './middleware/validate-server-config.middleware';
 import * as serverConfigsController from './server-configs.controller';
 
-export const serverConfigsRouter = express.Router();
+export const serverConfigsRouter = express.Router({
+  mergeParams: true,
+});
 
 serverConfigsRouter
   .use(authenticate)

@@ -12,7 +12,9 @@ export const invitesRouter = express.Router();
 
 invitesRouter.get('/:token', getInvite);
 
-export const serverInvitesRouter = express.Router();
+export const serverInvitesRouter = express.Router({
+  mergeParams: true,
+});
 
 serverInvitesRouter
   .use(authenticate)

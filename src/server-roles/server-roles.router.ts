@@ -11,7 +11,9 @@ import {
   updateServerRole,
 } from './server-roles.controller';
 
-export const serverRolesRouter = express.Router();
+export const serverRolesRouter = express.Router({
+  mergeParams: true,
+});
 
 serverRolesRouter.use(authenticate);
 

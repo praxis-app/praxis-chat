@@ -21,7 +21,9 @@ import {
 import { isChannelMember } from './middleware/is-channel-member.middleware';
 import { validateChannel } from './middleware/validate-channel.middleware';
 
-export const channelsRouter = express.Router();
+export const channelsRouter = express.Router({
+  mergeParams: true,
+});
 
 // Public routes
 channelsRouter
