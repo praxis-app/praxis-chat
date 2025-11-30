@@ -304,6 +304,7 @@
     },
     "headers": {
       "serverRoles": "Roles",
+      "instanceRoles": "Instance Roles",
       "viewServerRoles": "Roles Overview"
     },
     "descriptions": {
@@ -470,7 +471,7 @@
     "labels": {
       "serverSettings": "Server settings",
       "instanceSettings": "Instance settings",
-      "instanceRoles": "Instance roles",
+      "instanceRoles": "Instance Roles",
       "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"
