@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { useParams } from 'react-router-dom';
 import { api } from '../client/api-client';
 import { NavigationPaths } from '../constants/shared.constants';
+import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 
 export const useServerData = () => {
+  const { isLoggedIn } = useAppStore();
   const { serverSlug } = useParams();
 
   const {
@@ -14,27 +17,37 @@ export const useServerData = () => {
     isLoading: isMeLoading,
   } = useMeQuery({ enabled: !serverSlug });
 
-  const { data: serverBySlugData, isLoading: isServerBySlugLoading } = useQuery(
-    {
-      queryKey: ['servers', serverSlug],
-      queryFn: () => {
-        if (!serverSlug) {
-          throw new Error('Server slug is missing in URL');
-        }
-        return api.getServerBySlug(serverSlug);
-      },
-      enabled: !!serverSlug,
+  const {
+    data: serverBySlugData,
+    isLoading: isServerBySlugLoading,
+    error: serverBySlugError,
+  } = useQuery({
+    queryKey: ['servers', serverSlug],
+    queryFn: () => {
+      if (!serverSlug) {
+        throw new Error('Server slug is missing in URL');
+      }
+      return api.getServerBySlug(serverSlug);
     },
-  );
+    enabled: !!serverSlug && isLoggedIn,
+  });
 
   const isDefaultServerQueryEnabled = () => {
-    if (serverSlug) {
-      return false;
+    if (!serverSlug) {
+      if (isMeError) {
+        return true;
+      }
+      return isMeSuccess && !meData?.user.currentServer?.id;
     }
-    if (isMeError) {
+
+    if (!isLoggedIn) {
       return true;
     }
-    return isMeSuccess && !meData?.user.currentServer?.id;
+
+    return (
+      isAxiosError(serverBySlugError) &&
+      serverBySlugError.response?.status === 401
+    );
   };
 
   const { data: defaultServerData, isLoading: isDefaultServerLoading } =

@@ -1,3 +1,5 @@
+// TODO: Prevent excessive calls to `/api/users/me` when the user is not logged in
+
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { api } from '../client/api-client';

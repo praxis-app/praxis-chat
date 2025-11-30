@@ -55,7 +55,7 @@ export const EditServerRolePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { serverAbility } = useAbility();
+  const { serverAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServerRoles = serverAbility.can('manage', 'ServerRole');
 
   const {
@@ -180,6 +180,10 @@ export const EditServerRolePage = () => {
     deleteServerRole();
   };
 
+  if (isAbilityLoading || isServerRolePending || isDeletePending) {
+    return null;
+  }
+
   if (!canManageServerRoles) {
     return (
       <PermissionDenied
@@ -192,11 +196,7 @@ export const EditServerRolePage = () => {
     );
   }
 
-  if (isServerRolePending) {
-    return null;
-  }
-
-  if (!serverRoleData || serverRoleError || eligibleUsersError) {
+  if (serverRoleError || eligibleUsersError) {
     return <p>{t('errors.somethingWentWrong')}</p>;
   }
 

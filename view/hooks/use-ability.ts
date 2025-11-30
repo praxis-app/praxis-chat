@@ -7,9 +7,9 @@ import { useServerData } from './use-server-data';
 
 export const useAbility = () => {
   const { isLoggedIn } = useAppStore();
-  const { serverId } = useServerData();
+  const { serverId, isLoading: isServerDataLoading } = useServerData();
 
-  const { data: meData } = useMeQuery({
+  const { data: meData, isLoading: isMeLoading } = useMeQuery({
     enabled: isLoggedIn,
   });
 
@@ -28,5 +28,6 @@ export const useAbility = () => {
   return {
     serverAbility: getServerAbility(),
     instanceAbility: getInstanceAbility(),
+    isLoading: isMeLoading || isServerDataLoading,
   };
 };
