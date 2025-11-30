@@ -44,7 +44,7 @@ export const ServerRoleForm = ({ editRole }: Props) => {
       const { serverRole } = await api.createServerRole(serverId, data);
 
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        [serverId, 'server-roles'],
+        ['servers', serverId, 'roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };
@@ -68,13 +68,13 @@ export const ServerRoleForm = ({ editRole }: Props) => {
 
       const serverRole = { ...editRole, ...data };
       queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
-        [serverId, 'server-role', editRole.id],
+        ['servers', serverId, 'roles', editRole.id],
         {
           serverRole,
         },
       );
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        [serverId, 'server-roles'],
+        ['servers', serverId, 'roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };

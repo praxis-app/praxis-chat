@@ -32,7 +32,7 @@ export const ServerRoleSelectionStep = () => {
   const { t } = useTranslation();
 
   const { data: serverRolesData, isLoading } = useQuery({
-    queryKey: ['serverRoles', serverId],
+    queryKey: ['servers', serverId, 'roles'],
     queryFn: () => {
       if (!serverId) {
         throw new Error('Server ID is required');

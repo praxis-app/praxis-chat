@@ -58,7 +58,7 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
       },
       onSuccess: (data) => {
         queryClient.setQueryData<{ serverConfig: ServerConfigRes }>(
-          ['server-configs'],
+          ['servers', serverId, 'configs'],
           (oldData) => {
             if (!oldData) {
               throw new Error('Server config not found');

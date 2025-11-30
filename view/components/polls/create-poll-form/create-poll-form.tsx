@@ -67,7 +67,7 @@ export const CreatePollForm = ({
     actionType === 'change-role' || actionType === 'create-role';
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: [serverId, 'server-role', selectedServerRoleId],
+    queryKey: ['servers', serverId, 'roles', selectedServerRoleId],
     queryFn: () => {
       if (!serverId || !selectedServerRoleId) {
         throw new Error('Server ID and server role ID are required');
@@ -82,8 +82,9 @@ export const CreatePollForm = ({
   const { data: eligibleUsersData, isLoading: isEligibleUsersLoading } =
     useQuery({
       queryKey: [
+        'servers',
         serverId,
-        'server-role',
+        'roles',
         selectedServerRoleId,
         'members',
         'eligible',
@@ -234,13 +235,13 @@ export const CreatePollForm = ({
         ? GENERAL_CHANNEL_NAME
         : channelId;
 
-      if (!resolvedChannelId) {
+      if (!resolvedChannelId || !serverId) {
         return;
       }
 
       // Optimistically insert new poll at top of feed (no refetch)
       queryClient.setQueryData<FeedQuery>(
-        ['feed', resolvedChannelId],
+        ['servers', serverId, 'channels', resolvedChannelId, 'feed'],
         (old) => {
           const newItem: FeedItemRes = {
             ...poll,

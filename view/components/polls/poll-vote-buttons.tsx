@@ -66,11 +66,14 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       };
     },
     onSuccess: (result) => {
-      const applyUpdate = (cacheKey: [string, string]) => {
+      const applyUpdate = (channelId: string) => {
+        if (!serverId) {
+          throw new Error('Server ID is required');
+        }
         queryClient.setQueryData<{
           pages: { feed: FeedItemRes[] }[];
           pageParams: number[];
-        }>(cacheKey, (oldData) => {
+        }>(['servers', serverId, 'channels', channelId, 'feed'], (oldData) => {
           if (!oldData) {
             return oldData;
           }
@@ -122,10 +125,11 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
         });
       };
 
+      // TODO: Check if `applyUpdate` is actually needed or if this can all just be inline
       if (channel.name === GENERAL_CHANNEL_NAME) {
-        applyUpdate(['feed', GENERAL_CHANNEL_NAME]);
+        applyUpdate(GENERAL_CHANNEL_NAME);
       }
-      applyUpdate(['feed', channel.id]);
+      applyUpdate(channel.id);
 
       if (result.isRatifyingVote) {
         toast(t('polls.prompts.ratifiedSuccess'));

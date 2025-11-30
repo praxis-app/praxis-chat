@@ -31,7 +31,12 @@ export const PollActionRole = ({ action }: Props) => {
   const { serverId } = useServerData();
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: [serverId, 'server-role', action.serverRole?.serverRoleId],
+    queryKey: [
+      'servers',
+      serverId,
+      'roles',
+      action.serverRole?.serverRoleId,
+    ],
     queryFn: () => {
       if (!action.serverRole?.serverRoleId || !serverId) {
         throw new Error('Server role ID is required');

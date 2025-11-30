@@ -71,7 +71,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
       });
 
       queryClient.setQueryData<{ serverRole: ServerRoleRes }>(
-        [serverId, 'server-role', serverRole.id],
+        ['servers', serverId, 'roles', serverRole.id],
         (oldData) => {
           if (!oldData) {
             return { serverRole };
