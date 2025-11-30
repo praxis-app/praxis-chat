@@ -6,6 +6,7 @@ import { t } from 'i18next';
 import { Namespace, TFunction } from 'react-i18next';
 import {
   InstancePermission,
+  InstancePermissionKeys,
   ServerPermission,
   ServerPermissionKeys,
 } from '../types/role.types';
@@ -112,8 +113,9 @@ export const getInstancePermissionValuesMap = (
     {},
   );
 
-// TODO: Update to support instance permissions
-export const getPermissionText = (name: ServerPermissionKeys) => {
+export const getPermissionText = (
+  name: ServerPermissionKeys | InstancePermissionKeys,
+) => {
   const _t: TFunction<Namespace<'translation'>, undefined> = t;
   return {
     displayName: _t(`permissions.names.${name}`),
