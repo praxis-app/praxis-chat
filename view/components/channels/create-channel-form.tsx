@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, CreateChannelReq } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as zod from 'zod';
-import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '../../lib/error.utils';
 import { Button } from '../ui/button';
 import {
@@ -60,7 +60,7 @@ export const CreateChannelForm = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
 
   const form = useForm<zod.infer<typeof createChannelFormSchema>>({
     resolver: zodResolver(createChannelFormSchema),
@@ -89,7 +89,7 @@ export const CreateChannelForm = ({
 
       onSubmit?.();
 
-      navigate(`${NavigationPaths.Channels}/${channel.id}`);
+      navigate(`${serverPath}${NavigationPaths.Channels}/${channel.id}`);
     },
     onError(error: Error) {
       handleError(error);

@@ -5,6 +5,7 @@ import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdAddCircle, MdSettings } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useServerData } from '../../hooks/use-server-data';
 import {
   CreateChannelForm,
   CreateChannelFormSubmitButton,
@@ -39,6 +40,8 @@ export const NavDrawer = ({ trigger }: Props) => {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { serverPath } = useServerData();
 
   return (
     <Drawer open={showNavDrawer} onOpenChange={setShowNavDrawer}>
@@ -95,7 +98,7 @@ export const NavDrawer = ({ trigger }: Props) => {
             variant="ghost"
             className="text-md flex items-center gap-6 font-normal"
             onClick={() => {
-              navigate(NavigationPaths.Settings);
+              navigate(`${serverPath}${NavigationPaths.Settings}`);
               setIsNavSheetOpen(false);
             }}
           >

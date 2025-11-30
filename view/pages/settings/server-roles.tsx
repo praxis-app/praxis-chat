@@ -30,12 +30,14 @@ export const ServerRoles = () => {
   const navigate = useNavigate();
   const ability = useAbility();
 
+  const serverSettingsPath = `${serverPath}${NavigationPaths.Settings}`;
+
   if (!ability.can('manage', 'ServerRole')) {
     return (
       <PermissionDenied
         topNavProps={{
           header: t('roles.headers.serverRoles'),
-          onBackClick: () => navigate(NavigationPaths.Settings),
+          onBackClick: () => navigate(serverSettingsPath),
         }}
       />
     );
@@ -49,7 +51,7 @@ export const ServerRoles = () => {
     <>
       <TopNav
         header={t('navigation.labels.roles')}
-        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Settings}`)}
+        onBackClick={() => navigate(serverSettingsPath)}
       />
       <Container>
         <ServerRoleForm />
