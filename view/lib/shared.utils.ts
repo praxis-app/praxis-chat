@@ -86,14 +86,3 @@ export const cn = (...inputs: ClassValue[]) => {
  * Ref: https://github.com/praxis-app/praxis-matrix-client/pull/7#pullrequestreview-3022541526
  */
 export const t: TFunction<Namespace<'translation'>, undefined> = translate;
-
-/** Generates a random string of a given length. */
-export const getRandomString = (length: number) => {
-  let result = '';
-  const chars =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-};
