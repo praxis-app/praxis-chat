@@ -21,12 +21,11 @@ export const ServerSettings = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
-  const { serverSlug } = useServerData();
-  const serverPath = `/s/${serverSlug}`;
+  const { serverPath } = useServerData();
 
   const handleBackClick = () => {
     if (isDesktop) {
-      navigate(NavigationPaths.Home);
+      navigate(serverPath);
       return;
     }
     setIsNavSheetOpen(true);

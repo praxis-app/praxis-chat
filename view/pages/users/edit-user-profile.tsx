@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { api } from '../../client/api-client';
+import { useServerData } from '../../hooks/use-server-data';
 
 export const EditUserProfile = () => {
   const { setIsNavSheetOpen } = useAppStore();
@@ -17,6 +18,8 @@ export const EditUserProfile = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+
+  const { serverPath } = useServerData();
 
   const { data: meData } = useMeQuery();
   const userId = meData?.user?.id || '';
@@ -29,7 +32,7 @@ export const EditUserProfile = () => {
 
   const handleBackClick = () => {
     if (isDesktop) {
-      navigate(NavigationPaths.Home);
+      navigate(serverPath);
       return;
     }
     setIsNavSheetOpen(true);

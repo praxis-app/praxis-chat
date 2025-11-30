@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../client/api-client';
+import { NavigationPaths } from '../constants/shared.constants';
 import { useMeQuery } from './use-me-query';
 
 export const useServerData = () => {
@@ -48,11 +49,15 @@ export const useServerData = () => {
     meData?.user.currentServer?.id ||
     defaultServerData?.server.id;
 
-  const resolvedServerSlug = serverSlug ?? meData?.user.currentServer?.slug;
+  const resolvedServerSlug = serverSlug || meData?.user.currentServer?.slug;
+  const resolvedServerPath = resolvedServerSlug
+    ? `/s/${resolvedServerSlug}`
+    : NavigationPaths.Home;
 
   return {
     serverId,
     serverSlug: resolvedServerSlug,
+    serverPath: resolvedServerPath,
     isLoading: isMeLoading || isDefaultServerLoading || isServerBySlugLoading,
   };
 };

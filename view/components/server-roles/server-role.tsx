@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { NavigationPaths } from '../../constants/shared.constants';
+import { useServerData } from '../../hooks/use-server-data';
 import { ServerRoleRes } from '../../types/server-role.types';
 
 interface Props {
@@ -17,7 +18,8 @@ export const ServerRole = ({
   const { t } = useTranslation();
   const isAboveMd = useIsDesktop();
 
-  const editRolePath = `${NavigationPaths.ServerRoles}/${id}/edit`;
+  const { serverPath } = useServerData();
+  const editRolePath = `${serverPath}${NavigationPaths.ServerRoles}/${id}/edit`;
 
   return (
     <Link to={editRolePath}>

@@ -19,7 +19,7 @@ export const InvitesPage = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
 
   const { data: invitesData } = useQuery({
     queryKey: [serverId, 'invites'],
@@ -40,7 +40,7 @@ export const InvitesPage = () => {
     <>
       <TopNav
         header={t('navigation.labels.invites')}
-        onBackClick={() => navigate(NavigationPaths.Settings)}
+        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Settings}`)}
         bypassNavSheet={!isDesktop}
       />
 

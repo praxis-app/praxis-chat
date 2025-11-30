@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useServerData } from '../../hooks/use-server-data';
 
 export const ServerRoles = () => {
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
 
   const { data, isPending, error } = useQuery({
     queryKey: [serverId, 'server-roles'],
@@ -49,7 +49,7 @@ export const ServerRoles = () => {
     <>
       <TopNav
         header={t('navigation.labels.roles')}
-        onBackClick={() => navigate(NavigationPaths.Settings)}
+        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Settings}`)}
       />
       <Container>
         <ServerRoleForm />

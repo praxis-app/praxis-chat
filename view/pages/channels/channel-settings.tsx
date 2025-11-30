@@ -18,7 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelSettings = () => {
   const { channelId } = useParams();
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ export const ChannelSettings = () => {
   });
 
   const goBack = () => {
-    navigate(`${NavigationPaths.Channels}/${channelId}`);
+    navigate(`${serverPath}${NavigationPaths.Channels}/${channelId}`);
   };
 
   if (!channelData?.channel) {

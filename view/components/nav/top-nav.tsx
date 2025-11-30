@@ -1,8 +1,4 @@
-import {
-  BrowserEvents,
-  KeyCodes,
-  NavigationPaths,
-} from '@/constants/shared.constants';
+import { BrowserEvents, KeyCodes } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useAppStore } from '@/store/app.store';
 import { ReactNode, useCallback, useEffect } from 'react';
@@ -11,6 +7,7 @@ import { LuArrowLeft } from 'react-icons/lu';
 import { MdSearch } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useServerData } from '../../hooks/use-server-data';
 import { Button } from '../ui/button';
 import { NavSheet } from './nav-sheet';
 
@@ -35,6 +32,8 @@ export const TopNav = ({
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
+  const { serverPath } = useServerData();
+
   const handleBackClick = useCallback(
     (isEscapeKey = false) => {
       if (onBackClick) {
@@ -42,7 +41,7 @@ export const TopNav = ({
         return;
       }
       if (isDesktop) {
-        navigate(NavigationPaths.Home);
+        navigate(serverPath);
         return;
       }
       if (isEscapeKey) {

@@ -49,7 +49,7 @@ export const EditServerRolePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
 
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
   const { serverRoleId } = useParams<{ serverRoleId: string }>();
 
   const { t } = useTranslation();
@@ -169,7 +169,7 @@ export const EditServerRolePage = () => {
   };
 
   const handleDeleteBtnClick = async () => {
-    await navigate(NavigationPaths.ServerRoles);
+    await navigate(`${serverPath}${NavigationPaths.ServerRoles}`);
     deleteServerRole();
   };
 
@@ -178,7 +178,8 @@ export const EditServerRolePage = () => {
       <PermissionDenied
         topNavProps={{
           header: t('roles.headers.serverRoles'),
-          onBackClick: () => navigate(NavigationPaths.Settings),
+          onBackClick: () =>
+            navigate(`${serverPath}${NavigationPaths.Settings}`),
         }}
       />
     );
@@ -196,7 +197,9 @@ export const EditServerRolePage = () => {
     <>
       <TopNav
         header={serverRoleData.serverRole.name}
-        onBackClick={() => navigate(NavigationPaths.ServerRoles)}
+        onBackClick={() =>
+          navigate(`${serverPath}${NavigationPaths.ServerRoles}`)
+        }
       />
 
       <Container>
