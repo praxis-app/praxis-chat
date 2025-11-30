@@ -49,7 +49,7 @@ export const TopNav = ({
       }
       setIsNavSheetOpen(true);
     },
-    [isDesktop, navigate, onBackClick, setIsNavSheetOpen],
+    [isDesktop, navigate, onBackClick, serverPath, setIsNavSheetOpen],
   );
 
   // Handle escape key to go back or open nav sheet

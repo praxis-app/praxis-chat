@@ -49,7 +49,11 @@ export const useServerData = () => {
     meData?.user.currentServer?.id ||
     defaultServerData?.server.id;
 
-  const resolvedServerSlug = serverSlug || meData?.user.currentServer?.slug;
+  const resolvedServerSlug =
+    serverSlug ||
+    meData?.user.currentServer?.slug ||
+    defaultServerData?.server.slug;
+
   const resolvedServerPath = resolvedServerSlug
     ? `/s/${resolvedServerSlug}`
     : NavigationPaths.Home;

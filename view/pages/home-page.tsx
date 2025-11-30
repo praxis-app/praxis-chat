@@ -15,7 +15,7 @@ export const HomePage = () => {
     throw new Error(channelError.message);
   }
 
-  if (pathname === NavigationPaths.Home) {
+  if (pathname === NavigationPaths.Home && serverPath !== NavigationPaths.Home) {
     return <Navigate to={serverPath} />;
   }
 
