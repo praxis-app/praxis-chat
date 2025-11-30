@@ -1,7 +1,7 @@
-import { ServerRolePermissionsForm } from '@/components/server-roles/server-role-permissions-form';
 import { ServerRoleForm } from '@/components/server-roles/server-role-form';
 import { ServerRoleMember } from '@/components/server-roles/server-role-member';
 import { ServerRoleMemberOption } from '@/components/server-roles/server-role-member-option';
+import { ServerRolePermissionsForm } from '@/components/server-roles/server-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
@@ -31,9 +31,9 @@ import {
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
-import { handleError } from '../../lib/error.utils';
-import { ServerRoleRes } from '../../types/server-role.types';
 import { useServerData } from '../../hooks/use-server-data';
+import { handleError } from '../../lib/error.utils';
+import { ServerRoleRes } from '../../types/role.types';
 
 enum EditServerRoleTabName {
   Permissions = 'permissions',
@@ -55,8 +55,8 @@ export const EditServerRolePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const ability = useAbility();
-  const canManageServerRoles = ability.can('manage', 'ServerRole');
+  const { serverAbility } = useAbility();
+  const canManageServerRoles = serverAbility.can('manage', 'ServerRole');
 
   const {
     data: serverRoleData,
@@ -101,15 +101,12 @@ export const EditServerRolePage = () => {
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
       );
-      queryClient.setQueryData(
-        ['servers', serverId, 'roles', serverRoleId],
-        {
-          serverRole: {
-            ...serverRoleData.serverRole,
-            members: serverRoleData.serverRole.members.concat(membersToAdd),
-          },
+      queryClient.setQueryData(['servers', serverId, 'roles', serverRoleId], {
+        serverRole: {
+          ...serverRoleData.serverRole,
+          members: serverRoleData.serverRole.members.concat(membersToAdd),
         },
-      );
+      });
       queryClient.setQueryData(
         ['servers', serverId, 'roles', serverRoleId, 'members', 'eligible'],
         {

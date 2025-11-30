@@ -25,7 +25,7 @@ import {
   CreateServerRoleReq,
   ServerRoleRes,
   UpdateServerRolePermissionsReq,
-} from '../types/server-role.types';
+} from '../types/role.types';
 import { ServerReq, ServerRes } from '../types/server.types';
 import {
   CurrentUserRes,

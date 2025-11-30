@@ -1,6 +1,6 @@
 import { PERMISSION_KEYS } from '@/constants/server-role.constants';
 import { t } from '@/lib/shared.utils';
-import { ServerRoleRes } from '@/types/server-role.types';
+import { ServerRoleRes } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import * as zod from 'zod';

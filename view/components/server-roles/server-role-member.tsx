@@ -5,7 +5,7 @@ import { LuX } from 'react-icons/lu';
 import { api } from '../../client/api-client';
 import { useServerData } from '../../hooks/use-server-data';
 import { truncate } from '../../lib/text.utils';
-import { ServerRoleRes } from '../../types/server-role.types';
+import { ServerRoleRes } from '../../types/role.types';
 import { UserRes } from '../../types/user.types';
 import { Button } from '../ui/button';
 import {

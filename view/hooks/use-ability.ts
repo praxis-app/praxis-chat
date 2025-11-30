@@ -1,16 +1,11 @@
-// TODO: Account for servers map and instances
-
 import { createMongoAbility } from '@casl/ability';
+import { InstanceAbility } from '@common/instance-roles/instance-ability';
 import { ServerAbility } from '@common/server-roles/server-ability';
 import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 import { useServerData } from './use-server-data';
 
-interface UseAbilityOptions {
-  scope?: 'instance' | 'server';
-}
-
-export const useAbility = ({ scope = 'server' }: UseAbilityOptions = {}) => {
+export const useAbility = () => {
   const { isLoggedIn } = useAppStore();
   const { serverId } = useServerData();
 
@@ -18,22 +13,20 @@ export const useAbility = ({ scope = 'server' }: UseAbilityOptions = {}) => {
     enabled: isLoggedIn,
   });
 
-  const getPermissions = () => {
-    if (!meData) {
-      return [];
-    }
-    const { permissions } = meData.user;
-    if (scope === 'instance') {
-      return permissions.instance ?? [];
-    }
-    if (!serverId) {
-      throw new Error('Server ID is required for server scope');
-    }
-    return permissions.servers[serverId] ?? [];
+  const getServerAbility = () => {
+    const permissions = serverId
+      ? meData?.user.permissions.servers[serverId] || []
+      : [];
+    return createMongoAbility<ServerAbility>(permissions);
   };
 
-  const permissions = getPermissions();
-  const ability = createMongoAbility<ServerAbility>(permissions);
+  const getInstanceAbility = () => {
+    const permissions = meData?.user.permissions.instance || [];
+    return createMongoAbility<InstanceAbility>(permissions);
+  };
 
-  return ability;
+  return {
+    serverAbility: getServerAbility(),
+    instanceAbility: getInstanceAbility(),
+  };
 };

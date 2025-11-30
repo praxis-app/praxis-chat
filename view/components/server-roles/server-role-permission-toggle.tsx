@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { getPermissionText } from '../../lib/server-role.utils';
-import { PermissionKeys } from '../../types/server-role.types';
+import { PermissionKeys } from '../../types/role.types';
 import { Switch } from '../ui/switch';
 
 interface Props {

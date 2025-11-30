@@ -50,9 +50,9 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const { serverSlug } = useParams();
   const { signUpPath } = useAuthData();
 
-  const ability = useAbility();
-  const canManageChannels = ability.can('manage', 'Channel');
-  const canManageSettings = ability.can('manage', 'ServerConfig');
+  const { serverAbility } = useAbility();
+  const canManageChannels = serverAbility.can('manage', 'Channel');
+  const canManageSettings = serverAbility.can('manage', 'ServerConfig');
   const isServerMenuBtnDisabled = !canManageSettings && !canManageChannels;
 
   const resolvedServerSlug = serverSlug ?? me?.currentServer?.slug;

@@ -43,12 +43,12 @@ export const ChannelListItemDesktop = ({
   const [showDeleteChannelDialog, setShowDeleteChannelDialog] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
+  const { serverAbility } = useAbility();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const ability = useAbility();
 
-  const canManageChannels = ability.can('manage', 'Channel');
-  const canDeleteChannel = ability.can('delete', 'Channel');
+  const canManageChannels = serverAbility.can('manage', 'Channel');
+  const canDeleteChannel = serverAbility.can('delete', 'Channel');
   const showSettingsBtn = canManageChannels && (isHovering || isActive);
 
   const channelPath = `/s/${serverSlug}${NavigationPaths.Channels}/${channel.id}`;

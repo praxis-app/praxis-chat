@@ -26,13 +26,13 @@ export const ServerRoles = () => {
     enabled: !!serverId,
   });
 
+  const { serverAbility } = useAbility();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const ability = useAbility();
 
   const serverSettingsPath = `${serverPath}${NavigationPaths.Settings}`;
 
-  if (!ability.can('manage', 'ServerRole')) {
+  if (!serverAbility.can('manage', 'ServerRole')) {
     return (
       <PermissionDenied
         topNavProps={{

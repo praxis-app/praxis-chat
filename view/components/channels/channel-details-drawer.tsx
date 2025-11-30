@@ -41,8 +41,8 @@ export const ChannelDetailsDrawer = ({ channel, trigger }: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
-  const ability = useAbility();
-  const canDeleteChannel = ability.can('delete', 'Channel');
+  const { serverAbility } = useAbility();
+  const canDeleteChannel = serverAbility.can('delete', 'Channel');
 
   return (
     <Drawer>

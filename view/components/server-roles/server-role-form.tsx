@@ -9,10 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { ROLE_COLOR_OPTIONS } from '../../constants/server-role.constants';
 import { useServerData } from '../../hooks/use-server-data';
-import {
-  CreateServerRoleReq,
-  ServerRoleRes,
-} from '../../types/server-role.types';
+import { CreateServerRoleReq, ServerRoleRes } from '../../types/role.types';
 import { ColorPicker } from '../shared/color-picker';
 
 interface Props {

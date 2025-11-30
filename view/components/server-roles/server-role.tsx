@@ -6,7 +6,7 @@ import { MdArrowForwardIos, MdPerson } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useServerData } from '../../hooks/use-server-data';
-import { ServerRoleRes } from '../../types/server-role.types';
+import { ServerRoleRes } from '../../types/role.types';
 
 interface Props {
   serverRole: ServerRoleRes;

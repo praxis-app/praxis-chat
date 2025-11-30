@@ -14,7 +14,7 @@ import {
   PollActionRes,
   PollActionServerRoleMemberRes,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/server-role.types';
+import { PermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,12 +31,7 @@ export const PollActionRole = ({ action }: Props) => {
   const { serverId } = useServerData();
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: [
-      'servers',
-      serverId,
-      'roles',
-      action.serverRole?.serverRoleId,
-    ],
+    queryKey: ['servers', serverId, 'roles', action.serverRole?.serverRoleId],
     queryFn: () => {
       if (!action.serverRole?.serverRoleId || !serverId) {
         throw new Error('Server role ID is required');

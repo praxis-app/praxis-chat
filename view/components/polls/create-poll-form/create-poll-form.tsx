@@ -6,7 +6,7 @@ import {
   CreatePollActionServerRoleMemberReq,
   CreatePollActionServerRolePermissionReq,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/server-role.types';
+import { PermissionKeys } from '@/types/role.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

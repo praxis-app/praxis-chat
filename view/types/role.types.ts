@@ -1,4 +1,8 @@
 import {
+  InstanceAbilityAction,
+  InstanceAbilitySubject,
+} from '@common/instance-roles/instance-ability';
+import {
   ServerAbilityAction,
   ServerAbilitySubject,
 } from '@common/server-roles/server-ability';
@@ -7,9 +11,14 @@ import { UserRes } from './user.types';
 
 export type PermissionKeys = (typeof PERMISSION_KEYS)[number];
 
-export interface Permission {
+export interface ServerPermission {
   subject: ServerAbilitySubject;
   action: ServerAbilityAction[];
+}
+
+export interface InstancePermission {
+  subject: InstanceAbilitySubject;
+  action: InstanceAbilityAction[];
 }
 
 // -------------------------------------------------------------------------
@@ -22,7 +31,7 @@ export interface CreateServerRoleReq {
 }
 
 export interface UpdateServerRolePermissionsReq {
-  permissions: Permission[];
+  permissions: ServerPermission[];
 }
 
 // -------------------------------------------------------------------------
@@ -33,7 +42,7 @@ export interface ServerRoleRes {
   id: string;
   name: string;
   color: string;
-  permissions: Permission[];
+  permissions: ServerPermission[];
   memberCount: number;
   members: UserRes[];
 }

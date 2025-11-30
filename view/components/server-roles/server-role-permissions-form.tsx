@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../client/api-client';
 import { PERMISSION_KEYS } from '../../constants/server-role.constants';
 import {
-  Permission,
+  ServerPermission,
   PermissionKeys,
   ServerRoleRes,
-} from '../../types/server-role.types';
+} from '../../types/role.types';
 import { Button } from '../ui/button';
 import { ServerRolePermissionToggle } from './server-role-permission-toggle';
 
@@ -39,7 +39,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
   const queryClient = useQueryClient();
   const { mutate: updatePermissions, isPending } = useMutation({
     mutationFn: async (values: FormValues) => {
-      const permissions = values.permissions.reduce<Permission[]>(
+      const permissions = values.permissions.reduce<ServerPermission[]>(
         (result, permission) => {
           if (!permission.value) {
             return result;
