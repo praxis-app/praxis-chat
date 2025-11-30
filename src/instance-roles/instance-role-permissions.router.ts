@@ -8,6 +8,6 @@ export const instanceRolePermissionsRouter = express.Router({
 
 instanceRolePermissionsRouter.put(
   '/',
-  can('update', 'InstanceRole'),
+  can('update', 'InstanceRole', 'instance'),
   updateInstanceRolePermissions,
 );

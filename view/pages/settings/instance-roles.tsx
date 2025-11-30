@@ -1,25 +1,29 @@
+import { api } from '@/client/api-client';
+import { InstanceRole } from '@/components/instance-roles/instance-role';
+import { InstanceRoleForm } from '@/components/instance-roles/instance-role-form';
 import { TopNav } from '@/components/nav/top-nav';
 import { PermissionDenied } from '@/components/shared/permission-denied';
+import { Card, CardContent } from '@/components/ui/card';
+import { Container } from '@/components/ui/container';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 export const InstanceRoles = () => {
-  // const { data, isPending, error } = useQuery({
-  //   queryKey: ['servers', serverId, 'roles'],
-  //   queryFn: () => {
-  //     if (!serverId) {
-  //       throw new Error('Server ID is required');
-  //     }
-  //     return api.getInstanceRoles();
-  //   },
-  //   enabled: !!serverId,
-  // });
+  const { data, isPending, error } = useQuery({
+    queryKey: ['instance-roles'],
+    queryFn: () => api.getInstanceRoles(),
+  });
 
-  const { instanceAbility } = useAbility();
+  const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  if (isAbilityLoading || isPending) {
+    return null;
+  }
 
   if (!instanceAbility.can('manage', 'InstanceRole')) {
     return (
@@ -32,31 +36,27 @@ export const InstanceRoles = () => {
     );
   }
 
-  // if (isPending) {
-  //   return null;
-  // }
-
   return (
     <>
       <TopNav
         header={t('roles.headers.instanceRoles')}
         onBackClick={() => navigate(NavigationPaths.Settings)}
       />
-      {/* <Container>
-        <ServerRoleForm />
+      <Container>
+        <InstanceRoleForm />
 
         {data && (
           <Card className="py-3">
             <CardContent className="flex flex-col gap-2 px-3">
-              {data.serverRoles.map((role) => (
-                <ServerRole key={role.id} serverRole={role} />
+              {data.instanceRoles.map((role) => (
+                <InstanceRole key={role.id} instanceRole={role} />
               ))}
             </CardContent>
           </Card>
         )}
 
         {error && <p>{t('errors.somethingWentWrong')}</p>}
-      </Container> */}
+      </Container>
     </>
   );
 };

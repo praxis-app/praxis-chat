@@ -13,8 +13,12 @@ export const instanceRoleMembersRouter = express.Router({
 instanceRoleMembersRouter
   .get(
     '/eligible',
-    can('read', 'InstanceRole'),
+    can('read', 'InstanceRole', 'instance'),
     getUsersEligibleForInstanceRole,
   )
-  .post('/', can('update', 'InstanceRole'), addInstanceRoleMembers)
-  .delete('/:userId', can('update', 'InstanceRole'), removeInstanceRoleMember);
+  .post('/', can('update', 'InstanceRole', 'instance'), addInstanceRoleMembers)
+  .delete(
+    '/:userId',
+    can('update', 'InstanceRole', 'instance'),
+    removeInstanceRoleMember,
+  );

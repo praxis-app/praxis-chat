@@ -16,13 +16,21 @@ export const instanceRolesRouter = express.Router();
 instanceRolesRouter.use(authenticate);
 
 instanceRolesRouter
-  .get('/:instanceRoleId', can('read', 'InstanceRole'), getInstanceRole)
-  .get('/', can('read', 'InstanceRole'), getInstanceRoles)
-  .post('/', can('create', 'InstanceRole'), createInstanceRole)
-  .put('/:instanceRoleId', can('update', 'InstanceRole'), updateInstanceRole)
+  .get(
+    '/:instanceRoleId',
+    can('read', 'InstanceRole', 'instance'),
+    getInstanceRole,
+  )
+  .get('/', can('read', 'InstanceRole', 'instance'), getInstanceRoles)
+  .post('/', can('create', 'InstanceRole', 'instance'), createInstanceRole)
+  .put(
+    '/:instanceRoleId',
+    can('update', 'InstanceRole', 'instance'),
+    updateInstanceRole,
+  )
   .delete(
     '/:instanceRoleId',
-    can('delete', 'InstanceRole'),
+    can('delete', 'InstanceRole', 'instance'),
     deleteInstanceRole,
   );
 
