@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
 import { INSTANCE_PERMISSION_KEYS } from '@/constants/role.constants';
 import { getInstancePermissionValues } from '@/lib/role.utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -9,8 +10,7 @@ import {
   InstancePermissionKeys,
   InstanceRoleRes,
 } from '@/types/role.types';
-import { Button } from '@/components/ui/button';
-import { InstanceRolePermissionToggle } from './instance-role-permission-toggle';
+import { RolePermissionToggle } from '../role-permission-toggle';
 
 // TODO: Add form schema with zod
 
@@ -83,7 +83,7 @@ export const InstanceRolePermissionsForm = ({ instanceRole }: Props) => {
         render={({ field: { onChange, value } }) => (
           <>
             {INSTANCE_PERMISSION_KEYS.map((permissionName, index) => (
-              <InstanceRolePermissionToggle
+              <RolePermissionToggle
                 key={permissionName}
                 permissionName={permissionName}
                 checked={value[index].value}

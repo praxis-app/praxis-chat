@@ -1,8 +1,8 @@
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ServerRoleMemberOption } from '@/components/roles/server-roles/server-role-member-option';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
@@ -89,7 +89,7 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
               <CardContent className="space-y-2">
                 <div className="min-h-48 space-y-0.5">
                   {filteredUsers.map((user) => (
-                    <ServerRoleMemberOption
+                    <RoleMemberOption
                       key={user.id}
                       user={user}
                       selectedUserIds={selectedMembers}

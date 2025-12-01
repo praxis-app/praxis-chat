@@ -1,5 +1,4 @@
 import { api } from '@/client/api-client';
-import { Button } from '@/components/ui/button';
 import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { getServerPermissionValues } from '@/lib/role.utils';
@@ -8,10 +7,11 @@ import {
   ServerPermissionKeys,
   ServerRoleRes,
 } from '@/types/role.types';
+import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ServerRolePermissionToggle } from './server-role-permission-toggle';
+import { RolePermissionToggle } from '../role-permission-toggle';
 
 // TODO: Add form schema with zod
 
@@ -95,7 +95,7 @@ export const ServerRolePermissionsForm = ({ serverRole }: Props) => {
         render={({ field: { onChange, value } }) => (
           <>
             {SERVER_PERMISSION_KEYS.map((permissionName, index) => (
-              <ServerRolePermissionToggle
+              <RolePermissionToggle
                 key={permissionName}
                 permissionName={permissionName}
                 checked={value[index].value}

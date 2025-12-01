@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { InstanceRoleForm } from '@/components/roles/instance-roles/instance-role-form';
 import { InstanceRoleMember } from '@/components/roles/instance-roles/instance-role-member';
-import { InstanceRoleMemberOption } from '@/components/roles/instance-roles/instance-role-member-option';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { InstanceRolePermissionsForm } from '@/components/roles/instance-roles/instance-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
@@ -323,7 +323,7 @@ export const EditInstanceRolePage = () => {
                 </DialogHeader>
                 <div className="space-y-0.5">
                   {eligibleUsersData?.users.map((user) => (
-                    <InstanceRoleMemberOption
+                    <RoleMemberOption
                       key={user.id}
                       selectedUserIds={selectedUserIds}
                       setSelectedUserIds={setSelectedUserIds}

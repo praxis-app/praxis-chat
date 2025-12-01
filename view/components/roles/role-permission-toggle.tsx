@@ -1,15 +1,20 @@
 import { Switch } from '@/components/ui/switch';
 import { getPermissionText } from '@/lib/role.utils';
-import { ServerPermissionKeys } from '@/types/role.types';
+import {
+  InstancePermissionKeys,
+  ServerPermissionKeys,
+} from '@/types/role.types';
 import { t } from 'i18next';
 
+type PermissionKey = ServerPermissionKeys | InstancePermissionKeys;
+
 interface Props {
-  permissionName: ServerPermissionKeys;
+  permissionName: PermissionKey;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }
 
-export const ServerRolePermissionToggle = ({
+export const RolePermissionToggle = ({
   permissionName,
   checked,
   onChange,

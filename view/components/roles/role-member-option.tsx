@@ -1,22 +1,22 @@
-import { cn } from '@/lib/shared.utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserAvatar } from '@/components/users/user-avatar';
+import { cn } from '@/lib/shared.utils';
 import { truncate } from '@/lib/text.utils';
 import { UserRes } from '@/types/user.types';
 
-interface Props {
+export interface RoleMemberOptionProps {
   selectedUserIds: string[];
   setSelectedUserIds(selectedUsers: string[]): void;
   className?: string;
   user: UserRes;
 }
 
-export const InstanceRoleMemberOption = ({
+export const RoleMemberOption = ({
   selectedUserIds,
   setSelectedUserIds,
   className,
   user,
-}: Props) => {
+}: RoleMemberOptionProps) => {
   const isSelected = selectedUserIds.some((userId) => userId === user.id);
 
   const handleChange = () => {

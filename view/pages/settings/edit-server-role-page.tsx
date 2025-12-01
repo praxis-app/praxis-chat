@@ -1,6 +1,6 @@
 import { ServerRoleForm } from '@/components/roles/server-roles/server-role-form';
 import { ServerRoleMember } from '@/components/roles/server-roles/server-role-member';
-import { ServerRoleMemberOption } from '@/components/roles/server-roles/server-role-member-option';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { ServerRolePermissionsForm } from '@/components/roles/server-roles/server-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
@@ -304,7 +304,7 @@ export const EditServerRolePage = () => {
                 </DialogHeader>
                 <div className="space-y-0.5">
                   {eligibleUsersData?.users.map((user) => (
-                    <ServerRoleMemberOption
+                    <RoleMemberOption
                       key={user.id}
                       selectedUserIds={selectedUserIds}
                       setSelectedUserIds={setSelectedUserIds}
