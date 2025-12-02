@@ -1,12 +1,12 @@
 // TODO: Add permissions middleware
 
 import express from 'express';
-import { authenticate } from '../auth/middleware/authenticate.middleware';
-import { channelsRouter } from '../channels/channels.router';
-import { serverInvitesRouter } from '../invites/invites.router';
-import { serverConfigsRouter } from '../server-configs/server-configs.router';
-import { serverRolesRouter } from '../server-roles/server-roles.router';
-import { setServerMemberActivity } from './middleware/set-server-member-activity.middleware';
+import { authenticate } from '../../auth/middleware/authenticate.middleware';
+import { channelsRouter } from '../../channels/channels.router';
+import { serverInvitesRouter } from '../../invites/invites.router';
+import { serverConfigsRouter } from '../../server-configs/server-configs.router';
+import { serverRolesRouter } from '../../server-roles/routers/server-roles.router';
+import { setServerMemberActivity } from '../middleware/set-server-member-activity.middleware';
 import {
   createServer,
   deleteServer,
@@ -14,7 +14,7 @@ import {
   getServerBySlug,
   getServers,
   updateServer,
-} from './servers.controller';
+} from '../servers.controller';
 
 export const serversRouter = express.Router();
 

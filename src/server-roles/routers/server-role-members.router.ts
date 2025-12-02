@@ -1,10 +1,10 @@
 import express from 'express';
-import { can } from '../common/roles/can.middleware';
+import { can } from '../../common/roles/can.middleware';
 import {
   addServerRoleMembers,
   getUsersEligibleForServerRole,
   removeServerRoleMember,
-} from './server-roles.controller';
+} from '../server-roles.controller';
 
 export const serverRoleMembersRouter = express.Router({
   mergeParams: true,
