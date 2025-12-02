@@ -1,20 +1,14 @@
 import { api } from '@/client/api-client';
+import { TopNav } from '@/components/nav/top-nav';
 import { InstanceRoleForm } from '@/components/roles/instance-roles/instance-role-form';
 import { InstanceRoleMember } from '@/components/roles/instance-roles/instance-role-member';
-import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { InstanceRolePermissionsForm } from '@/components/roles/instance-roles/instance-role-permissions-form';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { LuChevronRight, LuPlus } from 'react-icons/lu';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { TopNav } from '../../components/nav/top-nav';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent } from '../../components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -22,17 +16,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../components/ui/tabs';
-import { NavigationPaths } from '../../constants/shared.constants';
-import { useAbility } from '../../hooks/use-ability';
-import { handleError } from '../../lib/error.utils';
-import { InstanceRoleRes } from '../../types/role.types';
+} from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useAbility } from '@/hooks/use-ability';
+import { handleError } from '@/lib/error.utils';
+import { InstanceRoleRes } from '@/types/role.types';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LuChevronRight, LuPlus } from 'react-icons/lu';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 enum EditInstanceRoleTabName {
   Permissions = 'permissions',

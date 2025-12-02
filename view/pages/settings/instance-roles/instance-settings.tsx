@@ -5,11 +5,11 @@ import { SettingsNavItem } from '@/components/settings/settings-nav-item';
 import { Container } from '@/components/ui/container';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { useTranslation } from 'react-i18next';
 import { MdAdminPanelSettings, MdClose } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import { useServerData } from '../../hooks/use-server-data';
 
 export const InstanceSettings = () => {
   const { setIsNavSheetOpen } = useAppStore();
