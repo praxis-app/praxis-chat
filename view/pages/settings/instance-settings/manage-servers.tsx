@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
+import { CreateServerForm } from '@/components/servers/create-server-form';
 import { ServerListItem } from '@/components/servers/server-list-item';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Card, CardContent } from '@/components/ui/card';
@@ -54,6 +55,8 @@ export const ManageServers = () => {
       />
 
       <Container>
+        <CreateServerForm />
+
         {serversData.servers.length > 0 && (
           <Card className="py-3">
             <CardContent className="flex flex-col gap-2 px-3">

@@ -17,7 +17,7 @@ const userRepository = dataSource.getRepository(User);
 
 export const getServers = async () => {
   return serverRepository.find({
-    order: { createdAt: 'ASC' },
+    order: { createdAt: 'DESC' },
   });
 };
 

@@ -38,7 +38,8 @@
 
   "errors": {
     "pageNotFound": "Page not found.",
-    "somethingWentWrong": "Something went wrong."
+    "somethingWentWrong": "Something went wrong.",
+    "fieldRequired": "This field is required."
   },
 
   "auth": {
@@ -414,6 +415,23 @@
     "errors": {
       "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
       "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
+    }
+  },
+
+  "servers": {
+    "headers": {
+      "create": "Create Server"
+    },
+    "form": {
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description"
+    },
+    "prompts": {
+      "creating": "Creating server..."
+    },
+    "errors": {
+      "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens."
     }
   },
 
