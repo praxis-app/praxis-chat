@@ -1,7 +1,7 @@
 import express from 'express';
 import { authRouter } from '../auth/auth.router';
 import { healthRouter } from '../health/health.router';
-import { instanceRolesRouter } from '../instance-roles/instance-roles.router';
+import { instanceRolesRouter } from '../instance-roles/routers/instance-roles.router';
 import { invitesRouter } from '../invites/invites.router';
 import { serversRouter } from '../servers/servers.router';
 import { usersRouter } from '../users/users.router';

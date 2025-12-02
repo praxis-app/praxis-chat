@@ -1,4 +1,12 @@
 import {
+  InstanceAbilityAction,
+  InstanceAbilitySubject,
+} from '@common/instance-roles/instance-ability';
+import {
+  INSTANCE_ROLE_ABILITY_ACTIONS,
+  INSTANCE_ROLE_ABILITY_SUBJECTS,
+} from '@common/instance-roles/instance-role.constants';
+import {
   Column,
   CreateDateColumn,
   Entity,
@@ -7,14 +15,6 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import {
-  InstanceAbilityAction,
-  InstanceAbilitySubject,
-} from '../../common/instance-roles/instance-ability';
-import {
-  INSTANCE_ROLE_ABILITY_ACTIONS,
-  INSTANCE_ROLE_ABILITY_SUBJECTS,
-} from '../../common/instance-roles/instance-role.constants';
 import { InstanceRole } from './instance-role.entity';
 
 @Entity()

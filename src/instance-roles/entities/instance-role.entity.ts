@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../../users/user.entity';
 import { InstanceRolePermission } from './instance-role-permission.entity';
 
 @Entity()

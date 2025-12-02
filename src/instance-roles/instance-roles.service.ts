@@ -10,8 +10,8 @@ import { dataSource } from '../database/data-source';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
-import { InstanceRolePermission } from './instance-role-permission.entity';
-import { InstanceRole } from './instance-role.entity';
+import { InstanceRolePermission } from './entities/instance-role-permission.entity';
+import { InstanceRole } from './entities/instance-role.entity';
 
 // TODO: Move to src/common
 const DEFAULT_ROLE_COLOR = '#f44336';

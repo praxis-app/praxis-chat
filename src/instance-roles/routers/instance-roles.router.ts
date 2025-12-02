@@ -1,6 +1,6 @@
 import express from 'express';
-import { authenticate } from '../auth/middleware/authenticate.middleware';
-import { can } from '../common/roles/can.middleware';
+import { authenticate } from '../../auth/middleware/authenticate.middleware';
+import { can } from '../../common/roles/can.middleware';
 import { instanceRoleMembersRouter } from './instance-role-members.router';
 import { instanceRolePermissionsRouter } from './instance-role-permissions.router';
 import {
@@ -9,7 +9,7 @@ import {
   getInstanceRole,
   getInstanceRoles,
   updateInstanceRole,
-} from './instance-roles.controller';
+} from '../instance-roles.controller';
 
 export const instanceRolesRouter = express.Router();
 

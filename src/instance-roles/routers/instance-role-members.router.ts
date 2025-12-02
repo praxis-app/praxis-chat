@@ -1,10 +1,10 @@
 import express from 'express';
-import { can } from '../common/roles/can.middleware';
+import { can } from '../../common/roles/can.middleware';
 import {
   addInstanceRoleMembers,
   getUsersEligibleForInstanceRole,
   removeInstanceRoleMember,
-} from './instance-roles.controller';
+} from '../instance-roles.controller';
 
 export const instanceRoleMembersRouter = express.Router({
   mergeParams: true,

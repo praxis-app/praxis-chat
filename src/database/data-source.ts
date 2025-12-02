@@ -5,8 +5,9 @@ import { ChannelKey } from '../channels/entities/channel-key.entity';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Image } from '../images/entities/image.entity';
-import { InstanceRolePermission } from '../instance-roles/instance-role-permission.entity';
-import { InstanceRole } from '../instance-roles/instance-role.entity';
+import { InstanceRolePermission } from '../instance-roles/entities/instance-role-permission.entity';
+import { InstanceRole } from '../instance-roles/entities/instance-role.entity';
+import { InstanceConfig } from '../instance/instance-config.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionPermission } from '../poll-actions/entities/poll-action-permission.entity';
@@ -23,7 +24,6 @@ import { Server } from '../servers/entities/server.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Initial1762107499573 } from './migrations/1762107499573-Initial';
-import { InstanceConfig } from '../instance/instance-config.entity';
 
 dotenv.config();
 
