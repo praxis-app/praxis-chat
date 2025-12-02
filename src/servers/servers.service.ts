@@ -1,10 +1,9 @@
-// TODO: Add support for multiple chat servers per instance
-
-import { QueryFailedError } from 'typeorm';
+import { In, QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import { getInstanceConfigSafely } from '../instance/instance.service';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
+import { User } from '../users/user.entity';
 import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
 
@@ -13,6 +12,7 @@ export const INITIAL_SERVER_NAME = 'praxis';
 const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
+const userRepository = dataSource.getRepository(User);
 
 export const getServers = async () => {
   return serverRepository.find({
@@ -119,4 +119,44 @@ export const addMemberToServer = async (serverId: string, userId: string) => {
     userId,
   });
   await channelsService.addMemberToAllServerChannels(userId, serverId);
+};
+
+export const addServerMembers = async (serverId: string, userIds: string[]) => {
+  const server = await serverRepository.findOne({
+    where: { id: serverId },
+    relations: ['members'],
+  });
+  if (!server) {
+    throw new Error('Server not found');
+  }
+  const newMembers = await userRepository.find({
+    where: {
+      id: In(userIds),
+      anonymous: false,
+      locked: false,
+    },
+  });
+  const members = [...server.members, ...newMembers];
+
+  await serverRepository.save({
+    ...server,
+    members,
+  });
+};
+
+export const removeServerMembers = async (
+  serverId: string,
+  userIds: string[],
+) => {
+  const server = await serverRepository.findOne({
+    where: { id: serverId },
+    relations: ['members'],
+  });
+  if (!server) {
+    throw new Error('Server not found');
+  }
+  server.members = server.members.filter(
+    (member) => !userIds.includes(member.id),
+  );
+  await serverRepository.save(server);
 };

@@ -263,6 +263,8 @@ export const addInstanceRoleMembers = async (
   });
 
   const members = [...instanceRole.members, ...newMembers];
+
+  // TODO: Remove profile pictures reference here - not needed at all for this function
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
   );
