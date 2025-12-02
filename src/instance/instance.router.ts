@@ -1,10 +1,8 @@
 import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { can } from '../common/roles/can.middleware';
-import {
-  getInstanceConfig,
-  updateInstanceConfig,
-} from './instance.controller';
+import { instanceRolesRouter } from '../instance-roles/routers/instance-roles.router';
+import { getInstanceConfig, updateInstanceConfig } from './instance.controller';
 
 export const instanceRouter = express.Router();
 
@@ -15,4 +13,5 @@ instanceRouter
     '/config',
     can('update', 'InstanceConfig', 'instance'),
     updateInstanceConfig,
-  );
+  )
+  .use('/roles', instanceRolesRouter);

@@ -444,12 +444,12 @@ class ApiClient {
   // -------------------------------------------------------------------------
 
   getInstanceRole = async (instanceRoleId: string) => {
-    const path = `/instance-roles/${instanceRoleId}`;
+    const path = `/instance/roles/${instanceRoleId}`;
     return this.executeRequest<{ instanceRole: InstanceRoleRes }>('get', path);
   };
 
   getInstanceRoles = async () => {
-    const path = `/instance-roles`;
+    const path = `/instance/roles`;
     return this.executeRequest<{ instanceRoles: InstanceRoleRes[] }>(
       'get',
       path,
@@ -457,12 +457,12 @@ class ApiClient {
   };
 
   getUsersEligibleForInstanceRole = async (instanceRoleId: string) => {
-    const path = `/instance-roles/${instanceRoleId}/members/eligible`;
+    const path = `/instance/roles/${instanceRoleId}/members/eligible`;
     return this.executeRequest<{ users: UserRes[] }>('get', path);
   };
 
   createInstanceRole = async (data: CreateRoleReq) => {
-    const path = `/instance-roles`;
+    const path = `/instance/roles`;
     return this.executeRequest<{ instanceRole: InstanceRoleRes }>(
       'post',
       path,
@@ -471,7 +471,7 @@ class ApiClient {
   };
 
   updateInstanceRole = async (instanceRoleId: string, data: CreateRoleReq) => {
-    const path = `/instance-roles/${instanceRoleId}`;
+    const path = `/instance/roles/${instanceRoleId}`;
     return this.executeRequest<void>('put', path, {
       data,
     });
@@ -481,7 +481,7 @@ class ApiClient {
     instanceRoleId: string,
     data: UpdateInstanceRolePermissionsReq,
   ) => {
-    const path = `/instance-roles/${instanceRoleId}/permissions`;
+    const path = `/instance/roles/${instanceRoleId}/permissions`;
     return this.executeRequest<void>('put', path, {
       data,
     });
@@ -491,19 +491,19 @@ class ApiClient {
     instanceRoleId: string,
     userIds: string[],
   ) => {
-    const path = `/instance-roles/${instanceRoleId}/members`;
+    const path = `/instance/roles/${instanceRoleId}/members`;
     return this.executeRequest<void>('post', path, {
       data: { userIds },
     });
   };
 
   removeInstanceRoleMember = async (instanceRoleId: string, userId: string) => {
-    const path = `/instance-roles/${instanceRoleId}/members/${userId}`;
+    const path = `/instance/roles/${instanceRoleId}/members/${userId}`;
     return this.executeRequest<void>('delete', path);
   };
 
   deleteInstanceRole = async (instanceRoleId: string) => {
-    const path = `/instance-roles/${instanceRoleId}`;
+    const path = `/instance/roles/${instanceRoleId}`;
     return this.executeRequest<void>('delete', path);
   };
 

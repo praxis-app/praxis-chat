@@ -1,5 +1,4 @@
 import express from 'express';
-import { authenticate } from '../../auth/middleware/authenticate.middleware';
 import { can } from '../../common/roles/can.middleware';
 import { instanceRoleMembersRouter } from './instance-role-members.router';
 import { instanceRolePermissionsRouter } from './instance-role-permissions.router';
@@ -12,8 +11,6 @@ import {
 } from '../instance-roles.controller';
 
 export const instanceRolesRouter = express.Router();
-
-instanceRolesRouter.use(authenticate);
 
 instanceRolesRouter
   .get(
