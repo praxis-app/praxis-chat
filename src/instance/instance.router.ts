@@ -3,7 +3,7 @@ import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { can } from '../common/roles/can.middleware';
 import {
   getInstanceConfig,
-  updateDefaultServer,
+  updateInstanceConfig,
 } from './instance.controller';
 
 export const instanceRouter = express.Router();
@@ -14,5 +14,5 @@ instanceRouter
   .put(
     '/config',
     can('update', 'InstanceConfig', 'instance'),
-    updateDefaultServer,
+    updateInstanceConfig,
   );

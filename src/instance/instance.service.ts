@@ -6,6 +6,10 @@ import { InstanceConfig } from './instance-config.entity';
 const instanceConfigRepository = dataSource.getRepository(InstanceConfig);
 const serverRepository = dataSource.getRepository(Server);
 
+interface UpdateInstanceConfigDto {
+  defaultServerId?: string;
+}
+
 export const getInstanceConfigSafely = async () => {
   const instanceConfigs = await instanceConfigRepository.find();
   if (!instanceConfigs.length) {
@@ -14,22 +18,27 @@ export const getInstanceConfigSafely = async () => {
   return instanceConfigs[0];
 };
 
-export const updateDefaultServer = async (serverId: string) => {
-  const server = await serverRepository.findOne({
-    where: { id: serverId },
-  });
-  if (!server) {
-    throw new Error('Server not found');
-  }
+export const updateInstanceConfig = async ({
+  defaultServerId,
+}: UpdateInstanceConfigDto) => {
+  const updates: Partial<InstanceConfig> = {};
 
   const instanceConfig = await getInstanceConfigSafely();
   if (!instanceConfig) {
     throw new Error('Instance config not found');
   }
 
-  return instanceConfigRepository.update(instanceConfig.id, {
-    defaultServerId: serverId,
-  });
+  if (defaultServerId) {
+    const server = await serverRepository.findOne({
+      where: { id: defaultServerId },
+    });
+    if (!server) {
+      throw new Error('Server not found');
+    }
+    updates.defaultServerId = defaultServerId;
+  }
+
+  return instanceConfigRepository.update(instanceConfig.id, updates);
 };
 
 export const initializeInstance = async () => {
