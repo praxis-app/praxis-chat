@@ -20,6 +20,16 @@ export const getDefaultServer = async (_req: Request, res: Response) => {
   res.json({ server });
 };
 
+export const getUsersEligibleForServer = async (
+  req: Request,
+  res: Response,
+) => {
+  const users = await serversService.getUsersEligibleForServer(
+    req.params.serverId,
+  );
+  res.json({ users });
+};
+
 export const createServer = async (req: Request, res: Response) => {
   const server = await serversService.createServer(
     req.body.name,
@@ -42,5 +52,21 @@ export const updateServer = async (req: Request, res: Response) => {
 
 export const deleteServer = async (req: Request, res: Response) => {
   const result = await serversService.deleteServer(req.params.serverId);
+  res.json(result);
+};
+
+export const addServerMembers = async (req: Request, res: Response) => {
+  const result = await serversService.addServerMembers(
+    req.params.serverId,
+    req.body.userIds,
+  );
+  res.json(result);
+};
+
+export const removeServerMembers = async (req: Request, res: Response) => {
+  const result = await serversService.removeServerMembers(
+    req.params.serverId,
+    req.body.userIds,
+  );
   res.json(result);
 };

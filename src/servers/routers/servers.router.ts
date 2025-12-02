@@ -15,6 +15,7 @@ import {
   getServers,
   updateServer,
 } from '../servers.controller';
+import { serverMembersRouter } from './server-members.router';
 
 export const serversRouter = express.Router();
 
@@ -23,7 +24,8 @@ serversRouter
   .use('/:serverId/channels', channelsRouter)
   .use('/:serverId/configs', serverConfigsRouter)
   .use('/:serverId/roles', serverRolesRouter)
-  .use('/:serverId/invites', serverInvitesRouter);
+  .use('/:serverId/invites', serverInvitesRouter)
+  .use('/:serverId/members', serverMembersRouter);
 
 // Public routes
 serversRouter.get('/default', getDefaultServer);

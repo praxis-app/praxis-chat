@@ -1,4 +1,4 @@
-import { In, QueryFailedError } from 'typeorm';
+import { In, Not, QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import { getInstanceConfigSafely } from '../instance/instance.service';
@@ -6,6 +6,7 @@ import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { User } from '../users/user.entity';
 import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
+import * as usersService from '../users/users.service';
 
 export const INITIAL_SERVER_NAME = 'praxis';
 
@@ -30,6 +31,39 @@ export const getDefaultServer = async () => {
     throw new Error('Default server not found');
   }
   return server;
+};
+
+export const getUsersEligibleForServer = async (serverId: string) => {
+  const server = await serverRepository.findOne({
+    where: { id: serverId },
+    relations: ['members'],
+  });
+  if (!server) {
+    throw new Error('Server not found');
+  }
+
+  const userIds = server.members.map(({ id }) => id);
+  const users = await userRepository.find({
+    where: {
+      id: Not(In(userIds)),
+      anonymous: false,
+      locked: false,
+    },
+    select: ['id', 'name', 'displayName'],
+  });
+  if (users.length === 0) {
+    return [];
+  }
+
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    users.map((user) => user.id),
+  );
+  const shapedUsers = users.map((user) => ({
+    ...user,
+    profilePicture: profilePictures[user.id],
+  }));
+
+  return shapedUsers;
 };
 
 export const createServer = async (
