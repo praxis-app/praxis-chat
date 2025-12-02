@@ -1,8 +1,10 @@
 import { dataSource } from '../database/data-source';
+import { Server } from '../servers/entities/server.entity';
 import { createInitialServer } from '../servers/servers.service';
 import { InstanceConfig } from './instance-config.entity';
 
 const instanceConfigRepository = dataSource.getRepository(InstanceConfig);
+const serverRepository = dataSource.getRepository(Server);
 
 export const getInstanceConfigSafely = async () => {
   const instanceConfigs = await instanceConfigRepository.find();
@@ -10,6 +12,24 @@ export const getInstanceConfigSafely = async () => {
     return initializeInstanceConfig();
   }
   return instanceConfigs[0];
+};
+
+export const updateDefaultServer = async (serverId: string) => {
+  const server = await serverRepository.findOne({
+    where: { id: serverId },
+  });
+  if (!server) {
+    throw new Error('Server not found');
+  }
+
+  const instanceConfig = await getInstanceConfigSafely();
+  if (!instanceConfig) {
+    throw new Error('Instance config not found');
+  }
+
+  return instanceConfigRepository.update(instanceConfig.id, {
+    defaultServerId: serverId,
+  });
 };
 
 export const initializeInstance = async () => {

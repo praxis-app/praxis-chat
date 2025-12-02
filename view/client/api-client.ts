@@ -1,7 +1,37 @@
 // API client for server endpoints
 
+import { MESSAGES_PAGE_SIZE } from '@/constants/message.constants';
+import { LocalStorageKeys } from '@/constants/shared.constants';
+import { AuthRes, LoginReq, SignUpReq } from '@/types/auth.types';
+import {
+  ChannelRes,
+  CreateChannelReq,
+  FeedItemRes,
+  UpdateChannelReq,
+} from '@/types/channel.types';
+import { ImageRes } from '@/types/image.types';
+import {
+  InstanceConfigReq,
+  InstanceConfigRes,
+} from '@/types/instance-config.types';
+import { CreateInviteReq, InviteRes } from '@/types/invite.types';
+import { MessageRes } from '@/types/message.types';
 import { CreatePollReq, PollRes } from '@/types/poll.types';
+import {
+  CreateRoleReq,
+  InstanceRoleRes,
+  ServerRoleRes,
+  UpdateInstanceRolePermissionsReq,
+  UpdateServerRolePermissionsReq,
+} from '@/types/role.types';
 import { ServerConfigReq, ServerConfigRes } from '@/types/server-config.types';
+import { ServerReq, ServerRes } from '@/types/server.types';
+import {
+  CurrentUserRes,
+  UpdateUserProfileReq,
+  UserProfileRes,
+  UserRes,
+} from '@/types/user.types';
 import {
   CreateVoteReq,
   CreateVoteRes,
@@ -9,32 +39,6 @@ import {
   UpdateVoteRes,
 } from '@/types/vote.types';
 import axios, { AxiosInstance, AxiosResponse, Method } from 'axios';
-import { MESSAGES_PAGE_SIZE } from '../constants/message.constants';
-import { LocalStorageKeys } from '../constants/shared.constants';
-import { AuthRes, LoginReq, SignUpReq } from '../types/auth.types';
-import {
-  ChannelRes,
-  CreateChannelReq,
-  FeedItemRes,
-  UpdateChannelReq,
-} from '../types/channel.types';
-import { ImageRes } from '../types/image.types';
-import { CreateInviteReq, InviteRes } from '../types/invite.types';
-import { MessageRes } from '../types/message.types';
-import {
-  CreateRoleReq,
-  InstanceRoleRes,
-  ServerRoleRes,
-  UpdateInstanceRolePermissionsReq,
-  UpdateServerRolePermissionsReq,
-} from '../types/role.types';
-import { ServerReq, ServerRes } from '../types/server.types';
-import {
-  CurrentUserRes,
-  UpdateUserProfileReq,
-  UserProfileRes,
-  UserRes,
-} from '../types/user.types';
 
 class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -416,6 +420,23 @@ class ApiClient {
   deleteServerRole = async (serverId: string, serverRoleId: string) => {
     const path = `/servers/${serverId}/roles/${serverRoleId}`;
     return this.executeRequest<void>('delete', path);
+  };
+
+  // -------------------------------------------------------------------------
+  // Instance Config
+  // -------------------------------------------------------------------------
+
+  getInstanceConfig = async () => {
+    const path = `/instance/config`;
+    return this.executeRequest<{ instanceConfig: InstanceConfigRes }>(
+      'get',
+      path,
+    );
+  };
+
+  updateInstanceConfig = async (data: InstanceConfigReq) => {
+    const path = `/instance/config`;
+    return this.executeRequest<void>('put', path, { data });
   };
 
   // -------------------------------------------------------------------------
