@@ -1,6 +1,7 @@
 // TODO: Add remaining layout and functionality - below is a WIP
 
 import { EditInstanceRolePage } from '@/pages/settings/instance-settings/edit-instance-role-page';
+import { EditServerPage } from '@/pages/settings/instance-settings/edit-server-page';
 import { InstanceRoles } from '@/pages/settings/instance-settings/instance-roles';
 import { InstanceSettings } from '@/pages/settings/instance-settings/instance-settings';
 import { ManageServers } from '@/pages/settings/instance-settings/manage-servers';
@@ -23,7 +24,7 @@ export const instanceSettingsRouter: RouteObject = {
         },
         {
           path: ':serverId/edit',
-          element: <div />,
+          element: <EditServerPage />,
         },
       ],
     },
