@@ -387,6 +387,9 @@
   },
 
   "settings": {
+    "headers": {
+      "manageServers": "Manage Servers"
+    },
     "names": {
       "decisionMakingModel": "Decision making model",
       "ratificationThreshold": "Ratification threshold",

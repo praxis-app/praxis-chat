@@ -8,7 +8,7 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { useTranslation } from 'react-i18next';
-import { MdAdminPanelSettings, MdClose } from 'react-icons/md';
+import { MdAdminPanelSettings, MdClose, MdGroups } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
 export const InstanceSettings = () => {
@@ -42,6 +42,11 @@ export const InstanceSettings = () => {
           Icon={MdAdminPanelSettings}
           label={t('navigation.labels.instanceRoles')}
           to={NavigationPaths.Roles}
+        />
+        <SettingsNavItem
+          Icon={MdGroups}
+          label={t('settings.headers.manageServers')}
+          to={NavigationPaths.ManageServers}
         />
       </Container>
     </>

@@ -3,6 +3,7 @@
 import { EditInstanceRolePage } from '@/pages/settings/instance-settings/edit-instance-role-page';
 import { InstanceRoles } from '@/pages/settings/instance-settings/instance-roles';
 import { InstanceSettings } from '@/pages/settings/instance-settings/instance-settings';
+import { ManageServers } from '@/pages/settings/instance-settings/manage-servers';
 import { RouteObject } from 'react-router-dom';
 
 export const instanceSettingsRouter: RouteObject = {
@@ -11,6 +12,20 @@ export const instanceSettingsRouter: RouteObject = {
     {
       index: true,
       element: <InstanceSettings />,
+    },
+    {
+      path: 'servers',
+
+      children: [
+        {
+          index: true,
+          element: <ManageServers />,
+        },
+        {
+          path: ':serverId/edit',
+          element: <div />,
+        },
+      ],
     },
     {
       path: 'roles',
