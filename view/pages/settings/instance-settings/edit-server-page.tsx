@@ -1,31 +1,16 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
+import { ServerForm } from '@/components/servers/server-form';
 import { PermissionDenied } from '@/components/shared/permission-denied';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { handleError } from '@/lib/error.utils';
-import { cn } from '@/lib/shared.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
-import { ServerErrorKeys } from '@common/servers/server.constants';
-import { serverFormSchema } from '@common/servers/server.types';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
@@ -59,47 +44,37 @@ export const EditServerPage = () => {
 
   const server = serversData?.servers.find((s) => s.id === serverId);
 
-  const form = useForm<ServerReq>({
-    resolver: zodResolver(serverFormSchema),
-    defaultValues: {
-      name: server?.name || '',
-      slug: server?.slug || '',
-      description: server?.description || '',
-    },
-    values: server
-      ? {
-          name: server.name,
-          slug: server.slug,
-          description: server.description,
+  const { mutateAsync: updateServer, isPending: isUpdatePending } = useMutation(
+    {
+      mutationFn: async (values: ServerReq) => {
+        if (!serverId || !server) {
+          throw new Error('Server ID is required');
         }
-      : undefined,
-  });
+        await api.updateServer(serverId, values);
 
-  const { mutate: updateServer, isPending: isUpdatePending } = useMutation({
-    mutationFn: async (values: ServerReq) => {
-      if (!serverId) {
-        throw new Error('Server ID is required');
-      }
-      await api.updateServer(serverId, values);
+        const updatedServer = { ...server, ...values } as ServerRes;
 
-      queryClient.setQueryData<{ servers: ServerRes[] }>(
-        ['servers'],
-        (oldData) => {
-          if (!oldData) {
-            return { servers: [] };
-          }
-          return {
-            servers: oldData.servers.map((s) =>
-              s.id === serverId ? { ...s, ...values } : s,
-            ),
-          };
-        },
-      );
+        queryClient.setQueryData<{ servers: ServerRes[] }>(
+          ['servers'],
+          (oldData) => {
+            if (!oldData) {
+              return { servers: [] };
+            }
+            return {
+              servers: oldData.servers.map((s) =>
+                s.id === serverId ? updatedServer : s,
+              ),
+            };
+          },
+        );
+
+        return updatedServer;
+      },
+      onError(error: Error) {
+        handleError(error);
+      },
     },
-    onError(error: Error) {
-      handleError(error);
-    },
-  });
+  );
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -159,79 +134,12 @@ export const EditServerPage = () => {
           <TabsContent value={EditServerTabName.Properties}>
             <Card className="pb-1.5">
               <CardContent>
-                <Form {...form}>
-                  <form
-                    className={cn('space-y-4 pb-6')}
-                    onSubmit={form.handleSubmit((fv) => updateServer(fv))}
-                  >
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('servers.form.name')}</FormLabel>
-                          <FormControl>
-                            <Input {...field} autoComplete="off" />
-                          </FormControl>
-                          <FormMessage
-                            errorOverrides={{
-                              [ServerErrorKeys.NameLength]: t(
-                                'servers.errors.nameLength',
-                              ),
-                            }}
-                          />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="slug"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('servers.form.slug')}</FormLabel>
-                          <FormControl>
-                            <Input {...field} autoComplete="off" />
-                          </FormControl>
-                          <FormMessage
-                            errorOverrides={{
-                              [ServerErrorKeys.SlugLength]: t(
-                                'servers.errors.slugLength',
-                              ),
-                              [ServerErrorKeys.SlugInvalid]: t(
-                                'servers.errors.invalidSlug',
-                              ),
-                            }}
-                          />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('servers.form.description')}</FormLabel>
-                          <FormControl>
-                            <Textarea {...field} rows={3} />
-                          </FormControl>
-                          <FormMessage
-                            errorOverrides={{
-                              [ServerErrorKeys.DescriptionLength]: t(
-                                'servers.errors.descriptionLength',
-                              ),
-                            }}
-                          />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button type="submit" disabled={isUpdatePending}>
-                      {isUpdatePending ? t('states.saving') : t('actions.save')}
-                    </Button>
-                  </form>
-                </Form>
+                <ServerForm
+                  className="pb-6"
+                  editServer={server}
+                  isSubmitting={isUpdatePending}
+                  onSubmit={(fv) => updateServer(fv)}
+                />
               </CardContent>
             </Card>
           </TabsContent>

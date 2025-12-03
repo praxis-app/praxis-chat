@@ -1,19 +1,22 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
-import { CreateServerForm } from '@/components/servers/create-server-form';
+import { ServerForm } from '@/components/servers/server-form';
 import { ServerListItem } from '@/components/servers/server-list-item';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
-import { useQuery } from '@tanstack/react-query';
+import { handleError } from '@/lib/error.utils';
+import { ServerReq, ServerRes } from '@/types/server.types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 export const ManageServers = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
@@ -27,6 +30,29 @@ export const ManageServers = () => {
     queryFn: api.getServers,
     enabled: canManageServers && !isAbilityLoading,
   });
+
+  const { mutateAsync: createServer, isPending: isCreatePending } = useMutation(
+    {
+      mutationFn: async (values: ServerReq) => {
+        const { server } = await api.createServer(values);
+
+        queryClient.setQueryData<{ servers: ServerRes[] }>(
+          ['servers'],
+          (oldData) => {
+            if (!oldData) {
+              return { servers: [server] };
+            }
+            return { servers: [server, ...oldData.servers] };
+          },
+        );
+
+        return server;
+      },
+      onError(error: Error) {
+        handleError(error);
+      },
+    },
+  );
 
   if (isAbilityLoading) {
     return null;
@@ -55,7 +81,20 @@ export const ManageServers = () => {
       />
 
       <Container>
-        <CreateServerForm />
+        <Card className="mb-4 pt-4 pb-7">
+          <CardContent className="space-y-4 px-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">
+                {t('servers.headers.create')}
+              </h2>
+            </div>
+
+            <ServerForm
+              isSubmitting={isCreatePending}
+              onSubmit={(fv) => createServer(fv)}
+            />
+          </CardContent>
+        </Card>
 
         {serversData.servers.length > 0 && (
           <Card className="py-3">
