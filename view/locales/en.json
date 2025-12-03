@@ -420,12 +420,17 @@
 
   "servers": {
     "headers": {
-      "create": "Create Server"
+      "create": "Create Server",
+      "edit": "Edit Server"
     },
     "form": {
       "name": "Name",
       "slug": "Slug",
       "description": "Description"
+    },
+    "tabs": {
+      "properties": "Properties",
+      "members": "Members"
     },
     "prompts": {
       "creating": "Creating server..."
