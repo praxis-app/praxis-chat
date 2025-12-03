@@ -34,10 +34,9 @@ serversRouter.get('/default', getDefaultServer);
 // Protected routes
 serversRouter
   .use(authenticate)
-  .use(['/slug/:slug', '/:serverId'], setServerMemberActivity)
   .get('/', getServers)
-  .get('/slug/:slug', getServerBySlug)
-  .get('/:serverId', getServerById)
+  .get('/slug/:slug', setServerMemberActivity, getServerBySlug)
+  .get('/:serverId', setServerMemberActivity, getServerById)
   .post('/', createServer)
   .put('/:serverId', updateServer)
   .delete('/:serverId', deleteServer);
