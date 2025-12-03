@@ -66,7 +66,7 @@ export const getUsersEligibleForServer = async (serverId: string) => {
     throw new Error('Server not found');
   }
 
-  const userIds = server.members.map(({ id }) => id);
+  const userIds = server.members.map(({ userId }) => userId);
   const users = await userRepository.find({
     where: {
       id: Not(In(userIds)),
