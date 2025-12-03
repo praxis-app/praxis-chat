@@ -7,6 +7,7 @@ import { serverInvitesRouter } from '../../invites/invites.router';
 import { serverConfigsRouter } from '../../server-configs/server-configs.router';
 import { serverRolesRouter } from '../../server-roles/routers/server-roles.router';
 import { setServerMemberActivity } from '../middleware/set-server-member-activity.middleware';
+import { validateServer } from '../middleware/validate-server.middleware';
 import {
   createServer,
   deleteServer,
@@ -37,6 +38,6 @@ serversRouter
   .get('/', getServers)
   .get('/slug/:slug', setServerMemberActivity, getServerBySlug)
   .get('/:serverId', setServerMemberActivity, getServerById)
-  .post('/', createServer)
-  .put('/:serverId', updateServer)
+  .post('/', validateServer, createServer)
+  .put('/:serverId', validateServer, updateServer)
   .delete('/:serverId', deleteServer);
