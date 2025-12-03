@@ -292,6 +292,16 @@ class ApiClient {
     return this.executeRequest<{ server: ServerRes }>('get', path);
   };
 
+  getServerMembers = async (serverId: string) => {
+    const path = `/servers/${serverId}/members`;
+    return this.executeRequest<{ users: UserRes[] }>('get', path);
+  };
+
+  getUsersEligibleForServer = async (serverId: string) => {
+    const path = `/servers/${serverId}/members/eligible`;
+    return this.executeRequest<{ users: UserRes[] }>('get', path);
+  };
+
   getServerBySlug = async (slug: string) => {
     const path = `/servers/slug/${slug}`;
     return this.executeRequest<{ server: ServerRes }>('get', path);

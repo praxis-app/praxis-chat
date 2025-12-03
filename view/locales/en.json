@@ -423,17 +423,24 @@
       "create": "Create Server",
       "edit": "Edit Server"
     },
+    "actions": {
+      "addMembers": "Add members"
+    },
     "form": {
       "name": "Name",
       "slug": "Slug",
       "description": "Description"
+    },
+    "descriptions": {
+      "addMembers": "Add members to this server."
     },
     "tabs": {
       "properties": "Properties",
       "members": "Members"
     },
     "prompts": {
-      "creating": "Creating server..."
+      "creating": "Creating server...",
+      "removeMember": "Remove server member?"
     },
     "errors": {
       "nameLength": "Name must be between 2 and 20 characters.",

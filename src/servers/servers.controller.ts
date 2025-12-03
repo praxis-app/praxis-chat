@@ -50,6 +50,11 @@ export const deleteServer = async (req: Request, res: Response) => {
   res.json(result);
 };
 
+export const getServerMembers = async (req: Request, res: Response) => {
+  const users = await serversService.getServerMembers(req.params.serverId);
+  res.json({ users });
+};
+
 export const getUsersEligibleForServer = async (
   req: Request,
   res: Response,

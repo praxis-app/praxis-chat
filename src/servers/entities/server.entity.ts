@@ -27,7 +27,9 @@ export class Server {
   @Column({ type: 'varchar', nullable: true })
   description: string | null;
 
-  @OneToMany(() => ServerMember, (member) => member.server)
+  @OneToMany(() => ServerMember, (member) => member.server, {
+    cascade: true,
+  })
   members: ServerMember[];
 
   @OneToMany(() => Channel, (channel) => channel.server)

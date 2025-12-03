@@ -1,8 +1,10 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
 import { ServerForm } from '@/components/servers/server-form';
+import { ServerMember } from '@/components/servers/server-member';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
@@ -19,10 +21,13 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { handleError } from '@/lib/error.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
+import { UserRes } from '@/types/user.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { LuChevronRight, LuPlus } from 'react-icons/lu';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 enum EditServerTabName {
   Properties = 'properties',
@@ -31,6 +36,8 @@ enum EditServerTabName {
 
 export const EditServerPage = () => {
   const [activeTab, setActiveTab] = useState(EditServerTabName.Properties);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,9 +50,10 @@ export const EditServerPage = () => {
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
 
+  // TODO: Replace with fetch for a single server
   const {
     data: serversData,
-    isPending: isServersPending,
+    isLoading: isServersLoading,
     error: serversError,
   } = useQuery({
     queryKey: ['servers'],
@@ -54,6 +62,38 @@ export const EditServerPage = () => {
   });
 
   const server = serversData?.servers.find((s) => s.id === serverId);
+
+  const serverQueriesEnabled =
+    activeTab === EditServerTabName.Members &&
+    !isAbilityLoading &&
+    canManageServers &&
+    !!serverId;
+
+  const {
+    data: serverMembersData,
+    isLoading: isServerMembersLoading,
+    error: serverMembersError,
+  } = useQuery({
+    queryKey: ['servers', serverId, 'members'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerMembers(serverId);
+    },
+    enabled: serverQueriesEnabled,
+  });
+
+  const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
+    queryKey: ['servers', serverId, 'members', 'eligible'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getUsersEligibleForServer(serverId);
+    },
+    enabled: serverQueriesEnabled,
+  });
 
   const { mutateAsync: updateServer, isPending: isUpdatePending } = useMutation(
     {
@@ -110,6 +150,47 @@ export const EditServerPage = () => {
     },
   });
 
+  const { mutate: addMembers } = useMutation({
+    mutationFn: async () => {
+      if (!serverId || !eligibleUsersData) {
+        return;
+      }
+
+      await api.addServerMembers(serverId, selectedUserIds);
+
+      const membersToAdd = selectedUserIds
+        .map((id) => eligibleUsersData.users.find((user) => user.id === id))
+        .filter(Boolean) as UserRes[];
+
+      queryClient.setQueryData<{ users: UserRes[] } | undefined>(
+        ['servers', serverId, 'members'],
+        (oldData) => {
+          if (!oldData) {
+            return { users: membersToAdd };
+          }
+
+          return { users: [...oldData.users, ...membersToAdd] };
+        },
+      );
+
+      queryClient.setQueryData<{ users: UserRes[] } | undefined>(
+        ['servers', serverId, 'members', 'eligible'],
+        {
+          users: eligibleUsersData.users.filter(
+            (user) => !selectedUserIds.includes(user.id),
+          ),
+        },
+      );
+
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+      setSelectedUserIds([]);
+      setIsAddMemberDialogOpen(false);
+    },
+    onError(error: Error) {
+      handleError(error);
+    },
+  });
+
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam === EditServerTabName.Members) {
@@ -134,7 +215,7 @@ export const EditServerPage = () => {
     deleteServer();
   };
 
-  if (isAbilityLoading || isServersPending) {
+  if (isAbilityLoading || isServersLoading || isServerMembersLoading) {
     return null;
   }
 
@@ -149,8 +230,12 @@ export const EditServerPage = () => {
     );
   }
 
+  if (serversError || serverMembersError || eligibleUsersError) {
+    return <p>{t('errors.somethingWentWrong')}</p>;
+  }
+
   if (!server) {
-    return <p>{serversError ? t('errors.somethingWentWrong') : null}</p>;
+    return null;
   }
 
   return (
@@ -222,7 +307,72 @@ export const EditServerPage = () => {
           </TabsContent>
 
           <TabsContent value={EditServerTabName.Members}>
-            <p className="text-muted-foreground">{t('prompts.inDev')}</p>
+            <Card
+              className="mb-3 cursor-pointer"
+              onClick={() => setIsAddMemberDialogOpen(true)}
+            >
+              <CardContent className="flex items-center justify-between py-0.5">
+                <div className="flex items-center">
+                  <LuPlus className="mr-3 size-6" />
+                  <span>{t('servers.actions.addMembers')}</span>
+                </div>
+                <LuChevronRight className="size-6" />
+              </CardContent>
+            </Card>
+
+            {!!serverMembersData?.users.length && (
+              <Card className="py-5">
+                <CardContent className="px-5">
+                  {serverMembersData.users.map((member) => (
+                    <ServerMember
+                      serverId={serverId!}
+                      member={member}
+                      key={member.id}
+                    />
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {serverMembersData && serverMembersData.users.length === 0 && (
+              <p className="text-muted-foreground">{t('prompts.noContent')}</p>
+            )}
+
+            <Dialog
+              open={isAddMemberDialogOpen}
+              onOpenChange={() => setIsAddMemberDialogOpen(false)}
+            >
+              <DialogContent className="overflow-y-auto pt-10 md:max-h-[90vh] md:min-w-xl">
+                <DialogHeader>
+                  <DialogTitle>{t('servers.actions.addMembers')}</DialogTitle>
+                  <VisuallyHidden>
+                    <DialogDescription>
+                      {t('servers.descriptions.addMembers')}
+                    </DialogDescription>
+                  </VisuallyHidden>
+                </DialogHeader>
+                <div className="space-y-0.5">
+                  {eligibleUsersData?.users.map((user) => (
+                    <RoleMemberOption
+                      key={user.id}
+                      selectedUserIds={selectedUserIds}
+                      setSelectedUserIds={setSelectedUserIds}
+                      className="px-3.5"
+                      user={user}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <Button
+                    onClick={() => addMembers()}
+                    className="w-30"
+                    disabled={!selectedUserIds.length}
+                  >
+                    {t('servers.actions.addMembers')}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
       </Container>

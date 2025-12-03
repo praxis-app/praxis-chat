@@ -33,6 +33,30 @@ export const getDefaultServer = async () => {
   return server;
 };
 
+export const getServerMembers = async (serverId: string) => {
+  const members = await serverMemberRepository.find({
+    where: { serverId },
+    relations: ['user'],
+    order: { createdAt: 'ASC' },
+  });
+
+  if (!members.length) {
+    return [];
+  }
+
+  const users = members.map((member) => member.user);
+  const profilePictures = await usersService.getUserProfilePicturesMap(
+    users.map((user) => user.id),
+  );
+
+  return users.map((user) => ({
+    id: user.id,
+    name: user.name,
+    displayName: user.displayName,
+    profilePicture: profilePictures[user.id],
+  }));
+};
+
 export const getUsersEligibleForServer = async (serverId: string) => {
   const server = await serverRepository.findOne({
     where: { id: serverId },
@@ -178,7 +202,11 @@ export const addServerMembers = async (serverId: string, userIds: string[]) => {
       locked: false,
     },
   });
-  const members = [...server.members, ...newMembers];
+  const shapedNewMembers = newMembers.map((member) => ({
+    userId: member.id,
+    serverId,
+  }));
+  const members = [...server.members, ...shapedNewMembers];
 
   await serverRepository.save({
     ...server,
