@@ -1,9 +1,19 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
 import { ServerForm } from '@/components/servers/server-form';
+import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
@@ -21,6 +31,7 @@ enum EditServerTabName {
 
 export const EditServerPage = () => {
   const [activeTab, setActiveTab] = useState(EditServerTabName.Properties);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { serverId } = useParams<{ serverId: string }>();
@@ -76,6 +87,29 @@ export const EditServerPage = () => {
     },
   );
 
+  const { mutate: deleteServer, isPending: isDeletePending } = useMutation({
+    mutationFn: async () => {
+      if (!serverId) {
+        return;
+      }
+      await api.deleteServer(serverId);
+      queryClient.setQueryData<{ servers: ServerRes[] }>(
+        ['servers'],
+        (oldData) => {
+          if (!oldData) {
+            return { servers: [] };
+          }
+          return {
+            servers: oldData.servers.filter((s) => s.id !== serverId),
+          };
+        },
+      );
+    },
+    onError(error: Error) {
+      handleError(error);
+    },
+  });
+
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam === EditServerTabName.Members) {
@@ -92,6 +126,12 @@ export const EditServerPage = () => {
       return;
     }
     setSearchParams({});
+  };
+
+  const handleDeleteBtnClick = async () => {
+    setIsConfirmDialogOpen(false);
+    await navigate(NavigationPaths.ManageServers);
+    deleteServer();
   };
 
   if (isAbilityLoading || isServersPending) {
@@ -132,7 +172,7 @@ export const EditServerPage = () => {
           </TabsList>
 
           <TabsContent value={EditServerTabName.Properties}>
-            <Card className="pb-1.5">
+            <Card className="mb-1 pb-1.5">
               <CardContent>
                 <ServerForm
                   className="pb-6"
@@ -142,6 +182,43 @@ export const EditServerPage = () => {
                 />
               </CardContent>
             </Card>
+
+            <DeleteButton
+              className="mt-2"
+              onClick={() => setIsConfirmDialogOpen(true)}
+            >
+              {t('actions.delete')}
+            </DeleteButton>
+
+            <Dialog
+              open={isConfirmDialogOpen}
+              onOpenChange={() => setIsConfirmDialogOpen(false)}
+            >
+              <DialogContent>
+                <DialogHeader className="pt-6">
+                  <DialogTitle>
+                    {t('prompts.deleteItem', { itemType: 'server' })}
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogDescription>{server.name}</DialogDescription>
+
+                <DialogFooter className="flex flex-row justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsConfirmDialogOpen(false)}
+                  >
+                    {t('actions.cancel')}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteBtnClick}
+                    disabled={isDeletePending}
+                  >
+                    {t('actions.delete')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           <TabsContent value={EditServerTabName.Members}>
