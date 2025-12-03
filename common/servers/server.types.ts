@@ -1,7 +1,7 @@
 import * as zod from 'zod';
 import { ServerErrorKeys } from './server.constants';
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const serverFormSchema = zod.object({
   name: zod
@@ -14,7 +14,7 @@ export const serverFormSchema = zod.object({
     .trim()
     .min(2, { message: ServerErrorKeys.SlugLength })
     .max(20, { message: ServerErrorKeys.SlugLength })
-    .regex(slugPattern, { message: ServerErrorKeys.SlugInvalid }),
+    .regex(SLUG_PATTERN, { message: ServerErrorKeys.SlugInvalid }),
   description: zod
     .string()
     .trim()
