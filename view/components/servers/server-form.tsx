@@ -167,7 +167,7 @@ export const ServerForm = ({
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="mb-5">
               <FormLabel>{t('servers.form.description')}</FormLabel>
               <FormControl>
                 <Textarea {...field} rows={3} />
@@ -183,13 +183,11 @@ export const ServerForm = ({
           )}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitDisabled()}
-          className="w-full sm:w-auto"
-        >
-          {submitLabel}
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isSubmitDisabled()} className="w-22">
+            {submitLabel}
+          </Button>
+        </div>
       </form>
     </Form>
   );
