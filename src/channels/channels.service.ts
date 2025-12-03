@@ -43,10 +43,11 @@ export const getChannel = (serverId: string, channelId: string) => {
 };
 
 export const getJoinedChannels = async (serverId: string, userId: string) => {
-  return channelRepository.find({
+  const channels = await channelRepository.find({
     where: { serverId, members: { userId } },
     order: { createdAt: 'ASC' },
   });
+  return channels;
 };
 
 export const getChannelMembers = (channelId: string) => {
