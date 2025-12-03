@@ -1,12 +1,13 @@
 import { api } from '@/client/api-client';
 import { handleError } from '@/lib/error.utils';
-import { cn, t } from '@/lib/shared.utils';
+import { cn } from '@/lib/shared.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
+import { ServerErrorKeys } from '@common/servers/server.constants';
+import { serverFormSchema } from '@common/servers/server.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import * as zod from 'zod';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import {
@@ -19,30 +20,6 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-
-const serverFormSchema = zod.object({
-  name: zod
-    .string()
-    .trim()
-    .min(2, {
-      message: t('errors.fieldRequired'),
-    }),
-  slug: zod
-    .string()
-    .trim()
-    .min(2, {
-      message: t('errors.fieldRequired'),
-    })
-    .regex(/^[a-z0-9-]+$/, {
-      message: t('servers.errors.invalidSlug'),
-    }),
-  description: zod
-    .string()
-    .trim()
-    .min(1, {
-      message: t('errors.fieldRequired'),
-    }),
-});
 
 export const CreateServerForm = () => {
   const { t } = useTranslation();
@@ -118,7 +95,13 @@ export const CreateServerForm = () => {
                       }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    errorOverrides={{
+                      [ServerErrorKeys.NameLength]: t(
+                        'servers.errors.nameLength',
+                      ),
+                    }}
+                  />
                 </FormItem>
               )}
             />
@@ -139,7 +122,16 @@ export const CreateServerForm = () => {
                       }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    errorOverrides={{
+                      [ServerErrorKeys.SlugLength]: t(
+                        'servers.errors.slugLength',
+                      ),
+                      [ServerErrorKeys.SlugInvalid]: t(
+                        'servers.errors.invalidSlug',
+                      ),
+                    }}
+                  />
                 </FormItem>
               )}
             />
@@ -153,7 +145,13 @@ export const CreateServerForm = () => {
                   <FormControl>
                     <Textarea {...field} rows={3} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage
+                    errorOverrides={{
+                      [ServerErrorKeys.DescriptionLength]: t(
+                        'servers.errors.descriptionLength',
+                      ),
+                    }}
+                  />
                 </FormItem>
               )}
             />

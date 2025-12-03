@@ -436,7 +436,10 @@
       "creating": "Creating server..."
     },
     "errors": {
-      "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens."
+      "nameLength": "Name must be between 2 and 20 characters.",
+      "slugLength": "Slug must be between 2 and 20 characters.",
+      "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.",
+      "descriptionLength": "Description must be between 1 and 255 characters."
     }
   },
 

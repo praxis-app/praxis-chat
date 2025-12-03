@@ -18,36 +18,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { handleError } from '@/lib/error.utils';
-import { cn, t } from '@/lib/shared.utils';
+import { cn } from '@/lib/shared.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
+import { ServerErrorKeys } from '@common/servers/server.constants';
+import { serverFormSchema } from '@common/servers/server.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import * as zod from 'zod';
 
 enum EditServerTabName {
   Properties = 'properties',
   Members = 'members',
 }
-
-const serverFormSchema = zod.object({
-  name: zod
-    .string()
-    .trim()
-    .min(2, { message: t('errors.fieldRequired') }),
-  slug: zod
-    .string()
-    .trim()
-    .min(2, { message: t('errors.fieldRequired') })
-    .regex(/^[a-z0-9-]+$/, { message: t('servers.errors.invalidSlug') }),
-  description: zod
-    .string()
-    .trim()
-    .min(1, { message: t('errors.fieldRequired') }),
-});
 
 export const EditServerPage = () => {
   const [activeTab, setActiveTab] = useState(EditServerTabName.Properties);
@@ -188,7 +173,13 @@ export const EditServerPage = () => {
                           <FormControl>
                             <Input {...field} autoComplete="off" />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            errorOverrides={{
+                              [ServerErrorKeys.NameLength]: t(
+                                'servers.errors.nameLength',
+                              ),
+                            }}
+                          />
                         </FormItem>
                       )}
                     />
@@ -202,7 +193,16 @@ export const EditServerPage = () => {
                           <FormControl>
                             <Input {...field} autoComplete="off" />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            errorOverrides={{
+                              [ServerErrorKeys.SlugLength]: t(
+                                'servers.errors.slugLength',
+                              ),
+                              [ServerErrorKeys.SlugInvalid]: t(
+                                'servers.errors.invalidSlug',
+                              ),
+                            }}
+                          />
                         </FormItem>
                       )}
                     />
@@ -216,7 +216,13 @@ export const EditServerPage = () => {
                           <FormControl>
                             <Textarea {...field} rows={3} />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage
+                            errorOverrides={{
+                              [ServerErrorKeys.DescriptionLength]: t(
+                                'servers.errors.descriptionLength',
+                              ),
+                            }}
+                          />
                         </FormItem>
                       )}
                     />
