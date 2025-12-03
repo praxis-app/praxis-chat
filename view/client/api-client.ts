@@ -287,8 +287,13 @@ class ApiClient {
     return this.executeRequest<{ servers: ServerRes[] }>('get', path);
   };
 
+  getServerById = async (serverId: string) => {
+    const path = `/servers/${serverId}`;
+    return this.executeRequest<{ server: ServerRes }>('get', path);
+  };
+
   getServerBySlug = async (slug: string) => {
-    const path = `/servers/${slug}`;
+    const path = `/servers/slug/${slug}`;
     return this.executeRequest<{ server: ServerRes }>('get', path);
   };
 

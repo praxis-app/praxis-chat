@@ -11,6 +11,7 @@ import {
   createServer,
   deleteServer,
   getDefaultServer,
+  getServerById,
   getServerBySlug,
   getServers,
   updateServer,
@@ -33,9 +34,10 @@ serversRouter.get('/default', getDefaultServer);
 // Protected routes
 serversRouter
   .use(authenticate)
-  .use(['/:slug', '/:serverId'], setServerMemberActivity)
+  .use(['/slug/:slug', '/:serverId'], setServerMemberActivity)
   .get('/', getServers)
-  .get('/:slug', getServerBySlug)
+  .get('/slug/:slug', getServerBySlug)
+  .get('/:serverId', getServerById)
   .post('/', createServer)
   .put('/:serverId', updateServer)
   .delete('/:serverId', deleteServer);

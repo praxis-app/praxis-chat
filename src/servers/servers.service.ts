@@ -108,6 +108,14 @@ export const deleteServer = async (serverId: string) => {
   return serverRepository.delete(serverId);
 };
 
+export const getServerById = async (serverId: string) => {
+  const server = await serverRepository.findOne({ where: { id: serverId } });
+  if (!server) {
+    throw new Error(`Server with id ${serverId} not found`);
+  }
+  return server;
+};
+
 export const getServerBySlug = async (slug: string) => {
   const server = await serverRepository.findOne({ where: { slug } });
   if (!server) {

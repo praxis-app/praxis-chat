@@ -6,6 +6,11 @@ export const getServers = async (_req: Request, res: Response) => {
   res.json({ servers });
 };
 
+export const getServerById = async (req: Request, res: Response) => {
+  const server = await serversService.getServerById(req.params.serverId);
+  res.json({ server });
+};
+
 export const getServerBySlug = async (req: Request, res: Response) => {
   const server = await serversService.getServerBySlug(req.params.slug);
   res.json({ server });
