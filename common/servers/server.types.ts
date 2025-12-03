@@ -18,6 +18,6 @@ export const serverFormSchema = zod.object({
   description: zod
     .string()
     .trim()
-    .min(1, { message: ServerErrorKeys.DescriptionLength })
-    .max(255, { message: ServerErrorKeys.DescriptionLength }),
+    .max(255, { message: ServerErrorKeys.DescriptionLength })
+    .optional(),
 });
