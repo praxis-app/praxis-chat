@@ -225,8 +225,9 @@ export const removeServerMembers = async (
   if (!server) {
     throw new Error('Server not found');
   }
-  server.members = server.members.filter(
-    (member) => !userIds.includes(member.id),
-  );
-  await serverRepository.save(server);
+
+  await serverMemberRepository.delete({
+    serverId,
+    userId: In(userIds),
+  });
 };
