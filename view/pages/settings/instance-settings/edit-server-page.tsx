@@ -50,18 +50,20 @@ export const EditServerPage = () => {
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
 
-  // TODO: Replace with fetch for a single server
   const {
-    data: serversData,
-    isLoading: isServersLoading,
-    error: serversError,
+    data: serverData,
+    isLoading: isServerLoading,
+    error: serverError,
   } = useQuery({
-    queryKey: ['servers'],
-    queryFn: api.getServers,
-    enabled: canManageServers && !isAbilityLoading,
+    queryKey: ['servers', serverId],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerById(serverId);
+    },
+    enabled: canManageServers && !isAbilityLoading && !!serverId,
   });
-
-  const server = serversData?.servers.find((s) => s.id === serverId);
 
   const serverQueriesEnabled =
     activeTab === EditServerTabName.Members &&
@@ -98,26 +100,16 @@ export const EditServerPage = () => {
   const { mutateAsync: updateServer, isPending: isUpdatePending } = useMutation(
     {
       mutationFn: async (values: ServerReq) => {
-        if (!serverId || !server) {
-          throw new Error('Server ID is required');
+        if (!serverId || !serverData?.server) {
+          throw new Error('Server ID and server data are required');
         }
         await api.updateServer(serverId, values);
 
-        const updatedServer = { ...server, ...values } as ServerRes;
+        const updatedServer = { ...serverData.server, ...values };
 
-        queryClient.setQueryData<{ servers: ServerRes[] }>(
-          ['servers'],
-          (oldData) => {
-            if (!oldData) {
-              return { servers: [] };
-            }
-            return {
-              servers: oldData.servers.map((s) =>
-                s.id === serverId ? updatedServer : s,
-              ),
-            };
-          },
-        );
+        queryClient.setQueryData<{ server: ServerRes }>(['servers', serverId], {
+          server: updatedServer,
+        });
 
         return updatedServer;
       },
@@ -133,6 +125,7 @@ export const EditServerPage = () => {
         return;
       }
       await api.deleteServer(serverId);
+
       queryClient.setQueryData<{ servers: ServerRes[] }>(
         ['servers'],
         (oldData) => {
@@ -144,6 +137,7 @@ export const EditServerPage = () => {
           };
         },
       );
+      queryClient.removeQueries({ queryKey: ['servers', serverId] });
     },
     onError(error: Error) {
       handleError(error);
@@ -215,7 +209,7 @@ export const EditServerPage = () => {
     deleteServer();
   };
 
-  if (isAbilityLoading || isServersLoading || isServerMembersLoading) {
+  if (isAbilityLoading || isServerLoading || isServerMembersLoading) {
     return null;
   }
 
@@ -230,18 +224,18 @@ export const EditServerPage = () => {
     );
   }
 
-  if (serversError || serverMembersError || eligibleUsersError) {
+  if (serverError || serverMembersError || eligibleUsersError) {
     return <p>{t('errors.somethingWentWrong')}</p>;
   }
 
-  if (!server) {
+  if (!serverData?.server) {
     return null;
   }
 
   return (
     <>
       <TopNav
-        header={server.name}
+        header={serverData.server.name}
         onBackClick={() => navigate(NavigationPaths.ManageServers)}
       />
 
@@ -261,7 +255,7 @@ export const EditServerPage = () => {
               <CardContent>
                 <ServerForm
                   className="pb-6"
-                  editServer={server}
+                  editServer={serverData.server}
                   isSubmitting={isUpdatePending}
                   onSubmit={(fv) => updateServer(fv)}
                 />
@@ -285,7 +279,7 @@ export const EditServerPage = () => {
                     {t('prompts.deleteItem', { itemType: 'server' })}
                   </DialogTitle>
                 </DialogHeader>
-                <DialogDescription>{server.name}</DialogDescription>
+                <DialogDescription>{serverData.server.name}</DialogDescription>
 
                 <DialogFooter className="flex flex-row justify-end gap-2">
                   <Button
