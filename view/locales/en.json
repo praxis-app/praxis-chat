@@ -516,6 +516,7 @@
     "labels": {
       "serverSettings": "Server settings",
       "instanceSettings": "Instance settings",
+      "switchServers": "Switch servers",
       "instanceRoles": "Instance Roles",
       "proposals": "Proposals",
       "invites": "Invites",

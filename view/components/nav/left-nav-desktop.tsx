@@ -11,6 +11,7 @@ import {
   MdOutlineSettings,
   MdSettings,
 } from 'react-icons/md';
+import { TbSwitchHorizontal } from 'react-icons/tb';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import appIconImg from '../../assets/images/app-icon.png';
@@ -109,6 +110,13 @@ export const LeftNavDesktop = ({ me }: Props) => {
                   {t('navigation.labels.instanceSettings')}
                 </DropdownMenuItem>
               </Link>
+            )}
+
+            {me && me.serversCount > 1 && (
+              <DropdownMenuItem className="text-md">
+                <TbSwitchHorizontal className="text-foreground size-5" />
+                {t('navigation.labels.switchServers')}
+              </DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
