@@ -158,7 +158,8 @@ export const EditServerPage = () => {
         return;
       }
       await api.deleteServer(serverId);
-
+    },
+    onSuccess() {
       queryClient.setQueryData<{ servers: ServerRes[] }>(
         ['servers'],
         (oldData) => {
@@ -171,6 +172,8 @@ export const EditServerPage = () => {
         },
       );
       queryClient.removeQueries({ queryKey: ['servers', serverId] });
+
+      navigate(NavigationPaths.ManageServers);
     },
     onError(error: Error) {
       handleError(error);
@@ -238,7 +241,6 @@ export const EditServerPage = () => {
 
   const handleDeleteBtnClick = async () => {
     setIsConfirmDialogOpen(false);
-    await navigate(NavigationPaths.ManageServers);
     deleteServer();
   };
 
@@ -298,6 +300,7 @@ export const EditServerPage = () => {
             <DeleteButton
               className="mt-2"
               onClick={() => setIsConfirmDialogOpen(true)}
+              disabled={serverData.server.isDefaultServer}
             >
               {t('actions.delete')}
             </DeleteButton>
