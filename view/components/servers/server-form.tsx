@@ -203,6 +203,7 @@ export const ServerForm = ({
                   checked={!!field.value}
                   onCheckedChange={(checked) => field.onChange(checked)}
                   aria-label={t('servers.form.defaultServer')}
+                  disabled={editServer?.isDefaultServer}
                 />
               </FormControl>
             </FormItem>
