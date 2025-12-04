@@ -12,7 +12,7 @@ export const useMeQuery = (
 ) => {
   const { setIsAppLoading, setIsLoggedIn } = useAppStore();
 
-  const defaultOptions = {
+  const defaultOptions: Partial<UseQueryOptions<{ user: CurrentUser }>> = {
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
