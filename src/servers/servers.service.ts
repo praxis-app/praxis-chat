@@ -21,6 +21,22 @@ export const getServers = async () => {
   });
 };
 
+export const getServerById = async (serverId: string) => {
+  const server = await serverRepository.findOne({ where: { id: serverId } });
+  if (!server) {
+    throw new Error(`Server with id ${serverId} not found`);
+  }
+  return server;
+};
+
+export const getServerBySlug = async (slug: string) => {
+  const server = await serverRepository.findOne({ where: { slug } });
+  if (!server) {
+    throw new Error(`Server with slug ${slug} not found`);
+  }
+  return server;
+};
+
 export const getDefaultServer = async () => {
   const instanceConfig = await getInstanceConfigSafely();
 
@@ -130,22 +146,6 @@ export const deleteServer = async (serverId: string) => {
     throw new Error(`Server with id ${serverId} not found`);
   }
   return serverRepository.delete(serverId);
-};
-
-export const getServerById = async (serverId: string) => {
-  const server = await serverRepository.findOne({ where: { id: serverId } });
-  if (!server) {
-    throw new Error(`Server with id ${serverId} not found`);
-  }
-  return server;
-};
-
-export const getServerBySlug = async (slug: string) => {
-  const server = await serverRepository.findOne({ where: { slug } });
-  if (!server) {
-    throw new Error(`Server with slug ${slug} not found`);
-  }
-  return server;
 };
 
 export const createInitialServer = async () => {
