@@ -1,7 +1,10 @@
 import { In, Not, QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
-import { getInstanceConfigSafely } from '../instance/instance.service';
+import {
+  getInstanceConfigSafely,
+  updateInstanceConfig,
+} from '../instance/instance.service';
 import { ServerConfig } from '../server-configs/entities/server-config.entity';
 import { User } from '../users/user.entity';
 import { ServerMember } from './entities/server-member.entity';
@@ -124,6 +127,7 @@ export const createServer = async (
   slug: string,
   description: string | undefined,
   currentUserId: string,
+  isDefaultServer?: boolean,
 ) => {
   const server = await serverRepository.save({
     name,
@@ -133,7 +137,21 @@ export const createServer = async (
     config: serverConfigRepository.create(),
   });
   await channelsService.initializeGeneralChannel(server.id);
-  return server;
+
+  if (isDefaultServer) {
+    const instanceConfig = await updateInstanceConfig({
+      defaultServerId: server.id,
+    });
+    return {
+      ...server,
+      isDefaultServer: server.id === instanceConfig.defaultServerId,
+    };
+  }
+
+  return {
+    ...server,
+    isDefaultServer: false,
+  };
 };
 
 export const updateServer = async (
@@ -141,16 +159,38 @@ export const updateServer = async (
   name: string,
   slug: string,
   description: string | undefined,
+  isDefaultServer?: boolean,
 ) => {
-  const server = await serverRepository.findOne({ where: { id: serverId } });
+  const server = await serverRepository.findOne({
+    where: { id: serverId },
+  });
   if (!server) {
     throw new Error(`Server with id ${serverId} not found`);
   }
-  return serverRepository.update(serverId, {
+
+  const updatedServer = await serverRepository.save({
+    ...server,
     name,
     slug,
     description,
   });
+
+  if (isDefaultServer) {
+    const instanceConfig = await updateInstanceConfig({
+      defaultServerId: updatedServer.id,
+    });
+    return {
+      ...updatedServer,
+      isDefaultServer: updatedServer.id === instanceConfig.defaultServerId,
+    };
+  }
+
+  const instanceConfig = await getInstanceConfigSafely();
+
+  return {
+    ...updatedServer,
+    isDefaultServer: updatedServer.id === instanceConfig.defaultServerId,
+  };
 };
 
 export const deleteServer = async (serverId: string) => {

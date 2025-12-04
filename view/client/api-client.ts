@@ -321,7 +321,7 @@ class ApiClient {
 
   updateServer = async (serverId: string, data: ServerReq) => {
     const path = `/servers/${serverId}`;
-    return this.executeRequest<void>('put', path, {
+    return this.executeRequest<{ server: ServerRes }>('put', path, {
       data,
     });
   };
@@ -451,7 +451,9 @@ class ApiClient {
 
   updateInstanceConfig = async (data: InstanceConfigReq) => {
     const path = `/instance/config`;
-    return this.executeRequest<void>('put', path, { data });
+    return this.executeRequest<{ instanceConfig: InstanceConfigRes }>('put', path, {
+      data,
+    });
   };
 
   // -------------------------------------------------------------------------

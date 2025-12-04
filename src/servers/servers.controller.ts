@@ -31,18 +31,20 @@ export const createServer = async (req: Request, res: Response) => {
     req.body.slug,
     req.body.description,
     res.locals.user.id,
+    req.body.isDefaultServer,
   );
   res.json({ server });
 };
 
 export const updateServer = async (req: Request, res: Response) => {
-  const result = await serversService.updateServer(
+  const server = await serversService.updateServer(
     req.params.serverId,
     req.body.name,
     req.body.slug,
     req.body.description,
+    req.body.isDefaultServer,
   );
-  res.json(result);
+  res.json({ server });
 };
 
 export const deleteServer = async (req: Request, res: Response) => {

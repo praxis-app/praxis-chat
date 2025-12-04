@@ -105,33 +105,35 @@ export const EditServerPage = () => {
         }
 
         const wasDefaultServer = serverData.server.isDefaultServer;
-        await api.updateServer(serverId, values);
-
-        const updatedServer = { ...serverData.server, ...values };
+        const updateResponse = await api.updateServer(serverId, values);
+        const { server: updatedServer } = updateResponse;
 
         queryClient.setQueryData<{ server: ServerRes }>(['servers', serverId], {
           server: updatedServer,
         });
 
-        queryClient.setQueryData<{ servers: ServerRes[] }>(['servers'], (old) => {
-          if (!old) {
-            return old;
-          }
+        queryClient.setQueryData<{ servers: ServerRes[] }>(
+          ['servers'],
+          (oldData) => {
+            if (!oldData) {
+              return oldData;
+            }
 
-          return {
-            servers: old.servers.map((server) => {
-              if (server.id === updatedServer.id) {
-                return updatedServer;
-              }
+            return {
+              servers: oldData.servers.map((server) => {
+                if (server.id === updatedServer.id) {
+                  return updatedServer;
+                }
 
-              if (updatedServer.isDefaultServer) {
-                return { ...server, isDefaultServer: false };
-              }
+                if (updatedServer.isDefaultServer) {
+                  return { ...server, isDefaultServer: false };
+                }
 
-              return server;
-            }),
-          };
-        });
+                return server;
+              }),
+            };
+          },
+        );
 
         if (updatedServer.isDefaultServer) {
           queryClient.setQueryData<{ server: ServerRes }>(

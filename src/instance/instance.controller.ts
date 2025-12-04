@@ -7,6 +7,6 @@ export const getInstanceConfig = async (_req: Request, res: Response) => {
 };
 
 export const updateInstanceConfig = async (req: Request, res: Response) => {
-  const result = await instanceService.updateInstanceConfig(req.body);
-  res.json(result);
+  const instanceConfig = await instanceService.updateInstanceConfig(req.body);
+  res.json({ instanceConfig });
 };

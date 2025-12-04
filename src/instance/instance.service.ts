@@ -21,8 +21,6 @@ export const getInstanceConfigSafely = async () => {
 export const updateInstanceConfig = async ({
   defaultServerId,
 }: UpdateInstanceConfigDto) => {
-  const updates: Partial<InstanceConfig> = {};
-
   const instanceConfig = await getInstanceConfigSafely();
   if (!instanceConfig) {
     throw new Error('Instance config not found');
@@ -35,10 +33,10 @@ export const updateInstanceConfig = async ({
     if (!server) {
       throw new Error('Server not found');
     }
-    updates.defaultServerId = defaultServerId;
+    instanceConfig.defaultServerId = defaultServerId;
   }
 
-  return instanceConfigRepository.update(instanceConfig.id, updates);
+  return instanceConfigRepository.save(instanceConfig);
 };
 
 export const initializeInstance = async () => {
