@@ -9,12 +9,14 @@ import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Switch } from '../ui/switch';
 import { Textarea } from '../ui/textarea';
 
 interface Props {
@@ -39,17 +41,20 @@ export const ServerForm = ({
           name: editServer.name,
           slug: editServer.slug,
           description: editServer.description ?? '',
+          isDefaultServer: editServer.isDefaultServer,
         }
       : {
           name: '',
           slug: '',
           description: '',
+          isDefaultServer: false,
         },
     values: editServer
       ? {
           name: editServer.name,
           slug: editServer.slug,
           description: editServer.description ?? '',
+          isDefaultServer: editServer.isDefaultServer,
         }
       : undefined,
   });
@@ -70,17 +75,19 @@ export const ServerForm = ({
             name: result.name,
             slug: result.slug,
             description: result.description ?? '',
+            isDefaultServer: result.isDefaultServer,
           }
         : {
             name: editServer.name,
             slug: editServer.slug,
             description: editServer.description ?? '',
+            isDefaultServer: editServer.isDefaultServer,
           };
       form.reset(nextValues);
       return;
     }
 
-    form.reset({ name: '', slug: '', description: '' });
+    form.reset({ name: '', slug: '', description: '', isDefaultServer: false });
   };
 
   const isSubmitDisabled = () => {
@@ -179,6 +186,28 @@ export const ServerForm = ({
                   ),
                 }}
               />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="isDefaultServer"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <FormLabel>{t('servers.form.defaultServer')}</FormLabel>
+                <FormDescription>
+                  {t('servers.form.defaultServerDescription')}
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={!!field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                  aria-label={t('servers.form.defaultServer')}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

@@ -39,12 +39,24 @@ export const ManageServers = () => {
         queryClient.setQueryData<{ servers: ServerRes[] }>(
           ['servers'],
           (oldData) => {
-            if (!oldData) {
-              return { servers: [server] };
-            }
-            return { servers: [server, ...oldData.servers] };
+            const existingServers = oldData?.servers ?? [];
+            const normalizedServers = server.isDefaultServer
+              ? existingServers.map((s) => ({
+                  ...s,
+                  isDefaultServer: false,
+                }))
+              : existingServers;
+
+            return { servers: [server, ...normalizedServers] };
           },
         );
+
+        if (server.isDefaultServer) {
+          queryClient.setQueryData<{ server: ServerRes }>(
+            ['servers', 'default'],
+            { server },
+          );
+        }
 
         return server;
       },

@@ -103,6 +103,8 @@ export const EditServerPage = () => {
         if (!serverId || !serverData?.server) {
           throw new Error('Server ID and server data are required');
         }
+
+        const wasDefaultServer = serverData.server.isDefaultServer;
         await api.updateServer(serverId, values);
 
         const updatedServer = { ...serverData.server, ...values };
@@ -110,6 +112,35 @@ export const EditServerPage = () => {
         queryClient.setQueryData<{ server: ServerRes }>(['servers', serverId], {
           server: updatedServer,
         });
+
+        queryClient.setQueryData<{ servers: ServerRes[] }>(['servers'], (old) => {
+          if (!old) {
+            return old;
+          }
+
+          return {
+            servers: old.servers.map((server) => {
+              if (server.id === updatedServer.id) {
+                return updatedServer;
+              }
+
+              if (updatedServer.isDefaultServer) {
+                return { ...server, isDefaultServer: false };
+              }
+
+              return server;
+            }),
+          };
+        });
+
+        if (updatedServer.isDefaultServer) {
+          queryClient.setQueryData<{ server: ServerRes }>(
+            ['servers', 'default'],
+            { server: updatedServer },
+          );
+        } else if (wasDefaultServer) {
+          queryClient.invalidateQueries({ queryKey: ['servers', 'default'] });
+        }
 
         return updatedServer;
       },

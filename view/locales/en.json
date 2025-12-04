@@ -426,10 +426,15 @@
     "actions": {
       "addMembers": "Add members"
     },
+    "labels": {
+      "default": "Default"
+    },
     "form": {
       "name": "Name",
       "slug": "Slug",
-      "description": "Description"
+      "description": "Description",
+      "defaultServer": "Default server",
+      "defaultServerDescription": "New visitors and users without an invite start here."
     },
     "descriptions": {
       "addMembers": "Add members to this server."

@@ -1,8 +1,10 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { cn } from '@/lib/shared.utils';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { cn } from '@/lib/shared.utils';
 import { ServerRes } from '@/types/server.types';
+import { useTranslation } from 'react-i18next';
 import { MdArrowForwardIos } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +13,9 @@ interface Props {
 }
 
 export const ServerListItem = ({ server }: Props) => {
+  const { t } = useTranslation();
   const isAboveMd = useIsDesktop();
+
   const editPath = `${NavigationPaths.ManageServers}/${server.id}/edit`;
 
   const getInitial = (value: string) => {
@@ -40,6 +44,11 @@ export const ServerListItem = ({ server }: Props) => {
                 <span className="text-muted-foreground truncate text-xs font-normal">
                   /s/{server.slug}
                 </span>
+                {server.isDefaultServer && (
+                  <Badge variant="secondary" className="uppercase">
+                    {t('servers.labels.default')}
+                  </Badge>
+                )}
               </div>
 
               {server.description && (

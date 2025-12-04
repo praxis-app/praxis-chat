@@ -20,4 +20,5 @@ export const serverFormSchema = zod.object({
     .trim()
     .max(255, { message: ServerErrorKeys.DescriptionLength })
     .optional(),
+  isDefaultServer: zod.boolean().optional(),
 });
