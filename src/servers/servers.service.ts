@@ -198,6 +198,10 @@ export const deleteServer = async (serverId: string) => {
   if (!server) {
     throw new Error(`Server with id ${serverId} not found`);
   }
+  const serverCount = await serverRepository.count();
+  if (serverCount === 1) {
+    throw new Error('There must be at least one server per instance');
+  }
   return serverRepository.delete(serverId);
 };
 
