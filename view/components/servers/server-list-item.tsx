@@ -24,7 +24,7 @@ export const ServerListItem = ({ server }: Props) => {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Avatar className="size-10">
-              <AvatarFallback className="font-semibold uppercase">
+              <AvatarFallback className="bg-accent font-semibold uppercase">
                 {getInitial(server.name)}
               </AvatarFallback>
             </Avatar>
