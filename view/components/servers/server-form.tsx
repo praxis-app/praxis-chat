@@ -87,7 +87,12 @@ export const ServerForm = ({
       return;
     }
 
-    form.reset({ name: '', slug: '', description: '', isDefaultServer: false });
+    form.reset({
+      name: '',
+      slug: '',
+      description: '',
+      isDefaultServer: false,
+    });
   };
 
   const isSubmitDisabled = () => {
@@ -99,14 +104,6 @@ export const ServerForm = ({
     }
     return false;
   };
-
-  const submitLabel = editServer
-    ? isSubmitting
-      ? t('states.saving')
-      : t('actions.save')
-    : isSubmitting
-      ? t('servers.prompts.creating')
-      : t('actions.create');
 
   return (
     <Form {...form}>
@@ -214,7 +211,7 @@ export const ServerForm = ({
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitDisabled()} className="w-22">
-            {submitLabel}
+            {editServer ? t('actions.save') : t('actions.create')}
           </Button>
         </div>
       </form>
