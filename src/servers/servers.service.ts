@@ -202,6 +202,10 @@ export const deleteServer = async (serverId: string) => {
   if (serverCount === 1) {
     throw new Error('There must be at least one server per instance');
   }
+  const instanceConfig = await getInstanceConfigSafely();
+  if (server.id === instanceConfig.defaultServerId) {
+    throw new Error('The default server cannot be deleted');
+  }
   return serverRepository.delete(serverId);
 };
 
