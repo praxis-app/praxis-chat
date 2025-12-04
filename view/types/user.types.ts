@@ -20,6 +20,7 @@ export interface CurrentUserRes {
   };
   profilePicture: ImageRes | null;
   currentServer: ServerRes | null;
+  serversCount: number;
 }
 
 export interface UserProfileRes {

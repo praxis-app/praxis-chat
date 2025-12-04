@@ -16,6 +16,7 @@ import { Image } from '../images/entities/image.entity';
 import * as instanceRolesService from '../instance-roles/instance-roles.service';
 import { Invite } from '../invites/invite.entity';
 import * as serverRolesService from '../server-roles/server-roles.service';
+import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
@@ -26,6 +27,7 @@ const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const serverRepository = dataSource.getRepository(Server);
+const serverMemberRepository = dataSource.getRepository(ServerMember);
 const inviteRepository = dataSource.getRepository(Invite);
 
 export const getCurrentUser = async (userId: string, includePerms = true) => {
@@ -47,11 +49,13 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
     const [
       instancePermissions,
       serverPermissions,
+      serversCount,
       profilePicture,
       initialCurrentServer,
     ] = await Promise.all([
       instanceRolesService.getInstancePermissionsByUser(userId),
       serverRolesService.getServerPermissionsByUser(userId),
+      serverMemberRepository.count({ where: { userId } }),
       getUserProfilePicture(userId),
       getLastUsedServer(userId),
     ]);
@@ -73,6 +77,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       permissions,
       profilePicture,
       currentServer,
+      serversCount,
     };
   } catch (error) {
     console.error(error);
