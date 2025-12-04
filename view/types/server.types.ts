@@ -2,6 +2,7 @@ export interface ServerReq {
   name: string;
   slug: string;
   description?: string;
+  isDefaultServer?: boolean;
 }
 
 export interface ServerRes {
@@ -9,6 +10,7 @@ export interface ServerRes {
   name: string;
   slug: string;
   description: string | null;
+  isDefaultServer: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

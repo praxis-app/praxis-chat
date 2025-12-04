@@ -16,25 +16,38 @@ const serverMemberRepository = dataSource.getRepository(ServerMember);
 const userRepository = dataSource.getRepository(User);
 
 export const getServers = async () => {
-  return serverRepository.find({
+  const instanceConfig = await getInstanceConfigSafely();
+  const servers = await serverRepository.find({
     order: { createdAt: 'DESC' },
   });
+  return servers.map((server) => ({
+    ...server,
+    isDefaultServer: server.id === instanceConfig.defaultServerId,
+  }));
 };
 
 export const getServerById = async (serverId: string) => {
+  const instanceConfig = await getInstanceConfigSafely();
   const server = await serverRepository.findOne({ where: { id: serverId } });
   if (!server) {
     throw new Error(`Server with id ${serverId} not found`);
   }
-  return server;
+  return {
+    ...server,
+    isDefaultServer: server.id === instanceConfig.defaultServerId,
+  };
 };
 
 export const getServerBySlug = async (slug: string) => {
+  const instanceConfig = await getInstanceConfigSafely();
   const server = await serverRepository.findOne({ where: { slug } });
   if (!server) {
     throw new Error(`Server with slug ${slug} not found`);
   }
-  return server;
+  return {
+    ...server,
+    isDefaultServer: server.id === instanceConfig.defaultServerId,
+  };
 };
 
 export const getDefaultServer = async () => {
