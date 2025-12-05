@@ -7,7 +7,7 @@ import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 
 export const useServerData = () => {
-  const { isLoggedIn } = useAppStore();
+  const { isLoggedIn, inviteToken } = useAppStore();
   const { serverSlug } = useParams();
 
   const {
@@ -32,6 +32,15 @@ export const useServerData = () => {
     enabled: !!serverSlug && isLoggedIn,
   });
 
+  const {
+    data: serverByInviteTokenData,
+    isLoading: isServerByInviteTokenLoading,
+  } = useQuery({
+    queryKey: ['servers', 'invite', inviteToken],
+    queryFn: () => api.getServerByInviteToken(inviteToken!),
+    enabled: !!inviteToken && !isMeError && !serverSlug,
+  });
+
   const isDefaultServerQueryEnabled = () => {
     if (!serverSlug) {
       if (isMeError) {
@@ -41,7 +50,7 @@ export const useServerData = () => {
     }
 
     if (!isLoggedIn) {
-      return true;
+      return !inviteToken;
     }
 
     return (
@@ -60,21 +69,29 @@ export const useServerData = () => {
   const serverId =
     serverBySlugData?.server.id ||
     meData?.user.currentServer?.id ||
+    serverByInviteTokenData?.server.id ||
     defaultServerData?.server.id;
 
   const resolvedServerSlug =
     serverSlug ||
     meData?.user.currentServer?.slug ||
+    serverByInviteTokenData?.server.slug ||
     defaultServerData?.server.slug;
 
   const resolvedServerPath = resolvedServerSlug
     ? `/s/${resolvedServerSlug}`
     : NavigationPaths.Home;
 
+  const isLoading =
+    isMeLoading ||
+    isDefaultServerLoading ||
+    isServerBySlugLoading ||
+    isServerByInviteTokenLoading;
+
   return {
-    serverId,
     serverSlug: resolvedServerSlug,
     serverPath: resolvedServerPath,
-    isLoading: isMeLoading || isDefaultServerLoading || isServerBySlugLoading,
+    isLoading,
+    serverId,
   };
 };
