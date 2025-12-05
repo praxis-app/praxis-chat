@@ -10,7 +10,7 @@ export interface ServerRes {
   name: string;
   slug: string;
   description: string | null;
-  isDefaultServer: boolean;
+  isDefaultServer?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

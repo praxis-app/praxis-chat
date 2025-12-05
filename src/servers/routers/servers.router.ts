@@ -13,6 +13,7 @@ import {
   deleteServer,
   getDefaultServer,
   getServerById,
+  getServerByInviteToken,
   getServerBySlug,
   getServers,
   updateServer,
@@ -30,7 +31,9 @@ serversRouter
   .use('/:serverId/members', serverMembersRouter);
 
 // Public routes
-serversRouter.get('/default', getDefaultServer);
+serversRouter
+  .get('/default', getDefaultServer)
+  .get('/invite/:inviteToken', getServerByInviteToken);
 
 // Protected routes
 serversRouter

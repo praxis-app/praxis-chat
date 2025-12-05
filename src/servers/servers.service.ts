@@ -71,6 +71,16 @@ export const getServerBySlug = async (slug: string) => {
   };
 };
 
+export const getServerByInviteToken = async (inviteToken: string) => {
+  const server = await serverRepository.findOne({
+    where: { invites: { token: inviteToken } },
+  });
+  if (!server) {
+    throw new Error(`Server with invite token ${inviteToken} not found`);
+  }
+  return server;
+};
+
 export const getDefaultServer = async () => {
   const instanceConfig = await getInstanceConfigSafely();
 

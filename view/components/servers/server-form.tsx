@@ -34,6 +34,8 @@ export const ServerForm = ({
 }: Props) => {
   const { t } = useTranslation();
 
+  // TODO: Clean up default values and values assignment
+
   const form = useForm<ServerReq>({
     resolver: zodResolver(serverFormSchema),
     defaultValues: editServer

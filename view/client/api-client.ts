@@ -297,6 +297,11 @@ class ApiClient {
     return this.executeRequest<{ server: ServerRes }>('get', path);
   };
 
+  getServerByInviteToken = async (inviteToken: string) => {
+    const path = `/servers/invite/${inviteToken}`;
+    return this.executeRequest<{ server: ServerRes }>('get', path);
+  };
+
   getServerMembers = async (serverId: string) => {
     const path = `/servers/${serverId}/members`;
     return this.executeRequest<{ users: UserRes[] }>('get', path);

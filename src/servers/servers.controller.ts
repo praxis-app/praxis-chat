@@ -16,6 +16,13 @@ export const getServerBySlug = async (req: Request, res: Response) => {
   res.json({ server });
 };
 
+export const getServerByInviteToken = async (req: Request, res: Response) => {
+  const server = await serversService.getServerByInviteToken(
+    req.params.inviteToken,
+  );
+  res.json({ server });
+};
+
 export const getDefaultServer = async (_req: Request, res: Response) => {
   const server = await serversService.getDefaultServer();
   if (!server) {
