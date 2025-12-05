@@ -1,4 +1,29 @@
+import appIconImg from '@/assets/images/app-icon.png';
+import { ChannelListDesktop } from '@/components/channels/channel-list-desktop';
+import {
+  CreateChannelForm,
+  CreateChannelFormSubmitButton,
+} from '@/components/channels/create-channel-form';
+import { LeftNavUserMenu } from '@/components/nav/left-nav-user-menu';
+import { ServerSwitchDialog } from '@/components/nav/server-switch-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { NavigationPaths } from '@/constants/shared.constants';
+import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
@@ -14,30 +39,6 @@ import {
 import { TbSwitchHorizontal } from 'react-icons/tb';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import appIconImg from '../../assets/images/app-icon.png';
-import { useAbility } from '../../hooks/use-ability';
-import { ChannelListDesktop } from '../channels/channel-list-desktop';
-import {
-  CreateChannelForm,
-  CreateChannelFormSubmitButton,
-} from '../channels/create-channel-form';
-import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { LeftNavUserMenu } from './left-nav-user-menu';
 
 interface Props {
   me?: CurrentUserRes;
@@ -46,6 +47,7 @@ interface Props {
 export const LeftNavDesktop = ({ me }: Props) => {
   const { isLoggedIn, isAppLoading } = useAppStore();
   const [showRoomFormDialog, setShowRoomFormDialog] = useState(false);
+  const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 
   const { t } = useTranslation();
   const { serverSlug } = useParams();
@@ -63,6 +65,10 @@ export const LeftNavDesktop = ({ me }: Props) => {
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
+      <ServerSwitchDialog
+        open={showServerSwitchDialog}
+        onOpenChange={setShowServerSwitchDialog}
+      />
       <Dialog open={showRoomFormDialog} onOpenChange={setShowRoomFormDialog}>
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -113,7 +119,10 @@ export const LeftNavDesktop = ({ me }: Props) => {
             )}
 
             {me && me.serversCount > 1 && (
-              <DropdownMenuItem className="text-md">
+              <DropdownMenuItem
+                className="text-md"
+                onSelect={() => setShowServerSwitchDialog(true)}
+              >
                 <TbSwitchHorizontal className="text-foreground size-5" />
                 {t('navigation.labels.switchServers')}
               </DropdownMenuItem>
