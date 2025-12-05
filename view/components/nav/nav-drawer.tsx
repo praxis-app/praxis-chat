@@ -4,8 +4,10 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdAddCircle, MdOutlineSettings, MdSettings } from 'react-icons/md';
+import { TbSwitchHorizontal } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 import { useAbility } from '../../hooks/use-ability';
+import { useMeQuery } from '../../hooks/use-me-query';
 import { useServerData } from '../../hooks/use-server-data';
 import {
   CreateChannelForm,
@@ -44,6 +46,7 @@ export const NavDrawer = ({ trigger }: Props) => {
 
   const { instanceAbility } = useAbility();
   const { serverPath } = useServerData();
+  const { data: meData } = useMeQuery();
 
   return (
     <Drawer open={showNavDrawer} onOpenChange={setShowNavDrawer}>
@@ -119,6 +122,16 @@ export const NavDrawer = ({ trigger }: Props) => {
             >
               <MdOutlineSettings className="size-6" />
               {t('navigation.labels.instanceSettings')}
+            </Button>
+          )}
+
+          {meData && meData.user.serversCount > 1 && (
+            <Button
+              variant="ghost"
+              className="text-md flex items-center gap-6 font-normal"
+            >
+              <TbSwitchHorizontal className="size-6" />
+              {t('navigation.labels.switchServers')}
             </Button>
           )}
         </div>
