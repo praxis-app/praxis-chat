@@ -93,6 +93,11 @@ class ApiClient {
     return this.executeRequest<{ user: CurrentUserRes }>('get', path);
   };
 
+  getCurrentUserServers = async () => {
+    const path = '/users/me/servers';
+    return this.executeRequest<{ servers: ServerRes[] }>('get', path);
+  };
+
   getUserProfile = async (userId: string) => {
     const path = `/users/${userId}/profile`;
     return this.executeRequest<{ user: UserProfileRes }>('get', path);
@@ -451,9 +456,11 @@ class ApiClient {
 
   updateInstanceConfig = async (data: InstanceConfigReq) => {
     const path = `/instance/config`;
-    return this.executeRequest<{ instanceConfig: InstanceConfigRes }>('put', path, {
-      data,
-    });
+    return this.executeRequest<{ instanceConfig: InstanceConfigRes }>(
+      'put',
+      path,
+      { data },
+    );
   };
 
   // -------------------------------------------------------------------------

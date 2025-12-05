@@ -29,6 +29,23 @@ export const getServers = async () => {
   }));
 };
 
+export const getServersForUser = async (userId: string) => {
+  const instanceConfig = await getInstanceConfigSafely();
+
+  const servers = await serverRepository
+    .createQueryBuilder('server')
+    .innerJoin('server.members', 'member', 'member.userId = :userId', {
+      userId,
+    })
+    .orderBy('server.createdAt', 'DESC')
+    .getMany();
+
+  return servers.map((server) => ({
+    ...server,
+    isDefaultServer: server.id === instanceConfig.defaultServerId,
+  }));
+};
+
 export const getServerById = async (serverId: string) => {
   const instanceConfig = await getInstanceConfigSafely();
   const server = await serverRepository.findOne({ where: { id: serverId } });
