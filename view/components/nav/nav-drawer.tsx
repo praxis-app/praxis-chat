@@ -3,8 +3,9 @@ import { useAppStore } from '@/store/app.store';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdAddCircle, MdSettings } from 'react-icons/md';
+import { MdAddCircle, MdOutlineSettings, MdSettings } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useAbility } from '../../hooks/use-ability';
 import { useServerData } from '../../hooks/use-server-data';
 import {
   CreateChannelForm,
@@ -41,6 +42,7 @@ export const NavDrawer = ({ trigger }: Props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { instanceAbility } = useAbility();
   const { serverPath } = useServerData();
 
   return (
@@ -57,7 +59,7 @@ export const NavDrawer = ({ trigger }: Props) => {
           </DrawerHeader>
         </VisuallyHidden>
 
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col items-start gap-4 p-5">
           <Dialog
             open={showRoomFormDialog}
             onOpenChange={setShowRoomFormDialog}
@@ -105,6 +107,20 @@ export const NavDrawer = ({ trigger }: Props) => {
             <MdSettings className="size-6" />
             {t('navigation.labels.serverSettings')}
           </Button>
+
+          {instanceAbility.can('manage', 'InstanceConfig') && (
+            <Button
+              variant="ghost"
+              className="text-md flex items-center gap-6 font-normal"
+              onClick={() => {
+                navigate(NavigationPaths.Settings);
+                setIsNavSheetOpen(false);
+              }}
+            >
+              <MdOutlineSettings className="size-6" />
+              {t('navigation.labels.instanceSettings')}
+            </Button>
+          )}
         </div>
       </DrawerContent>
     </Drawer>
