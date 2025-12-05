@@ -1,3 +1,4 @@
+import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -7,7 +8,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { api } from '@/client/api-client';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -19,9 +19,10 @@ interface Props {
 }
 
 export const ServerSwitchDialog = ({ open, onOpenChange }: Props) => {
+  const { isLoggedIn } = useAppStore();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isLoggedIn } = useAppStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ['me', 'servers'],

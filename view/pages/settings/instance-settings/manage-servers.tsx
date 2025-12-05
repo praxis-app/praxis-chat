@@ -58,6 +58,8 @@ export const ManageServers = () => {
           );
         }
 
+        queryClient.invalidateQueries({ queryKey: ['me'] });
+
         return server;
       },
       onError(error: Error) {
