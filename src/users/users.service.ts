@@ -13,7 +13,7 @@ import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { normalizeText, sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
-import * as instanceRolesService from '../instance-roles/instance-roles.service';
+import * as instanceRolesService from '../instance/instance-roles/instance-roles.service';
 import { Invite } from '../invites/invite.entity';
 import * as serverRolesService from '../server-roles/server-roles.service';
 import { ServerMember } from '../servers/entities/server-member.entity';

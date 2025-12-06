@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Image } from '../images/entities/image.entity';
-import { InstanceRole } from '../instance-roles/entities/instance-role.entity';
+import { InstanceRole } from '../instance/instance-roles/entities/instance-role.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
