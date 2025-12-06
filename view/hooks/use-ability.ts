@@ -1,6 +1,6 @@
 import { createMongoAbility } from '@casl/ability';
-import { InstanceAbility } from '@common/instance-roles/instance-ability';
-import { ServerAbility } from '@common/server-roles/server-ability';
+import { InstanceAbility } from '@common/roles/instance-roles/instance-ability';
+import { ServerAbility } from '@common/roles/server-roles/server-ability';
 import { useAppStore } from '../store/app.store';
 import { useMeQuery } from './use-me-query';
 import { useServerData } from './use-server-data';

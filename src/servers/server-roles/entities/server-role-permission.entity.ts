@@ -1,11 +1,11 @@
 import {
   ServerAbilityAction,
   ServerAbilitySubject,
-} from '@common/server-roles/server-ability';
+} from '@common/roles/server-roles/server-ability';
 import {
   SERVER_ABILITY_ACTIONS,
   SERVER_ABILITY_SUBJECTS,
-} from '@common/server-roles/server-role.constants';
+} from '@common/roles/server-roles/server-role.constants';
 import {
   Column,
   CreateDateColumn,

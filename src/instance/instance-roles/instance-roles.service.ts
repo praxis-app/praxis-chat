@@ -3,7 +3,7 @@ import {
   InstanceAbility,
   InstanceAbilityAction,
   InstanceAbilitySubject,
-} from '@common/instance-roles/instance-ability';
+} from '@common/roles/instance-roles/instance-ability';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';

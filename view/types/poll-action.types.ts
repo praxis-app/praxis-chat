@@ -5,7 +5,7 @@ import {
 import {
   ServerAbilityAction,
   ServerAbilitySubject,
-} from '@common/server-roles/server-ability';
+} from '@common/roles/server-roles/server-ability';
 import { UserRes } from './user.types';
 
 // -------------------------------------------------------------------------

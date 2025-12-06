@@ -1,11 +1,11 @@
 import {
   InstanceAbilityAction,
   InstanceAbilitySubject,
-} from '@common/instance-roles/instance-ability';
+} from '@common/roles/instance-roles/instance-ability';
 import {
   ServerAbilityAction,
   ServerAbilitySubject,
-} from '@common/server-roles/server-ability';
+} from '@common/roles/server-roles/server-ability';
 import {
   INSTANCE_PERMISSION_KEYS,
   SERVER_PERMISSION_KEYS,

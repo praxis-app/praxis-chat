@@ -1,11 +1,11 @@
 import {
   InstanceAbilityAction,
   InstanceAbilitySubject,
-} from '@common/instance-roles/instance-ability';
+} from '@common/roles/instance-roles/instance-ability';
 import {
   INSTANCE_ROLE_ABILITY_ACTIONS,
   INSTANCE_ROLE_ABILITY_SUBJECTS,
-} from '@common/instance-roles/instance-role.constants';
+} from '@common/roles/instance-roles/instance-role.constants';
 import {
   Column,
   CreateDateColumn,
