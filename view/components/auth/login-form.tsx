@@ -66,6 +66,7 @@ export const LoginForm = () => {
     mutationFn: api.login,
     onSuccess({ access_token }) {
       localStorage.setItem(LocalStorageKeys.AccessToken, access_token);
+      localStorage.removeItem(LocalStorageKeys.InviteToken);
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },
