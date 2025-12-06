@@ -1,8 +1,8 @@
 import { In } from 'typeorm';
 import { dataSource } from '../database/data-source';
-import { ServerRolePermission } from '../server-roles/entities/server-role-permission.entity';
-import { ServerRole } from '../server-roles/entities/server-role.entity';
-import * as serverRolesService from '../server-roles/server-roles.service';
+import { ServerRolePermission } from '../servers/server-roles/entities/server-role-permission.entity';
+import { ServerRole } from '../servers/server-roles/entities/server-role.entity';
+import * as serverRolesService from '../servers/server-roles/server-roles.service';
 import { User } from '../users/user.entity';
 import { PollActionRoleDto } from './dtos/poll-action-role.dto';
 import { PollActionPermission } from './entities/poll-action-permission.entity';
@@ -141,10 +141,10 @@ export const implementChangeServerRole = async (pollActionId: string) => {
   // Update role permissions
   if (actionRole.permissions) {
     const toAdd = actionRole.permissions.filter(
-      (permission) => permission.changeType === 'add',
+      (permission: PollActionPermission) => permission.changeType === 'add',
     );
     const toRemove = actionRole.permissions.filter(
-      (permission) => permission.changeType === 'remove',
+      (permission: PollActionPermission) => permission.changeType === 'remove',
     );
     if (toRemove.length > 0) {
       await serverRolePermissionRepository.remove(

@@ -9,9 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
-import { Server } from '../../servers/entities/server.entity';
-import { User } from '../../users/user.entity';
+import { PollActionRole } from '../../../poll-actions/entities/poll-action-role.entity';
+import { Server } from '../../entities/server.entity';
+import { User } from '../../../users/user.entity';
 import { ServerRolePermission } from './server-role-permission.entity';
 
 @Entity()
@@ -27,24 +27,24 @@ export class ServerRole {
 
   @OneToMany(
     () => ServerRolePermission,
-    (rolePermission) => rolePermission.serverRole,
+    (rolePermission: ServerRolePermission) => rolePermission.serverRole,
     {
       cascade: true,
     },
   )
   permissions: ServerRolePermission[];
 
-  @ManyToMany(() => User, (user) => user.serverRoles)
+  @ManyToMany(() => User, (user: User) => user.serverRoles)
   @JoinTable()
   members: User[];
 
   @OneToMany(
     () => PollActionRole,
-    (pollActionRole) => pollActionRole.serverRole,
+    (pollActionRole: PollActionRole) => pollActionRole.serverRole,
   )
   pollActionRoles: PollActionRole[];
 
-  @ManyToOne(() => Server, (server) => server.serverRoles, {
+  @ManyToOne(() => Server, (server: Server) => server.serverRoles, {
     onDelete: 'CASCADE',
   })
   server: Server;

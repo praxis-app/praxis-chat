@@ -5,11 +5,11 @@ import {
   ServerAbilitySubject,
 } from '@common/server-roles/server-ability';
 import { In, Not } from 'typeorm';
-import { sanitizeText } from '../common/text.utils';
-import { dataSource } from '../database/data-source';
-import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
-import { User } from '../users/user.entity';
-import * as usersService from '../users/users.service';
+import { sanitizeText } from '../../common/text.utils';
+import { dataSource } from '../../database/data-source';
+import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
+import { User } from '../../users/user.entity';
+import * as usersService from '../../users/users.service';
 import { ServerRolePermission } from './entities/server-role-permission.entity';
 import { ServerRole } from './entities/server-role.entity';
 

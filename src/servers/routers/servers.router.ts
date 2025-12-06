@@ -3,10 +3,10 @@ import { authenticate } from '../../auth/middleware/authenticate.middleware';
 import { channelsRouter } from '../../channels/channels.router';
 import { can } from '../../common/roles/can.middleware';
 import { serverInvitesRouter } from '../../invites/invites.router';
-import { serverConfigsRouter } from '../../server-configs/server-configs.router';
-import { serverRolesRouter } from '../../server-roles/routers/server-roles.router';
 import { setServerMemberActivity } from '../middleware/set-server-member-activity.middleware';
 import { validateServer } from '../middleware/validate-server.middleware';
+import { serverConfigsRouter } from '../server-configs/server-configs.router';
+import { serverRolesRouter } from '../server-roles/routers/server-roles.router';
 import {
   createServer,
   deleteServer,

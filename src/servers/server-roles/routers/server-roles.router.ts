@@ -1,6 +1,6 @@
 import express from 'express';
-import { authenticate } from '../../auth/middleware/authenticate.middleware';
-import { can } from '../../common/roles/can.middleware';
+import { authenticate } from '../../../auth/middleware/authenticate.middleware';
+import { can } from '../../../common/roles/can.middleware';
 import { serverRoleMembersRouter } from './server-role-members.router';
 import { serverRolePermissionsRouter } from './server-role-permissions.router';
 import {

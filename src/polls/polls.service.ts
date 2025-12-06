@@ -10,7 +10,7 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
-import * as serverConfigsService from '../server-configs/server-configs.service';
+import * as serverConfigsService from '../servers/server-configs/server-configs.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';

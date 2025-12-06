@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Server } from '../../servers/entities/server.entity';
+import { Server } from '../../entities/server.entity';
 
 @Entity()
 export class ServerConfig {
@@ -32,7 +32,7 @@ export class ServerConfig {
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
 
-  @OneToOne(() => Server, (server) => server.config, {
+  @OneToOne(() => Server, (server: Server) => server.config, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()

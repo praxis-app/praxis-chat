@@ -5,12 +5,12 @@ import {
   getInstanceConfigSafely,
   updateInstanceConfig,
 } from '../instance/instance.service';
-import { ServerConfig } from '../server-configs/entities/server-config.entity';
-import * as serverRolesService from '../server-roles/server-roles.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
+import { ServerConfig } from './server-configs/entities/server-config.entity';
+import * as serverRolesService from './server-roles/server-roles.service';
 
 export const INITIAL_SERVER_NAME = 'praxis';
 

@@ -16,8 +16,8 @@ import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
+import { ServerRole } from '../servers/server-roles/entities/server-role.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()

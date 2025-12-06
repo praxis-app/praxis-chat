@@ -16,11 +16,11 @@ import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import { PollConfig } from '../polls/entities/poll-config.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { ServerConfig } from '../server-configs/entities/server-config.entity';
-import { ServerRolePermission } from '../server-roles/entities/server-role-permission.entity';
-import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
+import { ServerConfig } from '../servers/server-configs/entities/server-config.entity';
+import { ServerRolePermission } from '../servers/server-roles/entities/server-role-permission.entity';
+import { ServerRole } from '../servers/server-roles/entities/server-role.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Initial1762107499573 } from './migrations/1762107499573-Initial';

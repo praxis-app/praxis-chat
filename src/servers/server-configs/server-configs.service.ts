@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { dataSource } from '../database/data-source';
+import { dataSource } from '../../database/data-source';
 import { ServerConfig } from './entities/server-config.entity';
 import { ServerConfigDto } from './server-config.types';
 

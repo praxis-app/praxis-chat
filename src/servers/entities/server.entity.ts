@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Invite } from '../../invites/invite.entity';
-import { ServerConfig } from '../../server-configs/entities/server-config.entity';
-import { ServerRole } from '../../server-roles/entities/server-role.entity';
+import { ServerConfig } from '../server-configs/entities/server-config.entity';
+import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerMember } from './server-member.entity';
 
 @Entity()
@@ -35,13 +35,13 @@ export class Server {
   @OneToMany(() => Channel, (channel) => channel.server)
   channels: Channel[];
 
-  @OneToMany(() => ServerRole, (serverRole) => serverRole.server)
+  @OneToMany(() => ServerRole, (serverRole: ServerRole) => serverRole.server)
   serverRoles: ServerRole[];
 
   @OneToMany(() => Invite, (invite) => invite.server)
   invites: Invite[];
 
-  @OneToOne(() => ServerConfig, (config) => config.server, {
+  @OneToOne(() => ServerConfig, (config: ServerConfig) => config.server, {
     cascade: true,
   })
   config: ServerConfig;
