@@ -1,8 +1,7 @@
-// TODO: Add permissions middleware
-
 import express from 'express';
 import { authenticate } from '../../auth/middleware/authenticate.middleware';
 import { channelsRouter } from '../../channels/channels.router';
+import { can } from '../../common/roles/can.middleware';
 import { serverInvitesRouter } from '../../invites/invites.router';
 import { serverConfigsRouter } from '../../server-configs/server-configs.router';
 import { serverRolesRouter } from '../../server-roles/routers/server-roles.router';
@@ -38,9 +37,19 @@ serversRouter
 // Protected routes
 serversRouter
   .use(authenticate)
-  .get('/', getServers)
+  .get('/', can('read', 'Server', 'instance'), getServers)
   .get('/slug/:slug', setServerMemberActivity, getServerBySlug)
-  .get('/:serverId', setServerMemberActivity, getServerById)
-  .post('/', validateServer, createServer)
-  .put('/:serverId', validateServer, updateServer)
-  .delete('/:serverId', deleteServer);
+  .get(
+    '/:serverId',
+    can('read', 'Server', 'instance'),
+    setServerMemberActivity,
+    getServerById,
+  )
+  .post('/', can('create', 'Server', 'instance'), validateServer, createServer)
+  .put(
+    '/:serverId',
+    can('update', 'Server', 'instance'),
+    validateServer,
+    updateServer,
+  )
+  .delete('/:serverId', can('delete', 'Server', 'instance'), deleteServer);
