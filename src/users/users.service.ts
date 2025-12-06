@@ -2,7 +2,7 @@
 
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
-import { FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
+import { FindManyOptions, In, Like } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -17,7 +17,6 @@ import * as instanceRolesService from '../instance-roles/instance-roles.service'
 import { Invite } from '../invites/invite.entity';
 import * as serverRolesService from '../server-roles/server-roles.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
-import { Server } from '../servers/entities/server.entity';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
@@ -26,7 +25,6 @@ import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
-const serverRepository = dataSource.getRepository(Server);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 const inviteRepository = dataSource.getRepository(Invite);
 
@@ -50,14 +48,14 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       instancePermissions,
       serverPermissions,
       serversCount,
-      profilePicture,
       initialCurrentServer,
+      profilePicture,
     ] = await Promise.all([
       instanceRolesService.getInstancePermissionsByUser(userId),
       serverRolesService.getServerPermissionsByUser(userId),
       serverMemberRepository.count({ where: { userId } }),
+      serversService.getLastUsedServer(userId),
       getUserProfilePicture(userId),
-      getLastUsedServer(userId),
     ]);
 
     let currentServer = initialCurrentServer;
@@ -99,22 +97,6 @@ export const getUserProfile = async (userId: string) => {
 
 export const getUserCount = async (options?: FindManyOptions<User>) => {
   return userRepository.count(options);
-};
-
-export const getLastUsedServer = async (userId: string) => {
-  const server = await serverRepository.findOne({
-    where: { members: { userId, lastActiveAt: Not(IsNull()) } },
-    order: { members: { lastActiveAt: 'DESC' } },
-    relations: ['members'],
-    select: ['id', 'slug'],
-  });
-  if (!server) {
-    return null;
-  }
-  return {
-    id: server.id,
-    slug: server.slug,
-  };
 };
 
 export const isFirstUser = async () => {
@@ -211,7 +193,7 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  const lastUsedServer = await getLastUsedServer(userId);
+  const lastUsedServer = await serversService.getLastUsedServer(userId);
   if (!lastUsedServer) {
     throw new Error('Last used server not found for user');
   } else {

@@ -1,4 +1,4 @@
-import { In, Not, QueryFailedError } from 'typeorm';
+import { In, IsNull, Not, QueryFailedError } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import {
@@ -91,6 +91,22 @@ export const getDefaultServer = async () => {
     throw new Error('Default server not found');
   }
   return server;
+};
+
+export const getLastUsedServer = async (userId: string) => {
+  const server = await serverRepository.findOne({
+    where: { members: { userId, lastActiveAt: Not(IsNull()) } },
+    order: { members: { lastActiveAt: 'DESC' } },
+    relations: ['members'],
+    select: ['id', 'slug'],
+  });
+  if (!server) {
+    return null;
+  }
+  return {
+    id: server.id,
+    slug: server.slug,
+  };
 };
 
 export const getServerMembers = async (serverId: string) => {
