@@ -100,14 +100,19 @@ export const getCurrentServer = async (userId: string) => {
     relations: ['members'],
     select: ['id', 'slug'],
   });
+
   if (!server) {
     const servers = await getServersForUser(userId);
     if (servers.length === 0) {
       return null;
     }
+
+    let server = servers.find((server) => server.isDefaultServer);
+    server = server || servers[0];
+
     return {
-      id: servers[0].id,
-      slug: servers[0].slug,
+      id: server.id,
+      slug: server.slug,
     };
   }
   return {
