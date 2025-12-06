@@ -42,7 +42,7 @@ export const NavSheet = ({ trigger }: Props) => {
   const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
-  const channelsPath = `${serverPath}${NavigationPaths.Channels}`;
+  const channelsPath = `${serverPath}/c`;
 
   const { data: channelsData } = useQuery({
     queryKey: ['servers', serverId, 'channels'],

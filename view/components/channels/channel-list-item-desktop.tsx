@@ -51,7 +51,7 @@ export const ChannelListItemDesktop = ({
   const canDeleteChannel = serverAbility.can('delete', 'Channel');
   const showSettingsBtn = canManageChannels && (isHovering || isActive);
 
-  const channelPath = `/s/${serverSlug}${NavigationPaths.Channels}/${channel.id}`;
+  const channelPath = `/s/${serverSlug}/c/${channel.id}`;
   const settingsPath = `${channelPath}/settings`;
 
   const truncatedChannelName = truncate(

@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
@@ -35,7 +34,7 @@ export const ChannelSettings = () => {
   });
 
   const goBack = () => {
-    navigate(`${serverPath}${NavigationPaths.Channels}/${channelId}`);
+    navigate(`${serverPath}/c/${channelId}`);
   };
 
   if (!channelData?.channel) {

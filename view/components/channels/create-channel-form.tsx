@@ -1,5 +1,4 @@
 import { api } from '@/client/api-client';
-import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, CreateChannelReq } from '@/types/channel.types';
@@ -89,7 +88,7 @@ export const CreateChannelForm = ({
 
       onSubmit?.();
 
-      navigate(`${serverPath}${NavigationPaths.Channels}/${channel.id}`);
+      navigate(`${serverPath}/c/${channel.id}`);
     },
     onError(error: Error) {
       handleError(error);

@@ -24,7 +24,6 @@ export enum BrowserEvents {
 
 export enum NavigationPaths {
   Home = '/',
-  Channels = '/channels',
   Invites = '/settings/invites',
   Login = '/auth/login',
   ManageServers = '/settings/servers',
