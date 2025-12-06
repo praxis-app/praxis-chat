@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../client/api-client';
 import { NavigationPaths } from '../constants/shared.constants';
 import { useAppStore } from '../store/app.store';
@@ -8,7 +8,9 @@ import { useMeQuery } from './use-me-query';
 
 export const useServerData = () => {
   const { isLoggedIn, inviteToken } = useAppStore();
+
   const { serverSlug } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: meData,
@@ -23,11 +25,29 @@ export const useServerData = () => {
     error: serverBySlugError,
   } = useQuery({
     queryKey: ['servers', serverSlug],
-    queryFn: () => {
+    queryFn: async () => {
       if (!serverSlug) {
         throw new Error('Server slug is missing in URL');
       }
-      return api.getServerBySlug(serverSlug);
+      try {
+        const result = await api.getServerBySlug(serverSlug);
+        return result;
+      } catch (error) {
+        // If the server is not found, check if the user has any servers
+        if (isAxiosError(error) && error.response?.status === 404) {
+          const { servers } = await api.getCurrentUserServers();
+
+          // If the user has any servers, navigate to the first one returned
+          if (servers.length > 0) {
+            const firstServer = servers[0];
+            await navigate(`/s/${firstServer.slug}`);
+            return null;
+          } else {
+            throw new Error('No servers found for user');
+          }
+        }
+        throw error;
+      }
     },
     enabled: !!serverSlug && isLoggedIn,
   });
