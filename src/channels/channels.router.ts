@@ -4,10 +4,11 @@ import express from 'express';
 import { authenticateOptional } from '../auth/middleware/authenticate-optional.middleware';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { isRegistered } from '../auth/middleware/is-registered.middleware';
+import { can } from '../common/roles/can.middleware';
 import { messagesRouter } from '../messages/messages.router';
 import { synchronizePolls } from '../polls/middleware/synchronize-polls.middleware';
 import { pollsRouter } from '../polls/polls.router';
-import { can } from '../common/roles/can.middleware';
+import { setServerMemberActivity } from '../servers/middleware/set-server-member-activity.middleware';
 import {
   createChannel,
   deleteChannel,
@@ -32,9 +33,12 @@ channelsRouter
   .use('/:channelId/messages', messagesRouter)
   .use('/:channelId/polls', pollsRouter);
 
+// TODO: Decide whether to add separate middleware for
+// protecting channel routes based on server membership
+
 // Protected routes
 channelsRouter
-  .use(authenticate, synchronizePolls)
+  .use(authenticate, setServerMemberActivity, synchronizePolls)
   .get('/joined', isRegistered, getJoinedChannels)
   .get('/:channelId', isRegistered, isChannelMember, getChannel)
   .get('/:channelId/feed', isChannelMember, getChannelFeed)
