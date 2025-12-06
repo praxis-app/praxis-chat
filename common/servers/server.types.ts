@@ -8,12 +8,12 @@ export const serverFormSchema = zod.object({
     .string()
     .trim()
     .min(2, { message: ServerErrorKeys.NameLength })
-    .max(20, { message: ServerErrorKeys.NameLength }),
+    .max(30, { message: ServerErrorKeys.NameLength }),
   slug: zod
     .string()
     .trim()
     .min(2, { message: ServerErrorKeys.SlugLength })
-    .max(20, { message: ServerErrorKeys.SlugLength })
+    .max(30, { message: ServerErrorKeys.SlugLength })
     .regex(SLUG_PATTERN, { message: ServerErrorKeys.SlugInvalid }),
   description: zod
     .string()
