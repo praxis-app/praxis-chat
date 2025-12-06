@@ -101,7 +101,14 @@ export const getCurrentServer = async (userId: string) => {
     select: ['id', 'slug'],
   });
   if (!server) {
-    return null;
+    const servers = await getServersForUser(userId);
+    if (servers.length === 0) {
+      return null;
+    }
+    return {
+      id: servers[0].id,
+      slug: servers[0].slug,
+    };
   }
   return {
     id: server.id,
