@@ -453,7 +453,9 @@
       "nameLength": "Name must be between 2 and 30 characters.",
       "slugLength": "Slug must be between 2 and 30 characters.",
       "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.",
-      "descriptionLength": "Description must be at most 255 characters."
+      "descriptionLength": "Description must be at most 255 characters.",
+      "noServersFound": "No servers found.",
+      "noServersFoundDescription": "You don't belong to any servers yet."
     }
   },
 

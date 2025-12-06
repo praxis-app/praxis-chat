@@ -1,13 +1,12 @@
-import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { truncate } from '@/lib/text.utils';
 import { useAppStore } from '@/store/app.store';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdExitToApp, MdPerson } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useLogOut } from '../../hooks/use-log-out';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import {
@@ -24,22 +23,14 @@ interface Props {
 }
 
 export const NavDropdown = ({ trigger }: Props) => {
-  const { isLoggedIn, setIsLoggedIn, setIsNavSheetOpen } = useAppStore();
+  const { isLoggedIn, setIsNavSheetOpen } = useAppStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const { mutate: logOut, isPending: isLogoutPending } = useMutation({
-    mutationFn: api.logOut,
-    onSuccess: async () => {
-      await navigate(NavigationPaths.Home);
-      setShowLogoutDialog(false);
-      setIsNavSheetOpen(false);
-      setIsLoggedIn(false);
-      queryClient.clear();
-    },
+  const { mutate: logOut, isPending: isLogoutPending } = useLogOut({
+    onSuccess: () => setShowLogoutDialog(false),
   });
 
   const { data: meData } = useMeQuery({

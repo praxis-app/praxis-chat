@@ -14,7 +14,6 @@ export const useServerData = () => {
 
   const {
     data: meData,
-    isSuccess: isMeSuccess,
     isError: isMeError,
     isLoading: isMeLoading,
   } = useMeQuery({ enabled: !serverSlug });
@@ -52,17 +51,12 @@ export const useServerData = () => {
   });
 
   const isDefaultServerQueryEnabled = () => {
-    if (!serverSlug) {
-      if (isMeError) {
-        return true;
+    if (isMeError) {
+      if (inviteToken) {
+        return false;
       }
-      return isMeSuccess && !meData?.user.currentServer?.id;
+      return true;
     }
-
-    if (!isLoggedIn) {
-      return !inviteToken;
-    }
-
     return (
       isAxiosError(serverBySlugError) &&
       serverBySlugError.response?.status === 401
@@ -76,18 +70,13 @@ export const useServerData = () => {
       enabled: isDefaultServerQueryEnabled(),
     });
 
-  const serverId =
-    serverBySlugData?.server.id ||
-    meData?.user.currentServer?.id ||
-    serverByInviteTokenData?.server.id ||
-    defaultServerData?.server.id;
+  const server =
+    serverBySlugData?.server ||
+    meData?.user.currentServer ||
+    serverByInviteTokenData?.server ||
+    defaultServerData?.server;
 
-  const resolvedServerSlug =
-    serverSlug ||
-    meData?.user.currentServer?.slug ||
-    serverByInviteTokenData?.server.slug ||
-    defaultServerData?.server.slug;
-
+  const resolvedServerSlug = serverSlug || server?.slug;
   const resolvedServerPath = resolvedServerSlug
     ? `/s/${resolvedServerSlug}`
     : NavigationPaths.Home;
@@ -98,11 +87,16 @@ export const useServerData = () => {
     isServerBySlugLoading ||
     isServerByInviteTokenLoading;
 
+  const currentUserHasNoServers =
+    meData?.user.serversCount === 0 && !isMeError && !isLoading;
+
   return {
+    server,
+    serverId: server?.id,
     serverSlug: resolvedServerSlug,
     serverPath: resolvedServerPath,
-    serverCount: meData?.user.serversCount,
+    myServerCount: meData?.user.serversCount,
+    currentUserHasNoServers,
     isLoading,
-    serverId,
   };
 };
