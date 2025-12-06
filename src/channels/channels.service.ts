@@ -168,6 +168,25 @@ export const addMemberToAllServerChannels = async (
   await channelMemberRepository.save(channelMembers);
 };
 
+export const removeMemberFromAllServerChannels = async (
+  userId: string,
+  serverId: string,
+) => {
+  const channelIdsSubquery = channelRepository
+    .createQueryBuilder('channel')
+    .select('channel.id')
+    .where('channel.serverId = :serverId', { serverId });
+
+  await channelMemberRepository
+    .createQueryBuilder()
+    .delete()
+    .from(ChannelMember)
+    .where('userId = :userId', { userId })
+    .andWhere(`channelId IN (${channelIdsSubquery.getQuery()})`)
+    .setParameters(channelIdsSubquery.getParameters())
+    .execute();
+};
+
 export const createChannel = async (
   serverId: string,
   { name, description }: CreateChannelDto,

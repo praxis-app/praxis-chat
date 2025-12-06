@@ -298,10 +298,16 @@ export const addServerMembers = async (serverId: string, userIds: string[]) => {
   }));
   const members = [...server.members, ...shapedNewMembers];
 
+  // Update server with new members
   await serverRepository.save({
     ...server,
     members,
   });
+
+  // Add new members to all server channels
+  for (const userId of userIds) {
+    await channelsService.addMemberToAllServerChannels(userId, serverId);
+  }
 };
 
 export const removeServerMembers = async (
@@ -316,8 +322,14 @@ export const removeServerMembers = async (
     throw new Error('Server not found');
   }
 
+  // Remove members from server
   await serverMemberRepository.delete({
     serverId,
     userId: In(userIds),
   });
+
+  // Remove members from all server channels
+  for (const userId of userIds) {
+    await channelsService.removeMemberFromAllServerChannels(userId, serverId);
+  }
 };
