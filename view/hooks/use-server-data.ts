@@ -91,6 +91,7 @@ export const useServerData = () => {
   return {
     serverSlug: resolvedServerSlug,
     serverPath: resolvedServerPath,
+    serverCount: meData?.user.serversCount,
     isLoading,
     serverId,
   };

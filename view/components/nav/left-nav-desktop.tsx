@@ -58,7 +58,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
 
   const isServerMenuBtnDisabled =
-    !canManageServerSettings && !canManageChannels;
+    !canManageServerSettings && !canManageChannels && !me?.serversCount;
 
   const resolvedServerSlug = serverSlug || me?.currentServer?.slug;
   const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
@@ -95,19 +95,23 @@ export const LeftNavDesktop = ({ me }: Props) => {
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10} className="w-52">
-            <DialogTrigger asChild>
-              <DropdownMenuItem className="text-md">
-                <MdAddCircle className="text-foreground size-5" />
-                {t('channels.actions.create')}
-              </DropdownMenuItem>
-            </DialogTrigger>
+            {canManageChannels && (
+              <DialogTrigger asChild>
+                <DropdownMenuItem className="text-md">
+                  <MdAddCircle className="text-foreground size-5" />
+                  {t('channels.actions.create')}
+                </DropdownMenuItem>
+              </DialogTrigger>
+            )}
 
-            <Link to={settingsPath}>
-              <DropdownMenuItem className="text-md">
-                <MdSettings className="text-foreground size-5" />
-                {t('navigation.labels.serverSettings')}
-              </DropdownMenuItem>
-            </Link>
+            {canManageServerSettings && (
+              <Link to={settingsPath}>
+                <DropdownMenuItem className="text-md">
+                  <MdSettings className="text-foreground size-5" />
+                  {t('navigation.labels.serverSettings')}
+                </DropdownMenuItem>
+              </Link>
+            )}
 
             {instanceAbility.can('manage', 'InstanceConfig') && (
               <Link to={NavigationPaths.Settings}>
