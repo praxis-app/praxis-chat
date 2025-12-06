@@ -159,6 +159,8 @@ export const EditServerPage = () => {
       if (!serverId) {
         return;
       }
+      // Route to manage servers optimistically to avoid 404 error
+      await navigate(NavigationPaths.ManageServers);
       await api.deleteServer(serverId);
     },
     onSuccess() {
@@ -174,8 +176,6 @@ export const EditServerPage = () => {
         },
       );
       queryClient.removeQueries({ queryKey: ['servers', serverId] });
-
-      navigate(NavigationPaths.ManageServers);
     },
     onError(error: Error) {
       handleError(error);
