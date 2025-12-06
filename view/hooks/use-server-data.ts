@@ -1,10 +1,10 @@
+import { api } from '@/client/api-client';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useMeQuery } from '@/hooks/use-me-query';
+import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api } from '../client/api-client';
-import { NavigationPaths } from '../constants/shared.constants';
-import { useAppStore } from '../store/app.store';
-import { useMeQuery } from './use-me-query';
 
 export const useServerData = () => {
   const { isLoggedIn, inviteToken } = useAppStore();
@@ -33,18 +33,8 @@ export const useServerData = () => {
         const result = await api.getServerBySlug(serverSlug);
         return result;
       } catch (error) {
-        // If the server is not found, check if the user has any servers
         if (isAxiosError(error) && error.response?.status === 404) {
-          const { servers } = await api.getCurrentUserServers();
-
-          // If the user has any servers, navigate to the first one returned
-          if (servers.length > 0) {
-            const firstServer = servers[0];
-            await navigate(`/s/${firstServer.slug}`);
-            return null;
-          } else {
-            throw new Error('No servers found for user');
-          }
+          navigate(NavigationPaths.Home);
         }
         throw error;
       }
