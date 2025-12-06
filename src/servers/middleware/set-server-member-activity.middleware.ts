@@ -28,15 +28,11 @@ export const setServerMemberActivity = async (
       where: { slug: params.slug },
     });
     serverId = server?.id;
-    if (!serverId) {
-      res.status(404).send('Server not found');
-      return;
-    }
   }
 
-  // If serverId is still missing (e.g., route without server context), skip activity update
   if (!serverId) {
-    return next();
+    res.status(404).send('Server not found');
+    return;
   }
 
   const serverMember = await serverMemberRepository.findOne({
