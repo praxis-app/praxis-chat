@@ -54,7 +54,7 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       instanceRolesService.getInstancePermissionsByUser(userId),
       serverRolesService.getServerPermissionsByUser(userId),
       serverMemberRepository.count({ where: { userId } }),
-      serversService.getLastUsedServer(userId),
+      serversService.getCurrentServer(userId),
       getUserProfilePicture(userId),
     ]);
 
@@ -193,11 +193,11 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  const lastUsedServer = await serversService.getLastUsedServer(userId);
-  if (!lastUsedServer) {
-    throw new Error('Last used server not found for user');
+  const currentServer = await serversService.getCurrentServer(userId);
+  if (!currentServer) {
+    throw new Error('Server not found for user');
   } else {
-    await serversService.addMemberToServer(lastUsedServer.id, user.id);
+    await serversService.addMemberToServer(currentServer.id, user.id);
   }
 };
 

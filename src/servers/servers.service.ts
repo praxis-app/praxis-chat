@@ -93,7 +93,7 @@ export const getDefaultServer = async () => {
   return server;
 };
 
-export const getLastUsedServer = async (userId: string) => {
+export const getCurrentServer = async (userId: string) => {
   const server = await serverRepository.findOne({
     where: { members: { userId, lastActiveAt: Not(IsNull()) } },
     order: { members: { lastActiveAt: 'DESC' } },
