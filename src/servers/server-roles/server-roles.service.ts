@@ -1,4 +1,5 @@
 import { RawRuleOf } from '@casl/ability';
+import { buildPermissionRules } from '@common/roles/role.utils';
 import {
   ServerAbility,
   ServerAbilityAction,
@@ -7,7 +8,6 @@ import {
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
-import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
 import { User } from '../../users/user.entity';
 import * as usersService from '../../users/users.service';
 import { ServerRolePermission } from './entities/server-role-permission.entity';
@@ -16,7 +16,6 @@ import { ServerRole } from './entities/server-role.entity';
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
 
-type RulesMap = Record<string, ServerAbilityAction[]>;
 type ServerPermissionsMap = Record<string, RawRuleOf<ServerAbility>[]>;
 
 interface CreateServerRoleDto {
@@ -50,7 +49,10 @@ export const getServerRole = async (serverId: string, serverRoleId: string) => {
     where: { serverRoles: { id: serverRoleId } },
     select: ['id', 'name', 'displayName'],
   });
-  const permissions = buildPermissionRules([serverRole]);
+  const permissions = buildPermissionRules<
+    ServerAbilitySubject,
+    ServerAbilityAction
+  >([serverRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
@@ -100,7 +102,10 @@ export const getServerRoles = async (serverId: string) => {
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules([serverRole]),
+    permissions: buildPermissionRules<
+      ServerAbilitySubject,
+      ServerAbilityAction
+    >([serverRole]),
     memberCount: serverRole.members.length,
   }));
 };
@@ -135,7 +140,10 @@ export const getServerPermissionsByUser = async (
 
   return Object.entries(serverRolesByServerId).reduce<ServerPermissionsMap>(
     (permissionsByServerId, [serverId, roles]) => {
-      permissionsByServerId[serverId] = buildPermissionRules(roles);
+      permissionsByServerId[serverId] = buildPermissionRules<
+        ServerAbilitySubject,
+        ServerAbilityAction
+      >(roles);
       return permissionsByServerId;
     },
     {},
@@ -341,27 +349,4 @@ export const deleteServerRole = async (
   serverRoleId: string,
 ) => {
   return serverRoleRepository.delete({ id: serverRoleId, serverId });
-};
-
-/**
- * Example output:
- * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
- */
-export const buildPermissionRules = (
-  serverRoles: ServerRole[] | PollActionRole[],
-): RawRuleOf<ServerAbility>[] => {
-  const rulesMap = serverRoles.reduce<RulesMap>((result, serverRole) => {
-    for (const permission of serverRole.permissions || []) {
-      if (!result[permission.subject]) {
-        result[permission.subject] = [];
-      }
-      result[permission.subject].push(permission.action);
-    }
-    return result;
-  }, {});
-
-  return Object.entries(rulesMap).map(([subject, action]) => ({
-    subject: subject as ServerAbilitySubject,
-    action,
-  }));
 };

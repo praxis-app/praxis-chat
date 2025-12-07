@@ -4,10 +4,10 @@ import {
   InstanceAbilityAction,
   InstanceAbilitySubject,
 } from '@common/roles/instance-roles/instance-ability';
+import { buildPermissionRules } from '@common/roles/role.utils';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
-import { PollActionRole } from '../../poll-actions/entities/poll-action-role.entity';
 import { User } from '../../users/user.entity';
 import * as usersService from '../../users/users.service';
 import { InstanceRolePermission } from './entities/instance-role-permission.entity';
@@ -16,8 +16,6 @@ import { InstanceRole } from './entities/instance-role.entity';
 // TODO: Move to src/common
 const DEFAULT_ROLE_COLOR = '#f44336';
 const ADMIN_ROLE_NAME = 'admin';
-
-type PermissionMap = Record<string, InstanceAbilityAction[]>;
 
 interface CreateInstanceRoleDto {
   name: string;
@@ -51,7 +49,10 @@ export const getInstanceRole = async (instanceRoleId: string) => {
     where: { instanceRoles: { id: instanceRoleId } },
     select: ['id', 'name', 'displayName'],
   });
-  const permissions = buildPermissionRules([instanceRole]);
+  const permissions = buildPermissionRules<
+    InstanceAbilitySubject,
+    InstanceAbilityAction
+  >([instanceRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
@@ -100,7 +101,10 @@ export const getInstanceRoles = async () => {
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules([instanceRole]),
+    permissions: buildPermissionRules<
+      InstanceAbilitySubject,
+      InstanceAbilityAction
+    >([instanceRole]),
     memberCount: instanceRole.members.length,
   }));
 };
@@ -117,7 +121,9 @@ export const getInstancePermissionsByUser = async (
       },
     },
   });
-  return buildPermissionRules(instanceRoles);
+  return buildPermissionRules<InstanceAbilitySubject, InstanceAbilityAction>(
+    instanceRoles,
+  );
 };
 
 export const getUsersEligibleForInstanceRole = async (
@@ -298,30 +304,4 @@ export const removeInstanceRoleMembers = async (
 
 export const deleteInstanceRole = async (id: string) => {
   return instanceRoleRepository.delete(id);
-};
-
-/**
- * Example output:
- * `[ { subject: 'Channel', action: ['read', 'create'] } ]`
- */
-export const buildPermissionRules = (
-  instanceRoles: InstanceRole[] | PollActionRole[],
-): RawRuleOf<InstanceAbility>[] => {
-  const permissionMap = instanceRoles.reduce<PermissionMap>(
-    (result, instanceRole) => {
-      for (const permission of instanceRole.permissions || []) {
-        if (!result[permission.subject]) {
-          result[permission.subject] = [];
-        }
-        result[permission.subject].push(permission.action);
-      }
-      return result;
-    },
-    {},
-  );
-
-  return Object.entries(permissionMap).map(([subject, action]) => ({
-    subject: subject as InstanceAbilitySubject,
-    action,
-  }));
 };
