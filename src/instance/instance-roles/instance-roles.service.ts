@@ -4,6 +4,10 @@ import {
   InstanceAbilityAction,
   InstanceAbilitySubject,
 } from '@common/roles/instance-roles/instance-ability';
+import {
+  ADMIN_ROLE_NAME,
+  DEFAULT_ROLE_COLOR,
+} from '@common/roles/role.constants';
 import { buildPermissionRules } from '@common/roles/role.utils';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
@@ -12,10 +16,6 @@ import { User } from '../../users/user.entity';
 import * as usersService from '../../users/users.service';
 import { InstanceRolePermission } from './entities/instance-role-permission.entity';
 import { InstanceRole } from './entities/instance-role.entity';
-
-// TODO: Move to src/common
-const DEFAULT_ROLE_COLOR = '#f44336';
-const ADMIN_ROLE_NAME = 'admin';
 
 interface CreateInstanceRoleDto {
   name: string;

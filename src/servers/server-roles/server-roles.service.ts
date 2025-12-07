@@ -1,4 +1,8 @@
 import { RawRuleOf } from '@casl/ability';
+import {
+  ADMIN_ROLE_NAME,
+  DEFAULT_ROLE_COLOR,
+} from '@common/roles/role.constants';
 import { buildPermissionRules } from '@common/roles/role.utils';
 import {
   ServerAbility,
@@ -12,9 +16,6 @@ import { User } from '../../users/user.entity';
 import * as usersService from '../../users/users.service';
 import { ServerRolePermission } from './entities/server-role-permission.entity';
 import { ServerRole } from './entities/server-role.entity';
-
-const DEFAULT_ROLE_COLOR = '#f44336';
-const ADMIN_ROLE_NAME = 'admin';
 
 type ServerPermissionsMap = Record<string, RawRuleOf<ServerAbility>[]>;
 
