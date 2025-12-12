@@ -62,7 +62,7 @@ The V1 scope maps directly to the maintained roadmap. Total estimated effort (se
 
 ## Implementation Approach
 
-Backend uses Node.js and Express with PostgreSQL and Redis; the front end uses React with Vite; shared types live in `@common` to keep contracts consistent. Real-time is handled with WebSockets or Socket.IO plus Redis pub and sub, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations per milestone.
+Backend uses Node.js and Express with PostgreSQL and Redis; the front end uses React with Vite; shared types live in `@common` to keep contracts consistent. Real-time is handled with WebSockets plus Redis pub and sub, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations per milestone.
 
 Governance flows are pluggable so majority, consensus, and consent models apply per proposal with audit trails and immutable vote records. Security relies on role-based access control at API and UI layers, server-side validation, minimal PII encrypted at rest and in transit, and audit logging for proposal and role changes. Quality gates include linting, tests, and type checks through the `npm run check` chain, story fixtures for demo mode, and feature flags to reduce risk on modules such as notifications and forum sorting.
 
