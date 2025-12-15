@@ -104,20 +104,20 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </DialogTrigger>
             )}
 
-            {canManageServerSettings && (
-              <Link to={settingsPath}>
-                <DropdownMenuItem className="text-md">
-                  <MdSettings className="text-foreground size-5" />
-                  {t('navigation.labels.serverSettings')}
-                </DropdownMenuItem>
-              </Link>
-            )}
-
             {instanceAbility.can('manage', 'InstanceConfig') && (
               <Link to={NavigationPaths.Settings}>
                 <DropdownMenuItem className="text-md">
                   <MdOutlineSettings className="text-foreground size-5" />
                   {t('navigation.labels.instanceSettings')}
+                </DropdownMenuItem>
+              </Link>
+            )}
+
+            {canManageServerSettings && (
+              <Link to={settingsPath}>
+                <DropdownMenuItem className="text-md">
+                  <MdSettings className="text-foreground size-5" />
+                  {t('navigation.labels.serverSettings')}
                 </DropdownMenuItem>
               </Link>
             )}

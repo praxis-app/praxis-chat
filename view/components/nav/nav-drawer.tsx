@@ -108,18 +108,6 @@ export const NavDrawer = ({ trigger }: Props) => {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="ghost"
-              className="text-md flex items-center gap-6 font-normal"
-              onClick={() => {
-                navigate(`${serverPath}${NavigationPaths.Settings}`);
-                setIsNavSheetOpen(false);
-              }}
-            >
-              <MdSettings className="size-6" />
-              {t('navigation.labels.serverSettings')}
-            </Button>
-
             {instanceAbility.can('manage', 'InstanceConfig') && (
               <Button
                 variant="ghost"
@@ -133,6 +121,18 @@ export const NavDrawer = ({ trigger }: Props) => {
                 {t('navigation.labels.instanceSettings')}
               </Button>
             )}
+
+            <Button
+              variant="ghost"
+              className="text-md flex items-center gap-6 font-normal"
+              onClick={() => {
+                navigate(`${serverPath}${NavigationPaths.Settings}`);
+                setIsNavSheetOpen(false);
+              }}
+            >
+              <MdSettings className="size-6" />
+              {t('navigation.labels.serverSettings')}
+            </Button>
 
             {meData && meData.user.serversCount > 1 && (
               <Button
