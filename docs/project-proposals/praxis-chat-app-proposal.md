@@ -16,11 +16,11 @@ Praxis bridges the gap between traditional collaborative decision-making platfor
 
 - **Mobile-first design** – Chat interfaces are much better optimized for mobile, crucial for organizers who coordinate on-the-go. Traditional CDM tools often have clunky mobile experiences that can hinder participation.
 
-- **Chat-first extensibility** – Chat interfaces can smoothly incorporate forum-like features (forum channels, threads, pinned content) without disrupting the core experience. The inverse - adding fluid conversation to forum-based tools - typically results in awkward, bolted-on chat features that users avoid.
+- **Chat-first extensibility** – Chat interfaces can smoothly incorporate forum-like features (forum channels, threads, pinned content, slow mode) without disrupting the core experience. The inverse - adding fluid conversation to forum-based tools - typically results in awkward, bolted-on chat features that users avoid.
 
 - **Progressive disclosure of complexity** – Chat can start simple (just discussing) then progressively reveal more structured features (polls, ranked choice, model of consensus) as needed. This lowers the initial learning curve compared to other options (e.g. Loomio, OpenSlides) that present all features upfront.
 
-- **Integrated voice and video capabilities** – Chat platforms typically include VoIP and video calling. This enables quick escalation from text discussions to verbal deliberation when decisions require nuanced conversation, emotional connection, or complex negotiation. For distributed organizing, the ability to seamlessly transition between text and video within the same platform eliminates tool-switching friction and keeps all participants engaged regardless of their communication preferences. (Voice/video are out of scope for V1 but reserved in the architecture.)
+- **Integrated voice and video capabilities** – Chat platforms typically include VoIP and video calling, with well defined UX patterns that we can leverage. This enables quick escalation from text discussions to verbal deliberation when decisions require nuanced conversation, emotional connection, or complex negotiation. For distributed organizing, the ability to seamlessly transition between text and video within the same platform eliminates tool-switching friction and keeps all participants engaged regardless of their communication preferences. (Voice/video are out of scope for V1 but slated for future development.)
 
 ## Objectives
 
