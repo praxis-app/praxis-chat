@@ -28,7 +28,7 @@ Deliver a familiar chat experience that can pivot into structured decision flows
 
 ## Scope and Feature Set (V1)
 
-The V1 scope maps directly to the maintained roadmap. Total estimated effort (serial) is about 9 months for two engineers; with parallel workstreams, expected elapsed time is about 4 months.
+The V1 scope maps directly to the maintained roadmap. Expected elapsed time is about 5 months with two engineers working in parallel.
 
 ### Chat Features (about 2 months total)
 
