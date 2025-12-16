@@ -30,10 +30,8 @@ Deliver a familiar chat experience that can pivot into structured decision flows
 
 The V1 scope maps directly to the maintained roadmap. Expected elapsed time is about 5 months with two engineers working in parallel.
 
-### Chat Features (about 2 months total)
+### Basic Chat Features (about 1.5 months total)
 
-- Send messages + image support: Core real-time chat with text and media (2.5 wks).
-- Channel creation and management: Allow users to create, rename, and manage channels (2.5 wks).
 - Reply threads: Enable threaded conversations for focus and clarity (2.5 wks).
 - Forum-type channels: Structured deliberation with advanced sorting and filtering (1.5 wks).
 
@@ -53,12 +51,9 @@ The V1 scope maps directly to the maintained roadmap. Expected elapsed time is a
 
 - Demo mode (PoC): Simplified environment for showcasing functionality (1.5 wks).
 - Onboarding / tutorial: Guided walkthrough with tooltips and interactive hints (1.5 wks).
-- Events + in-app calendar: Schedule and view community events (1.0 wk).
-- Server management, in progress: Manage and moderate multiple chat servers per instance (1.5 wks).
+- Server management: Manage and moderate multiple chat servers (workspaces) per instance (1.5 wks).
+- Basic search: Search messages, proposals, threads, and forum posts (1.0 wk).
 - Notifications: Real-time updates and push alerts (1.0 wk).
-- Invite links: Simplify onboarding and team expansion (1.5 wks).
-- User roles and permissions: Governance and moderation controls (1.5 wks).
-- Basic search: Search messages, proposals, and threads (1.0 wk).
 
 ## Implementation Approach
 
