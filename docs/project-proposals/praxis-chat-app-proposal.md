@@ -65,8 +65,8 @@ A single small VPS on DigitalOcean with 1 vCPU and 2 GB of RAM is enough for ear
 
 ## Success Metrics
 
-Track time to decision as a percentage reduction versus manual baselines, weekly active decision-makers and proposal completion rate for engagement, p95 message delivery and proposal action latency for reliability, and the absence of unresolved audit discrepancies alongside qualitative feedback from the pilot cohort for trust. Add an early leading indicator such as proposal-to-vote conversion rate within 48 hours to catch friction quickly.
+Measure success by completing the V1 roadmap and exiting a structured QA/pilot phase ready for initial rollout. Milestones include: all V1 features functionally complete, high-priority QA issues triaged and fixed, and pilot team feedback incorporated into a readiness review for launch.
 
 ## Next Steps
 
-Confirm priority within the V1 roadmap and lock scope for the first six weeks, finalize the deployment environment including cloud account, database and Redis provisioning, and push notification credentials, then kick off Foundations and Chat Core in week one with weekly stakeholder demos.
+Proceed with the initial deployment scaffolding to unblock development, keep the V1 roadmap as the guiding scope for the first six weeks, and recruit an additional engineer to accelerate delivery.
