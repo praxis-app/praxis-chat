@@ -1,6 +1,6 @@
 # Praxis - A Chat-based CDM App
 
-Praxis is a chat-based collaborative decision-making (CDM) app that lets volunteer teams move seamlessly from informal conversation to structured proposals and votes. It is designed for a political organization that needs transparent decision-making without slowing day-to-day collaboration. V1 targets a production-ready experience combining real-time chat, structured governance flows, and essential operational features (auth, notifications, onboarding). This proposal outlines the product scope, implementation approach, and time estimates for two engineers working in parallel.
+Praxis is a chat-based collaborative decision-making (CDM) app that seamlessly blends informal discussion with structured decision-making processes. Groups can transition smoothly from casual conversation to formal proposals and voting without breaking flow or losing context. V1 targets a production ready experience combining chat, structured decision-making flows, and essential operational features (demo mode, notifications, onboarding). This proposal outlines the full scope, implementation approach, and time estimates for two engineers working in parallel.
 
 ## Value proposition
 
