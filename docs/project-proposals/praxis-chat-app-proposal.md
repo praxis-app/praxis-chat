@@ -4,7 +4,7 @@ Praxis is a chat-based collaborative decision-making (CDM) app that seamlessly b
 
 ## Value proposition
 
-Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum-centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real-time chat environment. Unlike general-purpose communication tools like Discord or Signal, Praxis is purpose-built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all-in-one environment where communication flows and decision-making are fully integrated.
+Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum-centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real-time chat environment. Unlike general purpose communication tools like Discord or Signal, Praxis will be purpose built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all in one environment where communication and decision-making are fully integrated.
 
 ## Why chat-based?
 
