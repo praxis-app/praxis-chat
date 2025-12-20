@@ -1,10 +1,10 @@
 # Praxis - A Chat-based CDM App
 
-Praxis is a chat-based collaborative decision-making (CDM) app that lets volunteer teams move seamlessly from informal conversation to structured proposals and votes. It is designed for a political organization that needs transparent decision-making without slowing day-to-day collaboration. V1 targets a production-ready experience combining real-time chat, structured governance flows, and essential operational features (auth, notifications, onboarding). This proposal outlines the product scope, implementation approach, and time estimates for two engineers working in parallel.
+Praxis is a chat-based collaborative decision-making (CDM) app that seamlessly blends informal discussion with structured decision-making processes. Groups can transition smoothly from casual conversation to formal proposals and voting without breaking flow or losing context. V1 targets a production ready experience combining chat, structured decision-making flows, and essential operational features (demo mode, notifications, onboarding). This proposal outlines the full scope, implementation approach, and time estimates for two engineers working in parallel.
 
 ## Value proposition
 
-Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum-centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real-time chat environment. Unlike general-purpose communication tools like Discord or Signal, Praxis is purpose-built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all-in-one environment where communication flows and decision-making are fully integrated.
+Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum-centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real-time chat environment. Unlike general purpose communication tools like Discord or Signal, Praxis will be purpose built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all in one environment where communication and decision-making are fully integrated.
 
 ## Why chat-based?
 
@@ -28,7 +28,7 @@ Deliver a familiar chat experience that can pivot into structured decision flows
 
 ## Scope and Feature Set (V1)
 
-The V1 scope maps directly to the maintained roadmap. Expected elapsed time is about 5 months with two engineers working in parallel.
+The V1 scope matches the current roadmap. The feature estimates sum to roughly 8–9 months of combined engineering effort. With two engineers working in parallel and some overlap, this translates to about 5–6 months of elapsed time; some work can be parallelized, but dependencies and integration limit full overlap.
 
 ### Basic Chat Features (about 1.5 months total)
 
