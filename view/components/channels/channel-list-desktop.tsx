@@ -44,11 +44,16 @@ export const ChannelListDesktop = ({ me }: Props) => {
   const isLoading =
     isChannelsLoading || isGeneralChannelLoading || isAppLoading;
 
+  if (!serverSlug) {
+    return null;
+  }
+
   if (generalChannelData && !isRegistered && !isLoading) {
     return (
       <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
         <ChannelListItemDesktop
           channel={generalChannelData.channel}
+          serverSlug={serverSlug}
           isGeneralChannel
           isActive
         />

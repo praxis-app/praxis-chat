@@ -31,7 +31,7 @@ interface Props {
   channel: ChannelRes;
   isActive: boolean;
   isGeneralChannel?: boolean;
-  serverSlug?: string;
+  serverSlug: string;
 }
 
 export const ChannelListItemDesktop = ({
