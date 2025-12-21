@@ -191,15 +191,21 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  const currentServer = await serversService.getCurrentServer(userId);
-  if (!currentServer) {
-    throw new Error('Server not found for user');
+  const servers = await serverMemberRepository.find({
+    where: { userId },
+    select: ['serverId'],
+  });
+  if (servers.length === 0) {
+    throw new Error('User not found in any servers');
   }
 
-  // TODO: If user belongs multiple servers, add them to remaining channels for each server
-
-  // Add upgraded user to remaining channels in current server
-  await channelsService.addMemberToAllServerChannels(user.id, currentServer.id);
+  // Add upgraded user to remaining channels for each server they belong to
+  for (const server of servers) {
+    await channelsService.addMemberToAllServerChannels(
+      user.id,
+      server.serverId,
+    );
+  }
 };
 
 export const getUserProfilePicture = async (userId: string) => {
