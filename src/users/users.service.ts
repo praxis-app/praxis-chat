@@ -118,6 +118,7 @@ export const createUser = async (
     await instanceRolesService.createAdminInstanceRole(user.id);
     await serverRolesService.createAdminServerRole(server.id, user.id);
     await serversService.addMemberToServer(server.id, user.id);
+    await channelsService.addMemberToAllServerChannels(user.id, server.id);
     return user;
   }
 
@@ -128,6 +129,7 @@ export const createUser = async (
     where: { token: inviteToken },
   });
   await serversService.addMemberToServer(invite.serverId, user.id);
+  await channelsService.addMemberToAllServerChannels(user.id, invite.serverId);
 
   return user;
 };
@@ -157,10 +159,13 @@ export const createAnonUser = async (serverId: string) => {
   if (isFirst) {
     await instanceRolesService.createAdminInstanceRole(user.id);
     await serverRolesService.createAdminServerRole(serverId, user.id);
-    await serversService.addMemberToServer(serverId, user.id);
+    await channelsService.addMemberToAllServerChannels(user.id, serverId);
   } else {
     await channelsService.addMemberToGeneralChannel(serverId, user.id);
   }
+
+  // Always add anon user as a server member
+  await serversService.addMemberToServer(serverId, user.id);
 
   return user;
 };
@@ -189,9 +194,12 @@ export const upgradeAnonUser = async (
   const currentServer = await serversService.getCurrentServer(userId);
   if (!currentServer) {
     throw new Error('Server not found for user');
-  } else {
-    await serversService.addMemberToServer(currentServer.id, user.id);
   }
+
+  // TODO: If user belongs multiple servers, add them to remaining channels for each server
+
+  // Add upgraded user to remaining channels in current server
+  await channelsService.addMemberToAllServerChannels(user.id, currentServer.id);
 };
 
 export const getUserProfilePicture = async (userId: string) => {

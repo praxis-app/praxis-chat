@@ -302,7 +302,6 @@ export const addMemberToServer = async (serverId: string, userId: string) => {
     serverId,
     userId,
   });
-  await channelsService.addMemberToAllServerChannels(userId, serverId);
 };
 
 export const addServerMembers = async (serverId: string, userIds: string[]) => {

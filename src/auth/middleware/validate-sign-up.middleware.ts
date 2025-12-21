@@ -63,14 +63,16 @@ export const validateSignUp = async (
 ) => {
   try {
     const body = req.body as SignUpDto;
-    const { email, inviteToken } = body;
 
     // Validate request body shape
     signUpSchema.parse(body);
 
+    const { email, inviteToken } = body;
+    const isAnon = res.locals.user?.anonymous === true;
+
     // Validate invite token
     const isFirst = await isFirstUser();
-    if (!isFirst && !inviteToken) {
+    if (!isFirst && !inviteToken && !isAnon) {
       res.status(403).send('You need an invite to sign up');
       return;
     }
