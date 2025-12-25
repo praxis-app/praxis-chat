@@ -1,5 +1,11 @@
 // TODO: Add support for user deletion + clean up for saved image files
 
+/**
+ * NOTE: Support for anonymous users is currently implemented for demoing
+ * and proof of concept purposes. This will likely be removed in the
+ * future once the core functionality is fully implemented.
+ */
+
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
 import { FindManyOptions, In, Like } from 'typeorm';
