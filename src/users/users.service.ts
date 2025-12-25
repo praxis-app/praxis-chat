@@ -159,13 +159,10 @@ export const createAnonUser = async (serverId: string) => {
   if (isFirst) {
     await instanceRolesService.createAdminInstanceRole(user.id);
     await serverRolesService.createAdminServerRole(serverId, user.id);
-    await channelsService.addMemberToAllServerChannels(user.id, serverId);
-  } else {
-    await channelsService.addMemberToGeneralChannel(serverId, user.id);
   }
 
-  // Always add anon user as a server member
   await serversService.addMemberToServer(serverId, user.id);
+  await channelsService.addMemberToAllServerChannels(user.id, serverId);
 
   return user;
 };
@@ -197,14 +194,6 @@ export const upgradeAnonUser = async (
   });
   if (servers.length === 0) {
     throw new Error('User not found in any servers');
-  }
-
-  // Add upgraded user to remaining channels for each server they belong to
-  for (const server of servers) {
-    await channelsService.addMemberToAllServerChannels(
-      user.id,
-      server.serverId,
-    );
   }
 };
 
