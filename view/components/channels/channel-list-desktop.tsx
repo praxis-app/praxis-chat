@@ -23,8 +23,6 @@ export const ChannelListDesktop = ({ me }: Props) => {
   const { channelId } = useParams();
   const { pathname } = useLocation();
 
-  const isRegistered = !!me && !me.anonymous;
-
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
     queryKey: ['servers', serverId, 'channels'],
     queryFn: async () => {
@@ -33,22 +31,23 @@ export const ChannelListDesktop = ({ me }: Props) => {
       }
       return api.getJoinedChannels(serverId);
     },
-    enabled: isRegistered && !!serverId,
+    enabled: !!me && !!serverId,
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
     useGeneralChannel({
-      enabled: !isRegistered,
+      enabled: !me,
     });
 
   const isLoading =
     isChannelsLoading || isGeneralChannelLoading || isAppLoading;
 
-  if (!serverSlug) {
-    return null;
+  // TODO: Add skeleton loader
+  if (!serverSlug || isLoading) {
+    return <div className="flex flex-1" />;
   }
 
-  if (generalChannelData && !isRegistered && !isLoading) {
+  if (generalChannelData && !me) {
     return (
       <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
         <ChannelListItemDesktop

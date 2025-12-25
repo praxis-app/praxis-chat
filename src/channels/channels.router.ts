@@ -3,7 +3,6 @@
 import express from 'express';
 import { authenticateOptional } from '../auth/middleware/authenticate-optional.middleware';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
-import { isRegistered } from '../auth/middleware/is-registered.middleware';
 import { can } from '../common/roles/can.middleware';
 import { messagesRouter } from '../messages/messages.router';
 import { synchronizePolls } from '../polls/middleware/synchronize-polls.middleware';
@@ -39,8 +38,8 @@ channelsRouter
 // Protected routes
 channelsRouter
   .use(authenticate, setServerMemberActivity, synchronizePolls)
-  .get('/joined', isRegistered, getJoinedChannels)
-  .get('/:channelId', isRegistered, isChannelMember, getChannel)
+  .get('/joined', getJoinedChannels)
+  .get('/:channelId', isChannelMember, getChannel)
   .get('/:channelId/feed', isChannelMember, getChannelFeed)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
