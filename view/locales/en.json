@@ -405,7 +405,7 @@
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified.",
-      "anonymousUsersEnabled": "Allow users to participate anonymously without needing to create a full account with an email and password."
+      "anonymousUsersEnabled": "Allow users to participate without creating an account or providing personal information."
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
