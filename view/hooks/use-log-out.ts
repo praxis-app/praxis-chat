@@ -12,9 +12,10 @@ interface UseLogOutOptions {
 }
 
 export const useLogOut = (options: UseLogOutOptions = {}) => {
+  const { setIsLoggedIn, setIsNavSheetOpen, setInviteToken } = useAppStore();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setIsLoggedIn, setIsNavSheetOpen } = useAppStore();
 
   const result = useMutation({
     mutationFn: api.logOut,
@@ -23,6 +24,7 @@ export const useLogOut = (options: UseLogOutOptions = {}) => {
       options.onSuccess?.();
       setIsNavSheetOpen(false);
       setIsLoggedIn(false);
+      setInviteToken(null);
       queryClient.clear();
     },
   });
