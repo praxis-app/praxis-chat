@@ -51,9 +51,10 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const [images, setImages] = useState<File[]>([]);
 
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const isFieldSizingSupportedRef = useRef(true);
-  const queryClient = useQueryClient();
 
   const { data: meData } = useMeQuery();
   const { serverId } = useServerData();
