@@ -42,9 +42,7 @@ export const GeneralServerSettings = () => {
 
       <Container>
         <Card>
-          <CardContent>
-            {/* <GeneralServerSettingsForm serverConfig={data.serverConfig} /> */}
-          </CardContent>
+          <CardContent>TODO: Add general server settings form here</CardContent>
         </Card>
       </Container>
     </>
