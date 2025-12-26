@@ -1,3 +1,5 @@
+// TODO: Prevent excessive calls to `/api/users/me` when the user is not logged in
+
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { api } from '../client/api-client';
@@ -10,7 +12,7 @@ export const useMeQuery = (
 ) => {
   const { setIsAppLoading, setIsLoggedIn } = useAppStore();
 
-  const defaultOptions = {
+  const defaultOptions: Partial<UseQueryOptions<{ user: CurrentUser }>> = {
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

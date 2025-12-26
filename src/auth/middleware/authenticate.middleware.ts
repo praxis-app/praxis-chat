@@ -15,7 +15,7 @@ export const authenticate = async (
 
   // Check authorization header shape
   const { authorization } = req.headers;
-  const [type, token] = authorization?.split(' ') ?? [];
+  const [type, token] = authorization?.split(' ') || [];
   if (type !== 'Bearer' || !token) {
     res.status(401).send('Unauthorized');
     return;

@@ -13,11 +13,13 @@ import { CurrentUser } from '../../types/user.types';
 interface Props {
   message: MessageRes;
   me?: CurrentUser;
+  serverId?: string;
   channelId?: string;
 }
 
 export const Message = ({
   message: { id, body, images, user, createdAt },
+  serverId,
   channelId,
   me,
 }: Props) => {
@@ -76,6 +78,7 @@ export const Message = ({
         {showImages && (
           <AttachedImageList
             images={images}
+            serverId={serverId}
             channelId={channelId}
             messageId={id}
             imageClassName="rounded-lg"

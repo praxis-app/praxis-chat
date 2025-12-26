@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
 import { NavigationPaths } from '../../constants/shared.constants';
+import { useGeneralChannel } from '../../hooks/use-general-channel';
+import { useServerData } from '../../hooks/use-server-data';
 import { CurrentUserRes } from '../../types/user.types';
 import { ChannelListItemDesktop } from './channel-list-item-desktop';
 
@@ -17,32 +19,40 @@ interface Props {
 export const ChannelListDesktop = ({ me }: Props) => {
   const { isAppLoading } = useAppStore();
 
+  const { serverId, serverSlug, serverPath } = useServerData();
   const { channelId } = useParams();
   const { pathname } = useLocation();
 
-  const isRegistered = !!me && !me.anonymous;
-
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-    queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
-    enabled: isRegistered,
+    queryKey: ['servers', serverId, 'channels'],
+    queryFn: async () => {
+      if (!serverId) {
+        throw new Error('No current server found');
+      }
+      return api.getJoinedChannels(serverId);
+    },
+    enabled: !!me && !!serverId,
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useQuery({
-      queryKey: ['channels', GENERAL_CHANNEL_NAME],
-      queryFn: () => api.getGeneralChannel(),
-      enabled: !isRegistered,
+    useGeneralChannel({
+      enabled: !me,
     });
 
   const isLoading =
     isChannelsLoading || isGeneralChannelLoading || isAppLoading;
 
-  if (generalChannelData && !isRegistered && !isLoading) {
+  // TODO: Add skeleton loader
+  if (!serverSlug || isLoading) {
+    return <div className="flex flex-1" />;
+  }
+
+  if (generalChannelData && !me) {
     return (
       <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
         <ChannelListItemDesktop
           channel={generalChannelData.channel}
+          serverSlug={serverSlug}
           isGeneralChannel
           isActive
         />
@@ -53,7 +63,9 @@ export const ChannelListDesktop = ({ me }: Props) => {
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">
       {channelsData?.channels.map((channel) => {
-        const isHome = pathname === NavigationPaths.Home;
+        const isHome =
+          pathname === NavigationPaths.Home || pathname === serverPath;
+
         const isGeneral = channel.name === GENERAL_CHANNEL_NAME;
         const isActive = channelId === channel.id || (isHome && isGeneral);
 
@@ -62,6 +74,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
             key={channel.id}
             channel={channel}
             isActive={isActive}
+            serverSlug={serverSlug}
           />
         );
       })}

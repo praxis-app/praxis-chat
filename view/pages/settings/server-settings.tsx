@@ -10,8 +10,10 @@ import {
   MdClose,
   MdEmojiPeople,
   MdLink,
+  MdSettings,
 } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useServerData } from '../../hooks/use-server-data';
 
 export const ServerSettings = () => {
   const { setIsNavSheetOpen } = useAppStore();
@@ -20,9 +22,11 @@ export const ServerSettings = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
+  const { serverPath } = useServerData();
+
   const handleBackClick = () => {
     if (isDesktop) {
-      navigate(NavigationPaths.Home);
+      navigate(serverPath);
       return;
     }
     setIsNavSheetOpen(true);
@@ -39,19 +43,24 @@ export const ServerSettings = () => {
 
       <Container className="flex flex-col gap-4.5">
         <SettingsNavItem
+          Icon={MdSettings}
+          label={t('navigation.labels.general')}
+          to={`${serverPath}${NavigationPaths.GeneralSettings}`}
+        />
+        <SettingsNavItem
           Icon={MdEmojiPeople}
           label={t('navigation.labels.proposals')}
-          to={NavigationPaths.ProposalSettings}
+          to={`${serverPath}${NavigationPaths.ProposalSettings}`}
         />
         <SettingsNavItem
           Icon={MdLink}
           label={t('navigation.labels.invites')}
-          to={NavigationPaths.Invites}
+          to={`${serverPath}${NavigationPaths.Invites}`}
         />
         <SettingsNavItem
           Icon={MdAdminPanelSettings}
           label={t('navigation.labels.roles')}
-          to={NavigationPaths.ServerRoles}
+          to={`${serverPath}${NavigationPaths.Roles}`}
         />
       </Container>
     </>

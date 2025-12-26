@@ -1,18 +1,23 @@
 import { api } from '@/client/api-client';
 import { ChannelView } from '@/components/channels/channel-view';
 import { NavigationPaths } from '@/constants/shared.constants';
+import { useServerData } from '@/hooks/use-server-data';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
+  const { serverId } = useServerData();
   const { channelId } = useParams();
   const navigate = useNavigate();
 
   const { data: channelData } = useQuery({
-    queryKey: ['channels', channelId],
+    queryKey: ['servers', serverId, 'channels', channelId],
     queryFn: async () => {
       try {
-        const result = await api.getChannel(channelId!);
+        if (!serverId || !channelId) {
+          throw new Error('Missing server or channel id');
+        }
+        const result = await api.getChannel(serverId, channelId);
         return result;
       } catch (error) {
         await navigate(NavigationPaths.Home);
@@ -20,7 +25,7 @@ export const ChannelPage = () => {
         return null;
       }
     },
-    enabled: !!channelId,
+    enabled: !!channelId && !!serverId,
   });
 
   return <ChannelView channel={channelData?.channel} />;

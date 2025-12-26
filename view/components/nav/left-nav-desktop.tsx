@@ -1,21 +1,12 @@
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useAuthData } from '@/hooks/use-auth-data';
-import { cn } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
-import { CurrentUserRes } from '@/types/user.types';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MdAddCircle, MdExpandMore, MdSettings } from 'react-icons/md';
-import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
-import appIconImg from '../../assets/images/app-icon.png';
-import { useAbility } from '../../hooks/use-ability';
-import { ChannelListDesktop } from '../channels/channel-list-desktop';
+import appIconImg from '@/assets/images/app-icon.png';
+import { ChannelListDesktop } from '@/components/channels/channel-list-desktop';
 import {
   CreateChannelForm,
   CreateChannelFormSubmitButton,
-} from '../channels/create-channel-form';
-import { Button } from '../ui/button';
+} from '@/components/channels/create-channel-form';
+import { LeftNavUserMenu } from '@/components/nav/left-nav-user-menu';
+import { ServerSwitchDialog } from '@/components/nav/server-switch-dialog';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -24,14 +15,30 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { LeftNavUserMenu } from './left-nav-user-menu';
+} from '@/components/ui/dropdown-menu';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useAbility } from '@/hooks/use-ability';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { cn } from '@/lib/shared.utils';
+import { useAppStore } from '@/store/app.store';
+import { CurrentUserRes } from '@/types/user.types';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  MdAddCircle,
+  MdExpandMore,
+  MdOutlineSettings,
+  MdSettings,
+} from 'react-icons/md';
+import { TbSwitchHorizontal } from 'react-icons/tb';
+import { Link, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Props {
   me?: CurrentUserRes;
@@ -40,17 +47,28 @@ interface Props {
 export const LeftNavDesktop = ({ me }: Props) => {
   const { isLoggedIn, isAppLoading } = useAppStore();
   const [showRoomFormDialog, setShowRoomFormDialog] = useState(false);
+  const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 
-  const { signUpPath } = useAuthData();
   const { t } = useTranslation();
+  const { serverSlug } = useParams();
+  const { signUpPath } = useAuthData();
 
-  const ability = useAbility();
-  const canManageChannels = ability.can('manage', 'Channel');
-  const canManageSettings = ability.can('manage', 'ServerConfig');
-  const isServerMenuBtnDisabled = !canManageSettings && !canManageChannels;
+  const { serverAbility, instanceAbility } = useAbility();
+  const canManageChannels = serverAbility.can('manage', 'Channel');
+  const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
+
+  const isServerMenuBtnDisabled =
+    !canManageServerSettings && !canManageChannels && !me?.serversCount;
+
+  const resolvedServerSlug = serverSlug || me?.currentServer?.slug;
+  const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
+      <ServerSwitchDialog
+        open={showServerSwitchDialog}
+        onOpenChange={setShowServerSwitchDialog}
+      />
       <Dialog open={showRoomFormDialog} onOpenChange={setShowRoomFormDialog}>
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -77,19 +95,42 @@ export const LeftNavDesktop = ({ me }: Props) => {
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10} className="w-52">
-            <DialogTrigger asChild>
-              <DropdownMenuItem className="text-md">
-                <MdAddCircle className="text-foreground size-5" />
-                {t('channels.actions.create')}
-              </DropdownMenuItem>
-            </DialogTrigger>
+            {canManageChannels && (
+              <DialogTrigger asChild>
+                <DropdownMenuItem className="text-md">
+                  <MdAddCircle className="text-foreground size-5" />
+                  {t('channels.actions.create')}
+                </DropdownMenuItem>
+              </DialogTrigger>
+            )}
 
-            <Link to={NavigationPaths.Settings}>
-              <DropdownMenuItem className="text-md">
-                <MdSettings className="text-foreground size-5" />
-                {t('navigation.labels.serverSettings')}
+            {instanceAbility.can('manage', 'InstanceConfig') && (
+              <Link to={NavigationPaths.Settings}>
+                <DropdownMenuItem className="text-md">
+                  <MdOutlineSettings className="text-foreground size-5" />
+                  {t('navigation.labels.instanceSettings')}
+                </DropdownMenuItem>
+              </Link>
+            )}
+
+            {canManageServerSettings && (
+              <Link to={settingsPath}>
+                <DropdownMenuItem className="text-md">
+                  <MdSettings className="text-foreground size-5" />
+                  {t('navigation.labels.serverSettings')}
+                </DropdownMenuItem>
+              </Link>
+            )}
+
+            {me && me.serversCount > 1 && (
+              <DropdownMenuItem
+                className="text-md"
+                onSelect={() => setShowServerSwitchDialog(true)}
+              >
+                <TbSwitchHorizontal className="text-foreground size-5" />
+                {t('navigation.labels.switchServers')}
               </DropdownMenuItem>
-            </Link>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 

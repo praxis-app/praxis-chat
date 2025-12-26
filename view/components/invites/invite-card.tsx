@@ -26,7 +26,7 @@ export const InviteCard = ({
   invite: { id, token, uses, maxUses, expiresAt, user },
 }: Props) => {
   const { t } = useTranslation();
-  const ability = useAbility();
+  const { serverAbility } = useAbility();
 
   const { mutate: deleteInvite, isPending: isDeletePending } =
     useDeleteInviteMutation(id);
@@ -59,7 +59,7 @@ export const InviteCard = ({
         </CardTitle>
         <CardAction>
           <ItemMenu
-            canDelete={ability.can('manage', 'Invite')}
+            canDelete={serverAbility.can('manage', 'Invite')}
             deletePrompt={deleteInvitePrompt}
             deleteItem={deleteInvite}
             loading={isDeletePending}

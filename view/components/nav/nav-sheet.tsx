@@ -2,8 +2,8 @@ import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -12,6 +12,7 @@ import { LuChevronRight } from 'react-icons/lu';
 import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import appIconImg from '../../assets/images/app-icon.png';
+import { useGeneralChannel } from '../../hooks/use-general-channel';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import {
@@ -34,21 +35,27 @@ export const NavSheet = ({ trigger }: Props) => {
   const { isLoggedIn, isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const isDesktop = useIsDesktop();
+  const navigate = useNavigate();
 
+  const { serverId, serverPath } = useServerData();
   const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
+  const channelsPath = `${serverPath}/c`;
+
   const { data: channelsData } = useQuery({
-    queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
-    enabled: !isDesktop && isRegistered,
+    queryKey: ['servers', serverId, 'channels'],
+    queryFn: async () => {
+      if (!serverId) {
+        throw new Error('No current server found');
+      }
+      return api.getJoinedChannels(serverId);
+    },
+    enabled: !isDesktop && isRegistered && !!serverId,
   });
 
-  const { data: generalChannelData } = useQuery({
-    queryKey: ['channels', GENERAL_CHANNEL_NAME],
-    queryFn: () => api.getGeneralChannel(),
+  const { data: generalChannelData } = useGeneralChannel({
     enabled: !isMeLoading && !isRegistered,
   });
 
@@ -84,7 +91,7 @@ export const NavSheet = ({ trigger }: Props) => {
               <NavDropdown
                 trigger={
                   <UserAvatar
-                    name={name ?? ''}
+                    name={name || ''}
                     userId={me.id}
                     imageSrc={me.profilePicture?.url}
                     className="size-9"
@@ -105,7 +112,7 @@ export const NavSheet = ({ trigger }: Props) => {
           {channelsData?.channels.map((channel) => (
             <Link
               key={channel.id}
-              to={`${NavigationPaths.Channels}/${channel.id}`}
+              to={`${channelsPath}/${channel.id}`}
               onClick={() => setIsNavSheetOpen(false)}
               className="flex items-center gap-1.5 font-light tracking-[0.01em]"
             >

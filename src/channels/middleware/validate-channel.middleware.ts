@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { sanitizeText } from '../../common/common.utils';
+import { sanitizeText } from '../../common/text.utils';
 import { CreateChannelDto } from '../channels.service';
 
 /** Channel names can only contain letters, numbers, and hyphens */
