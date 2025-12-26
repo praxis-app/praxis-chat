@@ -10,6 +10,7 @@ export interface ServerConfigReq {
 }
 
 export interface ServerConfigRes {
+  anonymousUsersEnabled: boolean;
   decisionMakingModel: DecisionMakingModel;
   disagreementsLimit: number;
   abstainsLimit: number;

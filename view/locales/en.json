@@ -396,14 +396,16 @@
       "ratificationThreshold": "Ratification threshold",
       "disagreementsLimit": "Disagreements limit",
       "abstainsLimit": "Abstains limit",
-      "votingTimeLimit": "Voting time limit"
+      "votingTimeLimit": "Voting time limit",
+      "anonymousUsersEnabled": "Anonymous users"
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
       "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
-      "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified."
+      "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified.",
+      "anonymousUsersEnabled": "Allow users to participate anonymously without needing to create a full account with an email and password."
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
