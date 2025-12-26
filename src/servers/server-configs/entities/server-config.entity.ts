@@ -32,6 +32,9 @@ export class ServerConfig {
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
 
+  @Column({ default: false })
+  anonymousUsersEnabled: boolean;
+
   @OneToOne(() => Server, (server: Server) => server.config, {
     onDelete: 'CASCADE',
   })
