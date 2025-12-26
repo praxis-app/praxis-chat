@@ -12,6 +12,17 @@ export const getServerConfig = async (req: Request, res: Response) => {
   res.json({ serverConfig });
 };
 
+export const isAnonymousUsersEnabled = async (req: Request, res: Response) => {
+  const anonymousUsersEnabled =
+    await serverConfigsService.isAnonymousUsersEnabled(req.params.serverId);
+
+  if (anonymousUsersEnabled === null) {
+    res.status(404).send('Server config not found');
+    return;
+  }
+  res.json({ anonymousUsersEnabled });
+};
+
 export const updateServerConfig = async (req: Request, res: Response) => {
   const result = await serverConfigsService.updateServerConfig(
     req.params.serverId,

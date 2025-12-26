@@ -364,6 +364,11 @@ class ApiClient {
     return this.executeRequest<{ serverConfig: ServerConfigRes }>('get', path);
   };
 
+  isAnonymousUsersEnabled = async (serverId: string) => {
+    const path = `/servers/${serverId}/configs/anon-enabled`;
+    return this.executeRequest<{ anonymousUsersEnabled: boolean }>('get', path);
+  };
+
   updateServerConfig = async (serverId: string, data: ServerConfigReq) => {
     const path = `/servers/${serverId}/configs`;
     return this.executeRequest<void>('put', path, {

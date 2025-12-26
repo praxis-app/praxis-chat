@@ -8,6 +8,13 @@ export const serverConfigsRouter = express.Router({
   mergeParams: true,
 });
 
+// Public routes
+serverConfigsRouter.get(
+  '/anon-enabled',
+  serverConfigsController.isAnonymousUsersEnabled,
+);
+
+// Protected routes
 serverConfigsRouter
   .use(authenticate)
   .get(
