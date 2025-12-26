@@ -518,6 +518,7 @@
       "instanceSettings": "Instance Settings"
     },
     "labels": {
+      "general": "General",
       "serverSettings": "Server settings",
       "instanceSettings": "Instance settings",
       "switchServers": "Switch servers",

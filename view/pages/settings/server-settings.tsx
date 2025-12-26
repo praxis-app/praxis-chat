@@ -10,6 +10,7 @@ import {
   MdClose,
   MdEmojiPeople,
   MdLink,
+  MdSettings,
 } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { useServerData } from '../../hooks/use-server-data';
@@ -41,6 +42,11 @@ export const ServerSettings = () => {
       />
 
       <Container className="flex flex-col gap-4.5">
+        <SettingsNavItem
+          Icon={MdSettings}
+          label={t('navigation.labels.general')}
+          to={`${serverPath}${NavigationPaths.GeneralSettings}`}
+        />
         <SettingsNavItem
           Icon={MdEmojiPeople}
           label={t('navigation.labels.proposals')}
