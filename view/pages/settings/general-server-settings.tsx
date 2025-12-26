@@ -48,7 +48,7 @@ export const GeneralServerSettings = () => {
       anonymousUsersEnabled: false,
     },
     values: {
-      anonymousUsersEnabled: data?.serverConfig.anonymousUsersEnabled ?? false,
+      anonymousUsersEnabled: data?.serverConfig.anonymousUsersEnabled,
     },
     mode: 'onChange',
   });
