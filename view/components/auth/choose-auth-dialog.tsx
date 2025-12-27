@@ -26,6 +26,10 @@ interface Props {
 export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
   const { inviteToken, setIsLoggedIn } = useAppStore((state) => state);
 
+  const { signUpPath } = useAuthData();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const { mutate: createAnonSession } = useMutation({
     mutationFn: async () => {
       const { access_token } = await api.createAnonSession(inviteToken);
@@ -39,10 +43,6 @@ export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
       setIsOpen(false);
     },
   });
-
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { signUpPath } = useAuthData();
 
   const handleSendAnonMsgBtnClick = () => {
     createAnonSession();
