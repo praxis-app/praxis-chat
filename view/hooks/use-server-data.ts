@@ -47,14 +47,14 @@ export const useServerData = () => {
   } = useQuery({
     queryKey: ['servers', 'invite', inviteToken],
     queryFn: () => api.getServerByInviteToken(inviteToken!),
-    enabled: !!inviteToken && !isMeError && !serverSlug,
+    enabled: !!inviteToken,
   });
 
   const isDefaultServerQueryEnabled = () => {
+    if (inviteToken) {
+      return false;
+    }
     if (isMeError) {
-      if (inviteToken) {
-        return false;
-      }
       return true;
     }
     return (
