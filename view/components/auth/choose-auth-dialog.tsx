@@ -1,12 +1,5 @@
-import { useAuthData } from '@/hooks/use-auth-data';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useMutation } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../../client/api-client';
-import { LocalStorageKeys } from '../../constants/shared.constants';
-import { useAppStore } from '../../store/app.store';
-import { Button } from '../ui/button';
+import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +7,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
+} from '@/components/ui/dialog';
+import { LocalStorageKeys } from '@/constants/shared.constants';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { handleError } from '@/lib/error.utils';
+import { useAppStore } from '@/store/app.store';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   isOpen: boolean;
@@ -32,6 +33,10 @@ export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
       localStorage.removeItem(LocalStorageKeys.InviteToken);
       setIsLoggedIn(true);
       sendMessage();
+    },
+    onError(error: Error) {
+      handleError(error);
+      setIsOpen(false);
     },
   });
 
