@@ -1,10 +1,10 @@
 import { api } from '@/client/api-client';
 import { TopNav } from '@/components/nav/top-nav';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { ServerForm } from '@/components/servers/server-form';
 import { ServerMember } from '@/components/servers/server-member';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
-import { RoleMemberOption } from '@/components/roles/role-member-option';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
@@ -19,15 +19,16 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { handleError } from '@/lib/error.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
 import { UserRes } from '@/types/user.types';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LuChevronRight, LuPlus } from 'react-icons/lu';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 enum EditServerTabName {
   Properties = 'properties',
@@ -46,6 +47,7 @@ export const EditServerPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const isDesktop = useIsDesktop();
 
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
@@ -274,6 +276,7 @@ export const EditServerPage = () => {
       <TopNav
         header={serverData.server.name}
         onBackClick={() => navigate(NavigationPaths.ManageServers)}
+        bypassNavSheet={!isDesktop}
       />
 
       <Container>

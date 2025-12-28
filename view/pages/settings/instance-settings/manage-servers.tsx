@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { handleError } from '@/lib/error.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,6 +18,7 @@ export const ManageServers = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const isDesktop = useIsDesktop();
 
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
@@ -92,6 +94,7 @@ export const ManageServers = () => {
       <TopNav
         header={t('settings.headers.manageServers')}
         onBackClick={() => navigate(NavigationPaths.Settings)}
+        bypassNavSheet={!isDesktop}
       />
 
       <Container>

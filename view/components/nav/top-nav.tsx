@@ -16,6 +16,15 @@ interface Props {
   onBackClick?: () => void;
   backBtnIcon?: ReactNode;
   goBackOnEscape?: boolean;
+
+  /**
+   * TODO: Decide if this prop is needed or if there's a better way
+   * to handle this - the logic is currently a bit messy
+   *
+   * NOTE: There are multiple places in settings on mobile where this
+   * prop still needs to be passed in, which likely means there's
+   * something deeper that needs to be fixed
+   */
   bypassNavSheet?: boolean;
 }
 
