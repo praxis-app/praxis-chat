@@ -32,14 +32,14 @@ interface Props {
 }
 
 export const NavSheet = ({ trigger }: Props) => {
-  const { isLoggedIn, isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
   const { serverId, serverPath } = useServerData();
-  const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
+  const { me, isLoggedIn, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
   const channelsPath = `${serverPath}/c`;
@@ -121,13 +121,15 @@ export const NavSheet = ({ trigger }: Props) => {
             </Link>
           ))}
 
-          {/* Show general channel for unregistered users */}
-          {!isRegistered && generalChannelData && (
+          {/* Show general channel for logged out users */}
+          {!isLoggedIn && generalChannelData && (
             <Link
               key={generalChannelData.channel.id}
               to={NavigationPaths.Home}
               onClick={() => setIsNavSheetOpen(false)}
+              className="flex items-center gap-1.5 font-light tracking-[0.01em]"
             >
+              <MdTag className="mr-1 size-6" />
               <div>{generalChannelData.channel.name}</div>
             </Link>
           )}
