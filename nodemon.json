@@ -1,6 +1,10 @@
 {
   "watch": ["src", "common"],
-  "ignore": ["src/**/__tests__/**", "common/**/__tests__/**"],
+  "ignore": [
+    "src/**/__tests__/**",
+    "src/database/migrations/**",
+    "common/**/__tests__/**"
+  ],
   "exec": "ts-node --project ./tsconfig.src.json -r tsconfig-paths/register src/main.ts",
   "verbose": false,
   "ext": "ts"
