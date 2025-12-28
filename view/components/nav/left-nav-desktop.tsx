@@ -57,8 +57,10 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const canManageChannels = serverAbility.can('manage', 'Channel');
   const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
 
-  const isServerMenuBtnDisabled =
-    !canManageServerSettings && !canManageChannels && !me?.serversCount;
+  const hasMultipleServers = !!me && me.serversCount > 1;
+
+  const isServerMenuBtnEnabled =
+    canManageServerSettings || canManageChannels || hasMultipleServers;
 
   const resolvedServerSlug = serverSlug || me?.currentServer?.slug;
   const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
@@ -74,10 +76,10 @@ export const LeftNavDesktop = ({ me }: Props) => {
           <DropdownMenuTrigger
             className={cn(
               'flex h-[55px] w-full justify-between border-b border-[--color-border] pr-3 pl-4 select-none focus:outline-none',
-              !isServerMenuBtnDisabled &&
+              isServerMenuBtnEnabled &&
                 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 cursor-pointer',
             )}
-            disabled={isServerMenuBtnDisabled}
+            disabled={!isServerMenuBtnEnabled}
           >
             <div className="flex items-center gap-2">
               <img
@@ -90,7 +92,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </div>
             </div>
 
-            {!isServerMenuBtnDisabled && (
+            {isServerMenuBtnEnabled && (
               <MdExpandMore className="size-[1.4rem] self-center" />
             )}
           </DropdownMenuTrigger>
