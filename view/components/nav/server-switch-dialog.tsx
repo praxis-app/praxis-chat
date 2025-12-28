@@ -16,9 +16,10 @@ import { useNavigate } from 'react-router-dom';
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSelect?(): void;
 }
 
-export const ServerSwitchDialog = ({ open, onOpenChange }: Props) => {
+export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
   const { isLoggedIn } = useAppStore();
 
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export const ServerSwitchDialog = ({ open, onOpenChange }: Props) => {
   const handleSelect = (slug: string) => {
     onOpenChange(false);
     navigate(`/s/${slug}`);
+    onSelect?.();
   };
 
   return (

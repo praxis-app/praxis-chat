@@ -138,11 +138,7 @@ export const NavDrawer = ({ trigger }: Props) => {
               <Button
                 variant="ghost"
                 className="text-md flex items-center gap-6 font-normal"
-                onClick={() => {
-                  setShowServerSwitchDialog(true);
-                  setShowNavDrawer(false);
-                  setIsNavSheetOpen(false);
-                }}
+                onClick={() => setShowServerSwitchDialog(true)}
               >
                 <TbSwitchHorizontal className="size-6" />
                 {t('navigation.labels.switchServers')}
@@ -155,6 +151,7 @@ export const NavDrawer = ({ trigger }: Props) => {
       <ServerSwitchDialog
         open={showServerSwitchDialog}
         onOpenChange={setShowServerSwitchDialog}
+        onSelect={() => setIsNavSheetOpen(false)}
       />
     </>
   );
