@@ -14,9 +14,9 @@ When a user attempts to create an anonymous session via the `/auth/anon` endpoin
 
 A `invitesRequired` setting in `ServerConfig` will eventually be added to control whether invites are required for sign ups on a given server, applying to both anonymous and registered users. This setting will be independent of `anonymousUsersEnabled`. The `anonymousUsersEnabled` setting answers "Can anonymous sessions be created?" while `invitesRequired` answers "Are invites needed to sign up?"
 
-When `invitesRequired` is `false`, anonymous users will be able to sign up on the default server without an invite (assuming `anonymousUsersEnabled` is `true`). Registered users will also be able to sign up on the default server without an invite. Invite links will still work and will determine the target server when provided.
+When `invitesRequired` is `false` for a server, anonymous users will be able to sign up for that server without an invite (assuming `anonymousUsersEnabled` is `true` for that server). Registered users will also be able to sign up for that server without an invite.
 
-The middleware will need to check `invitesRequired` when no `inviteToken` is provided, falling back to the default server when invites aren't required. The first user bypass logic should remain, allowing the first user to sign up without an invite regardless of the `invitesRequired` setting.
+The middleware will need to check `invitesRequired` when no `inviteToken` is provided, falling back to the default server when invites aren't required. The first user bypass logic should remain, allowing the first user to sign up without an invite regardless of the `invitesRequired` setting for that server.
 
 ## Key Files
 
