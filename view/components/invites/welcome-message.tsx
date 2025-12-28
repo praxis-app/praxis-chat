@@ -37,23 +37,23 @@ export const WelcomeMessage = ({ onDismiss }: Props) => {
 
       <p className="pb-3">{t('welcome.messages.inDev')}</p>
 
-      {showSignUp && (
-        <Button
-          onClick={() => navigate(signUpPath)}
-          className="mr-3 uppercase"
-          variant="secondary"
-        >
-          {t('auth.actions.signUp')}
-        </Button>
-      )}
-
       {!isLoggedIn && (
         <Button
           onClick={() => navigate(NavigationPaths.Login)}
-          className="uppercase"
+          className="mr-3 uppercase"
           variant="secondary"
         >
           {t('auth.actions.logIn')}
+        </Button>
+      )}
+
+      {showSignUp && (
+        <Button
+          onClick={() => navigate(signUpPath)}
+          className="uppercase"
+          variant="secondary"
+        >
+          {t('auth.actions.signUp')}
         </Button>
       )}
     </BotMessage>

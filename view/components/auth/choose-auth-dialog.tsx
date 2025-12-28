@@ -8,12 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { LocalStorageKeys } from '@/constants/shared.constants';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  LocalStorageKeys,
+  NavigationPaths,
+} from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
+import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '@/lib/error.utils';
 import { useAppStore } from '@/store/app.store';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,9 +31,20 @@ interface Props {
 export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
   const { inviteToken, setIsLoggedIn } = useAppStore((state) => state);
 
+  const { serverId } = useServerData();
   const { signUpPath } = useAuthData();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const {
+    data: isAnonymousUsersEnabledData,
+    isLoading: isAnonymousUsersEnabledLoading,
+  } = useQuery({
+    queryKey: ['servers', serverId, 'configs', 'anon-enabled'],
+    queryFn: () => api.isAnonymousUsersEnabled(serverId!),
+    enabled: !!serverId && isOpen,
+  });
 
   const { mutate: createAnonSession } = useMutation({
     mutationFn: async () => {
@@ -49,12 +65,60 @@ export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
     setIsOpen(false);
   };
 
+  const isAnonymousUsersEnabled =
+    !!isAnonymousUsersEnabledData?.anonymousUsersEnabled;
+
+  const renderTitle = () => {
+    if (isAnonymousUsersEnabledLoading) {
+      return (
+        <div className="flex flex-col gap-3 md:min-w-[450px]">
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+        </div>
+      );
+    }
+    if (!isAnonymousUsersEnabled) {
+      return t('auth.prompts.signUpToChat');
+    }
+    return t('auth.prompts.chooseAuthFlow');
+  };
+
+  const renderFooter = () => {
+    if (isAnonymousUsersEnabledLoading) {
+      return (
+        <div className="flex w-full justify-center gap-2 md:justify-end">
+          <Skeleton className="h-10 w-[25%]" />
+          <Skeleton className="h-10 w-[25%]" />
+        </div>
+      );
+    }
+    return (
+      <DialogFooter className="flex flex-row gap-2 self-center">
+        {isAnonymousUsersEnabled ? (
+          <Button onClick={handleSendAnonMsgBtnClick} variant="outline">
+            {t('messages.actions.sendAnonymous')}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => navigate(NavigationPaths.Login)}
+            variant="outline"
+          >
+            {t('auth.actions.logIn')}
+          </Button>
+        )}
+        <Button onClick={() => navigate(signUpPath)}>
+          {t('auth.actions.signUp')}
+        </Button>
+      </DialogFooter>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader className="mt-9">
           <DialogTitle className="text-md font-normal">
-            {t('auth.prompts.chooseAuthFlow')}
+            {renderTitle()}
           </DialogTitle>
           <VisuallyHidden>
             <DialogDescription>
@@ -63,14 +127,7 @@ export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
           </VisuallyHidden>
         </DialogHeader>
 
-        <DialogFooter className="flex flex-row gap-2 self-center">
-          <Button onClick={handleSendAnonMsgBtnClick} variant="outline">
-            {t('messages.actions.sendAnonymous')}
-          </Button>
-          <Button onClick={() => navigate(signUpPath)}>
-            {t('auth.actions.signUp')}
-          </Button>
-        </DialogFooter>
+        {renderFooter()}
       </DialogContent>
     </Dialog>
   );

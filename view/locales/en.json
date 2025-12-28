@@ -60,6 +60,7 @@
       "alreadyRegistered": "You have already created an account.",
       "authenticated": "You are authenticated.",
       "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer to do?",
+      "signUpToChat": "Log in or sign up to chat and make decisions with other members of this server.",
       "createAccount": "Create an account",
       "createPassword": "Create a strong password",
       "dontHaveAccount": "Don't have an account?",
