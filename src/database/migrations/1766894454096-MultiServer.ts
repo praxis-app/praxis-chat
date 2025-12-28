@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class MultiServerSupport1765754853130 implements MigrationInterface {
-  name = 'MultiServerSupport1765754853130';
+export class MultiServer1766894454096 implements MigrationInterface {
+  name = 'MultiServer1766894454096';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -65,6 +65,10 @@ export class MultiServerSupport1765754853130 implements MigrationInterface {
             ADD "lastActiveAt" TIMESTAMP
         `);
     await queryRunner.query(`
+            ALTER TABLE "server_config"
+            ADD "anonymousUsersEnabled" boolean NOT NULL DEFAULT false
+        `);
+    await queryRunner.query(`
             ALTER TABLE "server"
             ADD "slug" character varying NOT NULL
         `);
@@ -108,6 +112,9 @@ export class MultiServerSupport1765754853130 implements MigrationInterface {
         `);
     await queryRunner.query(`
             ALTER TABLE "server" DROP COLUMN "slug"
+        `);
+    await queryRunner.query(`
+            ALTER TABLE "server_config" DROP COLUMN "anonymousUsersEnabled"
         `);
     await queryRunner.query(`
             ALTER TABLE "server_member" DROP COLUMN "lastActiveAt"
