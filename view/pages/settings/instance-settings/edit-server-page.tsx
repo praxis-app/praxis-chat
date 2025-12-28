@@ -19,7 +19,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { handleError } from '@/lib/error.utils';
 import { ServerReq, ServerRes } from '@/types/server.types';
 import { UserRes } from '@/types/user.types';
@@ -47,7 +46,6 @@ export const EditServerPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isDesktop = useIsDesktop();
 
   const { instanceAbility, isLoading: isAbilityLoading } = useAbility();
   const canManageServers = instanceAbility.can('manage', 'Server');
@@ -276,7 +274,6 @@ export const EditServerPage = () => {
       <TopNav
         header={serverData.server.name}
         onBackClick={() => navigate(NavigationPaths.ManageServers)}
-        bypassNavSheet={!isDesktop}
       />
 
       <Container>

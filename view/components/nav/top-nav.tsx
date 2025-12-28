@@ -16,16 +16,6 @@ interface Props {
   onBackClick?: () => void;
   backBtnIcon?: ReactNode;
   goBackOnEscape?: boolean;
-
-  /**
-   * TODO: Decide if this prop is needed or if there's a better way
-   * to handle this - the logic is currently a bit messy
-   *
-   * NOTE: There are multiple places in settings on mobile where this
-   * prop still needs to be passed in, which likely means there's
-   * something deeper that needs to be fixed
-   */
-  bypassNavSheet?: boolean;
 }
 
 export const TopNav = ({
@@ -33,7 +23,6 @@ export const TopNav = ({
   onBackClick,
   backBtnIcon,
   goBackOnEscape = false,
-  bypassNavSheet = false,
 }: Props) => {
   const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
@@ -78,20 +67,24 @@ export const TopNav = ({
     };
   }, [handleBackClick, isNavSheetOpen, setIsNavSheetOpen, goBackOnEscape]);
 
-  const renderBackBtn = () => (
-    <Button variant="ghost" size="icon" onClick={() => handleBackClick()}>
-      {backBtnIcon || <LuArrowLeft className="size-6" />}
-    </Button>
-  );
+  const renderBackBtn = () => {
+    const renderBtn = () => (
+      <Button variant="ghost" size="icon" onClick={() => handleBackClick()}>
+        {backBtnIcon || <LuArrowLeft className="size-6" />}
+      </Button>
+    );
+
+    if (!isDesktop && !onBackClick) {
+      return <NavSheet trigger={renderBtn()} />;
+    }
+
+    return renderBtn();
+  };
 
   return (
     <header className="flex h-[55px] items-center justify-between border-b border-[--color-border] px-2">
       <div className="mr-1 flex flex-1 items-center gap-2.5">
-        {isDesktop || bypassNavSheet ? (
-          renderBackBtn()
-        ) : (
-          <NavSheet trigger={renderBackBtn()} />
-        )}
+        {renderBackBtn()}
 
         <div className="flex flex-1 items-center text-[1.05rem] font-medium select-none">
           {header}

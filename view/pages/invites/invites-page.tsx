@@ -41,7 +41,6 @@ export const InvitesPage = () => {
       <TopNav
         header={t('navigation.labels.invites')}
         onBackClick={() => navigate(`${serverPath}${NavigationPaths.Settings}`)}
-        bypassNavSheet={!isDesktop}
       />
 
       <div className="flex h-full flex-col items-center justify-center gap-3.5 p-3 pt-4 md:p-16">
