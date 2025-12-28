@@ -1,6 +1,22 @@
+import appIconImg from '@/assets/images/app-icon.png';
 import { api } from '@/client/api-client';
+import { NavDrawer } from '@/components/nav/nav-drawer';
+import { NavDropdown } from '@/components/nav/nav-dropdown';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { UserAvatar } from '@/components/users/user-avatar';
 import { NavigationPaths } from '@/constants/shared.constants';
+import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
+import { useGeneralChannel } from '@/hooks/use-general-channel';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
@@ -11,21 +27,6 @@ import { useTranslation } from 'react-i18next';
 import { LuChevronRight } from 'react-icons/lu';
 import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
-import appIconImg from '../../assets/images/app-icon.png';
-import { useGeneralChannel } from '../../hooks/use-general-channel';
-import { Button } from '../ui/button';
-import { Separator } from '../ui/separator';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '../ui/sheet';
-import { UserAvatar } from '../users/user-avatar';
-import { NavDrawer } from './nav-drawer';
-import { NavDropdown } from './nav-dropdown';
 
 interface Props {
   trigger: ReactNode;
@@ -38,11 +39,11 @@ export const NavSheet = ({ trigger }: Props) => {
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
-  const { serverId, serverPath } = useServerData();
   const { me, isLoggedIn, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
-  const channelsPath = `${serverPath}/c`;
+  const { serverId, serverPath } = useServerData();
+  const { serverAbility } = useAbility();
 
   const { data: channelsData } = useQuery({
     queryKey: ['servers', serverId, 'channels'],
@@ -52,14 +53,22 @@ export const NavSheet = ({ trigger }: Props) => {
       }
       return api.getJoinedChannels(serverId);
     },
-    enabled: !isDesktop && isRegistered && !!serverId,
+    enabled: !isDesktop && isRegistered && !!serverId && isNavSheetOpen,
   });
 
   const { data: generalChannelData } = useGeneralChannel({
-    enabled: !isMeLoading && !isRegistered,
+    enabled: !isMeLoading && !me && isNavSheetOpen,
   });
 
+  const channelsPath = `${serverPath}/c`;
   const name = me?.displayName || me?.name;
+
+  const canManageChannels = serverAbility.can('manage', 'Channel');
+  const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
+  const hasMultipleServers = !!me && me.serversCount > 1;
+
+  const canViewNavDrawer =
+    canManageServerSettings || canManageChannels || hasMultipleServers;
 
   return (
     <Sheet open={isNavSheetOpen} onOpenChange={setIsNavSheetOpen}>
@@ -81,11 +90,12 @@ export const NavSheet = ({ trigger }: Props) => {
                     className="size-9 self-center"
                   />
                   {t('brand')}
-                  {isLoggedIn && (
+                  {canViewNavDrawer && (
                     <LuChevronRight className="mt-0.5 ml-0.5 size-4" />
                   )}
                 </div>
               }
+              disabled={!canViewNavDrawer}
             />
             {me && (
               <NavDropdown
