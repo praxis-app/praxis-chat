@@ -6,6 +6,12 @@ Designed for organizations, teams, and communities that need robust group decisi
 
 Praxis is free and open source software, as specified by the GNU General Public License.
 
+## Work in progress
+
+You are entering a construction yard. Things are going to change and break regularly as the project is still getting off the ground. Please bear in mind that Praxis is not yet intended for serious use outside of testing or research purposes. Your feedback is highly welcome.
+
+Please note that this is also an experimental approach within the Praxis project. The main repository is located at https://github.com/praxis-app/praxis.
+
 ## Tech stack and architecture
 
 Praxis is set up as a monolithic application that contains both backend and frontend code in the same repository and deploys them together as well. The backend is located in `src/`, the frontend in `view/`, and shared code is in `common/`.
@@ -15,12 +21,6 @@ Praxis is set up as a monolithic application that contains both backend and fron
 - Backend: Node.js v22.11.0, Express, TypeORM, PostgreSQL, Redis
 - Frontend: React, React Router, Vite, Shadcn UI
 - Testing: Vitest (both client and server)
-
-## Work in progress
-
-You are entering a construction yard. Things are going to change and break regularly as the project is still getting off the ground. Please bear in mind that Praxis is not yet intended for serious use outside of testing or research purposes. Your feedback is highly welcome.
-
-Please note that this is also an experimental approach within the Praxis project. The main repository is located at https://github.com/praxis-app/praxis.
 
 ## Installation and setup
 
