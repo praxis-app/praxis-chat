@@ -13,6 +13,17 @@ interface CreateInviteDto {
 
 const inviteRepository = dataSource.getRepository(Invite);
 
+export const validateInviteToken = async (token: string) => {
+  const invite = await inviteRepository.findOne({
+    where: { token },
+    select: ['id', 'maxUses', 'uses', 'expiresAt'],
+  });
+  if (!invite) {
+    return false;
+  }
+  return validateInvite(invite);
+};
+
 export const getValidInvite = async (token: string) => {
   const invite = await inviteRepository.findOne({
     where: { token },

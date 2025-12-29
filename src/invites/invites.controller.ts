@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import * as invitesService from './invites.service';
 
-export const getInvite = async (req: Request, res: Response) => {
-  const invite = await invitesService.getValidInvite(req.params.token);
-  res.json({ invite });
-};
-
 export const getInvites = async (req: Request, res: Response) => {
   const invites = await invitesService.getValidInvites(req.params.serverId);
   res.json({ invites });
+};
+
+export const validateInviteToken = async (req: Request, res: Response) => {
+  const isValidInvite = await invitesService.validateInviteToken(
+    req.params.token,
+  );
+  res.json({ isValidInvite });
 };
 
 export const createInvite = async (req: Request, res: Response) => {

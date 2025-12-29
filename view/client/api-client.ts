@@ -545,9 +545,9 @@ class ApiClient {
   // Invites
   // -------------------------------------------------------------------------
 
-  getInvite = async (token: string) => {
-    const path = `/invites/${token}`;
-    return this.executeRequest<{ invite: InviteRes }>('get', path);
+  validateInvite = async (token: string) => {
+    const path = `/invites/validate/${token}`;
+    return this.executeRequest<{ isValidInvite: boolean }>('get', path);
   };
 
   getInvites = async (serverId: string) => {

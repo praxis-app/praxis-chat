@@ -34,10 +34,16 @@ export const SignUp = () => {
   const { isLoading: isInviteLoading, error: inviteError } = useQuery({
     queryKey: ['invites', token],
     queryFn: async () => {
-      const { invite } = await api.getInvite(token!);
-      localStorage.setItem(LocalStorageKeys.InviteToken, invite.token);
-      setInviteToken(invite.token);
-      return invite;
+      if (!token) {
+        return;
+      }
+      const { isValidInvite } = await api.validateInvite(token!);
+      if (!isValidInvite) {
+        throw new Error('Invalid invite');
+      }
+      localStorage.setItem(LocalStorageKeys.InviteToken, token);
+      setInviteToken(token);
+      return isValidInvite;
     },
     enabled: !!token,
   });

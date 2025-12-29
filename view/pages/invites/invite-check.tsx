@@ -1,6 +1,5 @@
 import { ChannelSkeleton } from '@/components/channels/channel-skeleton';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../client/api-client';
@@ -11,28 +10,28 @@ import {
 import { useAppStore } from '../../store/app.store';
 
 export const InviteCheck = () => {
-  const { isLoggedIn, setInviteToken } = useAppStore();
+  const { setInviteToken } = useAppStore();
 
   const { t } = useTranslation();
   const { token } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate(NavigationPaths.Home);
-      return;
-    }
-  }, [isLoggedIn, navigate]);
-
   const { error } = useQuery({
     queryKey: ['invites', token],
     queryFn: async () => {
-      const { invite } = await api.getInvite(token!);
-      localStorage.setItem(LocalStorageKeys.InviteToken, invite.token);
-      setInviteToken(invite.token);
+      if (!token) {
+        return;
+      }
+      const { isValidInvite } = await api.validateInvite(token);
+      if (!isValidInvite) {
+        throw new Error('Invalid invite');
+      }
 
+      setInviteToken(token);
+      localStorage.setItem(LocalStorageKeys.InviteToken, token);
       await navigate(NavigationPaths.Home);
-      return invite;
+
+      return isValidInvite;
     },
     enabled: !!token,
   });
