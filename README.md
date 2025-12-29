@@ -8,7 +8,7 @@ Praxis is free and open source software, as specified by the GNU General Public 
 
 ## Tech stack and architecture
 
-Praxis is set up as a monolithic application that contains both the backend and frontend code in the same repository. The backend is located in the `src` directory and the frontend is located in the `view` directory. The shared code is located in the `common` directory.
+Praxis is set up as a monolithic application that contains both backend and frontend code in the same repository. The backend is located in `src/`, the frontend in `view/`, and shared code is in `common/`.
 
 **Tech stack**:
 
