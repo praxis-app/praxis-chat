@@ -4,6 +4,19 @@ Praxis is a chat-based collaborative decision-making (CDM) app that seamlessly b
 
 Designed for organizations, teams, and communities that need robust group decision-making capabilities, it combines the familiarity of messaging apps with flexible decision-making tools, multiple voting models, and forum-style organization when needed.
 
+Praxis is free and open source software, as specified by the GNU General Public License.
+
+## Tech stack and architecture
+
+Praxis is set up as a monolithic application that contains both the backend and frontend code in the same repository. The backend is located in the `src` directory and the frontend is located in the `view` directory. The shared code is located in the `common` directory.
+
+**Tech stack**:
+
+- Backend: Node.js, Express, TypeORM, PostgreSQL, Redis
+- Frontend: React, React Router, Vite, Shadcn UI
+- Testing: Vitest (both client and server)
+- Required: Node.js v22.11.0
+
 ## Work in progress
 
 You are entering a construction yard. Things are going to change and break regularly as the project is still getting off the ground. Please bear in mind that Praxis is not yet intended for serious use outside of testing or research purposes. Your feedback is highly welcome.
