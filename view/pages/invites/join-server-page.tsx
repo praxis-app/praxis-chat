@@ -1,10 +1,44 @@
-import { useParams } from 'react-router-dom';
+import { api } from '@/client/api-client';
+import { ChannelSkeleton } from '@/components/channels/channel-skeleton';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useAppStore } from '@/store/app.store';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { Navigate, useParams } from 'react-router-dom';
 
 export const JoinServerPage = () => {
-  const { token } = useParams();
+  const { isLoggedIn, setInviteToken } = useAppStore();
 
-  if (!token) {
-    return <div>Invalid invite</div>;
+  const { token } = useParams();
+  const { t } = useTranslation();
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['invites', token],
+    queryFn: async () => {
+      if (!token) {
+        return;
+      }
+      const { isValidInvite } = await api.validateInvite(token);
+      if (!isValidInvite) {
+        throw new Error('Invalid invite');
+      }
+      setInviteToken(token);
+
+      return isValidInvite;
+    },
+    enabled: !!token && isLoggedIn,
+  });
+
+  if (!isLoggedIn) {
+    return <Navigate to={NavigationPaths.Home} />;
+  }
+
+  if (error || !token) {
+    return <p>{t('invites.prompts.expiredOrInvalid')}</p>;
+  }
+
+  if (isLoading || !data) {
+    return <ChannelSkeleton />;
   }
 
   return (
