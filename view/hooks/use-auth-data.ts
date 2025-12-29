@@ -7,14 +7,17 @@ import { NavigationPaths } from '@/constants/shared.constants';
 export const useAuthData = () => {
   const { isLoggedIn, inviteToken } = useAppStore();
 
+  const {
+    data: meData,
+    isLoading: isMeLoading,
+    isSuccess: isMeSuccess,
+    isError: isMeError,
+  } = useMeQuery({ enabled: isLoggedIn });
+
   const { data } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
     enabled: !isLoggedIn,
-  });
-
-  const { data: meData, isLoading: isMeLoading } = useMeQuery({
-    enabled: isLoggedIn,
   });
 
   const me = meData?.user;
@@ -47,6 +50,8 @@ export const useAuthData = () => {
     inviteToken,
     signUpPath,
     isMeLoading,
+    isMeSuccess,
+    isMeError,
     isLoggedIn,
     me,
   };

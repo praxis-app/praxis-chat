@@ -1,16 +1,18 @@
+import { api } from '@/client/api-client';
 import { ChannelSkeleton } from '@/components/channels/channel-skeleton';
-import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
-import { api } from '../../client/api-client';
 import {
   LocalStorageKeys,
   NavigationPaths,
-} from '../../constants/shared.constants';
-import { useAppStore } from '../../store/app.store';
+} from '@/constants/shared.constants';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { useAppStore } from '@/store/app.store';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const InviteCheck = () => {
-  const { setInviteToken } = useAppStore();
+  const { isLoggedIn, setInviteToken } = useAppStore();
+  const { isMeSuccess, isMeError } = useAuthData();
 
   const { t } = useTranslation();
   const { token } = useParams();
@@ -28,12 +30,18 @@ export const InviteCheck = () => {
       }
 
       setInviteToken(token);
-      localStorage.setItem(LocalStorageKeys.InviteToken, token);
-      await navigate(NavigationPaths.Home);
+
+      if (isLoggedIn) {
+        const joinServerPagePath = `/i/${token}/join`;
+        await navigate(joinServerPagePath);
+      } else {
+        localStorage.setItem(LocalStorageKeys.InviteToken, token);
+        await navigate(NavigationPaths.Home);
+      }
 
       return isValidInvite;
     },
-    enabled: !!token,
+    enabled: !!token && (isMeSuccess || isMeError),
   });
 
   if (!token) {

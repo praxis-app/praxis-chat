@@ -1,13 +1,13 @@
 import { App } from '@/components/app/app';
 import { ErrorPage } from '@/pages/error-page';
 import { HomePage } from '@/pages/home-page';
-import { InviteCheck } from '@/pages/invites/invite-check';
 import { PageNotFound } from '@/pages/page-not-found';
+import { authRouter } from '@/routes/auth.router';
+import { instanceSettingsRouter } from '@/routes/instance-settings.router';
+import { invitesRouter } from '@/routes/invites.router';
+import { serversRouter } from '@/routes/servers.router';
+import { usersRouter } from '@/routes/users.router';
 import { createBrowserRouter } from 'react-router-dom';
-import { authRouter } from './auth.router';
-import { instanceSettingsRouter } from './instance-settings.router';
-import { serversRouter } from './servers.router';
-import { usersRouter } from './users.router';
 
 export const appRouter = createBrowserRouter([
   {
@@ -23,14 +23,11 @@ export const appRouter = createBrowserRouter([
         path: '*',
         element: <PageNotFound />,
       },
-      {
-        path: 'i/:token',
-        element: <InviteCheck />,
-      },
       authRouter,
-      usersRouter,
-      serversRouter,
       instanceSettingsRouter,
+      invitesRouter,
+      serversRouter,
+      usersRouter,
     ],
   },
 ]);
