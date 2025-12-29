@@ -27,9 +27,9 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 
 In short, when you submit code changes, your submissions are understood to be under the same [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.en.html) that covers the project.
 
-## Report bugs using Github's [issues](https://github.com/praxis-app/praxis/issues)
+## Report bugs using Github's [issues](https://github.com/praxis-app/praxis-chat/issues)
 
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/praxis-app/praxis/issues/new); it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/praxis-app/praxis-chat/issues/new); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
 
