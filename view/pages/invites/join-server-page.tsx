@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
 export const JoinServerPage = () => {
-  const { isLoggedIn, setInviteToken } = useAppStore();
+  const { isLoggedIn, inviteToken, setInviteToken } = useAppStore();
 
   const { token } = useParams();
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export const JoinServerPage = () => {
 
       return isValidInvite;
     },
-    enabled: !!token && isLoggedIn,
+    enabled: !!token && isLoggedIn && !inviteToken,
   });
 
   if (!isLoggedIn) {
