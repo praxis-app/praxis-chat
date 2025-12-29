@@ -6,10 +6,8 @@ export const getInvites = async (req: Request, res: Response) => {
   res.json({ invites });
 };
 
-export const validateInviteToken = async (req: Request, res: Response) => {
-  const isValidInvite = await invitesService.validateInviteToken(
-    req.params.token,
-  );
+export const isValidInvite = async (req: Request, res: Response) => {
+  const isValidInvite = await invitesService.isValidInvite(req.params.token);
   res.json({ isValidInvite });
 };
 

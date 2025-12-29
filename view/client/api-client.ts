@@ -545,7 +545,7 @@ class ApiClient {
   // Invites
   // -------------------------------------------------------------------------
 
-  validateInvite = async (token: string) => {
+  isValidInvite = async (token: string) => {
     const path = `/invites/validate/${token}`;
     return this.executeRequest<{ isValidInvite: boolean }>('get', path);
   };

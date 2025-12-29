@@ -37,7 +37,7 @@ export const SignUp = () => {
       if (!token) {
         return;
       }
-      const { isValidInvite } = await api.validateInvite(token!);
+      const { isValidInvite } = await api.isValidInvite(token!);
       if (!isValidInvite) {
         throw new Error('Invalid invite');
       }
