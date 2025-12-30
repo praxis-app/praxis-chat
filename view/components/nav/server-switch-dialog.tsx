@@ -64,11 +64,11 @@ export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
                 className="h-fit items-start justify-between gap-3 px-3 py-3"
                 onClick={() => handleSelect(server.slug)}
               >
-                <div className="flex min-w-0 flex-col text-left">
+                <div className="flex w-[80vw] min-w-0 flex-col text-left">
                   <div className="truncate leading-tight font-semibold">
                     {server.name}
                   </div>
-                  <div className="text-muted-foreground text-xs">
+                  <div className="text-muted-foreground truncate text-xs">
                     /s/{server.slug}
                   </div>
                   {server.description && (
