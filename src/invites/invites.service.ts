@@ -1,4 +1,5 @@
 import cryptoRandomString from 'crypto-random-string';
+import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
@@ -13,29 +14,15 @@ interface CreateInviteDto {
 
 const inviteRepository = dataSource.getRepository(Invite);
 
-export const isValidInvite = async (token: string) => {
+export const isValidInvite = async (where: FindOptionsWhere<Invite>) => {
   const invite = await inviteRepository.findOne({
-    where: { token },
     select: ['id', 'maxUses', 'uses', 'expiresAt'],
+    where,
   });
   if (!invite) {
     return false;
   }
   return validateInvite(invite);
-};
-
-export const getValidInvite = async (token: string) => {
-  const invite = await inviteRepository.findOne({
-    where: { token },
-  });
-  if (!invite) {
-    throw new Error('Invite not found');
-  }
-  const isValid = validateInvite(invite);
-  if (!isValid) {
-    throw new Error('Invalid server invite');
-  }
-  return invite;
 };
 
 export const getValidInvites = async (serverId: string) => {

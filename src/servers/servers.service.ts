@@ -5,6 +5,7 @@ import {
   getInstanceConfigSafely,
   updateInstanceConfig,
 } from '../instance/instance.service';
+import * as invitesService from '../invites/invites.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { ServerMember } from './entities/server-member.entity';
@@ -294,6 +295,24 @@ export const createInitialServer = async () => {
     }
     throw error;
   }
+};
+
+export const joinServer = async (
+  serverId: string,
+  userId: string,
+  inviteToken: string,
+) => {
+  // TODO: Move this validation to middleware
+  const isValid = await invitesService.isValidInvite({
+    token: inviteToken,
+    serverId,
+  });
+  if (!isValid) {
+    throw new Error('Invalid invite token');
+  }
+
+  await addMemberToServer(serverId, userId);
+  await channelsService.addMemberToAllServerChannels(userId, serverId);
 };
 
 export const addMemberToServer = async (serverId: string, userId: string) => {

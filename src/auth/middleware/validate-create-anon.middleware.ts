@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { dataSource } from '../../database/data-source';
-import { getValidInvite } from '../../invites/invites.service';
+import { isValidInvite } from '../../invites/invites.service';
 import { ServerConfig } from '../../servers/server-configs/entities/server-config.entity';
 
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
@@ -27,9 +27,8 @@ export const validateCreateAnon = async (
     return;
   }
 
-  try {
-    await getValidInvite(inviteToken);
-  } catch (error) {
+  const isValid = await isValidInvite({ token: inviteToken });
+  if (!isValid) {
     res.status(403).send('Invalid invite token');
     return;
   }

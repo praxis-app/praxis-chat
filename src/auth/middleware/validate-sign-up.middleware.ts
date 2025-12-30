@@ -9,7 +9,7 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { normalizeText } from '../../common/text.utils';
-import { getValidInvite } from '../../invites/invites.service';
+import { isValidInvite } from '../../invites/invites.service';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
 
@@ -77,9 +77,10 @@ export const validateSignUp = async (
       return;
     }
     if (inviteToken) {
-      try {
-        await getValidInvite(inviteToken);
-      } catch (error) {
+      const isValid = await isValidInvite({
+        token: inviteToken,
+      });
+      if (!isValid) {
         res.status(403).send('Invalid invite token');
         return;
       }

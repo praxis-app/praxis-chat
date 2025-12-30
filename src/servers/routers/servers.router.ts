@@ -15,6 +15,7 @@ import {
   getServerByInviteToken,
   getServerBySlug,
   getServers,
+  joinServer,
   updateServer,
 } from '../servers.controller';
 import { serverMembersRouter } from './server-members.router';
@@ -52,4 +53,5 @@ serversRouter
     validateServer,
     updateServer,
   )
-  .delete('/:serverId', can('delete', 'Server', 'instance'), deleteServer);
+  .delete('/:serverId', can('delete', 'Server', 'instance'), deleteServer)
+  .post('/:serverId/join', joinServer);
