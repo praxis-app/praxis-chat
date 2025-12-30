@@ -355,6 +355,13 @@ class ApiClient {
     });
   };
 
+  joinServer = async (serverId: string, inviteToken: string) => {
+    const path = `/servers/${serverId}/join`;
+    return this.executeRequest<void>('post', path, {
+      data: { inviteToken },
+    });
+  };
+
   // -------------------------------------------------------------------------
   // Server Configs
   // -------------------------------------------------------------------------
