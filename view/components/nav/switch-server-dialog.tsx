@@ -38,6 +38,14 @@ export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
 
   const servers = data?.servers ?? [];
 
+  const sortedServers = [...servers].sort((a, b) => {
+    const aIsActive = a.slug === serverSlug;
+    const bIsActive = b.slug === serverSlug;
+    if (aIsActive && !bIsActive) return -1;
+    if (!aIsActive && bIsActive) return 1;
+    return 0;
+  });
+
   const getInitial = (value: string) => {
     return (value?.trim()?.[0] || '?').toUpperCase();
   };
@@ -75,9 +83,9 @@ export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
           </div>
-        ) : servers.length ? (
+        ) : sortedServers.length ? (
           <div className="flex min-w-0 flex-col gap-2">
-            {servers.map((server) => (
+            {sortedServers.map((server) => (
               <Button
                 key={server.id}
                 variant="ghost"
