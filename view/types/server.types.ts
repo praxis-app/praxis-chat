@@ -11,6 +11,7 @@ export interface ServerRes {
   slug: string;
   description: string | null;
   isDefaultServer?: boolean;
+  memberCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }

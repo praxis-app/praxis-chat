@@ -1,6 +1,7 @@
 import { api } from '@/client/api-client';
 import { ChannelSkeleton } from '@/components/channels/channel-skeleton';
 import { TopNav } from '@/components/nav/top-nav';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
@@ -8,6 +9,8 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { handleError } from '@/lib/error.utils';
 import { useAppStore } from '@/store/app.store';
+import chroma from 'chroma-js';
+import ColorHash from 'color-hash';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
@@ -106,6 +109,21 @@ export const JoinServerPage = () => {
     return <ChannelSkeleton />;
   }
 
+  const getStringAvatarProps = () => {
+    const colorHash = new ColorHash();
+    const baseColor = colorHash.hex(serverData.server.name);
+    const color = chroma(baseColor).brighten(1.5).hex();
+    const backgroundColor = chroma(baseColor).darken(1.35).hex();
+
+    return {
+      style: { color, backgroundColor },
+    };
+  };
+
+  const getInitial = (value: string) => {
+    return (value?.trim()?.[0] || '?').toUpperCase();
+  };
+
   return (
     <>
       <TopNav
@@ -127,7 +145,29 @@ export const JoinServerPage = () => {
             </div>
 
             <div className="space-y-2 border-t pt-4">
-              <h2 className="text-lg font-medium">{serverData.server.name}</h2>
+              <div className="flex items-center gap-3">
+                <Avatar className="size-10">
+                  <AvatarFallback
+                    className="text-lg font-light uppercase"
+                    {...getStringAvatarProps()}
+                  >
+                    {getInitial(serverData.server.name)}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold">
+                    {serverData.server.name}
+                  </h2>
+                  {serverData.server.memberCount !== undefined && (
+                    <p className="text-muted-foreground text-sm">
+                      {t('roles.labels.membersCount', {
+                        count: serverData.server.memberCount,
+                      })}
+                    </p>
+                  )}
+                </div>
+              </div>
 
               {serverData.server.description && (
                 <p className="text-muted-foreground">
