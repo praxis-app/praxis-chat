@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,6 +10,8 @@ import {
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppStore } from '@/store/app.store';
+import chroma from 'chroma-js';
+import ColorHash from 'color-hash';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +35,21 @@ export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
   });
 
   const servers = data?.servers ?? [];
+
+  const getInitial = (value: string) => {
+    return (value?.trim()?.[0] || '?').toUpperCase();
+  };
+
+  const getStringAvatarProps = (serverId: string, serverName: string) => {
+    const colorHash = new ColorHash();
+    const baseColor = colorHash.hex(serverId || serverName);
+    const color = chroma(baseColor).brighten(1.5).hex();
+    const backgroundColor = chroma(baseColor).darken(1.35).hex();
+
+    return {
+      style: { color, backgroundColor },
+    };
+  };
 
   const handleSelect = (slug: string) => {
     onOpenChange(false);
@@ -61,10 +79,18 @@ export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
               <Button
                 key={server.id}
                 variant="ghost"
-                className="h-fit items-start justify-between gap-3 px-3 py-3"
+                className="h-fit items-start gap-3 px-3 py-3"
                 onClick={() => handleSelect(server.slug)}
               >
-                <div className="flex w-[80vw] min-w-0 flex-col text-left">
+                <Avatar className="size-10 shrink-0">
+                  <AvatarFallback
+                    className="text-lg font-light uppercase"
+                    {...getStringAvatarProps(server.id, server.name)}
+                  >
+                    {getInitial(server.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex w-[70vw] min-w-0 flex-col text-left">
                   <div className="truncate leading-tight font-semibold">
                     {server.name}
                   </div>
