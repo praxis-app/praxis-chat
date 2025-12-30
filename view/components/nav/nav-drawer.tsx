@@ -2,7 +2,7 @@ import {
   CreateChannelForm,
   CreateChannelFormSubmitButton,
 } from '@/components/channels/create-channel-form';
-import { SwitchServersDialog } from '@/components/nav/switch-servers-dialog';
+import { SwitchServerDialog } from '@/components/nav/switch-server-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -149,7 +149,7 @@ export const NavDrawer = ({ trigger, disabled }: Props) => {
         </DrawerContent>
       </Drawer>
 
-      <SwitchServersDialog
+      <SwitchServerDialog
         open={showServerSwitchDialog}
         onOpenChange={setShowServerSwitchDialog}
         onSelect={() => setIsNavSheetOpen(false)}

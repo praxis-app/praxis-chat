@@ -23,11 +23,7 @@ interface Props {
   onSelect?(): void;
 }
 
-export const SwitchServersDialog = ({
-  open,
-  onOpenChange,
-  onSelect,
-}: Props) => {
+export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
   const { isLoggedIn } = useAppStore();
 
   const { t } = useTranslation();
