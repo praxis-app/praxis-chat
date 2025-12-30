@@ -9,12 +9,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
+import { useQuery } from '@tanstack/react-query';
 import chroma from 'chroma-js';
 import ColorHash from 'color-hash';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Props {
   open: boolean;
@@ -30,6 +31,7 @@ export const SwitchServersDialog = ({
   const { isLoggedIn } = useAppStore();
 
   const { t } = useTranslation();
+  const { serverSlug } = useParams();
   const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
@@ -83,7 +85,11 @@ export const SwitchServersDialog = ({
               <Button
                 key={server.id}
                 variant="ghost"
-                className="h-fit items-start gap-3 px-3 py-3"
+                className={cn(
+                  'h-fit items-start gap-3 px-3 py-3',
+                  server.slug === serverSlug &&
+                    'bg-accent/30 border-border/40 border',
+                )}
                 onClick={() => handleSelect(server.slug)}
               >
                 <Avatar className="size-10 shrink-0">
