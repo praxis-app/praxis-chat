@@ -83,10 +83,10 @@ export const TopNav = ({
 
   return (
     <header className="flex h-[55px] items-center justify-between border-b border-[--color-border] px-2">
-      <div className="mr-1 flex flex-1 items-center gap-2.5">
+      <div className="mr-1 flex min-w-0 flex-1 items-center gap-2.5">
         {renderBackBtn()}
 
-        <div className="flex flex-1 items-center text-[1.05rem] font-medium select-none">
+        <div className="min-w-0 flex-1 truncate text-[1.05rem] font-medium select-none">
           {header}
         </div>
       </div>

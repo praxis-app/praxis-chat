@@ -464,17 +464,22 @@
 
   "invites": {
     "actions": {
-      "generateLink": "Generate a new link"
+      "generateLink": "Generate a new link",
+      "acceptInvite": "Accept Invite",
+      "joinServer": "Join Server"
     },
     "prompts": {
       "alreadySignedUp": "You've already signed up.",
       "copiedToClipboard": "Copied to clipboard",
       "expiredOrInvalid": "Your invite link is either expired or invalid.",
       "inviteRequired": "You need to be invited in order to sign up.",
-      "noInvites": "No invites have been created yet."
+      "joinServerToStart": "Join this server to start chatting, collaborating on decisions, and organizing with other members.",
+      "noInvites": "No invites have been created yet.",
+      "youHaveBeenInvited": "You've been invited!"
     },
     "headers": {
-      "serverInvites": "Invites"
+      "serverInvites": "Invites",
+      "invitedToJoin": "Invited to join {{serverName}}"
     },
     "form": {
       "expiresAtOptions": {

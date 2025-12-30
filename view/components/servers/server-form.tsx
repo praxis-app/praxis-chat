@@ -59,6 +59,7 @@ export const ServerForm = ({
           isDefaultServer: editServer.isDefaultServer,
         }
       : undefined,
+    mode: 'onChange',
   });
 
   const slugify = (value: string) =>
