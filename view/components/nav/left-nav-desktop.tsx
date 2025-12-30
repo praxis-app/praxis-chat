@@ -25,6 +25,7 @@ import {
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { CurrentUserRes } from '@/types/user.types';
@@ -37,7 +38,7 @@ import {
   MdSettings,
 } from 'react-icons/md';
 import { TbSwitchHorizontal } from 'react-icons/tb';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface Props {
@@ -50,7 +51,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 
   const { t } = useTranslation();
-  const { serverSlug } = useParams();
+  const { serverPath } = useServerData();
   const { signUpPath } = useAuthData();
 
   const { serverAbility, instanceAbility } = useAbility();
@@ -61,9 +62,6 @@ export const LeftNavDesktop = ({ me }: Props) => {
 
   const isServerMenuBtnEnabled =
     canManageServerSettings || canManageChannels || hasMultipleServers;
-
-  const resolvedServerSlug = serverSlug || me?.currentServer?.slug;
-  const settingsPath = `/s/${resolvedServerSlug}${NavigationPaths.Settings}`;
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
@@ -116,7 +114,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
             )}
 
             {canManageServerSettings && (
-              <Link to={settingsPath}>
+              <Link to={`${serverPath}${NavigationPaths.Settings}`}>
                 <DropdownMenuItem className="text-md">
                   <MdSettings className="text-foreground size-5" />
                   {t('navigation.labels.serverSettings')}
