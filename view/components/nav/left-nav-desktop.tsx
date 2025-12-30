@@ -51,14 +51,14 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 
   const { t } = useTranslation();
-  const { serverPath } = useServerData();
+  const { serverPath, myServerCount } = useServerData();
   const { signUpPath } = useAuthData();
 
   const { serverAbility, instanceAbility } = useAbility();
   const canManageChannels = serverAbility.can('manage', 'Channel');
   const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
 
-  const hasMultipleServers = !!me && me.serversCount > 1;
+  const hasMultipleServers = !!myServerCount && myServerCount > 1;
 
   const isServerMenuBtnEnabled =
     canManageServerSettings || canManageChannels || hasMultipleServers;
