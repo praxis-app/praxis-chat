@@ -22,7 +22,7 @@ export const InviteCheck = () => {
     queryKey: ['invites', token],
     queryFn: async () => {
       if (!token) {
-        return;
+        throw new Error('Invite token is required');
       }
       const { isValidInvite } = await api.isValidInvite(token);
       if (!isValidInvite) {
