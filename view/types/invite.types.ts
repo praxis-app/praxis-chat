@@ -6,6 +6,7 @@ export interface InviteRes {
   uses: number;
   maxUses?: number;
   user: UserRes;
+  memberCount?: number;
   expiresAt?: string;
   createdAt: string;
 }
