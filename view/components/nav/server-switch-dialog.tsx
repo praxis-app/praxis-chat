@@ -56,7 +56,7 @@ export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
             <Skeleton className="h-12 w-full" />
           </div>
         ) : servers.length ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-2">
             {servers.map((server) => (
               <Button
                 key={server.id}
@@ -64,17 +64,17 @@ export const ServerSwitchDialog = ({ open, onOpenChange, onSelect }: Props) => {
                 className="h-fit items-start justify-between gap-3 px-3 py-3"
                 onClick={() => handleSelect(server.slug)}
               >
-                <div className="flex flex-col text-left">
-                  <span className="leading-tight font-semibold">
+                <div className="flex min-w-0 flex-col text-left">
+                  <div className="truncate leading-tight font-semibold">
                     {server.name}
-                  </span>
-                  <span className="text-muted-foreground text-xs">
+                  </div>
+                  <div className="text-muted-foreground text-xs">
                     /s/{server.slug}
-                  </span>
+                  </div>
                   {server.description && (
-                    <span className="text-muted-foreground mt-1 text-xs leading-snug">
+                    <div className="text-muted-foreground mt-1 truncate text-xs leading-snug">
                       {server.description}
-                    </span>
+                    </div>
                   )}
                 </div>
               </Button>
