@@ -57,7 +57,6 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const { serverAbility, instanceAbility } = useAbility();
   const canManageChannels = serverAbility.can('manage', 'Channel');
   const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
-
   const hasMultipleServers = !!myServerCount && myServerCount > 1;
 
   const isServerMenuBtnEnabled =
