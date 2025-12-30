@@ -5,7 +5,7 @@ import {
   CreateChannelFormSubmitButton,
 } from '@/components/channels/create-channel-form';
 import { LeftNavUserMenu } from '@/components/nav/left-nav-user-menu';
-import { ServerSwitchDialog } from '@/components/nav/server-switch-dialog';
+import { SwitchServersDialog } from '@/components/nav/switch-servers-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -67,7 +67,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
-      <ServerSwitchDialog
+      <SwitchServersDialog
         open={showServerSwitchDialog}
         onOpenChange={setShowServerSwitchDialog}
       />
