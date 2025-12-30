@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
+import { Separator } from '@/components/ui/separator';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { handleError } from '@/lib/error.utils';
@@ -134,7 +135,7 @@ export const JoinServerPage = () => {
 
       <Container>
         <Card>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="space-y-2">
               <h1 className="text-2xl font-semibold">
                 {t('invites.prompts.youHaveBeenInvited')}
@@ -144,9 +145,11 @@ export const JoinServerPage = () => {
               </p>
             </div>
 
-            <div className="space-y-2 border-t pt-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="size-10">
+            <Separator />
+
+            <div className="space-y-3 pt-1">
+              <div className="flex items-start gap-3">
+                <Avatar className="size-10 shrink-0">
                   <AvatarFallback
                     className="text-lg font-light uppercase"
                     {...getStringAvatarProps()}
@@ -155,26 +158,27 @@ export const JoinServerPage = () => {
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="flex flex-col">
-                  <h2 className="text-lg font-semibold">
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <h2 className="text-xl font-semibold">
                     {serverData.server.name}
                   </h2>
                   {serverData.server.memberCount !== undefined && (
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-muted-foreground text-base">
                       {t('roles.labels.membersCount', {
                         count: serverData.server.memberCount,
                       })}
                     </p>
                   )}
+                  {serverData.server.description && (
+                    <p className="text-muted-foreground text-base leading-relaxed">
+                      {serverData.server.description}
+                    </p>
+                  )}
                 </div>
               </div>
-
-              {serverData.server.description && (
-                <p className="text-muted-foreground">
-                  {serverData.server.description}
-                </p>
-              )}
             </div>
+
+            <Separator />
 
             <div className="pt-1">
               <Button
