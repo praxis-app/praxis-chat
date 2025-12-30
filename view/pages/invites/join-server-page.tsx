@@ -85,7 +85,7 @@ export const JoinServerPage = () => {
       <>
         <TopNav />
         <Container>
-          <Card className="mt-8">
+          <Card>
             <CardContent className="p-6">
               <p className="text-center">
                 {t('invites.prompts.expiredOrInvalid')}
@@ -115,7 +115,7 @@ export const JoinServerPage = () => {
       />
 
       <Container>
-        <Card className="mt-8">
+        <Card>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <h1 className="text-2xl font-semibold">
