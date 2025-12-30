@@ -41,8 +41,12 @@ export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
   const sortedServers = [...servers].sort((a, b) => {
     const aIsActive = a.slug === serverSlug;
     const bIsActive = b.slug === serverSlug;
-    if (aIsActive && !bIsActive) return -1;
-    if (!aIsActive && bIsActive) return 1;
+    if (aIsActive && !bIsActive) {
+      return -1;
+    }
+    if (!aIsActive && bIsActive) {
+      return 1;
+    }
     return 0;
   });
 
