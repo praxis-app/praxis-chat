@@ -8,6 +8,7 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useGeneralChannel } from '@/hooks/use-general-channel';
 import { useLogOut } from '@/hooks/use-log-out';
 import { useServerData } from '@/hooks/use-server-data';
+import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation } from 'react-router-dom';
 
@@ -31,7 +32,7 @@ export const HomePage = () => {
           backBtnIcon={
             <img
               src={appIconImg}
-              alt={t('brand')}
+              alt={INITIAL_SERVER_NAME}
               className="size-7 self-center"
             />
           }

@@ -20,6 +20,7 @@ import { useGeneralChannel } from '@/hooks/use-general-channel';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
+import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -42,7 +43,7 @@ export const NavSheet = ({ trigger }: Props) => {
   const { me, isLoggedIn, signUpPath, showSignUp, isMeLoading, isRegistered } =
     useAuthData();
 
-  const { serverId, serverPath } = useServerData();
+  const { server, serverId, serverPath } = useServerData();
   const { serverAbility } = useAbility();
 
   const { data: channelsData } = useQuery({
@@ -70,6 +71,8 @@ export const NavSheet = ({ trigger }: Props) => {
   const canViewNavDrawer =
     canManageServerSettings || canManageChannels || hasMultipleServers;
 
+  const serverName = server?.name || INITIAL_SERVER_NAME;
+
   return (
     <Sheet open={isNavSheetOpen} onOpenChange={setIsNavSheetOpen}>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
@@ -86,12 +89,12 @@ export const NavSheet = ({ trigger }: Props) => {
                 <div className="flex cursor-pointer items-center gap-2 self-center px-6 font-medium tracking-[0.02em]">
                   <img
                     src={appIconImg}
-                    alt={t('brand')}
+                    alt={serverName}
                     className="size-9 self-center"
                   />
-                  {t('brand')}
+                  <div className="truncate">{serverName}</div>
                   {canViewNavDrawer && (
-                    <LuChevronRight className="mt-0.5 ml-0.5 size-4" />
+                    <LuChevronRight className="mt-0.5 size-4 shrink-0" />
                   )}
                 </div>
               }

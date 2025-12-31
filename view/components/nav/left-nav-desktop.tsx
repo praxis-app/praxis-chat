@@ -29,6 +29,7 @@ import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { CurrentUserRes } from '@/types/user.types';
+import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -51,7 +52,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
   const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 
   const { t } = useTranslation();
-  const { serverPath, myServerCount } = useServerData();
+  const { server, serverPath, myServerCount } = useServerData();
   const { signUpPath } = useAuthData();
 
   const { serverAbility, instanceAbility } = useAbility();
@@ -61,6 +62,8 @@ export const LeftNavDesktop = ({ me }: Props) => {
 
   const isServerMenuBtnEnabled =
     canManageServerSettings || canManageChannels || hasMultipleServers;
+
+  const serverName = server?.name || INITIAL_SERVER_NAME;
 
   return (
     <div className="dark:bg-card bg-secondary flex h-full w-[240px] flex-col border-r border-[--color-border]">
@@ -78,19 +81,19 @@ export const LeftNavDesktop = ({ me }: Props) => {
             )}
             disabled={!isServerMenuBtnEnabled}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2">
               <img
                 src={appIconImg}
-                alt={t('brand')}
+                alt={serverName}
                 className="size-[1.55rem] self-center"
               />
-              <div className="self-center text-base/tight font-medium tracking-[0.02em]">
-                {t('brand')}
+              <div className="self-center truncate text-base/tight font-medium tracking-[0.02em]">
+                {serverName}
               </div>
             </div>
 
             {isServerMenuBtnEnabled && (
-              <MdExpandMore className="size-[1.4rem] self-center" />
+              <MdExpandMore className="size-[1.4rem] shrink-0 self-center" />
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10} className="w-52">

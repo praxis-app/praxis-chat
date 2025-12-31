@@ -1,4 +1,5 @@
 import { In, IsNull, Not, QueryFailedError } from 'typeorm';
+import { INITIAL_SERVER_NAME } from '../../common/servers/server.constants';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import {
@@ -12,8 +13,6 @@ import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
 import { ServerConfig } from './server-configs/entities/server-config.entity';
 import * as serverRolesService from './server-roles/server-roles.service';
-
-export const INITIAL_SERVER_NAME = 'praxis';
 
 const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
