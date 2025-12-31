@@ -1,6 +1,9 @@
 /**
  * FIXME: When the user switches between servers, `meData?.user.currentServer` is not
  * always updated. There's likely issues with caching for both FE and BE
+ *
+ * NOTE: There might be a better solution for persisting and updating the current
+ * server that involves Redis and web sockets.
  */
 
 import { api } from '@/client/api-client';
