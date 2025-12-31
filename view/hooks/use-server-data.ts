@@ -62,7 +62,7 @@ export const useServerData = () => {
         const server = await api.getServerByInviteToken(inviteToken!);
         return server;
       } catch (error) {
-        if (isAxiosError(error) && error.response?.status === 404) {
+        if (isAxiosError(error) && error.response?.status === 400) {
           localStorage.removeItem(LocalStorageKeys.InviteToken);
           setInviteToken(null);
         }

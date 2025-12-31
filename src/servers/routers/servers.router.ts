@@ -3,6 +3,7 @@ import { authenticate } from '../../auth/middleware/authenticate.middleware';
 import { channelsRouter } from '../../channels/channels.router';
 import { can } from '../../common/roles/can.middleware';
 import { serverInvitesRouter } from '../../invites/invites.router';
+import { validateInvite } from '../../invites/middleware/validate-invite.middleware';
 import { setServerMemberActivity } from '../middleware/set-server-member-activity.middleware';
 import { validateServer } from '../middleware/validate-server.middleware';
 import { serverConfigsRouter } from '../server-configs/server-configs.router';
@@ -33,7 +34,7 @@ serversRouter
 // Public routes
 serversRouter
   .get('/default', getDefaultServer)
-  .get('/invite/:inviteToken', getServerByInviteToken);
+  .get('/invite/:inviteToken', validateInvite, getServerByInviteToken);
 
 // Protected routes
 serversRouter
@@ -54,4 +55,4 @@ serversRouter
     updateServer,
   )
   .delete('/:serverId', can('delete', 'Server', 'instance'), deleteServer)
-  .post('/:serverId/join', joinServer);
+  .post('/:serverId/join', validateInvite, joinServer);

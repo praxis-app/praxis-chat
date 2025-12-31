@@ -95,10 +95,6 @@ export const removeServerMembers = async (req: Request, res: Response) => {
 };
 
 export const joinServer = async (req: Request, res: Response) => {
-  const result = await serversService.joinServer(
-    req.params.serverId,
-    res.locals.user.id,
-    req.body.inviteToken,
-  );
-  res.json(result);
+  await serversService.joinServer(req.params.serverId, res.locals.user.id);
+  res.sendStatus(200);
 };
