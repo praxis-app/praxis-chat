@@ -20,6 +20,10 @@ export const getServerByInviteToken = async (req: Request, res: Response) => {
   const server = await serversService.getServerByInviteToken(
     req.params.inviteToken,
   );
+  if (!server) {
+    res.status(404).json({ error: 'Server not found' });
+    return;
+  }
   res.json({ server });
 };
 

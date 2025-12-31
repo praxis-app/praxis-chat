@@ -76,7 +76,7 @@ export const getServerByInviteToken = async (inviteToken: string) => {
     where: { invites: { token: inviteToken } },
   });
   if (!server) {
-    throw new Error(`Server with invite token ${inviteToken} not found`);
+    return null;
   }
 
   const memberCount = await serverMemberRepository.count({

@@ -4,7 +4,10 @@
  */
 
 import { api } from '@/client/api-client';
-import { NavigationPaths } from '@/constants/shared.constants';
+import {
+  LocalStorageKeys,
+  NavigationPaths,
+} from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +15,7 @@ import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const useServerData = () => {
-  const { isLoggedIn, inviteToken } = useAppStore();
+  const { isLoggedIn, inviteToken, setInviteToken } = useAppStore();
 
   const { serverSlug } = useParams();
   const navigate = useNavigate();
@@ -51,7 +54,21 @@ export const useServerData = () => {
     isLoading: isServerByInviteTokenLoading,
   } = useQuery({
     queryKey: ['servers', 'invite', inviteToken],
-    queryFn: () => api.getServerByInviteToken(inviteToken!),
+    queryFn: async () => {
+      if (!inviteToken) {
+        throw new Error('Invite token is required');
+      }
+      try {
+        const server = await api.getServerByInviteToken(inviteToken!);
+        return server;
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 404) {
+          localStorage.removeItem(LocalStorageKeys.InviteToken);
+          setInviteToken(null);
+        }
+        throw error;
+      }
+    },
     enabled: !!inviteToken,
   });
 
