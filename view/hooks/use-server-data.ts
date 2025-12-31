@@ -1,3 +1,8 @@
+/**
+ * FIXME: When the user switches between servers, `meData?.user.currentServer` is not
+ * always updated. There's likely issues with caching for both FE and BE
+ */
+
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';

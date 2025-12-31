@@ -1,5 +1,4 @@
 import { api } from '@/client/api-client';
-import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { ChannelRes } from '@/types/channel.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -37,7 +36,7 @@ export const DeleteChannelForm = ({
   onSubmit,
 }: DeleteChannelFormProps) => {
   const { channelId } = useParams();
-  const { serverId } = useServerData();
+  const { serverId, serverPath } = useServerData();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -64,7 +63,7 @@ export const DeleteChannelForm = ({
       onSubmit?.();
 
       if (channelId === channel.id) {
-        navigate(NavigationPaths.Home);
+        navigate(serverPath);
       }
     },
     onError(error: Error) {
