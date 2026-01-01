@@ -1,7 +1,8 @@
 import { api } from '@/client/api-client';
+import { useServerData } from '@/hooks/use-server-data';
+import { useAppStore } from '@/store/app.store';
+import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
-import { GENERAL_CHANNEL_NAME } from '../../common/channels/channel.constants';
-import { useServerData } from './use-server-data';
 
 interface UseGeneralChannelProps {
   enabled?: boolean;
@@ -10,6 +11,7 @@ interface UseGeneralChannelProps {
 export const useGeneralChannel = ({
   enabled = true,
 }: UseGeneralChannelProps = {}) => {
+  const { isAppLoading } = useAppStore();
   const { serverId } = useServerData();
 
   const result = useQuery({
@@ -25,7 +27,7 @@ export const useGeneralChannel = ({
         throw error;
       }
     },
-    enabled: enabled && !!serverId,
+    enabled: enabled && !isAppLoading && !!serverId,
     refetchOnMount: false,
   });
 
