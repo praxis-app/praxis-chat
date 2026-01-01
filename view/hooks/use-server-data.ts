@@ -95,6 +95,7 @@ export const useServerData = () => {
       queryKey: ['servers', 'default'],
       queryFn: api.getDefaultServer,
       enabled: isDefaultServerQueryEnabled(),
+      refetchOnMount: false,
     });
 
   const server =
