@@ -97,6 +97,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       (isMeSuccess || isMeError || !accessToken),
   });
 
+  // Listen for new messages
   useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewMessagePayload | ImageMessagePayload> =
@@ -216,6 +217,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
   });
 
+  // Listen for new polls
   useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
