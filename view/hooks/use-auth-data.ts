@@ -17,7 +17,7 @@ export const useAuthData = () => {
   const { data } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
-    enabled: !isLoggedIn,
+    enabled: isMeError || !accessToken,
   });
 
   const me = meData?.user;
