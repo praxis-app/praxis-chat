@@ -270,7 +270,7 @@ export const createUserCoverPhoto = async (
 };
 
 export const isGeneralChannelMember = async (userId: string) => {
-  const isMember = await channelMemberRepository.exist({
+  const isMember = await channelMemberRepository.exists({
     where: {
       channel: {
         name: Like(`%${GENERAL_CHANNEL_NAME}%`),

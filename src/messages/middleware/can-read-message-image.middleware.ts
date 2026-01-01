@@ -33,7 +33,7 @@ export const canReadMessageImage = async (
       return;
     }
   } else {
-    const isGeneralChannelMessage = await messageRepository.exist({
+    const isGeneralChannelMessage = await messageRepository.exists({
       where: { id: messageId, channel: { name: GENERAL_CHANNEL_NAME } },
     });
     if (!isGeneralChannelMessage) {
