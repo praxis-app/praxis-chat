@@ -33,7 +33,7 @@ interface Props {
 }
 
 export const NavSheet = ({ trigger }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen, isAppLoading } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ export const NavSheet = ({ trigger }: Props) => {
   });
 
   const { data: generalChannelData } = useGeneralChannel({
-    enabled: isNavSheetOpen && !me && !isAppLoading,
+    enabled: isNavSheetOpen && !me,
   });
 
   const channelsPath = `${serverPath}/c`;

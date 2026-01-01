@@ -1,13 +1,13 @@
+import { api } from '@/client/api-client';
+import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useGeneralChannel } from '@/hooks/use-general-channel';
+import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
+import { CurrentUserRes } from '@/types/user.types';
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
-import { api } from '../../client/api-client';
-import { NavigationPaths } from '../../constants/shared.constants';
-import { useGeneralChannel } from '../../hooks/use-general-channel';
-import { useServerData } from '../../hooks/use-server-data';
-import { CurrentUserRes } from '../../types/user.types';
-import { ChannelListItemDesktop } from './channel-list-item-desktop';
 
 interface Props {
   me?: CurrentUserRes;
@@ -35,7 +35,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useGeneralChannel({ enabled: !me && !isAppLoading });
+    useGeneralChannel({ enabled: !me });
 
   const isLoading =
     isChannelsLoading || isGeneralChannelLoading || isAppLoading;
