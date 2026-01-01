@@ -5,7 +5,7 @@ import { useMeQuery } from './use-me-query';
 import { NavigationPaths } from '@/constants/shared.constants';
 
 export const useAuthData = () => {
-  const { isLoggedIn, inviteToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const {
     data: meData,
@@ -17,7 +17,7 @@ export const useAuthData = () => {
   const { data } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
-    enabled: !isLoggedIn,
+    enabled: isMeError || !accessToken,
   });
 
   const me = meData?.user;
@@ -52,6 +52,7 @@ export const useAuthData = () => {
     isMeLoading,
     isMeSuccess,
     isMeError,
+    accessToken,
     isLoggedIn,
     me,
   };

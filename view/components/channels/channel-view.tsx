@@ -41,7 +41,7 @@ interface Props {
 }
 
 export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
-  const { isLoggedIn } = useAppStore();
+  const { isLoggedIn, accessToken } = useAppStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
   const queryClient = useQueryClient();
@@ -91,9 +91,13 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
-    enabled: !!serverId && !!resolvedChannelId && (isMeSuccess || isMeError),
+    enabled:
+      !!serverId &&
+      !!resolvedChannelId &&
+      (isMeSuccess || isMeError || !accessToken),
   });
 
+  // Listen for new messages
   useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewMessagePayload | ImageMessagePayload> =
@@ -213,6 +217,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
   });
 
+  // Listen for new polls
   useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);

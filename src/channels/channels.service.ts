@@ -105,7 +105,7 @@ export const getGeneralChannelFeed = async (
 };
 
 export const isChannelMember = async (channelId: string, userId: string) => {
-  return channelMemberRepository.exist({
+  return channelMemberRepository.exists({
     where: { channelId, userId },
   });
 };

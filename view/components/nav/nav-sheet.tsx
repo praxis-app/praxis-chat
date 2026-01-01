@@ -17,7 +17,6 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useGeneralChannel } from '@/hooks/use-general-channel';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
@@ -37,11 +36,9 @@ export const NavSheet = ({ trigger }: Props) => {
   const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
 
   const { t } = useTranslation();
-  const isDesktop = useIsDesktop();
   const navigate = useNavigate();
 
-  const { me, isLoggedIn, signUpPath, showSignUp, isMeLoading, isRegistered } =
-    useAuthData();
+  const { me, isLoggedIn, signUpPath, showSignUp, isMeSuccess } = useAuthData();
 
   const { server, serverId, serverPath } = useServerData();
   const { serverAbility } = useAbility();
@@ -54,11 +51,11 @@ export const NavSheet = ({ trigger }: Props) => {
       }
       return api.getJoinedChannels(serverId);
     },
-    enabled: !isDesktop && isRegistered && !!serverId && isNavSheetOpen,
+    enabled: isNavSheetOpen && isMeSuccess && !!serverId,
   });
 
   const { data: generalChannelData } = useGeneralChannel({
-    enabled: !isMeLoading && !me && isNavSheetOpen,
+    enabled: isNavSheetOpen && !me,
   });
 
   const channelsPath = `${serverPath}/c`;

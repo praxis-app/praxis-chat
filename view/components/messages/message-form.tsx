@@ -18,6 +18,7 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { useServerData } from '../../hooks/use-server-data';
 import { handleError } from '../../lib/error.utils';
 import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
 import { AttachedImagePreview } from '../images/attached-image-preview';
@@ -26,7 +27,6 @@ import { Button } from '../ui/button';
 import { Form, FormField } from '../ui/form';
 import { Textarea } from '../ui/textarea';
 import { MessageFormMenu } from './message-form-menu';
-import { useServerData } from '../../hooks/use-server-data';
 
 const MESSAGE_BODY_MAX = 6000;
 
@@ -43,7 +43,7 @@ interface Props {
 }
 
 export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
-  const { isLoggedIn, inviteToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const [showMenu, setShowMenu] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
@@ -56,7 +56,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const isFieldSizingSupportedRef = useRef(true);
 
-  const { data: meData } = useMeQuery();
+  const { data: meData, isError: isMeError } = useMeQuery();
   const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof formSchema>>({
@@ -270,7 +270,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const { data: isFirstUserData } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
-    enabled: !isLoggedIn,
+    enabled: isMeError || !accessToken,
   });
 
   // Focus on input when pressing space, enter, etc.

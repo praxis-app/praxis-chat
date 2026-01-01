@@ -18,7 +18,7 @@ import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const useServerData = () => {
-  const { isLoggedIn, inviteToken, setInviteToken } = useAppStore();
+  const { accessToken, inviteToken, setInviteToken } = useAppStore();
 
   const { serverSlug } = useParams();
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ export const useServerData = () => {
     data: meData,
     isError: isMeError,
     isLoading: isMeLoading,
+    isSuccess: isMeSuccess,
   } = useMeQuery({ enabled: !serverSlug });
 
   const {
@@ -49,7 +50,8 @@ export const useServerData = () => {
         throw error;
       }
     },
-    enabled: !!serverSlug && isLoggedIn,
+    enabled: !!serverSlug && isMeSuccess,
+    refetchOnMount: false,
   });
 
   const {
@@ -79,7 +81,7 @@ export const useServerData = () => {
     if (inviteToken) {
       return false;
     }
-    if (isMeError) {
+    if (isMeError || !accessToken) {
       return true;
     }
     return (
@@ -93,6 +95,7 @@ export const useServerData = () => {
       queryKey: ['servers', 'default'],
       queryFn: api.getDefaultServer,
       enabled: isDefaultServerQueryEnabled(),
+      refetchOnMount: false,
     });
 
   const server =

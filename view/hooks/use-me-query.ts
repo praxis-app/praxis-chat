@@ -1,5 +1,3 @@
-// TODO: Prevent excessive calls to `/api/users/me` when the user is not logged in
-
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { api } from '../client/api-client';
@@ -7,16 +5,26 @@ import { LocalStorageKeys } from '../constants/shared.constants';
 import { useAppStore } from '../store/app.store';
 import { CurrentUser } from '../types/user.types';
 
-export const useMeQuery = (
-  options?: Omit<UseQueryOptions<{ user: CurrentUser }>, 'queryKey'>,
-) => {
-  const { setIsAppLoading, setIsLoggedIn } = useAppStore();
+type UseMeQueryOptions = Omit<
+  UseQueryOptions<{ user: CurrentUser }>,
+  'queryKey'
+>;
 
-  const defaultOptions: Partial<UseQueryOptions<{ user: CurrentUser }>> = {
+export const useMeQuery = (options?: UseMeQueryOptions) => {
+  const { accessToken, setIsAppLoading, setIsLoggedIn } = useAppStore();
+
+  const defaultOptions: Partial<UseMeQueryOptions> = {
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: 2,
+  };
+
+  const enabled = !!accessToken && (options?.enabled ?? true);
+  const resolvedOptions: UseMeQueryOptions = {
+    ...defaultOptions,
+    ...options,
+    enabled,
   };
 
   const result = useQuery({
@@ -54,8 +62,7 @@ export const useMeQuery = (
         setIsAppLoading(false);
       }
     },
-    ...defaultOptions,
-    ...options,
+    ...resolvedOptions,
   });
 
   return result;

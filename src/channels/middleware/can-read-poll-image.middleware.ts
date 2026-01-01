@@ -33,7 +33,7 @@ export const canReadPollImage = async (
       return;
     }
   } else {
-    const isGeneralChannelPoll = await pollRepository.exist({
+    const isGeneralChannelPoll = await pollRepository.exists({
       where: { id: pollId, channel: { name: GENERAL_CHANNEL_NAME } },
     });
     if (!isGeneralChannelPoll) {

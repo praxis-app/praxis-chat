@@ -13,11 +13,16 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation } from 'react-router-dom';
 
 export const HomePage = () => {
-  const { data: channelData, error: channelError } = useGeneralChannel();
-
   const { serverPath, currentUserHasNoServers } = useServerData();
   const { t } = useTranslation();
   const { pathname } = useLocation();
+
+  const isExpectedToNavigate =
+    pathname === NavigationPaths.Home && serverPath !== NavigationPaths.Home;
+
+  const { data: channelData, error: channelError } = useGeneralChannel({
+    enabled: !isExpectedToNavigate,
+  });
 
   const { mutate: logOut } = useLogOut();
 
@@ -61,10 +66,7 @@ export const HomePage = () => {
     );
   }
 
-  if (
-    pathname === NavigationPaths.Home &&
-    serverPath !== NavigationPaths.Home
-  ) {
+  if (isExpectedToNavigate) {
     return <Navigate to={serverPath} />;
   }
 
