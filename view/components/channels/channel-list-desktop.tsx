@@ -35,9 +35,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
   });
 
   const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useGeneralChannel({
-      enabled: !me,
-    });
+    useGeneralChannel({ enabled: !me && !isAppLoading });
 
   const isLoading =
     isChannelsLoading || isGeneralChannelLoading || isAppLoading;
