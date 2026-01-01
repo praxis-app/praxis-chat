@@ -18,7 +18,8 @@ import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const useServerData = () => {
-  const { isLoggedIn, inviteToken, setInviteToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken, setInviteToken } =
+    useAppStore();
 
   const { serverSlug } = useParams();
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export const useServerData = () => {
     if (inviteToken) {
       return false;
     }
-    if (isMeError) {
+    if (isMeError || !accessToken) {
       return true;
     }
     return (

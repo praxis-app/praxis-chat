@@ -5,7 +5,7 @@ import { useMeQuery } from './use-me-query';
 import { NavigationPaths } from '@/constants/shared.constants';
 
 export const useAuthData = () => {
-  const { isLoggedIn, inviteToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const {
     data: meData,
@@ -52,6 +52,7 @@ export const useAuthData = () => {
     isMeLoading,
     isMeSuccess,
     isMeError,
+    accessToken,
     isLoggedIn,
     me,
   };

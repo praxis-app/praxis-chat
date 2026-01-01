@@ -41,7 +41,7 @@ interface Props {
 }
 
 export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
-  const { isLoggedIn } = useAppStore();
+  const { isLoggedIn, accessToken } = useAppStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
   const queryClient = useQueryClient();
@@ -91,7 +91,10 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
-    enabled: !!serverId && !!resolvedChannelId && (isMeSuccess || isMeError),
+    enabled:
+      !!serverId &&
+      !!resolvedChannelId &&
+      (isMeSuccess || isMeError || !accessToken),
   });
 
   useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {

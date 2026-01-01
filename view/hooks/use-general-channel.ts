@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { GENERAL_CHANNEL_NAME } from '../../common/channels/channel.constants';
-import { useMeQuery } from './use-me-query';
+import { useAuthData } from './use-auth-data';
 import { useServerData } from './use-server-data';
 
 interface UseGeneralChannelProps {
@@ -11,7 +11,7 @@ interface UseGeneralChannelProps {
 export const useGeneralChannel = ({
   enabled = true,
 }: UseGeneralChannelProps = {}) => {
-  const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
+  const { isMeSuccess, isMeError, accessToken } = useAuthData();
   const { serverId } = useServerData();
 
   const result = useQuery({
@@ -27,7 +27,8 @@ export const useGeneralChannel = ({
         throw error;
       }
     },
-    enabled: (isMeSuccess || isMeError) && !!serverId && enabled,
+    enabled:
+      (isMeSuccess || isMeError || !accessToken) && !!serverId && enabled,
   });
 
   return result;
