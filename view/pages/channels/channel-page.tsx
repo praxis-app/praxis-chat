@@ -2,10 +2,12 @@ import { api } from '@/client/api-client';
 import { ChannelView } from '@/components/channels/channel-view';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
+import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
+  const { inviteToken } = useAppStore();
   const { serverId } = useServerData();
 
   const { channelId } = useParams();
@@ -18,7 +20,7 @@ export const ChannelPage = () => {
         if (!serverId || !channelId) {
           throw new Error('Missing server or channel id');
         }
-        const result = await api.getChannel(serverId, channelId);
+        const result = await api.getChannel(serverId, channelId, inviteToken);
         return result;
       } catch (error) {
         await navigate(NavigationPaths.Home);

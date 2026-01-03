@@ -1,6 +1,5 @@
 // API client for server endpoints
 
-import { MESSAGES_PAGE_SIZE } from '@/constants/message.constants';
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { AuthRes, LoginReq, SignUpReq } from '@/types/auth.types';
 import {
@@ -138,9 +137,15 @@ class ApiClient {
   // Channels & Messages
   // -------------------------------------------------------------------------
 
-  getChannel = async (serverId: string, channelId: string) => {
+  getChannel = async (
+    serverId: string,
+    channelId: string,
+    inviteToken?: string | null,
+  ) => {
     const path = `/servers/${serverId}/channels/${channelId}`;
-    return this.executeRequest<{ channel: ChannelRes }>('get', path);
+    return this.executeRequest<{ channel: ChannelRes }>('get', path, {
+      params: { inviteToken },
+    });
   };
 
   getJoinedChannels = async (serverId: string) => {
@@ -157,11 +162,12 @@ class ApiClient {
     serverId: string,
     channelId: string,
     offset: number,
-    limit = MESSAGES_PAGE_SIZE,
+    limit: number,
+    inviteToken?: string | null,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/feed`;
     return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
-      params: { offset, limit },
+      params: { offset, limit, inviteToken },
     });
   };
 

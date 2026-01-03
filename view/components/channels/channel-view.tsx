@@ -1,4 +1,9 @@
 import { api } from '@/client/api-client';
+import { ChannelFeed } from '@/components/channels/channel-feed';
+import { ChannelTopNav } from '@/components/channels/channel-top-nav';
+import { MessageForm } from '@/components/messages/message-form';
+import { LeftNavDesktop } from '@/components/nav/left-nav-desktop';
+import { MESSAGES_PAGE_SIZE } from '@/constants/message.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useServerData } from '@/hooks/use-server-data';
@@ -13,10 +18,6 @@ import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { MessageForm } from '../messages/message-form';
-import { LeftNavDesktop } from '../nav/left-nav-desktop';
-import { ChannelFeed } from './channel-feed';
-import { ChannelTopNav } from './channel-top-nav';
 
 interface NewMessagePayload {
   type: PubSubMessageType.MESSAGE;
@@ -41,7 +42,7 @@ interface Props {
 }
 
 export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
-  const { isLoggedIn, accessToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
   const queryClient = useQueryClient();
@@ -80,6 +81,8 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
         serverId,
         resolvedChannelId,
         pageParam,
+        MESSAGES_PAGE_SIZE,
+        inviteToken,
       );
       const isLast = result.feed.length === 0;
       if (isLast) {
