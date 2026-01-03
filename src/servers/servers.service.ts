@@ -12,6 +12,7 @@ import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
 import { ServerConfig } from './server-configs/entities/server-config.entity';
 import * as serverRolesService from './server-roles/server-roles.service';
+import * as instanceService from '../instance/instance.service';
 
 const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
@@ -190,6 +191,13 @@ export const getUsersEligibleForServer = async (serverId: string) => {
   }));
 
   return shapedUsers;
+};
+
+export const isDefaultServerMember = async (userId: string) => {
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+  return serverMemberRepository.exists({
+    where: { userId, serverId: defaultServerId },
+  });
 };
 
 export const createServer = async (
