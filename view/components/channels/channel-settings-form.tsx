@@ -1,7 +1,6 @@
 import { api } from '@/client/api-client';
 import { useServerData } from '@/hooks/use-server-data';
 import { ChannelRes } from '@/types/channel.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -53,12 +52,6 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
           ['servers', serverId, 'channels', editChannel.id],
           { channel },
         );
-        if (channel.name === GENERAL_CHANNEL_NAME) {
-          queryClient.setQueryData<{ channel: ChannelRes }>(
-            ['servers', serverId, 'channels', GENERAL_CHANNEL_NAME],
-            { channel },
-          );
-        }
         queryClient.setQueryData<{ channels: ChannelRes[] }>(
           ['servers', serverId, 'channels'],
           (oldData) => {

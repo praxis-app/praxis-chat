@@ -2,7 +2,6 @@ import { api } from '@/client/api-client';
 import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PollStage } from '@common/polls/poll.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
@@ -66,70 +65,56 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       };
     },
     onSuccess: (result) => {
-      const applyUpdate = (channelId: string) => {
-        if (!serverId) {
-          throw new Error('Server ID is required');
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      queryClient.setQueryData<{
+        pages: { feed: FeedItemRes[] }[];
+        pageParams: number[];
+      }>(['servers', serverId, 'channels', channel.id, 'feed'], (oldData) => {
+        if (!oldData) {
+          return oldData;
         }
-        queryClient.setQueryData<{
-          pages: { feed: FeedItemRes[] }[];
-          pageParams: number[];
-        }>(['servers', serverId, 'channels', channelId, 'feed'], (oldData) => {
-          if (!oldData) {
-            return oldData;
-          }
-          const pages = oldData.pages.map((page) => {
-            const feed = page.feed.map((item) => {
-              if (item.type !== 'poll' || item.id !== pollId) {
-                return item;
-              }
+        const pages = oldData.pages.map((page) => {
+          const feed = page.feed.map((item) => {
+            if (item.type !== 'poll' || item.id !== pollId) {
+              return item;
+            }
 
-              let agreementVoteCount = item.agreementVoteCount;
-              if (result.action === 'delete') {
-                if (myVote?.voteType === 'agree') {
-                  agreementVoteCount -= 1;
-                }
-                return {
-                  ...item,
-                  agreementVoteCount,
-                  myVote: undefined,
-                };
-              }
-
-              if (result.action === 'create' && result.voteType === 'agree') {
-                agreementVoteCount += 1;
-              }
-              if (result.action === 'update') {
-                if (
-                  myVote?.voteType !== 'agree' &&
-                  result.voteType === 'agree'
-                ) {
-                  agreementVoteCount += 1;
-                }
-                if (
-                  myVote?.voteType === 'agree' &&
-                  result.voteType !== 'agree'
-                ) {
-                  agreementVoteCount -= 1;
-                }
+            let agreementVoteCount = item.agreementVoteCount;
+            if (result.action === 'delete') {
+              if (myVote?.voteType === 'agree') {
+                agreementVoteCount -= 1;
               }
               return {
                 ...item,
                 agreementVoteCount,
-                stage: result.isRatifyingVote ? 'ratified' : item.stage,
-                myVote: { id: result.voteId, voteType: result.voteType },
+                myVote: undefined,
               };
-            });
-            return { feed };
-          });
-          return { pages, pageParams: oldData.pageParams };
-        });
-      };
+            }
 
-      // TODO: Check if `applyUpdate` is actually needed or if this can all just be inline
-      if (channel.name === GENERAL_CHANNEL_NAME) {
-        applyUpdate(GENERAL_CHANNEL_NAME);
-      }
-      applyUpdate(channel.id);
+            if (result.action === 'create' && result.voteType === 'agree') {
+              agreementVoteCount += 1;
+            }
+            if (result.action === 'update') {
+              if (myVote?.voteType !== 'agree' && result.voteType === 'agree') {
+                agreementVoteCount += 1;
+              }
+              if (myVote?.voteType === 'agree' && result.voteType !== 'agree') {
+                agreementVoteCount -= 1;
+              }
+            }
+            return {
+              ...item,
+              agreementVoteCount,
+              stage: result.isRatifyingVote ? 'ratified' : item.stage,
+              myVote: { id: result.voteId, voteType: result.voteType },
+            };
+          });
+          return { feed };
+        });
+        return { pages, pageParams: oldData.pageParams };
+      });
 
       if (result.isRatifyingVote) {
         toast(t('polls.prompts.ratifiedSuccess'));
