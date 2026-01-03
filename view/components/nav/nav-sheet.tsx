@@ -16,7 +16,6 @@ import { UserAvatar } from '@/components/users/user-avatar';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
-import { useGeneralChannel } from '@/hooks/use-general-channel';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
@@ -47,16 +46,25 @@ export const NavSheet = ({ trigger }: Props) => {
     queryKey: ['servers', serverId, 'channels'],
     queryFn: async () => {
       if (!serverId) {
-        throw new Error('No current server found');
+        throw new Error('Current server not found');
       }
       return api.getJoinedChannels(serverId);
     },
-    enabled: isNavSheetOpen && isMeSuccess && !!serverId,
+    enabled: isNavSheetOpen && !!serverId && isMeSuccess,
   });
 
-  const { data: generalChannelData } = useGeneralChannel({
-    enabled: isNavSheetOpen && !me,
+  const { data: publicChannelsData } = useQuery({
+    queryKey: ['servers', serverId, 'channels', 'public'],
+    queryFn: async () => {
+      if (!serverId) {
+        throw new Error('Current server not found');
+      }
+      return api.getPublicChannels(serverId);
+    },
+    enabled: isNavSheetOpen && !!serverId && !me,
   });
+
+  const channels = channelsData?.channels || publicChannelsData?.channels || [];
 
   const channelsPath = `${serverPath}/c`;
   const name = me?.displayName || me?.name;
@@ -119,7 +127,9 @@ export const NavSheet = ({ trigger }: Props) => {
         </SheetHeader>
 
         <div className="bg-background dark:bg-card flex h-full w-full flex-col gap-6 overflow-y-auto rounded-t-2xl px-4 pt-7 pb-12">
-          {channelsData?.channels.map((channel) => (
+          {/* TODO: Add visual indicator for current channel */}
+
+          {channels.map((channel) => (
             <Link
               key={channel.id}
               to={`${channelsPath}/${channel.id}`}
@@ -130,19 +140,6 @@ export const NavSheet = ({ trigger }: Props) => {
               <div>{channel.name}</div>
             </Link>
           ))}
-
-          {/* Show general channel for logged out users */}
-          {!isLoggedIn && generalChannelData && (
-            <Link
-              key={generalChannelData.channel.id}
-              to={NavigationPaths.Home}
-              onClick={() => setIsNavSheetOpen(false)}
-              className="flex items-center gap-1.5 font-light tracking-[0.01em]"
-            >
-              <MdTag className="mr-1 size-6" />
-              <div>{generalChannelData.channel.name}</div>
-            </Link>
-          )}
 
           {(showSignUp || !isLoggedIn) && (
             <div className="flex flex-col gap-4">

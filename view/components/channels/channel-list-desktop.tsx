@@ -1,13 +1,10 @@
 import { api } from '@/client/api-client';
 import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useGeneralChannel } from '@/hooks/use-general-channel';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { CurrentUserRes } from '@/types/user.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 interface Props {
   me?: CurrentUserRes;
@@ -19,63 +16,52 @@ interface Props {
 export const ChannelListDesktop = ({ me }: Props) => {
   const { isAppLoading } = useAppStore();
 
-  const { serverId, serverSlug, serverPath } = useServerData();
+  const { serverId, serverSlug } = useServerData();
   const { channelId } = useParams();
-  const { pathname } = useLocation();
 
   const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
     queryKey: ['servers', serverId, 'channels'],
     queryFn: async () => {
       if (!serverId) {
-        throw new Error('No current server found');
+        throw new Error('Current server not found');
       }
       return api.getJoinedChannels(serverId);
     },
     enabled: !!me && !!serverId,
   });
 
-  const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useGeneralChannel({ enabled: !me });
+  const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
+    useQuery({
+      queryKey: ['servers', serverId, 'channels', 'public'],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getPublicChannels(serverId);
+      },
+      enabled: !me && !!serverId,
+    });
 
   const isLoading =
-    isChannelsLoading || isGeneralChannelLoading || isAppLoading;
+    isChannelsLoading || isPublicChannelsLoading || isAppLoading;
 
   // TODO: Add skeleton loader
   if (!serverSlug || isLoading) {
     return <div className="flex flex-1" />;
   }
 
-  if (generalChannelData && !me) {
-    return (
-      <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
-        <ChannelListItemDesktop
-          channel={generalChannelData.channel}
-          serverSlug={serverSlug}
-          isGeneralChannel
-          isActive
-        />
-      </div>
-    );
-  }
+  const channels = channelsData?.channels || publicChannelsData?.channels || [];
 
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">
-      {channelsData?.channels.map((channel) => {
-        const isHome =
-          pathname === NavigationPaths.Home || pathname === serverPath;
-
-        const isGeneral = channel.name === GENERAL_CHANNEL_NAME;
-        const isActive = channelId === channel.id || (isHome && isGeneral);
-
-        return (
-          <ChannelListItemDesktop
-            key={channel.id}
-            channel={channel}
-            isActive={isActive}
-            serverSlug={serverSlug}
-          />
-        );
-      })}
+      {channels.map((channel) => (
+        <ChannelListItemDesktop
+          key={channel.id}
+          channel={channel}
+          isActive={channelId === channel.id}
+          serverSlug={serverSlug}
+        />
+      ))}
     </div>
   );
 };

@@ -148,9 +148,9 @@ class ApiClient {
     return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 
-  getGeneralChannel = async (serverId: string) => {
-    const path = `/servers/${serverId}/channels/general`;
-    return this.executeRequest<{ channel: ChannelRes }>('get', path);
+  getPublicChannels = async (serverId: string) => {
+    const path = `/servers/${serverId}/channels/public`;
+    return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 
   getChannelFeed = async (
