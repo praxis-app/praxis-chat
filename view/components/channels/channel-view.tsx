@@ -14,7 +14,6 @@ import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
 import { PollRes } from '@/types/poll.types';
 import { PubSubMessage } from '@/types/shared.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -38,10 +37,9 @@ interface ImageMessagePayload {
 
 interface Props {
   channel?: ChannelRes;
-  isGeneralChannel?: boolean;
 }
 
-export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
+export const ChannelView = ({ channel }: Props) => {
   const { isLoggedIn, accessToken, inviteToken } = useAppStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
@@ -51,17 +49,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
   const { serverId } = useServerData();
   const feedBoxRef = useRef<HTMLDivElement>(null);
 
-  const resolvedChannelId = isGeneralChannel
-    ? GENERAL_CHANNEL_NAME
-    : channel?.id;
-
-  const feedQueryKey = [
-    'servers',
-    serverId,
-    'channels',
-    resolvedChannelId,
-    'feed',
-  ];
+  const feedQueryKey = ['servers', serverId, 'channels', channel?.id, 'feed'];
 
   const {
     data: meData,
@@ -74,12 +62,12 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
   const { data: feedData, fetchNextPage } = useInfiniteQuery({
     queryKey: feedQueryKey,
     queryFn: async ({ pageParam }) => {
-      if (!serverId || !resolvedChannelId) {
+      if (!serverId || !channel?.id) {
         throw new Error('Server ID and channel ID are required');
       }
       const result = await api.getChannelFeed(
         serverId,
-        resolvedChannelId,
+        channel.id,
         pageParam,
         MESSAGES_PAGE_SIZE,
         inviteToken,
@@ -95,9 +83,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
     },
     initialPageParam: 0,
     enabled:
-      !!serverId &&
-      !!resolvedChannelId &&
-      (isMeSuccess || isMeError || !accessToken),
+      !!serverId && !!channel?.id && (isMeSuccess || isMeError || !accessToken),
   });
 
   // Listen for new messages
@@ -217,7 +203,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
 
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
+    enabled: !!meData && !!channel && !!channel?.id && !!serverId,
   });
 
   // Listen for new polls
@@ -260,15 +246,15 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
       }
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!resolvedChannelId && !!serverId,
+    enabled: !!meData && !!channel && !!channel?.id && !!serverId,
   });
 
   // Reset isLastPage when switching channels
   useEffect(() => {
-    if (resolvedChannelId) {
+    if (channel?.id) {
       setIsLastPage(false);
     }
-  }, [resolvedChannelId]);
+  }, [channel?.id]);
 
   const scrollToBottom = () => {
     if (feedBoxRef.current && feedBoxRef.current.scrollTop >= -200) {
@@ -291,11 +277,7 @@ export const ChannelView = ({ channel, isGeneralChannel }: Props) => {
           isLastPage={isLastPage}
         />
 
-        <MessageForm
-          channelId={channel?.id}
-          isGeneralChannel={isGeneralChannel}
-          onSend={scrollToBottom}
-        />
+        <MessageForm channelId={channel?.id} onSend={scrollToBottom} />
       </div>
     </div>
   );
