@@ -1,21 +1,17 @@
 import { api } from '@/client/api-client';
 import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
+import { useMeQuery } from '@/hooks/use-me-query';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
-import { CurrentUserRes } from '@/types/user.types';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-
-interface Props {
-  me?: CurrentUserRes;
-}
 
 /**
  * Channel list component for the left navigation panel on desktop
  */
-export const ChannelListDesktop = ({ me }: Props) => {
-  const { isAppLoading } = useAppStore();
-
+export const ChannelListDesktop = () => {
+  const { isAppLoading, accessToken } = useAppStore();
+  const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
   const { serverId, serverSlug } = useServerData();
   const { channelId } = useParams();
 
@@ -27,7 +23,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
       }
       return api.getJoinedChannels(serverId);
     },
-    enabled: !!me && !!serverId,
+    enabled: !!serverId && isMeSuccess,
   });
 
   const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
@@ -39,7 +35,7 @@ export const ChannelListDesktop = ({ me }: Props) => {
         }
         return api.getPublicChannels(serverId);
       },
-      enabled: !me && !!serverId,
+      enabled: !!serverId && (isMeError || !accessToken),
     });
 
   const isLoading =
