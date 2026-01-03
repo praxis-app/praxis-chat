@@ -12,7 +12,8 @@ interface UseLogOutOptions {
 }
 
 export const useLogOut = (options: UseLogOutOptions = {}) => {
-  const { setIsLoggedIn, setIsNavSheetOpen, setInviteToken } = useAppStore();
+  const { setIsLoggedIn, setIsNavSheetOpen, setAccessToken, setInviteToken } =
+    useAppStore();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -24,6 +25,7 @@ export const useLogOut = (options: UseLogOutOptions = {}) => {
       options.onSuccess?.();
       setIsNavSheetOpen(false);
       setIsLoggedIn(false);
+      setAccessToken(null);
       setInviteToken(null);
       queryClient.clear();
     },
