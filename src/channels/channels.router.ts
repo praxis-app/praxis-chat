@@ -23,6 +23,15 @@ export const channelsRouter = express.Router({
   mergeParams: true,
 });
 
+// Protected route - needs to be placed above parameterized routes
+channelsRouter.get(
+  '/joined',
+  authenticate,
+  setServerMemberActivity,
+  synchronizePolls,
+  getJoinedChannels,
+);
+
 // Public routes
 channelsRouter
   .get('/public', getPublicChannels)
@@ -34,7 +43,6 @@ channelsRouter
 // Protected routes
 channelsRouter
   .use(authenticate, setServerMemberActivity, synchronizePolls)
-  .get('/joined', getJoinedChannels)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
   .delete('/:channelId', can('delete', 'Channel'), deleteChannel);
