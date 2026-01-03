@@ -1,5 +1,9 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 
+/**
+ * Composes multiple Express middlewares into a single
+ * middleware function and runs them in sequence
+ */
 export const withMiddleware =
   (...middlewares: RequestHandler[]): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction) => {
