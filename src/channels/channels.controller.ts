@@ -7,16 +7,16 @@ export const getChannel = async (req: Request, res: Response) => {
   res.json({ channel });
 };
 
+export const getChannels = async (req: Request, res: Response) => {
+  const channels = await channelsService.getChannels(req.params.serverId);
+  res.json({ channels });
+};
+
 export const getJoinedChannels = async (req: Request, res: Response) => {
   const channels = await channelsService.getJoinedChannels(
     req.params.serverId,
     res.locals.user.id,
   );
-  res.json({ channels });
-};
-
-export const getPublicChannels = async (req: Request, res: Response) => {
-  const channels = await channelsService.getPublicChannels(req.params.serverId);
   res.json({ channels });
 };
 

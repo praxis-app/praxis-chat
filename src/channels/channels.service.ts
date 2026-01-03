@@ -10,7 +10,6 @@ import {
 } from '../common/common.constants';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
-import * as instanceService from '../instance/instance.service';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
@@ -43,25 +42,17 @@ export const getChannel = (serverId: string, channelId: string) => {
   });
 };
 
-export const getJoinedChannels = async (serverId: string, userId: string) => {
+export const getChannels = async (serverId: string) => {
   const channels = await channelRepository.find({
-    where: { serverId, members: { userId } },
+    where: { serverId },
     order: { createdAt: 'ASC' },
   });
   return channels;
 };
 
-/**
- * TODO: Add channel-specific permissions for determining if channels are public or private
- */
-export const getPublicChannels = async (serverId: string) => {
-  const instanceConfig = await instanceService.getInstanceConfigSafely();
-  if (instanceConfig.defaultServerId !== serverId) {
-    throw new Error('Channels for this server are not public');
-  }
-
+export const getJoinedChannels = async (serverId: string, userId: string) => {
   const channels = await channelRepository.find({
-    where: { serverId },
+    where: { serverId, members: { userId } },
     order: { createdAt: 'ASC' },
   });
   return channels;

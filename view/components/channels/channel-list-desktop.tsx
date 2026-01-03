@@ -10,43 +10,45 @@ import { useParams } from 'react-router-dom';
  * Channel list component for the left navigation panel on desktop
  */
 export const ChannelListDesktop = () => {
-  const { isAppLoading, accessToken } = useAppStore();
+  const { isAppLoading, accessToken, inviteToken } = useAppStore();
   const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
   const { serverId, serverSlug } = useServerData();
   const { channelId } = useParams();
 
-  const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-    queryKey: ['servers', serverId, 'channels'],
-    queryFn: async () => {
-      if (!serverId) {
-        throw new Error('Current server not found');
-      }
-      return api.getJoinedChannels(serverId);
-    },
-    enabled: !!serverId && isMeSuccess,
-  });
-
-  const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
+  const { data: joinedChannelsData, isLoading: isJoinedChannelsLoading } =
     useQuery({
-      queryKey: ['servers', serverId, 'channels', 'public'],
+      queryKey: ['servers', serverId, 'channels', 'joined'],
       queryFn: async () => {
         if (!serverId) {
           throw new Error('Current server not found');
         }
-        return api.getPublicChannels(serverId);
+        return api.getJoinedChannels(serverId);
+      },
+      enabled: !!serverId && isMeSuccess,
+    });
+
+  const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
+    useQuery({
+      queryKey: ['servers', serverId, 'channels', inviteToken],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getChannels(serverId, inviteToken);
       },
       enabled: !!serverId && (isMeError || !accessToken),
     });
 
   const isLoading =
-    isChannelsLoading || isPublicChannelsLoading || isAppLoading;
+    isJoinedChannelsLoading || isPublicChannelsLoading || isAppLoading;
 
   // TODO: Add skeleton loader
   if (!serverSlug || isLoading) {
     return <div className="flex flex-1" />;
   }
 
-  const channels = channelsData?.channels || publicChannelsData?.channels || [];
+  const channels =
+    joinedChannelsData?.channels || publicChannelsData?.channels || [];
 
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">

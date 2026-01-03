@@ -2,6 +2,7 @@ import { In, IsNull, Not, QueryFailedError } from 'typeorm';
 import { INITIAL_SERVER_NAME } from '../../common/servers/server.constants';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
+import * as instanceService from '../instance/instance.service';
 import {
   getInstanceConfigSafely,
   updateInstanceConfig,
@@ -12,7 +13,6 @@ import { ServerMember } from './entities/server-member.entity';
 import { Server } from './entities/server.entity';
 import { ServerConfig } from './server-configs/entities/server-config.entity';
 import * as serverRolesService from './server-roles/server-roles.service';
-import * as instanceService from '../instance/instance.service';
 
 const serverRepository = dataSource.getRepository(Server);
 const serverConfigRepository = dataSource.getRepository(ServerConfig);
@@ -191,6 +191,12 @@ export const getUsersEligibleForServer = async (serverId: string) => {
   }));
 
   return shapedUsers;
+};
+
+export const isServerMember = async (serverId: string, userId: string) => {
+  return serverMemberRepository.exists({
+    where: { serverId, userId },
+  });
 };
 
 export const isDefaultServerMember = async (userId: string) => {

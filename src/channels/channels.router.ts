@@ -12,11 +12,12 @@ import {
   deleteChannel,
   getChannel,
   getChannelFeed,
+  getChannels,
   getJoinedChannels,
-  getPublicChannels,
   updateChannel,
 } from './channels.controller';
 import { hasChannelAccess } from './middleware/has-channel-access';
+import { hasChannelsAccess } from './middleware/has-channels-access';
 import { validateChannel } from './middleware/validate-channel.middleware';
 
 export const channelsRouter = express.Router({
@@ -34,7 +35,7 @@ channelsRouter.get(
 
 // Public routes
 channelsRouter
-  .get('/public', getPublicChannels)
+  .get('/', hasChannelsAccess, getChannels)
   .get('/:channelId', hasChannelAccess, getChannel)
   .get('/:channelId/feed', hasChannelAccess, getChannelFeed)
   .use('/:channelId/messages', messagesRouter)

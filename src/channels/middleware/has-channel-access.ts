@@ -3,11 +3,17 @@ import { authenticateOptional } from '../../auth/middleware/authenticate-optiona
 import { withMiddleware } from '../../common/middleware.utils';
 import * as instanceService from '../../instance/instance.service';
 import { isValidInvite } from '../../invites/invites.service';
+import { User } from '../../users/user.entity';
 import * as channelsService from '../channels.service';
 
+/**
+ * Check if the user has access to a single channel
+ */
 export const hasChannelAccess = withMiddleware(
   authenticateOptional,
   async (req: Request, res: Response, next: NextFunction) => {
+    const user: User | undefined = res.locals.user;
+
     const instanceConfig = await instanceService.getInstanceConfigSafely();
 
     // All channels are public for the default server
@@ -16,11 +22,10 @@ export const hasChannelAccess = withMiddleware(
       return;
     }
 
-    // Check if the user is a member of the channel for non-default servers
-    const isChannelMember = await channelsService.isChannelMember(
-      req.params.channelId,
-      res.locals.user.id,
-    );
+    // Check if the user is a member of this channel (for non-default servers)
+    const isChannelMember = user
+      ? await channelsService.isChannelMember(req.params.channelId, user.id)
+      : false;
 
     // TODO: Clean up the following logic - can likely be flattened a bit more
 

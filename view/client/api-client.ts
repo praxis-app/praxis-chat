@@ -148,13 +148,15 @@ class ApiClient {
     });
   };
 
-  getJoinedChannels = async (serverId: string) => {
-    const path = `/servers/${serverId}/channels/joined`;
-    return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
+  getChannels = async (serverId: string, inviteToken?: string | null) => {
+    const path = `/servers/${serverId}/channels`;
+    return this.executeRequest<{ channels: ChannelRes[] }>('get', path, {
+      params: { inviteToken },
+    });
   };
 
-  getPublicChannels = async (serverId: string) => {
-    const path = `/servers/${serverId}/channels/public`;
+  getJoinedChannels = async (serverId: string) => {
+    const path = `/servers/${serverId}/channels/joined`;
     return this.executeRequest<{ channels: ChannelRes[] }>('get', path);
   };
 

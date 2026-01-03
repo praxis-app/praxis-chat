@@ -32,7 +32,7 @@ interface Props {
 }
 
 export const NavSheet = ({ trigger }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen, inviteToken } = useAppStore();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -42,8 +42,8 @@ export const NavSheet = ({ trigger }: Props) => {
   const { server, serverId, serverPath } = useServerData();
   const { serverAbility } = useAbility();
 
-  const { data: channelsData } = useQuery({
-    queryKey: ['servers', serverId, 'channels'],
+  const { data: joinedChannelsData } = useQuery({
+    queryKey: ['servers', serverId, 'channels', 'joined'],
     queryFn: async () => {
       if (!serverId) {
         throw new Error('Current server not found');
@@ -54,17 +54,21 @@ export const NavSheet = ({ trigger }: Props) => {
   });
 
   const { data: publicChannelsData } = useQuery({
-    queryKey: ['servers', serverId, 'channels', 'public'],
+    queryKey: ['servers', serverId, 'channels', inviteToken],
     queryFn: async () => {
       if (!serverId) {
         throw new Error('Current server not found');
       }
-      return api.getPublicChannels(serverId);
+      if (!inviteToken) {
+        throw new Error('Invite token is required');
+      }
+      return api.getChannels(serverId, inviteToken);
     },
-    enabled: isNavSheetOpen && !!serverId && !me,
+    enabled: isNavSheetOpen && !!serverId && !!inviteToken && !me,
   });
 
-  const channels = channelsData?.channels || publicChannelsData?.channels || [];
+  const channels =
+    joinedChannelsData?.channels || publicChannelsData?.channels || [];
 
   const channelsPath = `${serverPath}/c`;
   const name = me?.displayName || me?.name;
