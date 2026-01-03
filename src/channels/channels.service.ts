@@ -10,9 +10,9 @@ import {
 } from '../common/common.constants';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
+import * as instanceService from '../instance/instance.service';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
-import * as instanceService from '../instance/instance.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
@@ -116,16 +116,6 @@ export const getChannelFeed = async (
     .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
 
   return feed;
-};
-
-export const getGeneralChannelFeed = async (
-  serverId: string,
-  offset?: number,
-  limit?: number,
-  currentUserId?: string,
-) => {
-  const channel = await getGeneralChannel(serverId);
-  return getChannelFeed(serverId, channel.id, offset, limit, currentUserId);
 };
 
 export const isChannelMember = async (channelId: string, userId: string) => {

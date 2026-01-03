@@ -6,6 +6,7 @@ import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
+import * as instanceService from '../instance/instance.service';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
@@ -208,6 +209,23 @@ export const isPollRatifiable = async (pollId: string) => {
     return hasMajorityVote(votes, config, memberCount);
   }
   return false;
+};
+
+export const isPublicChannelPoll = async (
+  serverId: string,
+  channelId: string,
+  pollId: string,
+) => {
+  const exists = await pollRepository.exists({
+    where: { id: pollId, channel: { serverId, id: channelId } },
+  });
+  if (!exists) {
+    throw new Error('Poll not found');
+  }
+
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+
+  return defaultServerId === serverId;
 };
 
 export const createPoll = async (

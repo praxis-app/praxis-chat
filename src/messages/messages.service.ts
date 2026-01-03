@@ -12,6 +12,7 @@ import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
+import * as instanceService from '../instance/instance.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
 
@@ -108,6 +109,23 @@ export const getMessages = async (
   );
 
   return shapedMessages;
+};
+
+export const isPublicChannelMessage = async (
+  serverId: string,
+  channelId: string,
+  messageId: string,
+) => {
+  const exists = await messageRepository.exists({
+    where: { id: messageId, channel: { serverId, id: channelId } },
+  });
+  if (!exists) {
+    throw new Error('Message not found');
+  }
+
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+
+  return defaultServerId === serverId;
 };
 
 export const createMessage = async (
