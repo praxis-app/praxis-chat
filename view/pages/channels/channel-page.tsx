@@ -4,13 +4,13 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
   const { inviteToken } = useAppStore();
   const { serverId } = useServerData();
 
-  const { channelId } = useParams();
+  const { channelId, serverSlug } = useParams();
   const navigate = useNavigate();
 
   const { data: channelData, error: channelError } = useQuery({
@@ -31,9 +31,16 @@ export const ChannelPage = () => {
     enabled: !!channelId && !!serverId,
   });
 
+  const channel = channelData?.channel;
+  const channelServerSlug = channel?.server?.slug;
+
+  if (channelServerSlug && serverSlug !== channelServerSlug) {
+    return <Navigate to={`/s/${channelServerSlug}/c/${channel.id}`} replace />;
+  }
+
   if (channelError) {
     throw new Error(channelError.message);
   }
 
-  return <ChannelView channel={channelData?.channel} />;
+  return <ChannelView channel={channel} />;
 };
