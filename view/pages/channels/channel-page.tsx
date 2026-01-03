@@ -7,10 +7,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
   const { serverId } = useServerData();
+
   const { channelId } = useParams();
   const navigate = useNavigate();
 
-  const { data: channelData } = useQuery({
+  const { data: channelData, error: channelError } = useQuery({
     queryKey: ['servers', serverId, 'channels', channelId],
     queryFn: async () => {
       try {
@@ -27,6 +28,10 @@ export const ChannelPage = () => {
     },
     enabled: !!channelId && !!serverId,
   });
+
+  if (channelError) {
+    throw new Error(channelError.message);
+  }
 
   return <ChannelView channel={channelData?.channel} />;
 };

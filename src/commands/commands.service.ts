@@ -39,10 +39,11 @@ export const handleCommandExecution = async (
 
 export const startCommandProcessor = () => {
   commandQueue.process(async (job: Bull.Job<CommandJobData>) => {
-    const { channelId, messageBody, botMessageId } = job.data;
+    const { serverId, channelId, messageBody, botMessageId } = job.data;
 
     try {
       const result = await handleCommandExecution({
+        serverId,
         channelId,
         messageBody,
       });

@@ -11,7 +11,9 @@ interface UpdateInstanceConfigDto {
 }
 
 export const getInstanceConfigSafely = async () => {
-  const instanceConfigs = await instanceConfigRepository.find();
+  const instanceConfigs = await instanceConfigRepository.find({
+    select: ['id', 'defaultServerId'],
+  });
   if (!instanceConfigs.length) {
     return initializeInstanceConfig();
   }
@@ -51,7 +53,12 @@ export const initializeInstance = async () => {
 const initializeInstanceConfig = async () => {
   const initialServer = await createInitialServer();
 
-  return instanceConfigRepository.save({
+  const instanceConfig = await instanceConfigRepository.save({
     defaultServerId: initialServer.id,
   });
+
+  return {
+    id: instanceConfig.id,
+    defaultServerId: instanceConfig.defaultServerId,
+  };
 };

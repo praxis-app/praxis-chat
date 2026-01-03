@@ -124,6 +124,7 @@ export const useServerData = () => {
     serverSlug: resolvedServerSlug,
     serverPath: resolvedServerPath,
     myServerCount: meData?.user.serversCount,
+    generalChannelId: server?.generalChannelId,
     currentUserHasNoServers,
     isLoading,
   };

@@ -22,6 +22,7 @@ const imageRepository = dataSource.getRepository(Image);
 
 // TODO: Return `resolvedName` field for users
 export const getMessages = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
@@ -52,7 +53,9 @@ export const getMessages = async (
     .leftJoin('message.bot', 'messageBot')
     .addSelect(['messageBot.id', 'messageBot.name', 'messageBot.displayName'])
     .leftJoin('message.images', 'messageImage')
-    .where('message.channelId = :channelId', { channelId })
+    .innerJoin('message.channel', 'channel')
+    .where('channel.serverId = :serverId', { serverId })
+    .andWhere('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
     .skip(offset)
     .take(limit)
@@ -108,6 +111,7 @@ export const getMessages = async (
 };
 
 export const createMessage = async (
+  serverId: string,
   channelId: string,
   { body, imageCount }: CreateMessageDto,
   user: User,
@@ -199,6 +203,7 @@ export const createMessage = async (
       );
 
       await commandsService.queueCommandJob({
+        serverId,
         channelId,
         messageBody: plaintext,
         botMessageId: botMessage.id,

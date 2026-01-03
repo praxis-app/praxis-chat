@@ -4,8 +4,10 @@ import { getUploadsPath } from '../images/images.utils';
 import * as messagesService from './messages.service';
 
 export const createMessage = async (req: Request, res: Response) => {
+  const { serverId, channelId } = req.params;
   const message = await messagesService.createMessage(
-    req.params.channelId,
+    serverId,
+    channelId,
     req.body,
     res.locals.user,
   );

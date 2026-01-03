@@ -12,6 +12,7 @@ import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
+import * as instanceService from '../instance/instance.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
@@ -50,6 +51,22 @@ export const getJoinedChannels = async (serverId: string, userId: string) => {
   return channels;
 };
 
+/**
+ * TODO: Add channel-specific permissions for determining if channels are public or private
+ */
+export const getPublicChannels = async (serverId: string) => {
+  const instanceConfig = await instanceService.getInstanceConfigSafely();
+  if (instanceConfig.defaultServerId !== serverId) {
+    throw new Error('Channels for this server are not public');
+  }
+
+  const channels = await channelRepository.find({
+    where: { serverId },
+    order: { createdAt: 'ASC' },
+  });
+  return channels;
+};
+
 export const getChannelMembers = (channelId: string) => {
   return channelMemberRepository.find({
     where: { channelId },
@@ -67,14 +84,21 @@ export const getGeneralChannel = async (serverId: string) => {
 };
 
 export const getChannelFeed = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
   currentUserId?: string,
 ) => {
   const [messages, polls] = await Promise.all([
-    messagesService.getMessages(channelId, offset, limit),
-    pollsService.getInlinePolls(channelId, offset, limit, currentUserId),
+    messagesService.getMessages(serverId, channelId, offset, limit),
+    pollsService.getInlinePolls(
+      serverId,
+      channelId,
+      offset,
+      limit,
+      currentUserId,
+    ),
   ]);
 
   const shapedMessages = messages.map((message) => ({
@@ -101,7 +125,7 @@ export const getGeneralChannelFeed = async (
   currentUserId?: string,
 ) => {
   const channel = await getGeneralChannel(serverId);
-  return getChannelFeed(channel.id, offset, limit, currentUserId);
+  return getChannelFeed(serverId, channel.id, offset, limit, currentUserId);
 };
 
 export const isChannelMember = async (channelId: string, userId: string) => {

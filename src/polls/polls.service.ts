@@ -35,6 +35,7 @@ export const getPoll = (id: string, relations?: string[]) => {
 };
 
 export const getInlinePolls = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
@@ -97,7 +98,9 @@ export const getInlinePolls = async (
     .leftJoin('pollActionRole.permissions', 'pollActionPermission')
     .leftJoin('pollActionRole.members', 'pollActionRoleMember')
     .leftJoin('pollActionRoleMember.user', 'pollActionRoleMemberUser')
-    .where('poll.channelId = :channelId', { channelId })
+    .innerJoin('poll.channel', 'channel')
+    .where('channel.serverId = :serverId', { serverId })
+    .andWhere('channel.id = :channelId', { channelId })
     .orderBy('poll.createdAt', 'DESC')
     .skip(offset)
     .take(limit)

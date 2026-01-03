@@ -59,15 +59,16 @@ export const getServerById = async (serverId: string) => {
 };
 
 export const getServerBySlug = async (slug: string) => {
-  const instanceConfig = await getInstanceConfigSafely();
   const server = await serverRepository.findOne({ where: { slug } });
   if (!server) {
     throw new Error(`Server with slug ${slug} not found`);
   }
-  return {
-    ...server,
-    isDefaultServer: server.id === instanceConfig.defaultServerId,
-  };
+
+  const instanceConfig = await getInstanceConfigSafely();
+  const isDefaultServer = server.id === instanceConfig.defaultServerId;
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
+  return { ...server, isDefaultServer, generalChannelId: generalChannel.id };
 };
 
 export const getServerByInviteToken = async (inviteToken: string) => {
@@ -78,27 +79,38 @@ export const getServerByInviteToken = async (inviteToken: string) => {
     return null;
   }
 
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
   const memberCount = await serverMemberRepository.count({
     where: { serverId: server.id },
   });
 
-  return { ...server, memberCount };
+  return {
+    ...server,
+    memberCount,
+    generalChannelId: generalChannel.id,
+  };
 };
 
 export const getDefaultServer = async () => {
   const instanceConfig = await getInstanceConfigSafely();
-
   const server = await serverRepository.findOne({
     where: { id: instanceConfig.defaultServerId },
   });
   if (!server) {
     throw new Error('Default server not found');
   }
-  return server;
+
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
+  return {
+    ...server,
+    isDefaultServer: true,
+    generalChannelId: generalChannel.id,
+  };
 };
 
 export const getCurrentServer = async (userId: string) => {
-  const server = await serverRepository.findOne({
+  let server = await serverRepository.findOne({
     where: { members: { userId, lastActiveAt: Not(IsNull()) } },
     order: { members: { lastActiveAt: 'DESC' } },
     relations: ['members'],
@@ -110,18 +122,16 @@ export const getCurrentServer = async (userId: string) => {
     if (servers.length === 0) {
       return null;
     }
-
-    let server = servers.find((server) => server.isDefaultServer);
+    server = servers.find((server) => server.isDefaultServer) || null;
     server = server || servers[0];
-
-    return {
-      id: server.id,
-      slug: server.slug,
-    };
   }
+
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
   return {
     id: server.id,
     slug: server.slug,
+    generalChannelId: generalChannel.id,
   };
 };
 

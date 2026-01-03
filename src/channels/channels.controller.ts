@@ -15,31 +15,19 @@ export const getJoinedChannels = async (req: Request, res: Response) => {
   res.json({ channels });
 };
 
-export const getGeneralChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.getGeneralChannel(req.params.serverId);
-  res.json({ channel });
+export const getPublicChannels = async (req: Request, res: Response) => {
+  const channels = await channelsService.getPublicChannels(req.params.serverId);
+  res.json({ channels });
 };
 
 export const getChannelFeed = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
+  const { serverId, channelId } = req.params;
   const offset = req.query.offset ? Number(req.query.offset) : undefined;
   const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
   const feed = await channelsService.getChannelFeed(
+    serverId,
     channelId,
-    offset,
-    limit,
-    res.locals.user?.id,
-  );
-  res.json({ feed });
-};
-
-export const getGeneralChannelFeed = async (req: Request, res: Response) => {
-  const offset = req.query.offset ? Number(req.query.offset) : undefined;
-  const limit = req.query.limit ? Number(req.query.limit) : undefined;
-
-  const feed = await channelsService.getGeneralChannelFeed(
-    req.params.serverId,
     offset,
     limit,
     res.locals.user?.id,
