@@ -339,16 +339,20 @@ export const createPoll = async (
     if (member.userId === user.id) {
       continue;
     }
-    await pubSubService.publish(getNewPollKey(channelId, member.userId), {
-      type: 'poll',
-      poll: shapedPoll,
-    });
+    await pubSubService.publish(
+      getNewPollKey(serverId, channelId, member.userId),
+      {
+        type: 'poll',
+        poll: shapedPoll,
+      },
+    );
   }
 
   return shapedPoll;
 };
 
 export const savePollImage = async (
+  serverId: string,
   pollId: string,
   imageId: string,
   filename: string,
@@ -369,7 +373,7 @@ export const savePollImage = async (
     if (member.userId === user.id) {
       continue;
     }
-    const channelKey = getNewPollKey(poll.channelId, member.userId);
+    const channelKey = getNewPollKey(serverId, poll.channelId, member.userId);
     await pubSubService.publish(channelKey, {
       type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
@@ -503,6 +507,6 @@ const getPollMemberCount = async () => {
   });
 };
 
-const getNewPollKey = (channelId: string, userId: string) => {
-  return `new-poll-${channelId}-${userId}`;
+const getNewPollKey = (serverId: string, channelId: string, userId: string) => {
+  return `new-poll-${serverId}-${channelId}-${userId}`;
 };

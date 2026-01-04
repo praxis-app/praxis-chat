@@ -23,7 +23,11 @@ export const hasChannelAccess = withMiddleware(
 
     // Check if the user is a member of this channel (for non-default servers)
     const isChannelMember = user
-      ? await channelsService.isChannelMember(req.params.channelId, user.id)
+      ? await channelsService.isChannelMember(
+          req.params.serverId,
+          req.params.channelId,
+          user.id,
+        )
       : false;
     if (isChannelMember) {
       next();

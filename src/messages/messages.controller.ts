@@ -20,9 +20,10 @@ export const uploadMessageImage = async (req: Request, res: Response) => {
     return;
   }
   const { user } = res.locals;
-  const { messageId, imageId } = req.params;
+  const { serverId, messageId, imageId } = req.params;
   const { filename } = req.file as Express.Multer.File;
   const image = await messagesService.saveMessageImage(
+    serverId,
     messageId,
     imageId,
     filename,

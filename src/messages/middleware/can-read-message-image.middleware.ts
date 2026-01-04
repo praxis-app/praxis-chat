@@ -21,6 +21,7 @@ export const canReadMessageImage = async (
 
   if (currentUser) {
     const isChannelMember = await channelsService.isChannelMember(
+      serverId,
       channelId,
       currentUser.id,
     );

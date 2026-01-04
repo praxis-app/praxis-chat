@@ -116,9 +116,17 @@ export const getChannelFeed = async (
   return feed;
 };
 
-export const isChannelMember = async (channelId: string, userId: string) => {
+export const isChannelMember = async (
+  serverId: string,
+  channelId: string,
+  userId: string,
+) => {
   return channelMemberRepository.exists({
-    where: { channelId, userId },
+    where: {
+      channel: { serverId },
+      channelId,
+      userId,
+    },
   });
 };
 

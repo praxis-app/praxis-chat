@@ -199,10 +199,13 @@ export const createMessage = async (
     if (member.userId === user.id) {
       continue;
     }
-    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: PubSubMessageType.MESSAGE,
-      message: messagePayload,
-    });
+    await pubSubService.publish(
+      getNewMessageKey(serverId, channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   // TODO: Send an error message for invalid command messages
@@ -235,6 +238,7 @@ export const createMessage = async (
 };
 
 const createBotMessage = async (
+  serverId: string,
   channelId: string,
   body: string,
   commandStatus: CommandStatus | null = null,
@@ -283,16 +287,20 @@ const createBotMessage = async (
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
-    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: PubSubMessageType.MESSAGE,
-      message: messagePayload,
-    });
+    await pubSubService.publish(
+      getNewMessageKey(serverId, channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   return messagePayload;
 };
 
 export const updateBotMessage = async (
+  serverId: string,
   messageId: string,
   updates: {
     body: string;
@@ -351,7 +359,7 @@ export const updateBotMessage = async (
   );
   for (const member of channelMembers) {
     await pubSubService.publish(
-      getNewMessageKey(message.channelId, member.userId),
+      getNewMessageKey(serverId, message.channelId, member.userId),
       {
         type: PubSubMessageType.MESSAGE,
         message: messagePayload,
@@ -363,6 +371,7 @@ export const updateBotMessage = async (
 };
 
 export const saveMessageImage = async (
+  serverId: string,
   messageId: string,
   imageId: string,
   filename: string,
@@ -383,7 +392,11 @@ export const saveMessageImage = async (
     if (member.userId === user.id) {
       continue;
     }
-    const channelKey = getNewMessageKey(message.channelId, member.userId);
+    const channelKey = getNewMessageKey(
+      serverId,
+      message.channelId,
+      member.userId,
+    );
     await pubSubService.publish(channelKey, {
       type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
@@ -394,6 +407,10 @@ export const saveMessageImage = async (
   return image;
 };
 
-const getNewMessageKey = (channelId: string, userId: string) => {
-  return `new-message-${channelId}-${userId}`;
+const getNewMessageKey = (
+  serverId: string,
+  channelId: string,
+  userId: string,
+) => {
+  return `new-message-${serverId}-${channelId}-${userId}`;
 };

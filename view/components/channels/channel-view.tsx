@@ -87,7 +87,7 @@ export const ChannelView = ({ channel }: Props) => {
   });
 
   // Listen for new messages
-  useSubscription(`new-message-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-message-${serverId}-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewMessagePayload | ImageMessagePayload> =
         JSON.parse(event.data);
@@ -207,7 +207,7 @@ export const ChannelView = ({ channel }: Props) => {
   });
 
   // Listen for new polls
-  useSubscription(`new-poll-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-poll-${serverId}-${channel?.id}-${meData?.user.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
       if (!body) {
