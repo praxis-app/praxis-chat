@@ -38,7 +38,7 @@ export const CHANNEL_ACCESS_MAP: Record<string, ChannelAccessPolicy> = {
     ),
     rules: {
       isOwnMessage: (match, user) => {
-        const userId = match[2];
+        const userId = match[3];
         return user.id === userId;
       },
       isChannelMember: async (match, user) => {
