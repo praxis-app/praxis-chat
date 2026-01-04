@@ -1,5 +1,3 @@
-// TODO: Add remaining layout and functionality - below is a WIP
-
 import { TopNav } from '@/components/nav/top-nav';
 import { SettingsNavItem } from '@/components/settings/settings-nav-item';
 import { Container } from '@/components/ui/container';
