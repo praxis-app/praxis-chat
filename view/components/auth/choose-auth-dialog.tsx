@@ -29,7 +29,9 @@ interface Props {
 }
 
 export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
-  const { inviteToken, setIsLoggedIn } = useAppStore((state) => state);
+  const { inviteToken, setIsLoggedIn, setAccessToken } = useAppStore(
+    (state) => state,
+  );
 
   const { serverId } = useServerData();
   const { signUpPath } = useAuthData();
@@ -51,6 +53,7 @@ export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
       const { access_token } = await api.createAnonSession(inviteToken);
       localStorage.setItem(LocalStorageKeys.AccessToken, access_token);
       localStorage.removeItem(LocalStorageKeys.InviteToken);
+      setAccessToken(access_token);
       setIsLoggedIn(true);
       sendMessage();
     },
