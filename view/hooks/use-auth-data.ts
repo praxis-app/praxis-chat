@@ -18,6 +18,7 @@ export const useAuthData = () => {
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
     enabled: isMeError || !accessToken,
+    refetchOnMount: false,
   });
 
   const me = meData?.user;
