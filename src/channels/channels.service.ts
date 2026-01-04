@@ -152,17 +152,6 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   return { ...channelKey, unwrappedKey };
 };
 
-export const addMemberToGeneralChannel = async (
-  serverId: string,
-  userId: string,
-) => {
-  const generalChannel = await getGeneralChannel(serverId);
-  await channelMemberRepository.save({
-    channelId: generalChannel.id,
-    userId,
-  });
-};
-
 // TODO: Reconsider how new users are added to channels
 export const addMemberToAllServerChannels = async (
   userId: string,
