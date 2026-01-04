@@ -76,6 +76,13 @@ vi.mock('../../bots/bots.service', () => ({
   }),
 }));
 
+vi.mock('../../instance/instance.service', () => ({
+  getInstanceConfigSafely: vi.fn().mockResolvedValue({
+    id: 'instance-config-1',
+    defaultServerId: 'default-server-1',
+  }),
+}));
+
 // Import the service after mocks
 import * as channelsService from '../../channels/channels.service';
 import { sanitizeText } from '../../common/text.utils';
@@ -136,7 +143,9 @@ describe('Messages Service', () => {
         select: vi.fn().mockReturnThis(),
         addSelect: vi.fn().mockReturnThis(),
         leftJoin: vi.fn().mockReturnThis(),
+        innerJoin: vi.fn().mockReturnThis(),
         where: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
         orderBy: vi.fn().mockReturnThis(),
         skip: vi.fn().mockReturnThis(),
         take: vi.fn().mockReturnThis(),
@@ -161,7 +170,12 @@ describe('Messages Service', () => {
         } as Image,
       });
 
-      const result = await messagesService.getMessages('channel-1', 10, 20);
+      const result = await messagesService.getMessages(
+        'server-1',
+        'channel-1',
+        10,
+        20,
+      );
 
       expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalledWith(
         'message',
@@ -204,8 +218,8 @@ describe('Messages Service', () => {
         'messageImage',
       );
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'message.channelId = :channelId',
-        { channelId: 'channel-1' },
+        'channel.serverId = :serverId',
+        { serverId: 'server-1' },
       );
       expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
         'message.createdAt',
@@ -295,6 +309,7 @@ describe('Messages Service', () => {
       } as any);
 
       const result = await messagesService.createMessage(
+        'server-1',
         'channel-1',
         messageData,
         mockUser,

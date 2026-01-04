@@ -2,6 +2,7 @@ import { In, IsNull, Not, QueryFailedError } from 'typeorm';
 import { INITIAL_SERVER_NAME } from '../../common/servers/server.constants';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
+import * as instanceService from '../instance/instance.service';
 import {
   getInstanceConfigSafely,
   updateInstanceConfig,
@@ -59,15 +60,16 @@ export const getServerById = async (serverId: string) => {
 };
 
 export const getServerBySlug = async (slug: string) => {
-  const instanceConfig = await getInstanceConfigSafely();
   const server = await serverRepository.findOne({ where: { slug } });
   if (!server) {
     throw new Error(`Server with slug ${slug} not found`);
   }
-  return {
-    ...server,
-    isDefaultServer: server.id === instanceConfig.defaultServerId,
-  };
+
+  const instanceConfig = await getInstanceConfigSafely();
+  const isDefaultServer = server.id === instanceConfig.defaultServerId;
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
+  return { ...server, isDefaultServer, generalChannelId: generalChannel.id };
 };
 
 export const getServerByInviteToken = async (inviteToken: string) => {
@@ -78,27 +80,38 @@ export const getServerByInviteToken = async (inviteToken: string) => {
     return null;
   }
 
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
   const memberCount = await serverMemberRepository.count({
     where: { serverId: server.id },
   });
 
-  return { ...server, memberCount };
+  return {
+    ...server,
+    memberCount,
+    generalChannelId: generalChannel.id,
+  };
 };
 
 export const getDefaultServer = async () => {
   const instanceConfig = await getInstanceConfigSafely();
-
   const server = await serverRepository.findOne({
     where: { id: instanceConfig.defaultServerId },
   });
   if (!server) {
     throw new Error('Default server not found');
   }
-  return server;
+
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
+  return {
+    ...server,
+    isDefaultServer: true,
+    generalChannelId: generalChannel.id,
+  };
 };
 
 export const getCurrentServer = async (userId: string) => {
-  const server = await serverRepository.findOne({
+  let server = await serverRepository.findOne({
     where: { members: { userId, lastActiveAt: Not(IsNull()) } },
     order: { members: { lastActiveAt: 'DESC' } },
     relations: ['members'],
@@ -110,18 +123,16 @@ export const getCurrentServer = async (userId: string) => {
     if (servers.length === 0) {
       return null;
     }
-
-    let server = servers.find((server) => server.isDefaultServer);
+    server = servers.find((server) => server.isDefaultServer) || null;
     server = server || servers[0];
-
-    return {
-      id: server.id,
-      slug: server.slug,
-    };
   }
+
+  const generalChannel = await channelsService.getGeneralChannel(server.id);
+
   return {
     id: server.id,
     slug: server.slug,
+    generalChannelId: generalChannel.id,
   };
 };
 
@@ -180,6 +191,19 @@ export const getUsersEligibleForServer = async (serverId: string) => {
   }));
 
   return shapedUsers;
+};
+
+export const isServerMember = async (serverId: string, userId: string) => {
+  return serverMemberRepository.exists({
+    where: { serverId, userId },
+  });
+};
+
+export const isDefaultServerMember = async (userId: string) => {
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+  return serverMemberRepository.exists({
+    where: { userId, serverId: defaultServerId },
+  });
 };
 
 export const createServer = async (

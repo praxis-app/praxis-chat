@@ -6,9 +6,8 @@
  * future once the core functionality is fully implemented.
  */
 
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
-import { FindManyOptions, In, Like } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -267,18 +266,6 @@ export const createUserCoverPhoto = async (
     userId,
   });
   return image;
-};
-
-export const isGeneralChannelMember = async (userId: string) => {
-  const isMember = await channelMemberRepository.exists({
-    where: {
-      channel: {
-        name: Like(`%${GENERAL_CHANNEL_NAME}%`),
-      },
-      userId,
-    },
-  });
-  return isMember;
 };
 
 export const hasSharedChannel = async (userId: string, otherUserId: string) => {

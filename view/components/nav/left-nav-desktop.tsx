@@ -156,7 +156,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
         </DialogContent>
       </Dialog>
 
-      <ChannelListDesktop me={me} />
+      <ChannelListDesktop />
 
       <div className="flex h-[60px] items-center justify-between border-t border-[--color-border] px-1.5">
         <LeftNavUserMenu />

@@ -7,7 +7,6 @@ import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -39,10 +38,9 @@ const formSchema = zod.object({
 interface Props {
   channelId?: string;
   onSend?(): void;
-  isGeneralChannel?: boolean;
 }
 
-export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
+export const MessageForm = ({ channelId, onSend }: Props) => {
   const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const [showMenu, setShowMenu] = useState(false);
@@ -68,16 +66,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const isEmptyBody = !getValues('body') && !formState.dirtyFields.body;
   const isEmpty = isEmptyBody && !images.length;
 
-  const resolvedChannelId = isGeneralChannel ? GENERAL_CHANNEL_NAME : channelId;
-  const draftKey = `message-draft-${serverId}-${resolvedChannelId}`;
-
-  const feedQueryKey = [
-    'servers',
-    serverId,
-    'channels',
-    resolvedChannelId,
-    'feed',
-  ];
+  const draftKey = `message-draft-${serverId}-${channelId}`;
+  const feedQueryKey = ['servers', serverId, 'channels', channelId, 'feed'];
 
   const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
     return [...feed].sort(
@@ -128,7 +118,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       };
     },
     onMutate: async ({ body }) => {
-      if (!serverId || !resolvedChannelId) {
+      if (!serverId || !channelId) {
         throw new Error('Server ID and channel ID are required');
       }
 
@@ -200,7 +190,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       return { previousFeed, optimisticImages };
     },
     onSuccess: (message, _variables, context) => {
-      if (!serverId || !resolvedChannelId) {
+      if (!serverId || !channelId) {
         throw new Error('Server ID and channel ID are required');
       }
       const imagesWithSrc = message.images?.map((image, index) => {
@@ -415,7 +405,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             channelId={channelId}
-            isGeneralChannel={isGeneralChannel}
             disabled={isMessageSending}
           />
 

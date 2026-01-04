@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
+import { useServerData } from '@/hooks/use-server-data';
 import { getServerPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
@@ -7,7 +8,6 @@ import {
   CreatePollActionServerRolePermissionReq,
 } from '@/types/poll-action.types';
 import { ServerPermissionKeys } from '@/types/role.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -15,14 +15,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { useServerData } from '@/hooks/use-server-data';
 import { Wizard } from '../../shared/wizard/wizard';
 import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
 import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
 import { ServerRoleAttributesStep } from './create-poll-form-steps/server-role-attributes-step';
 import { ServerRoleMembersStep } from './create-poll-form-steps/server-role-members-step';
-import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
 import { ServerRolePermissionsStep } from './create-poll-form-steps/server-role-permissions-step';
+import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
 import {
   CreatePollFormSchema,
   createPollFormSchema,
@@ -30,17 +29,11 @@ import {
 
 interface Props {
   channelId?: string;
-  isGeneralChannel?: boolean;
   onSuccess: () => void;
   onNavigate: () => void;
 }
 
-export const CreatePollForm = ({
-  channelId,
-  isGeneralChannel,
-  onSuccess,
-  onNavigate,
-}: Props) => {
+export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const { t } = useTranslation();
@@ -231,17 +224,13 @@ export const CreatePollForm = ({
       });
     },
     onSuccess: ({ poll }) => {
-      const resolvedChannelId = isGeneralChannel
-        ? GENERAL_CHANNEL_NAME
-        : channelId;
-
-      if (!resolvedChannelId || !serverId) {
+      if (!channelId || !serverId) {
         return;
       }
 
       // Optimistically insert new poll at top of feed (no refetch)
       queryClient.setQueryData<FeedQuery>(
-        ['servers', serverId, 'channels', resolvedChannelId, 'feed'],
+        ['servers', serverId, 'channels', channelId, 'feed'],
         (old) => {
           const newItem: FeedItemRes = {
             ...poll,

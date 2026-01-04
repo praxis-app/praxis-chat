@@ -6,6 +6,7 @@ import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
+import * as instanceService from '../instance/instance.service';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
@@ -35,6 +36,7 @@ export const getPoll = (id: string, relations?: string[]) => {
 };
 
 export const getInlinePolls = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
@@ -97,7 +99,9 @@ export const getInlinePolls = async (
     .leftJoin('pollActionRole.permissions', 'pollActionPermission')
     .leftJoin('pollActionRole.members', 'pollActionRoleMember')
     .leftJoin('pollActionRoleMember.user', 'pollActionRoleMemberUser')
-    .where('poll.channelId = :channelId', { channelId })
+    .innerJoin('poll.channel', 'channel')
+    .where('channel.serverId = :serverId', { serverId })
+    .andWhere('channel.id = :channelId', { channelId })
     .orderBy('poll.createdAt', 'DESC')
     .skip(offset)
     .take(limit)
@@ -205,6 +209,23 @@ export const isPollRatifiable = async (pollId: string) => {
     return hasMajorityVote(votes, config, memberCount);
   }
   return false;
+};
+
+export const isPublicChannelPoll = async (
+  serverId: string,
+  channelId: string,
+  pollId: string,
+) => {
+  const exists = await pollRepository.exists({
+    where: { id: pollId, channel: { serverId, id: channelId } },
+  });
+  if (!exists) {
+    throw new Error('Poll not found');
+  }
+
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+
+  return defaultServerId === serverId;
 };
 
 export const createPoll = async (
@@ -318,16 +339,20 @@ export const createPoll = async (
     if (member.userId === user.id) {
       continue;
     }
-    await pubSubService.publish(getNewPollKey(channelId, member.userId), {
-      type: 'poll',
-      poll: shapedPoll,
-    });
+    await pubSubService.publish(
+      getNewPollKey(serverId, channelId, member.userId),
+      {
+        type: PubSubMessageType.POLL,
+        poll: shapedPoll,
+      },
+    );
   }
 
   return shapedPoll;
 };
 
 export const savePollImage = async (
+  serverId: string,
   pollId: string,
   imageId: string,
   filename: string,
@@ -348,7 +373,7 @@ export const savePollImage = async (
     if (member.userId === user.id) {
       continue;
     }
-    const channelKey = getNewPollKey(poll.channelId, member.userId);
+    const channelKey = getNewPollKey(serverId, poll.channelId, member.userId);
     await pubSubService.publish(channelKey, {
       type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
@@ -482,6 +507,6 @@ const getPollMemberCount = async () => {
   });
 };
 
-const getNewPollKey = (channelId: string, userId: string) => {
-  return `new-poll-${channelId}-${userId}`;
+const getNewPollKey = (serverId: string, channelId: string, userId: string) => {
+  return `new-poll-${serverId}-${channelId}-${userId}`;
 };

@@ -1,10 +1,21 @@
 // TODO: Add show password toggle
 
 import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   LocalStorageKeys,
   NavigationPaths,
 } from '@/constants/shared.constants';
+import { handleError } from '@/lib/error.utils';
 import { t } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import {
@@ -18,17 +29,6 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as zod from 'zod';
-import { handleError } from '../../lib/error.utils';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const loginFormSchema = zod.object({
   email: zod
@@ -49,7 +49,7 @@ const loginFormSchema = zod.object({
 });
 
 export const LoginForm = () => {
-  const { setIsLoggedIn } = useAppStore();
+  const { setIsLoggedIn, setAccessToken } = useAppStore();
 
   const form = useForm<zod.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -67,6 +67,7 @@ export const LoginForm = () => {
     onSuccess({ access_token }) {
       localStorage.setItem(LocalStorageKeys.AccessToken, access_token);
       localStorage.removeItem(LocalStorageKeys.InviteToken);
+      setAccessToken(access_token);
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },

@@ -1,81 +1,65 @@
 import { api } from '@/client/api-client';
 import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useGeneralChannel } from '@/hooks/use-general-channel';
+import { useMeQuery } from '@/hooks/use-me-query';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
-import { CurrentUserRes } from '@/types/user.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useParams } from 'react-router-dom';
-
-interface Props {
-  me?: CurrentUserRes;
-}
+import { useParams } from 'react-router-dom';
 
 /**
  * Channel list component for the left navigation panel on desktop
  */
-export const ChannelListDesktop = ({ me }: Props) => {
-  const { isAppLoading } = useAppStore();
-
-  const { serverId, serverSlug, serverPath } = useServerData();
+export const ChannelListDesktop = () => {
+  const { isAppLoading, accessToken, inviteToken } = useAppStore();
+  const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
+  const { serverId, serverSlug } = useServerData();
   const { channelId } = useParams();
-  const { pathname } = useLocation();
 
-  const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-    queryKey: ['servers', serverId, 'channels'],
-    queryFn: async () => {
-      if (!serverId) {
-        throw new Error('No current server found');
-      }
-      return api.getJoinedChannels(serverId);
-    },
-    enabled: !!me && !!serverId,
-  });
+  const { data: joinedChannelsData, isLoading: isJoinedChannelsLoading } =
+    useQuery({
+      queryKey: ['servers', serverId, 'channels', 'joined'],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getJoinedChannels(serverId);
+      },
+      enabled: !!serverId && isMeSuccess,
+    });
 
-  const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
-    useGeneralChannel({ enabled: !me });
+  const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
+    useQuery({
+      queryKey: ['servers', serverId, 'channels', inviteToken],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getChannels(serverId, inviteToken);
+      },
+      enabled: !!serverId && (isMeError || !accessToken),
+    });
 
   const isLoading =
-    isChannelsLoading || isGeneralChannelLoading || isAppLoading;
+    isJoinedChannelsLoading || isPublicChannelsLoading || isAppLoading;
 
   // TODO: Add skeleton loader
   if (!serverSlug || isLoading) {
     return <div className="flex flex-1" />;
   }
 
-  if (generalChannelData && !me) {
-    return (
-      <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
-        <ChannelListItemDesktop
-          channel={generalChannelData.channel}
-          serverSlug={serverSlug}
-          isGeneralChannel
-          isActive
-        />
-      </div>
-    );
-  }
+  const channels =
+    joinedChannelsData?.channels || publicChannelsData?.channels || [];
 
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">
-      {channelsData?.channels.map((channel) => {
-        const isHome =
-          pathname === NavigationPaths.Home || pathname === serverPath;
-
-        const isGeneral = channel.name === GENERAL_CHANNEL_NAME;
-        const isActive = channelId === channel.id || (isHome && isGeneral);
-
-        return (
-          <ChannelListItemDesktop
-            key={channel.id}
-            channel={channel}
-            isActive={isActive}
-            serverSlug={serverSlug}
-          />
-        );
-      })}
+      {channels.map((channel) => (
+        <ChannelListItemDesktop
+          key={channel.id}
+          channel={channel}
+          isActive={channelId === channel.id}
+          serverSlug={serverSlug}
+        />
+      ))}
     </div>
   );
 };

@@ -39,7 +39,22 @@ const serverMemberRepository = dataSource.getRepository(ServerMember);
 export const getChannel = (serverId: string, channelId: string) => {
   return channelRepository.findOneOrFail({
     where: { id: channelId, serverId },
+    relations: ['server'],
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      server: { id: true, slug: true },
+    },
   });
+};
+
+export const getChannels = async (serverId: string) => {
+  const channels = await channelRepository.find({
+    where: { serverId },
+    order: { createdAt: 'ASC' },
+  });
+  return channels;
 };
 
 export const getJoinedChannels = async (serverId: string, userId: string) => {
@@ -67,14 +82,21 @@ export const getGeneralChannel = async (serverId: string) => {
 };
 
 export const getChannelFeed = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
   currentUserId?: string,
 ) => {
   const [messages, polls] = await Promise.all([
-    messagesService.getMessages(channelId, offset, limit),
-    pollsService.getInlinePolls(channelId, offset, limit, currentUserId),
+    messagesService.getMessages(serverId, channelId, offset, limit),
+    pollsService.getInlinePolls(
+      serverId,
+      channelId,
+      offset,
+      limit,
+      currentUserId,
+    ),
   ]);
 
   const shapedMessages = messages.map((message) => ({
@@ -94,19 +116,17 @@ export const getChannelFeed = async (
   return feed;
 };
 
-export const getGeneralChannelFeed = async (
+export const isChannelMember = async (
   serverId: string,
-  offset?: number,
-  limit?: number,
-  currentUserId?: string,
+  channelId: string,
+  userId: string,
 ) => {
-  const channel = await getGeneralChannel(serverId);
-  return getChannelFeed(channel.id, offset, limit, currentUserId);
-};
-
-export const isChannelMember = async (channelId: string, userId: string) => {
   return channelMemberRepository.exists({
-    where: { channelId, userId },
+    where: {
+      channel: { serverId },
+      channelId,
+      userId,
+    },
   });
 };
 

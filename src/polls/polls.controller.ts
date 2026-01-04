@@ -20,9 +20,10 @@ export const uploadPollImage = async (req: Request, res: Response) => {
     return;
   }
   const { user } = res.locals;
-  const { pollId, imageId } = req.params;
+  const { serverId, pollId, imageId } = req.params;
   const { filename } = req.file as Express.Multer.File;
   const image = await pollsService.savePollImage(
+    serverId,
     pollId,
     imageId,
     filename,
