@@ -14,9 +14,8 @@ export const hasChannelAccess = withMiddleware(
   async (req: Request, res: Response, next: NextFunction) => {
     const user: User | undefined = res.locals.user;
 
-    const instanceConfig = await instanceService.getInstanceConfigSafely();
-
     // All channels are public for the default server
+    const instanceConfig = await instanceService.getInstanceConfigSafely();
     if (instanceConfig.defaultServerId === req.params.serverId) {
       next();
       return;
@@ -26,26 +25,21 @@ export const hasChannelAccess = withMiddleware(
     const isChannelMember = user
       ? await channelsService.isChannelMember(req.params.channelId, user.id)
       : false;
+    if (isChannelMember) {
+      next();
+      return;
+    }
 
-    // TODO: Clean up the following logic - can likely be flattened a bit more
-
-    if (!isChannelMember) {
-      // Check if the user has been invited to the server for this channel
-      if (req.query.inviteToken && typeof req.query.inviteToken === 'string') {
-        const isValid = await isValidInvite({
-          token: req.query.inviteToken,
-          serverId: req.params.serverId,
-        });
-        if (isValid) {
-          next();
-          return;
-        }
-      }
-
-      /**
-       * If the channel isn't public, the user isn't a member of the channel, and
-       * the user isn't invited to the server for this channel, prevent access
-       */
+    // Check if the user has been invited to the server for this channel
+    if (!req.query.inviteToken || typeof req.query.inviteToken !== 'string') {
+      res.status(403).send('Forbidden');
+      return;
+    }
+    const isValid = await isValidInvite({
+      token: req.query.inviteToken,
+      serverId: req.params.serverId,
+    });
+    if (!isValid) {
       res.status(403).send('Forbidden');
       return;
     }
