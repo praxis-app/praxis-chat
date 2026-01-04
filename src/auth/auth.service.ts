@@ -5,7 +5,6 @@ import { normalizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Invite } from '../invites/invite.entity';
 import * as invitesService from '../invites/invites.service';
-import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 
@@ -82,32 +81,18 @@ export const upgradeAnonSession = async (
   await usersService.upgradeAnonUser(userId, email, passwordHash, name);
 };
 
-export const createAnonSession = async (inviteToken?: string) => {
-  let serverId;
-
-  if (inviteToken) {
-    const invite = await inviteRepository.findOne({
-      where: { token: inviteToken },
-    });
-    if (!invite) {
-      throw new Error('Invalid invite token');
-    }
-    serverId = invite.serverId;
+export const createAnonSession = async (inviteToken: string) => {
+  const invite = await inviteRepository.findOne({
+    where: { token: inviteToken },
+    select: ['id', 'serverId'],
+  });
+  if (!invite) {
+    throw new Error('Invalid invite token');
   }
 
-  if (!serverId) {
-    const server = await serversService.getDefaultServer();
-    if (!server) {
-      throw new Error('No default server found');
-    }
-    serverId = server.id;
-  }
+  const user = await usersService.createAnonUser(invite.serverId);
+  await invitesService.redeemInvite(inviteToken);
 
-  const user = await usersService.createAnonUser(serverId);
-
-  if (inviteToken) {
-    await invitesService.redeemInvite(inviteToken);
-  }
   return generateAccessToken(user.id);
 };
 
