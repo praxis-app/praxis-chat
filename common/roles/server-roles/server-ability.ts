@@ -1,14 +1,12 @@
 import { ForcedSubject, MongoAbility } from '@casl/ability';
-import {
-  SERVER_ABILITY_ACTIONS,
-  SERVER_ABILITY_SUBJECTS,
-} from './server-role.constants';
+import { RoleAbilityAction } from '../role.types';
+import { SERVER_ROLE_ABILITY_SUBJECTS } from './server-role.constants';
 
-export type ServerAbilityAction = (typeof SERVER_ABILITY_ACTIONS)[number];
-export type ServerAbilitySubject = (typeof SERVER_ABILITY_SUBJECTS)[number];
+export type ServerAbilitySubject =
+  (typeof SERVER_ROLE_ABILITY_SUBJECTS)[number];
 
 export type ServerAbilities = [
-  ServerAbilityAction,
+  RoleAbilityAction,
   ServerAbilitySubject | ForcedSubject<Exclude<ServerAbilitySubject, 'all'>>,
 ];
 

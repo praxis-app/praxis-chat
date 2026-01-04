@@ -1,11 +1,7 @@
-import {
-  InstanceAbilityAction,
-  InstanceAbilitySubject,
-} from '@common/roles/instance-roles/instance-ability';
-import {
-  INSTANCE_ROLE_ABILITY_ACTIONS,
-  INSTANCE_ROLE_ABILITY_SUBJECTS,
-} from '@common/roles/instance-roles/instance-role.constants';
+import { InstanceAbilitySubject } from '@common/roles/instance-roles/instance-ability';
+import { INSTANCE_ROLE_ABILITY_SUBJECTS } from '@common/roles/instance-roles/instance-role.constants';
+import { ROLE_ABILITY_ACTIONS } from '@common/roles/role.constants';
+import { RoleAbilityAction } from '@common/roles/role.types';
 import {
   Column,
   CreateDateColumn,
@@ -23,8 +19,8 @@ export class InstanceRolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: INSTANCE_ROLE_ABILITY_ACTIONS })
-  action: InstanceAbilityAction;
+  @Column({ type: 'enum', enum: ROLE_ABILITY_ACTIONS })
+  action: RoleAbilityAction;
 
   @Column({ type: 'enum', enum: INSTANCE_ROLE_ABILITY_SUBJECTS })
   subject: InstanceAbilitySubject;

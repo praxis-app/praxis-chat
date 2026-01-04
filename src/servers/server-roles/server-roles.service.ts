@@ -6,10 +6,10 @@ import {
 import { buildPermissionRules } from '@common/roles/role.utils';
 import {
   ServerAbility,
-  ServerAbilityAction,
   ServerAbilitySubject,
 } from '@common/roles/server-roles/server-ability';
 import { In, Not } from 'typeorm';
+import { RoleAbilityAction } from '../../../common/roles/role.types';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
 import { User } from '../../users/user.entity';
@@ -52,7 +52,7 @@ export const getServerRole = async (serverId: string, serverRoleId: string) => {
   });
   const permissions = buildPermissionRules<
     ServerAbilitySubject,
-    ServerAbilityAction
+    RoleAbilityAction
   >([serverRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
@@ -103,10 +103,9 @@ export const getServerRoles = async (serverId: string) => {
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules<
-      ServerAbilitySubject,
-      ServerAbilityAction
-    >([serverRole]),
+    permissions: buildPermissionRules<ServerAbilitySubject, RoleAbilityAction>([
+      serverRole,
+    ]),
     memberCount: serverRole.members.length,
   }));
 };
@@ -143,7 +142,7 @@ export const getServerPermissionsByUser = async (
     (permissionsByServerId, [serverId, roles]) => {
       permissionsByServerId[serverId] = buildPermissionRules<
         ServerAbilitySubject,
-        ServerAbilityAction
+        RoleAbilityAction
       >(roles);
       return permissionsByServerId;
     },

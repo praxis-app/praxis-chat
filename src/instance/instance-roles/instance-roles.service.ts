@@ -1,13 +1,13 @@
 import { RawRuleOf } from '@casl/ability';
 import {
   InstanceAbility,
-  InstanceAbilityAction,
   InstanceAbilitySubject,
 } from '@common/roles/instance-roles/instance-ability';
 import {
   ADMIN_ROLE_NAME,
   DEFAULT_ROLE_COLOR,
 } from '@common/roles/role.constants';
+import { RoleAbilityAction } from '@common/roles/role.types';
 import { buildPermissionRules } from '@common/roles/role.utils';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
@@ -51,7 +51,7 @@ export const getInstanceRole = async (instanceRoleId: string) => {
   });
   const permissions = buildPermissionRules<
     InstanceAbilitySubject,
-    InstanceAbilityAction
+    RoleAbilityAction
   >([instanceRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
@@ -103,7 +103,7 @@ export const getInstanceRoles = async () => {
     })),
     permissions: buildPermissionRules<
       InstanceAbilitySubject,
-      InstanceAbilityAction
+      RoleAbilityAction
     >([instanceRole]),
     memberCount: instanceRole.members.length,
   }));
@@ -121,7 +121,7 @@ export const getInstancePermissionsByUser = async (
       },
     },
   });
-  return buildPermissionRules<InstanceAbilitySubject, InstanceAbilityAction>(
+  return buildPermissionRules<InstanceAbilitySubject, RoleAbilityAction>(
     instanceRoles,
   );
 };
