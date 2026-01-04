@@ -8,8 +8,8 @@ import {
 } from '@common/users/user.constants';
 import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
-import { normalizeText } from '../../common/common.utils';
-import { getValidInvite } from '../../invites/invites.service';
+import { normalizeText } from '../../common/text.utils';
+import { isValidInvite } from '../../invites/invites.service';
 import { getUserCount, isFirstUser } from '../../users/users.service';
 import { SignUpDto } from '../auth.service';
 
@@ -63,21 +63,24 @@ export const validateSignUp = async (
 ) => {
   try {
     const body = req.body as SignUpDto;
-    const { email, inviteToken } = body;
 
     // Validate request body shape
     signUpSchema.parse(body);
 
+    const { email, inviteToken } = body;
+    const isAnon = res.locals.user?.anonymous === true;
+
     // Validate invite token
     const isFirst = await isFirstUser();
-    if (!isFirst && !inviteToken) {
+    if (!isFirst && !inviteToken && !isAnon) {
       res.status(403).send('You need an invite to sign up');
       return;
     }
     if (inviteToken) {
-      try {
-        await getValidInvite(inviteToken);
-      } catch (error) {
+      const isValid = await isValidInvite({
+        token: inviteToken,
+      });
+      if (!isValid) {
         res.status(403).send('Invalid invite token');
         return;
       }

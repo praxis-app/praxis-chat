@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { PollStage } from '@common/polls/poll.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
@@ -21,12 +21,16 @@ interface Props {
 export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { serverId } = useServerData();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       // Create vote
       if (!myVote) {
-        const { vote } = await api.createVote(channel.id, pollId, {
+        const { vote } = await api.createVote(serverId, channel.id, pollId, {
           voteType,
         });
         return {
@@ -38,7 +42,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       }
       // Delete vote
       if (myVote.voteType === voteType) {
-        await api.deleteVote(channel.id, pollId, myVote.id);
+        await api.deleteVote(serverId, channel.id, pollId, myVote.id);
         return {
           action: 'delete' as const,
           isRatifyingVote: false,
@@ -47,6 +51,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       }
       // Update vote
       const { isRatifyingVote } = await api.updateVote(
+        serverId,
         channel.id,
         pollId,
         myVote.id,
@@ -60,66 +65,56 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
       };
     },
     onSuccess: (result) => {
-      const applyUpdate = (cacheKey: [string, string]) => {
-        queryClient.setQueryData<{
-          pages: { feed: FeedItemRes[] }[];
-          pageParams: number[];
-        }>(cacheKey, (oldData) => {
-          if (!oldData) {
-            return oldData;
-          }
-          const pages = oldData.pages.map((page) => {
-            const feed = page.feed.map((item) => {
-              if (item.type !== 'poll' || item.id !== pollId) {
-                return item;
-              }
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      queryClient.setQueryData<{
+        pages: { feed: FeedItemRes[] }[];
+        pageParams: number[];
+      }>(['servers', serverId, 'channels', channel.id, 'feed'], (oldData) => {
+        if (!oldData) {
+          return oldData;
+        }
+        const pages = oldData.pages.map((page) => {
+          const feed = page.feed.map((item) => {
+            if (item.type !== 'poll' || item.id !== pollId) {
+              return item;
+            }
 
-              let agreementVoteCount = item.agreementVoteCount;
-              if (result.action === 'delete') {
-                if (myVote?.voteType === 'agree') {
-                  agreementVoteCount -= 1;
-                }
-                return {
-                  ...item,
-                  agreementVoteCount,
-                  myVote: undefined,
-                };
-              }
-
-              if (result.action === 'create' && result.voteType === 'agree') {
-                agreementVoteCount += 1;
-              }
-              if (result.action === 'update') {
-                if (
-                  myVote?.voteType !== 'agree' &&
-                  result.voteType === 'agree'
-                ) {
-                  agreementVoteCount += 1;
-                }
-                if (
-                  myVote?.voteType === 'agree' &&
-                  result.voteType !== 'agree'
-                ) {
-                  agreementVoteCount -= 1;
-                }
+            let agreementVoteCount = item.agreementVoteCount;
+            if (result.action === 'delete') {
+              if (myVote?.voteType === 'agree') {
+                agreementVoteCount -= 1;
               }
               return {
                 ...item,
                 agreementVoteCount,
-                stage: result.isRatifyingVote ? 'ratified' : item.stage,
-                myVote: { id: result.voteId, voteType: result.voteType },
+                myVote: undefined,
               };
-            });
-            return { feed };
-          });
-          return { pages, pageParams: oldData.pageParams };
-        });
-      };
+            }
 
-      if (channel.name === GENERAL_CHANNEL_NAME) {
-        applyUpdate(['feed', GENERAL_CHANNEL_NAME]);
-      }
-      applyUpdate(['feed', channel.id]);
+            if (result.action === 'create' && result.voteType === 'agree') {
+              agreementVoteCount += 1;
+            }
+            if (result.action === 'update') {
+              if (myVote?.voteType !== 'agree' && result.voteType === 'agree') {
+                agreementVoteCount += 1;
+              }
+              if (myVote?.voteType === 'agree' && result.voteType !== 'agree') {
+                agreementVoteCount -= 1;
+              }
+            }
+            return {
+              ...item,
+              agreementVoteCount,
+              stage: result.isRatifyingVote ? 'ratified' : item.stage,
+              myVote: { id: result.voteId, voteType: result.voteType },
+            };
+          });
+          return { feed };
+        });
+        return { pages, pageParams: oldData.pageParams };
+      });
 
       if (result.isRatifyingVote) {
         toast(t('polls.prompts.ratifiedSuccess'));

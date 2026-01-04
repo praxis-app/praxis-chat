@@ -1,7 +1,7 @@
-import { ServerRolePermissionsForm } from '@/components/server-roles/server-role-permissions-form';
-import { ServerRoleForm } from '@/components/server-roles/server-role-form';
-import { ServerRoleMember } from '@/components/server-roles/server-role-member';
-import { ServerRoleMemberOption } from '@/components/server-roles/server-role-member-option';
+import { ServerRoleForm } from '@/components/roles/server-roles/server-role-form';
+import { ServerRoleMember } from '@/components/roles/server-roles/server-role-member';
+import { RoleMemberOption } from '@/components/roles/role-member-option';
+import { ServerRolePermissionsForm } from '@/components/roles/server-roles/server-role-permissions-form';
 import { DeleteButton } from '@/components/shared/delete-button';
 import { PermissionDenied } from '@/components/shared/permission-denied';
 import { Container } from '@/components/ui/container';
@@ -31,8 +31,9 @@ import {
 } from '../../components/ui/tabs';
 import { NavigationPaths } from '../../constants/shared.constants';
 import { useAbility } from '../../hooks/use-ability';
+import { useServerData } from '../../hooks/use-server-data';
 import { handleError } from '../../lib/error.utils';
-import { ServerRoleRes } from '../../types/server-role.types';
+import { ServerRoleRes } from '../../types/role.types';
 
 enum EditServerRoleTabName {
   Permissions = 'permissions',
@@ -47,47 +48,67 @@ export const EditServerRolePage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+
+  const { serverId, serverPath } = useServerData();
   const { serverRoleId } = useParams<{ serverRoleId: string }>();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const ability = useAbility();
-  const canManageServerRoles = ability.can('manage', 'ServerRole');
+  const { serverAbility, isLoading: isAbilityLoading } = useAbility();
+  const canManageServerRoles = serverAbility.can('manage', 'ServerRole');
 
   const {
     data: serverRoleData,
     isPending: isServerRolePending,
     error: serverRoleError,
   } = useQuery({
-    queryKey: ['serverRole', serverRoleId],
-    queryFn: () => api.getServerRole(serverRoleId!),
+    queryKey: ['servers', serverId, 'roles', serverRoleId],
+    queryFn: () => {
+      if (!serverRoleId || !serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerRole(serverId, serverRoleId);
+    },
     enabled: !!serverRoleId && canManageServerRoles,
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
-    queryKey: ['serverRole', serverRoleId, 'members', 'eligible'],
-    queryFn: () => api.getUsersEligibleForServerRole(serverRoleId!),
+    queryKey: [
+      'servers',
+      serverId,
+      'roles',
+      serverRoleId,
+      'members',
+      'eligible',
+    ],
+    queryFn: () => {
+      if (!serverRoleId || !serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getUsersEligibleForServerRole(serverId, serverRoleId);
+    },
     enabled: !!serverRoleId && activeTab === 'members' && canManageServerRoles,
   });
 
   const { mutate: addMembers } = useMutation({
     mutationFn: async () => {
-      if (!serverRoleId || !serverRoleData || !eligibleUsersData) {
+      if (!serverRoleId || !serverRoleData || !eligibleUsersData || !serverId) {
         return;
       }
-      await api.addServerRoleMembers(serverRoleId, selectedUserIds);
+      await api.addServerRoleMembers(serverId, serverRoleId, selectedUserIds);
 
       const membersToAdd = selectedUserIds.map(
         (id) => eligibleUsersData.users.find((u) => u.id === id)!,
       );
-      queryClient.setQueryData(['serverRole', serverRoleId], {
+      queryClient.setQueryData(['servers', serverId, 'roles', serverRoleId], {
         serverRole: {
           ...serverRoleData.serverRole,
           members: serverRoleData.serverRole.members.concat(membersToAdd),
         },
       });
       queryClient.setQueryData(
-        ['serverRole', serverRoleId, 'members', 'eligible'],
+        ['servers', serverId, 'roles', serverRoleId, 'members', 'eligible'],
         {
           users: eligibleUsersData?.users.filter(
             (user) => !selectedUserIds.includes(user.id),
@@ -105,13 +126,13 @@ export const EditServerRolePage = () => {
 
   const { mutate: deleteServerRole, isPending: isDeletePending } = useMutation({
     mutationFn: async () => {
-      if (!serverRoleId) {
+      if (!serverRoleId || !serverId) {
         return;
       }
-      await api.deleteServerRole(serverRoleId);
+      await api.deleteServerRole(serverId, serverRoleId);
 
       queryClient.setQueryData<{ serverRoles: ServerRoleRes[] }>(
-        ['serverRoles'],
+        ['servers', serverId, 'roles'],
         (oldData) => {
           if (!oldData) {
             return { serverRoles: [] };
@@ -155,26 +176,27 @@ export const EditServerRolePage = () => {
   };
 
   const handleDeleteBtnClick = async () => {
-    await navigate(NavigationPaths.ServerRoles);
+    await navigate(`${serverPath}${NavigationPaths.Roles}`);
     deleteServerRole();
   };
+
+  if (isAbilityLoading || isServerRolePending || isDeletePending) {
+    return null;
+  }
 
   if (!canManageServerRoles) {
     return (
       <PermissionDenied
         topNavProps={{
           header: t('roles.headers.serverRoles'),
-          onBackClick: () => navigate(NavigationPaths.Settings),
+          onBackClick: () =>
+            navigate(`${serverPath}${NavigationPaths.Settings}`),
         }}
       />
     );
   }
 
-  if (isServerRolePending) {
-    return null;
-  }
-
-  if (!serverRoleData || serverRoleError || eligibleUsersError) {
+  if (serverRoleError || eligibleUsersError) {
     return <p>{t('errors.somethingWentWrong')}</p>;
   }
 
@@ -182,7 +204,7 @@ export const EditServerRolePage = () => {
     <>
       <TopNav
         header={serverRoleData.serverRole.name}
-        onBackClick={() => navigate(NavigationPaths.ServerRoles)}
+        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Roles}`)}
       />
 
       <Container>
@@ -282,7 +304,7 @@ export const EditServerRolePage = () => {
                 </DialogHeader>
                 <div className="space-y-0.5">
                   {eligibleUsersData?.users.map((user) => (
-                    <ServerRoleMemberOption
+                    <RoleMemberOption
                       key={user.id}
                       selectedUserIds={selectedUserIds}
                       setSelectedUserIds={setSelectedUserIds}

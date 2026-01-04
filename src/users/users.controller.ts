@@ -1,10 +1,16 @@
 import { Request, Response } from 'express';
 import { Image } from '../images/entities/image.entity';
 import { getUploadsPath } from '../images/images.utils';
+import * as serversService from '../servers/servers.service';
 import * as usersService from './users.service';
 
 export const getCurrentUser = async (_req: Request, res: Response) => {
   res.json({ user: res.locals.user });
+};
+
+export const getCurrentUserServers = async (_req: Request, res: Response) => {
+  const servers = await serversService.getServersForUser(res.locals.user.id);
+  res.json({ servers });
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {

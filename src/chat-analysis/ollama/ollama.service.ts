@@ -9,7 +9,7 @@ const OLLAMA_HEADERS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 const OLLAMA_BODY_TIMEOUT_MS = 0; // Disable body timeout
 
 const ollama = new Ollama({
-  host: `${process.env.OLLAMA_HOST ?? 'http://localhost'}:${process.env.OLLAMA_PORT ?? '11434'}`,
+  host: `${process.env.OLLAMA_HOST || 'http://localhost'}:${process.env.OLLAMA_PORT || '11434'}`,
 
   // Increase fetch timeouts so long-running model pulls don't trigger Undici
   // header/body timeouts. This only affects Ollama requests, not other

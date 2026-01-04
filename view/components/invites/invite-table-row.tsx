@@ -22,7 +22,7 @@ export const InviteTableRow = ({
   invite: { id, user, token, uses, maxUses, expiresAt },
 }: Props) => {
   const { t } = useTranslation();
-  const ability = useAbility();
+  const { serverAbility } = useAbility();
 
   const { mutate: deleteInvite, isPending: isDeletePending } =
     useDeleteInviteMutation(id);
@@ -62,7 +62,7 @@ export const InviteTableRow = ({
       </TableCell>
       <TableCell>
         <ItemMenu
-          canDelete={ability.can('manage', 'Invite')}
+          canDelete={serverAbility.can('manage', 'Invite')}
           deletePrompt={deleteInvitePrompt}
           deleteItem={deleteInvite}
           loading={isDeletePending}

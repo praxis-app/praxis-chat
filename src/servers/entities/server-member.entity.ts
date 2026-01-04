@@ -32,6 +32,9 @@ export class ServerMember {
   @Column({ type: 'uuid' })
   serverId: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  lastActiveAt: Date | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

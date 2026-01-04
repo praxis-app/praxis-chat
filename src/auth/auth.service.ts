@@ -1,9 +1,11 @@
 import { compare, hash } from 'bcrypt';
 import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import { normalizeText } from '../common/common.utils';
+import { normalizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
+import { Invite } from '../invites/invite.entity';
 import * as invitesService from '../invites/invites.service';
+import * as serversService from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 
@@ -25,6 +27,7 @@ export interface LoginDto {
 }
 
 const userRepository = dataSource.getRepository(User);
+const inviteRepository = dataSource.getRepository(Invite);
 
 // TODO: Move validation to middleware with zod
 export const login = async ({ email, password }: LoginDto) => {
@@ -58,7 +61,12 @@ export const signUp = async ({
   inviteToken,
 }: SignUpDto) => {
   const passwordHash = await hash(password, SALT_ROUNDS);
-  const user = await usersService.createUser(email, name, passwordHash);
+  const user = await usersService.createUser(
+    email,
+    name,
+    passwordHash,
+    inviteToken,
+  );
 
   if (inviteToken) {
     await invitesService.redeemInvite(inviteToken);
@@ -75,7 +83,27 @@ export const upgradeAnonSession = async (
 };
 
 export const createAnonSession = async (inviteToken?: string) => {
-  const user = await usersService.createAnonUser();
+  let serverId;
+
+  if (inviteToken) {
+    const invite = await inviteRepository.findOne({
+      where: { token: inviteToken },
+    });
+    if (!invite) {
+      throw new Error('Invalid invite token');
+    }
+    serverId = invite.serverId;
+  }
+
+  if (!serverId) {
+    const server = await serversService.getDefaultServer();
+    if (!server) {
+      throw new Error('No default server found');
+    }
+    serverId = server.id;
+  }
+
+  const user = await usersService.createAnonUser(serverId);
 
   if (inviteToken) {
     await invitesService.redeemInvite(inviteToken);

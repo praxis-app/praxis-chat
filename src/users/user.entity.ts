@@ -11,12 +11,13 @@ import {
 } from 'typeorm';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { Image } from '../images/entities/image.entity';
+import { InstanceRole } from '../instance/instance-roles/entities/instance-role.entity';
 import { Invite } from '../invites/invite.entity';
 import { Message } from '../messages/message.entity';
 import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-member.entity';
 import { Poll } from '../polls/entities/poll.entity';
-import { ServerRole } from '../server-roles/entities/server-role.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
+import { ServerRole } from '../servers/server-roles/entities/server-role.entity';
 import { Vote } from '../votes/vote.entity';
 
 @Entity()
@@ -95,6 +96,11 @@ export class User {
     },
   )
   pollActionRoleMembers: PollActionRoleMember[];
+
+  @ManyToMany(() => InstanceRole, (instanceRole) => instanceRole.members, {
+    onDelete: 'CASCADE',
+  })
+  instanceRoles: InstanceRole[];
 
   @CreateDateColumn()
   createdAt: Date;

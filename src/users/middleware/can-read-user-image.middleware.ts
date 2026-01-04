@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as imagesService from '../../images/images.service';
+import * as serversService from '../../servers/servers.service';
 import { User } from '../user.entity';
 import * as usersService from '../users.service';
 
@@ -19,10 +20,10 @@ export const canReadUserImage = async (
   }
 
   if (image.imageType === 'profile-picture') {
-    const isGeneralChannelMember =
-      await usersService.isGeneralChannelMember(userId);
+    const isDefaultServerMember =
+      await serversService.isDefaultServerMember(userId);
 
-    if (!currentUser && !isGeneralChannelMember) {
+    if (!currentUser && !isDefaultServerMember) {
       res.status(403).send('Forbidden');
       return;
     }

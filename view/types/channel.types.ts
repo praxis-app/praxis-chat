@@ -5,6 +5,10 @@ export interface ChannelRes {
   id: string;
   name: string;
   description: string | null;
+  server?: {
+    id: string;
+    slug: string;
+  };
 }
 
 export interface CreateChannelReq {

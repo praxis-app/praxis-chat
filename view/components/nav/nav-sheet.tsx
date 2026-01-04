@@ -1,19 +1,9 @@
+import appIconImg from '@/assets/images/app-icon.png';
 import { api } from '@/client/api-client';
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useAuthData } from '@/hooks/use-auth-data';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useAppStore } from '@/store/app.store';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useQuery } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { LuChevronRight } from 'react-icons/lu';
-import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
-import appIconImg from '../../assets/images/app-icon.png';
-import { Button } from '../ui/button';
-import { Separator } from '../ui/separator';
+import { NavDrawer } from '@/components/nav/nav-drawer';
+import { NavDropdown } from '@/components/nav/nav-dropdown';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -21,38 +11,76 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '../ui/sheet';
-import { UserAvatar } from '../users/user-avatar';
-import { NavDrawer } from './nav-drawer';
-import { NavDropdown } from './nav-dropdown';
+} from '@/components/ui/sheet';
+import { UserAvatar } from '@/components/users/user-avatar';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useAbility } from '@/hooks/use-ability';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { useServerData } from '@/hooks/use-server-data';
+import { useAppStore } from '@/store/app.store';
+import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useQuery } from '@tanstack/react-query';
+import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LuChevronRight } from 'react-icons/lu';
+import { MdExitToApp, MdPersonAdd, MdTag } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Props {
   trigger: ReactNode;
 }
 
 export const NavSheet = ({ trigger }: Props) => {
-  const { isLoggedIn, isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen, inviteToken } = useAppStore();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isDesktop = useIsDesktop();
 
-  const { me, signUpPath, showSignUp, isMeLoading, isRegistered } =
-    useAuthData();
+  const { me, isLoggedIn, signUpPath, showSignUp, isMeSuccess } = useAuthData();
 
-  const { data: channelsData } = useQuery({
-    queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
-    enabled: !isDesktop && isRegistered,
+  const { server, serverId, serverPath } = useServerData();
+  const { serverAbility } = useAbility();
+
+  const { data: joinedChannelsData } = useQuery({
+    queryKey: ['servers', serverId, 'channels', 'joined'],
+    queryFn: async () => {
+      if (!serverId) {
+        throw new Error('Current server not found');
+      }
+      return api.getJoinedChannels(serverId);
+    },
+    enabled: isNavSheetOpen && !!serverId && isMeSuccess,
   });
 
-  const { data: generalChannelData } = useQuery({
-    queryKey: ['channels', GENERAL_CHANNEL_NAME],
-    queryFn: () => api.getGeneralChannel(),
-    enabled: !isMeLoading && !isRegistered,
+  const { data: publicChannelsData } = useQuery({
+    queryKey: ['servers', serverId, 'channels', inviteToken],
+    queryFn: async () => {
+      if (!serverId) {
+        throw new Error('Current server not found');
+      }
+      if (!inviteToken) {
+        throw new Error('Invite token is required');
+      }
+      return api.getChannels(serverId, inviteToken);
+    },
+    enabled: isNavSheetOpen && !!serverId && !!inviteToken && !me,
   });
 
+  const channels =
+    joinedChannelsData?.channels || publicChannelsData?.channels || [];
+
+  const channelsPath = `${serverPath}/c`;
   const name = me?.displayName || me?.name;
+
+  const canManageChannels = serverAbility.can('manage', 'Channel');
+  const canManageServerSettings = serverAbility.can('manage', 'ServerConfig');
+  const hasMultipleServers = !!me && me.serversCount > 1;
+
+  const canViewNavDrawer =
+    canManageServerSettings || canManageChannels || hasMultipleServers;
+
+  const serverName = server?.name || INITIAL_SERVER_NAME;
 
   return (
     <Sheet open={isNavSheetOpen} onOpenChange={setIsNavSheetOpen}>
@@ -70,21 +98,22 @@ export const NavSheet = ({ trigger }: Props) => {
                 <div className="flex cursor-pointer items-center gap-2 self-center px-6 font-medium tracking-[0.02em]">
                   <img
                     src={appIconImg}
-                    alt={t('brand')}
+                    alt={serverName}
                     className="size-9 self-center"
                   />
-                  {t('brand')}
-                  {isLoggedIn && (
-                    <LuChevronRight className="mt-0.5 ml-0.5 size-4" />
+                  <div className="truncate">{serverName}</div>
+                  {canViewNavDrawer && (
+                    <LuChevronRight className="mt-0.5 size-4 shrink-0" />
                   )}
                 </div>
               }
+              disabled={!canViewNavDrawer}
             />
             {me && (
               <NavDropdown
                 trigger={
                   <UserAvatar
-                    name={name ?? ''}
+                    name={name || ''}
                     userId={me.id}
                     imageSrc={me.profilePicture?.url}
                     className="size-9"
@@ -102,10 +131,12 @@ export const NavSheet = ({ trigger }: Props) => {
         </SheetHeader>
 
         <div className="bg-background dark:bg-card flex h-full w-full flex-col gap-6 overflow-y-auto rounded-t-2xl px-4 pt-7 pb-12">
-          {channelsData?.channels.map((channel) => (
+          {/* TODO: Add visual indicator for current channel */}
+
+          {channels.map((channel) => (
             <Link
               key={channel.id}
-              to={`${NavigationPaths.Channels}/${channel.id}`}
+              to={`${channelsPath}/${channel.id}`}
               onClick={() => setIsNavSheetOpen(false)}
               className="flex items-center gap-1.5 font-light tracking-[0.01em]"
             >
@@ -113,17 +144,6 @@ export const NavSheet = ({ trigger }: Props) => {
               <div>{channel.name}</div>
             </Link>
           ))}
-
-          {/* Show general channel for unregistered users */}
-          {!isRegistered && generalChannelData && (
-            <Link
-              key={generalChannelData.channel.id}
-              to={NavigationPaths.Home}
-              onClick={() => setIsNavSheetOpen(false)}
-            >
-              <div>{generalChannelData.channel.name}</div>
-            </Link>
-          )}
 
           {(showSignUp || !isLoggedIn) && (
             <div className="flex flex-col gap-4">

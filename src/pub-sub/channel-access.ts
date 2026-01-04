@@ -17,28 +17,34 @@ interface ChannelAccessPolicy {
 /** Rules to determine if a user can access a given pub-sub channel */
 export const CHANNEL_ACCESS_MAP: Record<string, ChannelAccessPolicy> = {
   newMessage: {
-    pattern: new RegExp(`^new-message-(${UUID_REGEX})-(${UUID_REGEX})$`),
+    pattern: new RegExp(
+      `^new-message-(${UUID_REGEX})-(${UUID_REGEX})-(${UUID_REGEX})$`,
+    ),
     rules: {
       isOwnMessage: (match, user) => {
-        const userId = match[2];
+        const userId = match[3];
         return user.id === userId;
       },
       isChannelMember: async (match, user) => {
-        const channelId = match[1];
-        return isChannelMember(channelId, user.id);
+        const serverId = match[1];
+        const channelId = match[2];
+        return isChannelMember(serverId, channelId, user.id);
       },
     },
   },
   newPoll: {
-    pattern: new RegExp(`^new-poll-(${UUID_REGEX})-(${UUID_REGEX})$`),
+    pattern: new RegExp(
+      `^new-poll-(${UUID_REGEX})-(${UUID_REGEX})-(${UUID_REGEX})$`,
+    ),
     rules: {
       isOwnMessage: (match, user) => {
-        const userId = match[2];
+        const userId = match[3];
         return user.id === userId;
       },
       isChannelMember: async (match, user) => {
-        const channelId = match[1];
-        return isChannelMember(channelId, user.id);
+        const serverId = match[1];
+        const channelId = match[2];
+        return isChannelMember(serverId, channelId, user.id);
       },
     },
   },

@@ -3,6 +3,7 @@ import * as botsService from '../bots/bots.service';
 import { rotateChannelKeysJob } from '../channels/cron/rotate-channel-keys.job';
 import * as chatAnalysisService from '../chat-analysis/chat-analysis.service';
 import * as commandsService from '../commands/commands.service';
+import * as instanceService from '../instance/instance.service';
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ export const initializeApp = async () => {
     await chatAnalysisService.loadRequiredModels();
     commandsService.startCommandProcessor();
   }
+  await instanceService.initializeInstance();
   startCronJobs();
 };
 

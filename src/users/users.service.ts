@@ -1,8 +1,13 @@
 // TODO: Add support for user deletion + clean up for saved image files
 
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
+/**
+ * NOTE: Support for anonymous users is currently implemented for demoing
+ * and proof of concept purposes. This will likely be removed in the
+ * future once the core functionality is fully implemented.
+ */
+
 import { GENERATED_NAME_SEPARATOR } from '@common/users/user.constants';
-import { FindManyOptions, In, Like } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 import {
   colors,
   NumberDictionary,
@@ -10,10 +15,13 @@ import {
 } from 'unique-names-generator';
 import * as channelsService from '../channels/channels.service';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
-import { normalizeText, sanitizeText } from '../common/common.utils';
+import { normalizeText, sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
-import * as serverRolesService from '../server-roles/server-roles.service';
+import * as instanceRolesService from '../instance/instance-roles/instance-roles.service';
+import { Invite } from '../invites/invite.entity';
+import { ServerMember } from '../servers/entities/server-member.entity';
+import * as serverRolesService from '../servers/server-roles/server-roles.service';
 import * as serversService from '../servers/servers.service';
 import { UserProfileDto } from './dtos/user-profile.dto';
 import { User } from './user.entity';
@@ -22,6 +30,8 @@ import { NATURE_DICTIONARY, SPACE_DICTIONARY } from './users.constants';
 const userRepository = dataSource.getRepository(User);
 const imageRepository = dataSource.getRepository(Image);
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
+const serverMemberRepository = dataSource.getRepository(ServerMember);
+const inviteRepository = dataSource.getRepository(Invite);
 
 export const getCurrentUser = async (userId: string, includePerms = true) => {
   try {
@@ -39,13 +49,31 @@ export const getCurrentUser = async (userId: string, includePerms = true) => {
       return user;
     }
 
-    const permissions = await serverRolesService.getUserPermissions(userId);
-    const profilePicture = await getUserProfilePicture(userId);
+    const [
+      instancePermissions,
+      serverPermissions,
+      serversCount,
+      currentServer,
+      profilePicture,
+    ] = await Promise.all([
+      instanceRolesService.getInstancePermissionsByUser(userId),
+      serverRolesService.getServerPermissionsByUser(userId),
+      serverMemberRepository.count({ where: { userId } }),
+      serversService.getCurrentServer(userId),
+      getUserProfilePicture(userId),
+    ]);
+
+    const permissions = {
+      instance: instancePermissions,
+      servers: serverPermissions,
+    };
 
     return {
       ...user,
       permissions,
       profilePicture,
+      currentServer,
+      serversCount,
     };
   } catch (error) {
     console.error(error);
@@ -76,10 +104,12 @@ export const isFirstUser = async () => {
   return userCount === 0;
 };
 
+// TODO: Refactor - simplify `createUser`
 export const createUser = async (
   email: string,
   name: string | undefined,
   password: string,
+  inviteToken?: string,
 ) => {
   const isFirst = await isFirstUser();
   const user = await userRepository.save({
@@ -89,9 +119,22 @@ export const createUser = async (
   });
 
   if (isFirst) {
-    await serverRolesService.createAdminServerRole(user.id);
+    const server = await serversService.getDefaultServer();
+    await instanceRolesService.createAdminInstanceRole(user.id);
+    await serverRolesService.createAdminServerRole(server.id, user.id);
+    await serversService.addMemberToServer(server.id, user.id);
+    await channelsService.addMemberToAllServerChannels(user.id, server.id);
+    return user;
   }
-  await serversService.addMemberToServer(user.id);
+
+  if (!inviteToken) {
+    throw new Error('Invite token is required for non-first users');
+  }
+  const invite = await inviteRepository.findOneOrFail({
+    where: { token: inviteToken },
+  });
+  await serversService.addMemberToServer(invite.serverId, user.id);
+  await channelsService.addMemberToAllServerChannels(user.id, invite.serverId);
 
   return user;
 };
@@ -111,7 +154,7 @@ export const updateUserProfile = async (
   });
 };
 
-export const createAnonUser = async () => {
+export const createAnonUser = async (serverId: string) => {
   const user = await userRepository.save({
     name: generateName(),
     anonymous: true,
@@ -119,11 +162,12 @@ export const createAnonUser = async () => {
   const isFirst = await isFirstUser();
 
   if (isFirst) {
-    await serverRolesService.createAdminServerRole(user.id);
-    await serversService.addMemberToServer(user.id);
-  } else {
-    await channelsService.addMemberToGeneralChannel(user.id);
+    await instanceRolesService.createAdminInstanceRole(user.id);
+    await serverRolesService.createAdminServerRole(serverId, user.id);
   }
+
+  await serversService.addMemberToServer(serverId, user.id);
+  await channelsService.addMemberToAllServerChannels(user.id, serverId);
 
   return user;
 };
@@ -149,7 +193,13 @@ export const upgradeAnonUser = async (
     password,
   });
 
-  await serversService.addMemberToServer(user.id);
+  const servers = await serverMemberRepository.find({
+    where: { userId },
+    select: ['serverId'],
+  });
+  if (servers.length === 0) {
+    throw new Error('User not found in any servers');
+  }
 };
 
 export const getUserProfilePicture = async (userId: string) => {
@@ -216,18 +266,6 @@ export const createUserCoverPhoto = async (
     userId,
   });
   return image;
-};
-
-export const isGeneralChannelMember = async (userId: string) => {
-  const isMember = await channelMemberRepository.exist({
-    where: {
-      channel: {
-        name: Like(`%${GENERAL_CHANNEL_NAME}%`),
-      },
-      userId,
-    },
-  });
-  return isMember;
 };
 
 export const hasSharedChannel = async (userId: string, otherUserId: string) => {

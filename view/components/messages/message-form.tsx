@@ -7,7 +7,6 @@ import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -18,6 +17,7 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
+import { useServerData } from '../../hooks/use-server-data';
 import { handleError } from '../../lib/error.utils';
 import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
 import { AttachedImagePreview } from '../images/attached-image-preview';
@@ -38,11 +38,10 @@ const formSchema = zod.object({
 interface Props {
   channelId?: string;
   onSend?(): void;
-  isGeneralChannel?: boolean;
 }
 
-export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
-  const { isLoggedIn, inviteToken } = useAppStore();
+export const MessageForm = ({ channelId, onSend }: Props) => {
+  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const [showMenu, setShowMenu] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
@@ -50,11 +49,13 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const [images, setImages] = useState<File[]>([]);
 
   const { t } = useTranslation();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const isFieldSizingSupportedRef = useRef(true);
   const queryClient = useQueryClient();
 
-  const { data: meData } = useMeQuery();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const isFieldSizingSupportedRef = useRef(true);
+
+  const { data: meData, isError: isMeError } = useMeQuery();
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,7 +65,9 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const { getValues, formState, setValue, reset, handleSubmit, control } = form;
   const isEmptyBody = !getValues('body') && !formState.dirtyFields.body;
   const isEmpty = isEmptyBody && !images.length;
-  const draftKey = `message-draft-${channelId}`;
+
+  const draftKey = `message-draft-${serverId}-${channelId}`;
+  const feedQueryKey = ['servers', serverId, 'channels', channelId, 'feed'];
 
   const sortFeedByDate = (feed: FeedItemRes[]): FeedItemRes[] => {
     return [...feed].sort(
@@ -75,6 +78,9 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
   const { mutate: sendMessage, isPending: isMessageSending } = useMutation({
     mutationFn: async ({ body }: zod.infer<typeof formSchema>) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
@@ -82,6 +88,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       validateImageInput(currentImages);
 
       const { message } = await api.sendMessage(
+        serverId,
         channelId,
         body,
         currentImages.length,
@@ -95,6 +102,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
           const placeholder = message.images[i];
           const { image } = await api.uploadMessageImage(
+            serverId,
             channelId,
             message.id,
             placeholder.id,
@@ -110,18 +118,15 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       };
     },
     onMutate: async ({ body }) => {
-      const resolvedChannelId = isGeneralChannel
-        ? GENERAL_CHANNEL_NAME
-        : channelId;
+      if (!serverId || !channelId) {
+        throw new Error('Server ID and channel ID are required');
+      }
 
       await queryClient.cancelQueries({
-        queryKey: ['feed', resolvedChannelId],
+        queryKey: feedQueryKey,
       });
 
-      const previousFeed = queryClient.getQueryData<FeedQuery>([
-        'feed',
-        resolvedChannelId,
-      ]);
+      const previousFeed = queryClient.getQueryData<FeedQuery>(feedQueryKey);
 
       const currentImages = [...images];
       const optimisticImageUrls = currentImages.map((file) =>
@@ -148,7 +153,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
               profilePicture: meData.user.profilePicture,
             }
           : null,
-        userId: meData?.user?.id ?? null,
+        userId: meData?.user?.id || null,
         botId: null,
         bot: null,
         createdAt: new Date().toISOString(),
@@ -161,37 +166,33 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
         type: 'message',
       };
 
-      queryClient.setQueryData<FeedQuery>(
-        ['feed', resolvedChannelId],
-        (oldData) => {
-          if (!oldData) {
-            return {
-              pages: [{ feed: [optimisticFeedItem] }],
-              pageParams: [0],
-            };
-          }
+      queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
+        if (!oldData) {
+          return {
+            pages: [{ feed: [optimisticFeedItem] }],
+            pageParams: [0],
+          };
+        }
 
-          const pages = oldData.pages.map((page, index) => {
-            if (index === 0) {
-              const sortedFeed = sortFeedByDate([
-                optimisticFeedItem,
-                ...page.feed,
-              ]);
-              return { feed: sortedFeed };
-            }
-            return page;
-          });
-          return { pages, pageParams: oldData.pageParams };
-        },
-      );
+        const pages = oldData.pages.map((page, index) => {
+          if (index === 0) {
+            const sortedFeed = sortFeedByDate([
+              optimisticFeedItem,
+              ...page.feed,
+            ]);
+            return { feed: sortedFeed };
+          }
+          return page;
+        });
+        return { pages, pageParams: oldData.pageParams };
+      });
 
       return { previousFeed, optimisticImages };
     },
     onSuccess: (message, _variables, context) => {
-      const resolvedChannelId = isGeneralChannel
-        ? GENERAL_CHANNEL_NAME
-        : channelId;
-
+      if (!serverId || !channelId) {
+        throw new Error('Server ID and channel ID are required');
+      }
       const imagesWithSrc = message.images?.map((image, index) => {
         const optimisticImage = context?.optimisticImages?.[index];
         if (optimisticImage?.src && !image.src) {
@@ -202,43 +203,40 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
 
       const newFeedItem: FeedItemRes = {
         ...message,
-        images: imagesWithSrc ?? message.images,
+        images: imagesWithSrc || message.images,
         type: 'message',
       };
 
-      queryClient.setQueryData<FeedQuery>(
-        ['feed', resolvedChannelId],
-        (oldData) => {
-          if (!oldData) {
-            return {
-              pages: [{ feed: [newFeedItem] }],
-              pageParams: [0],
-            };
-          }
+      queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
+        if (!oldData) {
+          return {
+            pages: [{ feed: [newFeedItem] }],
+            pageParams: [0],
+          };
+        }
 
-          const pages = oldData.pages.map((page, index) => {
-            if (index === 0) {
-              const feedWithoutOptimistic = page.feed.filter(
-                (item) =>
-                  !(item.type === 'message' && item.id.startsWith('temp-')),
-              );
-              const alreadyExists = feedWithoutOptimistic.some(
-                (item) => item.type === 'message' && item.id === message.id,
-              );
-              if (alreadyExists) {
-                return { feed: feedWithoutOptimistic };
-              }
-              const sortedFeed = sortFeedByDate([
-                newFeedItem,
-                ...feedWithoutOptimistic,
-              ]);
-              return { feed: sortedFeed };
+        const pages = oldData.pages.map((page, index) => {
+          if (index === 0) {
+            const feedWithoutOptimistic = page.feed.filter(
+              (item) =>
+                !(item.type === 'message' && item.id.startsWith('temp-')),
+            );
+            const alreadyExists = feedWithoutOptimistic.some(
+              (item) => item.type === 'message' && item.id === message.id,
+            );
+            if (alreadyExists) {
+              return { feed: feedWithoutOptimistic };
             }
-            return page;
-          });
-          return { pages, pageParams: oldData.pageParams };
-        },
-      );
+            const sortedFeed = sortFeedByDate([
+              newFeedItem,
+              ...feedWithoutOptimistic,
+            ]);
+            return { feed: sortedFeed };
+          }
+          return page;
+        });
+        return { pages, pageParams: oldData.pageParams };
+      });
 
       if (images.length) {
         setImagesInputKey(Date.now());
@@ -251,15 +249,8 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
       reset();
     },
     onError: (error: Error, _variables, context) => {
-      const resolvedChannelId = isGeneralChannel
-        ? GENERAL_CHANNEL_NAME
-        : channelId;
-
       if (context?.previousFeed) {
-        queryClient.setQueryData<FeedQuery>(
-          ['feed', resolvedChannelId],
-          context.previousFeed,
-        );
+        queryClient.setQueryData<FeedQuery>(feedQueryKey, context.previousFeed);
       }
 
       handleError(error);
@@ -269,7 +260,7 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
   const { data: isFirstUserData } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
-    enabled: !isLoggedIn,
+    enabled: isMeError || !accessToken,
   });
 
   // Focus on input when pressing space, enter, etc.
@@ -414,7 +405,6 @@ export const MessageForm = ({ channelId, onSend, isGeneralChannel }: Props) => {
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             channelId={channelId}
-            isGeneralChannel={isGeneralChannel}
             disabled={isMessageSending}
           />
 

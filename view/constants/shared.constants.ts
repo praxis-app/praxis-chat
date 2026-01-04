@@ -25,13 +25,14 @@ export enum BrowserEvents {
 export enum NavigationPaths {
   Home = '/',
   Login = '/auth/login',
-  SignUp = '/auth/signup',
-  Channels = '/channels',
+  GeneralSettings = '/settings/general',
   Invites = '/settings/invites',
+  ManageServers = '/settings/servers',
   ProposalSettings = '/settings/proposals',
-  UsersEdit = '/users/edit',
-  ServerRoles = '/settings/roles',
+  Roles = '/settings/roles',
   Settings = '/settings',
+  SignUp = '/auth/signup',
+  UsersEdit = '/users/edit',
 }
 
 export enum TruncationSizes {

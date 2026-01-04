@@ -2,41 +2,30 @@
 
 ## Overview
 
-The `Server` entity provides organizational structure for Praxis instances by grouping channels, roles, and members together. Currently, Praxis operates with a single server per instance, but the architecture is designed to support multiple servers in the future.
+Praxis runs multiple servers inside a single instance. A `Server` groups channels, roles, invites, members, and configuration behind a unique `slug`. An `InstanceConfig` record points to the default server that acts as the demo/fallback space for visitors who arrive without an invite; once a user follows an invite, all context shifts to that invite’s server.
 
-## Current Implementation
+## Initialization & defaults
 
-### Server Entity
+`initializeApp` calls `instanceService.initializeInstance()`, seeding an `InstanceConfig` row and the initial `praxis` server when none exist. Every new server automatically receives its own `ServerConfig` row and `general` channel via `initializeGeneralChannel(serverId)`.
 
-The Server entity (`src/servers/entities/server.entity.ts`) defines the core data model with relationships to:
+The `defaultServerId` on `InstanceConfig` points to the demo/fallback server used for visitors without an invite; they land there to explore, and once they follow an invite link the context shifts to that invite’s server. The `/servers/default` endpoint lets the client discover this fallback when it lacks server context.
 
-- **ServerMembers**: Users who belong to the server
-- **Channels**: Chat channels associated with the server
-- **Roles**: Permission-based roles scoped to the server
-- **ServerConfig**: Server-specific configuration settings
-- **Invites**: Server invitation tokens for new users
+## Routing shape
 
-Each server has a unique name and optional description.
+- All server-scoped resources are nested under `/servers`:
+  - `/servers` – list/create servers; `/:slug` fetch by slug; `/:serverId` update/delete.
+  - `/:serverId/channels`, `/:serverId/roles`, `/:serverId/configs`, `/:serverId/invites` mount the feature routers.
+- Public invite lookups stay at `/invites/:token`; creation/list/deletion use the nested `serverInvitesRouter`.
+- `setServerMemberActivity` middleware (on `/:slug` and `/:serverId` routes) updates `ServerMember.lastActiveAt` for authenticated users, enabling “last used server” restoration.
 
-### Single-Server Model
+## Data model
 
-The current implementation assumes one server per Praxis instance:
+`Server` stores a unique `slug` plus name and description. `ServerMember` tracks `lastActiveAt` to infer the most recent server a user touched. `InstanceConfig` holds `defaultServerId`, which identifies the demo/fallback server.
 
-- **Initial Server**: On first use, an initial server named "praxis" is created automatically
-- **`getServerSafely()`**: Always returns the first (and only) server, creating it if needed
-- **Race Condition Handling**: Concurrent requests safely handle duplicate server creation attempts
-- **Member Addition**: New users are automatically added to the single server and all its channels
+## Membership & invites
 
-### Purpose
+Creating a server (`createServer(name, slug, description, currentUserId)`) adds the creator as a member and seeds that server’s general channel. `addMemberToServer(serverId, userId)` joins the user to the server and all current channels. Invites are server-scoped and sign up for non-first users requires an invite for the target server.
 
-This architecture serves as foundational infrastructure for future multi-server support. By establishing server relationships now, entities like channels, roles, members, and invites already reference a server ID. When multiple servers are supported, minimal schema changes will be required, primarily adding server selection/creation UI and updating services to handle multiple server contexts.
+## Permissions
 
-## Future Considerations
-
-To enable multiple servers per instance:
-
-- Add server creation and management endpoints
-- Implement server selection UI
-- Update services to accept server context instead of assuming a single server
-- Add server invitations and discovery mechanisms
-- Handle cross-server user presence and permissions
+Permission lookups return rules keyed by `serverId` (`getServerPermissionsByUser`), enabling parallel memberships. Instance level roles cover cross-server actions such as creating servers. The shared `can` middleware in `src/common/roles` accepts `scope: 'server' | 'instance'` to enforce the right layer on each route.

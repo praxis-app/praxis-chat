@@ -174,6 +174,7 @@ npm run check          # Full verification: types, lint, tests (client + server)
 - After completing a logical unit of work (e.g., implementing a feature, fixing a bug, completing a refactor)
 - For multi-step changes, run the check after the expected final step, not after every intermediate change
 - Skip for very small changes (a few lines in a single file)
+- Skip for changes that only affect documentation
 - When in doubt about whether a change is "small", err on the side of running the check
 
 ## Code Guidelines

@@ -10,6 +10,7 @@ import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useServerData } from '../../hooks/use-server-data';
 
 export const InvitesPage = () => {
   const { isLoggedIn } = useAppStore();
@@ -18,10 +19,17 @@ export const InvitesPage = () => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
+  const { serverId, serverPath } = useServerData();
+
   const { data: invitesData } = useQuery({
-    queryKey: ['invites'],
-    queryFn: api.getInvites,
-    enabled: isLoggedIn,
+    queryKey: ['servers', serverId, 'invites'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getInvites(serverId);
+    },
+    enabled: isLoggedIn && !!serverId,
   });
 
   if (!invitesData) {
@@ -32,8 +40,7 @@ export const InvitesPage = () => {
     <>
       <TopNav
         header={t('navigation.labels.invites')}
-        onBackClick={() => navigate(NavigationPaths.Settings)}
-        bypassNavSheet={!isDesktop}
+        onBackClick={() => navigate(`${serverPath}${NavigationPaths.Settings}`)}
       />
 
       <div className="flex h-full flex-col items-center justify-center gap-3.5 p-3 pt-4 md:p-16">

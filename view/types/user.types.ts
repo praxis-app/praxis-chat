@@ -1,5 +1,6 @@
 import { ImageRes } from './image.types';
-import { Permission } from './server-role.types';
+import { InstancePermission, ServerPermission } from './role.types';
+import { ServerRes } from './server.types';
 
 export interface UserRes {
   id: string;
@@ -13,8 +14,13 @@ export interface CurrentUserRes {
   name: string;
   displayName?: string;
   anonymous: boolean;
-  permissions: Permission[];
+  permissions: {
+    instance: InstancePermission[];
+    servers: Record<string, ServerPermission[]>;
+  };
   profilePicture: ImageRes | null;
+  currentServer: ServerRes | null;
+  serversCount: number;
 }
 
 export interface UserProfileRes {

@@ -12,6 +12,7 @@ const MIN_MESSAGE_LIMIT = 3;
 const MAX_MESSAGE_LIMIT = 100;
 
 interface CommandContext {
+  serverId: string;
   channelId: string;
   messageBody: string;
 }
@@ -22,6 +23,7 @@ export const handleSummaryCommand = async (
   try {
     const limit = extractLimitParam(context.messageBody);
     const channelMessages = await fetchChannelMessages(
+      context.serverId,
       context.channelId,
       limit,
     );
@@ -49,6 +51,7 @@ export const handleConsensusCommand = async (
   try {
     const limit = extractLimitParam(context.messageBody);
     const channelMessages = await fetchChannelMessages(
+      context.serverId,
       context.channelId,
       limit,
     );
@@ -79,6 +82,7 @@ export const handleDisagreementsCommand = async (
   try {
     const limit = extractLimitParam(context.messageBody);
     const channelMessages = await fetchChannelMessages(
+      context.serverId,
       context.channelId,
       limit,
     );
@@ -118,6 +122,7 @@ export const handleCompromisesCommand = async (
   try {
     const limit = extractLimitParam(context.messageBody);
     const channelMessages = await fetchChannelMessages(
+      context.serverId,
       context.channelId,
       limit,
     );
@@ -157,6 +162,7 @@ export const handleDraftProposalCommand = async (
   try {
     const limit = extractLimitParam(context.messageBody);
     const channelMessages = await fetchChannelMessages(
+      context.serverId,
       context.channelId,
       limit,
     );
@@ -181,9 +187,14 @@ export const handleDraftProposalCommand = async (
   }
 };
 
-const fetchChannelMessages = async (channelId: string, limit?: number) => {
+const fetchChannelMessages = async (
+  serverId: string,
+  channelId: string,
+  limit?: number,
+) => {
   const effectiveLimit = limit || MAX_MESSAGE_LIMIT;
   const messages = await messagesService.getMessages(
+    serverId,
     channelId,
     0,
     effectiveLimit,

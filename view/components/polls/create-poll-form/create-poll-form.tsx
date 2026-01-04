@@ -1,13 +1,13 @@
 import { api } from '@/client/api-client';
 import { WizardStepData } from '@/components/shared/wizard/wizard.types';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { useServerData } from '@/hooks/use-server-data';
+import { getServerPermissionValuesMap } from '@/lib/role.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import {
   CreatePollActionServerRoleMemberReq,
   CreatePollActionServerRolePermissionReq,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/server-role.types';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -20,8 +20,8 @@ import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
 import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
 import { ServerRoleAttributesStep } from './create-poll-form-steps/server-role-attributes-step';
 import { ServerRoleMembersStep } from './create-poll-form-steps/server-role-members-step';
-import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
 import { ServerRolePermissionsStep } from './create-poll-form-steps/server-role-permissions-step';
+import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
 import {
   CreatePollFormSchema,
   createPollFormSchema,
@@ -29,21 +29,16 @@ import {
 
 interface Props {
   channelId?: string;
-  isGeneralChannel?: boolean;
   onSuccess: () => void;
   onNavigate: () => void;
 }
 
-export const CreatePollForm = ({
-  channelId,
-  isGeneralChannel,
-  onSuccess,
-  onNavigate,
-}: Props) => {
+export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { serverId } = useServerData();
+  const queryClient = useQueryClient();
 
   const form = useForm<CreatePollFormSchema>({
     resolver: zodResolver(createPollFormSchema),
@@ -65,21 +60,46 @@ export const CreatePollForm = ({
     actionType === 'change-role' || actionType === 'create-role';
 
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: ['serverRole', selectedServerRoleId],
-    queryFn: () => api.getServerRole(selectedServerRoleId!),
-    enabled: isRolePoll && !!selectedServerRoleId && currentStep > 1,
+    queryKey: ['servers', serverId, 'roles', selectedServerRoleId],
+    queryFn: () => {
+      if (!serverId || !selectedServerRoleId) {
+        throw new Error('Server ID and server role ID are required');
+      }
+      return api.getServerRole(serverId, selectedServerRoleId);
+    },
+    enabled:
+      isRolePoll && !!serverId && !!selectedServerRoleId && currentStep > 1,
   });
 
   // Get eligible users for the selected role
   const { data: eligibleUsersData, isLoading: isEligibleUsersLoading } =
     useQuery({
-      queryKey: ['serverRole', selectedServerRoleId, 'members', 'eligible'],
-      queryFn: () => api.getUsersEligibleForServerRole(selectedServerRoleId!),
-      enabled: isRolePoll && !!selectedServerRoleId && currentStep > 2,
+      queryKey: [
+        'servers',
+        serverId,
+        'roles',
+        selectedServerRoleId,
+        'members',
+        'eligible',
+      ],
+      queryFn: () => {
+        if (!serverId || !selectedServerRoleId) {
+          throw new Error('Server ID and server role ID are required');
+        }
+        return api.getUsersEligibleForServerRole(
+          serverId,
+          selectedServerRoleId,
+        );
+      },
+      enabled:
+        isRolePoll && !!serverId && !!selectedServerRoleId && currentStep > 2,
     });
 
   const { mutate: createPoll, isPending } = useMutation({
     mutationFn: async (values: CreatePollFormSchema) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
       if (!channelId) {
         throw new Error('Channel ID is required');
       }
@@ -97,7 +117,7 @@ export const CreatePollForm = ({
           ? values.serverRoleColor
           : undefined;
 
-      const shapedRolePermissions = getPermissionValuesMap(
+      const shapedRolePermissions = getServerPermissionValuesMap(
         serverRoleData?.serverRole?.permissions || [],
       );
 
@@ -108,7 +128,7 @@ export const CreatePollForm = ({
         if (shapedRolePermissions[permissionName] === permissionValue) {
           return result;
         }
-        switch (permissionName as PermissionKeys) {
+        switch (permissionName as ServerPermissionKeys) {
           case 'manageChannels':
             result.push({
               subject: 'Channel',
@@ -120,7 +140,7 @@ export const CreatePollForm = ({
               ],
             });
             break;
-          case 'manageSettings':
+          case 'manageServerSettings':
             result.push({
               subject: 'ServerConfig',
               actions: [
@@ -131,7 +151,7 @@ export const CreatePollForm = ({
               ],
             });
             break;
-          case 'manageRoles':
+          case 'manageServerRoles':
             result.push({
               subject: 'ServerRole',
               actions: [
@@ -195,7 +215,7 @@ export const CreatePollForm = ({
             }
           : undefined;
 
-      return api.createPoll(channelId, {
+      return api.createPoll(serverId, channelId, {
         body: values.body?.trim(),
         action: {
           actionType: values.action,
@@ -204,17 +224,13 @@ export const CreatePollForm = ({
       });
     },
     onSuccess: ({ poll }) => {
-      const resolvedChannelId = isGeneralChannel
-        ? GENERAL_CHANNEL_NAME
-        : channelId;
-
-      if (!resolvedChannelId) {
+      if (!channelId || !serverId) {
         return;
       }
 
       // Optimistically insert new poll at top of feed (no refetch)
       queryClient.setQueryData<FeedQuery>(
-        ['feed', resolvedChannelId],
+        ['servers', serverId, 'channels', channelId, 'feed'],
         (old) => {
           const newItem: FeedItemRes = {
             ...poll,
