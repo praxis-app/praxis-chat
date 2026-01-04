@@ -1,12 +1,3 @@
-/**
- * TODO: Ensure `can` middleware is able to account for both server roles
- * and instance roles once they're implemented. This middleware should
- * likely be moved to a more generic location and updated to support
- * both types of roles at that point.
- *
- * TODO: Test fully before merging
- */
-
 import {
   createMongoAbility,
   ForbiddenError,
