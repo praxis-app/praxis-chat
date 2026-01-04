@@ -342,7 +342,7 @@ export const createPoll = async (
     await pubSubService.publish(
       getNewPollKey(serverId, channelId, member.userId),
       {
-        type: 'poll',
+        type: PubSubMessageType.POLL,
         poll: shapedPoll,
       },
     );
