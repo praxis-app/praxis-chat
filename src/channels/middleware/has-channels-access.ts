@@ -35,15 +35,14 @@ export const hasChannelsAccess = withMiddleware(
     if (!req.query.inviteToken || typeof req.query.inviteToken !== 'string') {
       res.status(403).send('Forbidden');
       return;
-    } else {
-      const isValid = await isValidInvite({
-        token: req.query.inviteToken,
-        serverId: req.params.serverId,
-      });
-      if (!isValid) {
-        res.status(403).send('Forbidden');
-        return;
-      }
+    }
+    const isValid = await isValidInvite({
+      token: req.query.inviteToken,
+      serverId: req.params.serverId,
+    });
+    if (!isValid) {
+      res.status(403).send('Forbidden');
+      return;
     }
 
     next();
