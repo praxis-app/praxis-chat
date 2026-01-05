@@ -332,7 +332,7 @@ describe('Messages Service', () => {
       expect(result.images[0].isPlaceholder).toBe(true);
 
       expect(pubSubService.publish).toHaveBeenCalledWith(
-        'new-message-channel-1-user-2',
+        'new-message-server-1-channel-1-user-2',
         {
           type: 'message',
           message: expect.objectContaining({
@@ -422,7 +422,7 @@ describe('Messages Service', () => {
       });
 
       expect(pubSubService.publish).toHaveBeenCalledWith(
-        'new-message-channel-1-user-2',
+        'new-message-server-1-channel-1-user-2',
         {
           type: 'image',
           isPlaceholder: false,
