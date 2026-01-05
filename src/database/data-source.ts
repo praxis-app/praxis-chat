@@ -23,8 +23,7 @@ import { ServerRolePermission } from '../servers/server-roles/entities/server-ro
 import { ServerRole } from '../servers/server-roles/entities/server-role.entity';
 import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
-import { Initial1762107499573 } from './migrations/1762107499573-Initial';
-import { MultiServer1766894454096 } from './migrations/1766894454096-MultiServer';
+import { Initial1767572300125 } from './migrations/1767572300125-Initial';
 
 dotenv.config();
 
@@ -61,5 +60,5 @@ export const dataSource = new DataSource({
     User,
     Vote,
   ],
-  migrations: [Initial1762107499573, MultiServer1766894454096],
+  migrations: [Initial1767572300125],
 });
