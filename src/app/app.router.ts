@@ -1,3 +1,5 @@
+// TODO: Add rate limiting middleware to all routes
+
 import express from 'express';
 import { authRouter } from '../auth/auth.router';
 import { healthRouter } from '../health/health.router';
