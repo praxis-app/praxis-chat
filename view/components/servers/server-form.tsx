@@ -56,19 +56,12 @@ export const ServerForm = ({
     const result = await onSubmit(data);
 
     if (editServer) {
-      const nextValues = result
-        ? {
-            name: result.name,
-            slug: result.slug,
-            description: result.description ?? '',
-            isDefaultServer: result.isDefaultServer,
-          }
-        : {
-            name: editServer.name,
-            slug: editServer.slug,
-            description: editServer.description ?? '',
-            isDefaultServer: editServer.isDefaultServer,
-          };
+      const nextValues = {
+        name: editServer.name || result?.name,
+        slug: editServer.slug || result?.slug,
+        description: editServer.description ?? result?.description ?? '',
+        isDefaultServer: editServer.isDefaultServer || result?.isDefaultServer,
+      };
       form.reset(nextValues);
       return;
     }
