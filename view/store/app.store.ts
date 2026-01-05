@@ -1,4 +1,9 @@
-// TODO: Split into multiple stores for auth and navigation
+/**
+ * TODO: Split into multiple stores for auth and navigation
+ *
+ * TODO: Clean up auth state management - acces token should not need to be tracked
+ * in the store. If anything there should be a `canAuth` flag or something similar.
+ */
 
 import { create } from 'zustand';
 import { LocalStorageKeys } from '../constants/shared.constants';
