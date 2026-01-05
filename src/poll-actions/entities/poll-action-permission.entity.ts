@@ -1,7 +1,7 @@
 import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/poll-actions/poll-action.constants';
 import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
-import { ROLE_ABILITY_ACTIONS } from '@common/roles/role.constants';
-import { RoleAbilityAction } from '@common/roles/role.types';
+import { APP_ABILITY_ACTIONS } from '@common/roles/role.constants';
+import { AppAbilityAction } from '@common/roles/role.types';
 import { ServerAbilitySubject } from '@common/roles/server-roles/server-ability';
 import { SERVER_ROLE_ABILITY_SUBJECTS } from '@common/roles/server-roles/server-role.constants';
 import {
@@ -21,8 +21,8 @@ export class PollActionPermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: ROLE_ABILITY_ACTIONS })
-  action: RoleAbilityAction;
+  @Column({ type: 'enum', enum: APP_ABILITY_ACTIONS })
+  action: AppAbilityAction;
 
   @Column({ type: 'enum', enum: SERVER_ROLE_ABILITY_SUBJECTS })
   subject: ServerAbilitySubject;

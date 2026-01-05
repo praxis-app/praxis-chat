@@ -1,4 +1,4 @@
-export const ROLE_ABILITY_ACTIONS = [
+export const APP_ABILITY_ACTIONS = [
   'delete',
   'create',
   'read',

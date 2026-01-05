@@ -1,5 +1,5 @@
 import { InstanceAbilitySubject } from '@common/roles/instance-roles/instance-ability';
-import { RoleAbilityAction } from '@common/roles/role.types';
+import { AppAbilityAction } from '@common/roles/role.types';
 import { ServerAbilitySubject } from '@common/roles/server-roles/server-ability';
 import {
   INSTANCE_PERMISSION_KEYS,
@@ -12,12 +12,12 @@ export type InstancePermissionKeys = (typeof INSTANCE_PERMISSION_KEYS)[number];
 
 export interface ServerPermission {
   subject: ServerAbilitySubject;
-  action: RoleAbilityAction[];
+  action: AppAbilityAction[];
 }
 
 export interface InstancePermission {
   subject: InstanceAbilitySubject;
-  action: RoleAbilityAction[];
+  action: AppAbilityAction[];
 }
 
 // -------------------------------------------------------------------------

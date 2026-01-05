@@ -5,20 +5,20 @@ import {
   MongoAbility,
 } from '@casl/ability';
 import { InstanceAbilitySubject } from '@common/roles/instance-roles/instance-ability';
-import { RoleAbilityAction } from '@common/roles/role.types';
+import { AppAbilityAction } from '@common/roles/role.types';
 import { ServerAbilitySubject } from '@common/roles/server-roles/server-ability';
 import { NextFunction, Request, Response } from 'express';
 
 type RoleAbilitySubject = ServerAbilitySubject | InstanceAbilitySubject;
 
 type RoleAbilities = [
-  RoleAbilityAction,
+  AppAbilityAction,
   RoleAbilitySubject | ForcedSubject<Exclude<RoleAbilitySubject, 'all'>>,
 ];
 
 export const can =
   (
-    action: RoleAbilityAction | RoleAbilityAction[],
+    action: AppAbilityAction | AppAbilityAction[],
     subject: RoleAbilitySubject,
     scope: 'instance' | 'server' = 'server',
   ) =>
