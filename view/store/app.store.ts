@@ -18,8 +18,8 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   isLoggedIn: false,
-  isAppLoading: true,
   isNavSheetOpen: false,
+  isAppLoading: !!localStorage.getItem(LocalStorageKeys.AccessToken),
   accessToken: localStorage.getItem(LocalStorageKeys.AccessToken),
   inviteToken: localStorage.getItem(LocalStorageKeys.InviteToken),
 
