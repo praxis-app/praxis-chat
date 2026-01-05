@@ -203,7 +203,7 @@ export const ChannelView = ({ channel }: Props) => {
 
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!channel?.id && !!serverId,
+    enabled: !!meData && !!channel && !!serverId,
   });
 
   // Listen for new polls
@@ -246,7 +246,7 @@ export const ChannelView = ({ channel }: Props) => {
       }
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!channel?.id && !!serverId,
+    enabled: !!meData && !!channel && !!serverId,
   });
 
   // Reset isLastPage when switching channels
