@@ -364,6 +364,7 @@ describe('Messages Service', () => {
 
   describe('saveMessageImage', () => {
     it('should save image and publish to channel members', async () => {
+      const serverId = 'server-1';
       const messageId = 'message-1';
       const imageId = 'image-1';
       const filename = 'test.jpg';
@@ -404,6 +405,7 @@ describe('Messages Service', () => {
       ]);
 
       const result = await messagesService.saveMessageImage(
+        serverId,
         messageId,
         imageId,
         filename,
