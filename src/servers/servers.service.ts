@@ -21,12 +21,16 @@ const userRepository = dataSource.getRepository(User);
 
 export const getServers = async () => {
   const instanceConfig = await getInstanceConfigSafely();
-  const servers = await serverRepository.find({
-    order: { createdAt: 'DESC' },
-  });
+
+  const servers = await serverRepository
+    .createQueryBuilder('server')
+    .loadRelationCountAndMap('server.memberCount', 'server.members')
+    .orderBy('server.createdAt', 'DESC')
+    .getMany();
+
   return servers.map((server) => ({
-    ...server,
     isDefaultServer: server.id === instanceConfig.defaultServerId,
+    ...server,
   }));
 };
 
@@ -38,12 +42,13 @@ export const getServersForUser = async (userId: string) => {
     .innerJoin('server.members', 'member', 'member.userId = :userId', {
       userId,
     })
+    .loadRelationCountAndMap('server.memberCount', 'server.members')
     .orderBy('server.createdAt', 'DESC')
     .getMany();
 
   return servers.map((server) => ({
-    ...server,
     isDefaultServer: server.id === instanceConfig.defaultServerId,
+    ...server,
   }));
 };
 
