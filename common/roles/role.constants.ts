@@ -1,4 +1,4 @@
-export const APP_ABILITY_ACTIONS = [
+export const ABILITY_ACTIONS = [
   'delete',
   'create',
   'read',

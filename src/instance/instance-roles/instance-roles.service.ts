@@ -7,7 +7,7 @@ import {
   ADMIN_ROLE_NAME,
   DEFAULT_ROLE_COLOR,
 } from '@common/roles/role.constants';
-import { AppAbilityAction } from '@common/roles/role.types';
+import { AbilityAction } from '@common/roles/role.types';
 import { buildPermissionRules } from '@common/roles/role.utils';
 import { In, Not } from 'typeorm';
 import { sanitizeText } from '../../common/text.utils';
@@ -51,7 +51,7 @@ export const getInstanceRole = async (instanceRoleId: string) => {
   });
   const permissions = buildPermissionRules<
     InstanceAbilitySubject,
-    AppAbilityAction
+    AbilityAction
   >([instanceRole]);
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
@@ -101,9 +101,9 @@ export const getInstanceRoles = async () => {
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules<InstanceAbilitySubject, AppAbilityAction>(
-      [instanceRole],
-    ),
+    permissions: buildPermissionRules<InstanceAbilitySubject, AbilityAction>([
+      instanceRole,
+    ]),
     memberCount: instanceRole.members.length,
   }));
 };
@@ -120,7 +120,7 @@ export const getInstancePermissionsByUser = async (
       },
     },
   });
-  return buildPermissionRules<InstanceAbilitySubject, AppAbilityAction>(
+  return buildPermissionRules<InstanceAbilitySubject, AbilityAction>(
     instanceRoles,
   );
 };

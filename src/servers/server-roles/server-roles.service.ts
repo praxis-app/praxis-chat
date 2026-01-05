@@ -9,7 +9,7 @@ import {
   ServerAbilitySubject,
 } from '@common/roles/server-roles/server-ability';
 import { In, Not } from 'typeorm';
-import { AppAbilityAction } from '../../../common/roles/role.types';
+import { AbilityAction } from '../../../common/roles/role.types';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
 import { User } from '../../users/user.entity';
@@ -50,10 +50,9 @@ export const getServerRole = async (serverId: string, serverRoleId: string) => {
     where: { serverRoles: { id: serverRoleId } },
     select: ['id', 'name', 'displayName'],
   });
-  const permissions = buildPermissionRules<
-    ServerAbilitySubject,
-    AppAbilityAction
-  >([serverRole]);
+  const permissions = buildPermissionRules<ServerAbilitySubject, AbilityAction>(
+    [serverRole],
+  );
 
   const profilePictures = await usersService.getUserProfilePicturesMap(
     members.map((member) => member.id),
@@ -103,7 +102,7 @@ export const getServerRoles = async (serverId: string) => {
       ...member,
       profilePicture: profilePictures[member.id],
     })),
-    permissions: buildPermissionRules<ServerAbilitySubject, AppAbilityAction>([
+    permissions: buildPermissionRules<ServerAbilitySubject, AbilityAction>([
       serverRole,
     ]),
     memberCount: serverRole.members.length,
@@ -142,7 +141,7 @@ export const getServerPermissionsByUser = async (
     (permissionsByServerId, [serverId, roles]) => {
       permissionsByServerId[serverId] = buildPermissionRules<
         ServerAbilitySubject,
-        AppAbilityAction
+        AbilityAction
       >(roles);
       return permissionsByServerId;
     },

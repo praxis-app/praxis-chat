@@ -1,3 +1,3 @@
-import { APP_ABILITY_ACTIONS } from './role.constants';
+import { ABILITY_ACTIONS } from './role.constants';
 
-export type AppAbilityAction = (typeof APP_ABILITY_ACTIONS)[number];
+export type AbilityAction = (typeof ABILITY_ACTIONS)[number];
