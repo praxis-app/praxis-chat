@@ -218,6 +218,7 @@ export const createMessage = async (
   ) {
     try {
       const botMessage = await createBotMessage(
+        serverId,
         channelId,
         'Processing your command...',
         'processing',
