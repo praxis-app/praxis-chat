@@ -1,5 +1,5 @@
+import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
 import { In, IsNull, Not, QueryFailedError } from 'typeorm';
-import { INITIAL_SERVER_NAME } from '../../common/servers/server.constants';
 import * as channelsService from '../channels/channels.service';
 import { dataSource } from '../database/data-source';
 import * as instanceService from '../instance/instance.service';

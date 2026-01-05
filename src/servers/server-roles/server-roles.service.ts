@@ -9,7 +9,7 @@ import {
   ServerAbilitySubject,
 } from '@common/roles/server-roles/server-ability';
 import { In, Not } from 'typeorm';
-import { AbilityAction } from '../../../common/roles/role.types';
+import { AbilityAction } from '@common/roles/role.types';
 import { sanitizeText } from '../../common/text.utils';
 import { dataSource } from '../../database/data-source';
 import { User } from '../../users/user.entity';
