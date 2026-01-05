@@ -65,7 +65,7 @@ export const EditServerPage = () => {
     enabled: canManageServers && !isAbilityLoading && !!serverId,
   });
 
-  const serverQueriesEnabled =
+  const serverMemberQueriesEnabled =
     activeTab === EditServerTabName.Members &&
     !isAbilityLoading &&
     canManageServers &&
@@ -83,7 +83,7 @@ export const EditServerPage = () => {
       }
       return api.getServerMembers(serverId);
     },
-    enabled: serverQueriesEnabled,
+    enabled: serverMemberQueriesEnabled,
   });
 
   const { data: eligibleUsersData, error: eligibleUsersError } = useQuery({
@@ -94,7 +94,7 @@ export const EditServerPage = () => {
       }
       return api.getUsersEligibleForServer(serverId);
     },
-    enabled: serverQueriesEnabled,
+    enabled: serverMemberQueriesEnabled,
   });
 
   const { mutateAsync: updateServer, isPending: isUpdatePending } = useMutation(
