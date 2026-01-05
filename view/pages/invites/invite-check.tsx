@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const InviteCheck = () => {
-  const { isLoggedIn, accessToken, setInviteToken } = useAppStore();
-  const { isMeSuccess, isMeError } = useAuthData();
+  const { setInviteToken } = useAppStore();
+  const { isLoggedIn, isMeSuccess, isAuthError } = useAuthData();
 
   const { t } = useTranslation();
   const { token } = useParams();
@@ -41,7 +41,7 @@ export const InviteCheck = () => {
 
       return isValidInvite;
     },
-    enabled: !!token && (isMeSuccess || isMeError || !accessToken),
+    enabled: !!token && (isMeSuccess || isAuthError),
   });
 
   if (!token) {

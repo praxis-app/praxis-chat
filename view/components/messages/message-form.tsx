@@ -1,14 +1,22 @@
 import { api } from '@/client/api-client';
+import { ChooseAuthDialog } from '@/components/auth/choose-auth-dialog';
+import { AttachedImagePreview } from '@/components/images/attached-image-preview';
+import { ImageInput } from '@/components/images/image-input';
+import { MessageFormMenu } from '@/components/messages/message-form-menu';
+import { Button } from '@/components/ui/button';
+import { Form, FormField } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { KeyCodes } from '@/constants/shared.constants';
-import { useMeQuery } from '@/hooks/use-me-query';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { useServerData } from '@/hooks/use-server-data';
+import { handleError } from '@/lib/error.utils';
 import { validateImageInput } from '@/lib/image.utilts';
 import { cn, debounce, t } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -17,15 +25,6 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
-import { useServerData } from '../../hooks/use-server-data';
-import { handleError } from '../../lib/error.utils';
-import { ChooseAuthDialog } from '../auth/choose-auth-dialog';
-import { AttachedImagePreview } from '../images/attached-image-preview';
-import { ImageInput } from '../images/image-input';
-import { Button } from '../ui/button';
-import { Form, FormField } from '../ui/form';
-import { Textarea } from '../ui/textarea';
-import { MessageFormMenu } from './message-form-menu';
 
 const MESSAGE_BODY_MAX = 6000;
 
@@ -41,8 +40,6 @@ interface Props {
 }
 
 export const MessageForm = ({ channelId, onSend }: Props) => {
-  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
-
   const [showMenu, setShowMenu] = useState(false);
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
   const [imagesInputKey, setImagesInputKey] = useState<number>();
@@ -54,7 +51,9 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const isFieldSizingSupportedRef = useRef(true);
 
-  const { data: meData, isError: isMeError } = useMeQuery();
+  const { me, isFirstUser, isLoggedIn, inviteToken } = useAuthData({
+    isFirstUserQueryEnabled: true,
+  });
   const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof formSchema>>({
@@ -146,14 +145,14 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
       const optimisticMessage: MessageRes = {
         id: `temp-${crypto.randomUUID()}`,
         body,
-        user: meData?.user
+        user: me
           ? {
-              id: meData.user.id,
-              name: meData.user.name,
-              profilePicture: meData.user.profilePicture,
+              id: me.id,
+              name: me.name,
+              profilePicture: me.profilePicture,
             }
           : null,
-        userId: meData?.user?.id || null,
+        userId: me?.id || null,
         botId: null,
         bot: null,
         createdAt: new Date().toISOString(),
@@ -257,12 +256,6 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
     },
   });
 
-  const { data: isFirstUserData } = useQuery({
-    queryKey: ['is-first-user'],
-    queryFn: api.isFirstUser,
-    enabled: isMeError || !accessToken,
-  });
-
   // Focus on input when pressing space, enter, etc.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -362,7 +355,7 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
       return;
     }
     if (!isLoggedIn) {
-      if (!inviteToken && !isFirstUserData?.isFirstUser) {
+      if (!inviteToken && !isFirstUser) {
         toast(t('messages.prompts.inviteRequired'));
         return;
       }

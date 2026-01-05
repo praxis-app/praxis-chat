@@ -1,10 +1,18 @@
 import { api } from '@/client/api-client';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useMeQuery } from '@/hooks/use-me-query';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
-import { useMeQuery } from './use-me-query';
-import { NavigationPaths } from '@/constants/shared.constants';
 
-export const useAuthData = () => {
+interface UseAuthDataProps {
+  isMeQueryEnabled?: boolean;
+  isFirstUserQueryEnabled?: boolean;
+}
+
+export const useAuthData = ({
+  isMeQueryEnabled = true,
+  isFirstUserQueryEnabled = false,
+}: UseAuthDataProps = {}) => {
   const { isLoggedIn, accessToken, inviteToken } = useAppStore();
 
   const {
@@ -12,12 +20,14 @@ export const useAuthData = () => {
     isLoading: isMeLoading,
     isSuccess: isMeSuccess,
     isError: isMeError,
-  } = useMeQuery({ enabled: isLoggedIn });
+  } = useMeQuery({ enabled: isMeQueryEnabled && isLoggedIn });
+
+  const isAuthError = isMeError || !accessToken;
 
   const { data } = useQuery({
     queryKey: ['is-first-user'],
     queryFn: api.isFirstUser,
-    enabled: isMeError || !accessToken,
+    enabled: isFirstUserQueryEnabled && isAuthError,
     refetchOnMount: false,
   });
 
@@ -53,7 +63,7 @@ export const useAuthData = () => {
     isMeLoading,
     isMeSuccess,
     isMeError,
-    accessToken,
+    isAuthError,
     isLoggedIn,
     me,
   };

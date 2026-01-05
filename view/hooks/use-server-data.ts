@@ -11,24 +11,21 @@ import {
   LocalStorageKeys,
   NavigationPaths,
 } from '@/constants/shared.constants';
-import { useMeQuery } from '@/hooks/use-me-query';
+import { useAuthData } from '@/hooks/use-auth-data';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const useServerData = () => {
-  const { accessToken, inviteToken, setInviteToken } = useAppStore();
+  const { inviteToken, setInviteToken } = useAppStore();
 
   const { serverSlug } = useParams();
   const navigate = useNavigate();
 
-  const {
-    data: meData,
-    isError: isMeError,
-    isLoading: isMeLoading,
-    isSuccess: isMeSuccess,
-  } = useMeQuery({ enabled: !serverSlug });
+  const { me, isMeLoading, isMeSuccess, isMeError, isAuthError } = useAuthData({
+    isMeQueryEnabled: !serverSlug,
+  });
 
   const {
     data: serverBySlugData,
@@ -81,7 +78,7 @@ export const useServerData = () => {
     if (inviteToken) {
       return false;
     }
-    if (isMeError || !accessToken) {
+    if (isAuthError) {
       return true;
     }
     return (
@@ -100,7 +97,7 @@ export const useServerData = () => {
 
   const server =
     serverBySlugData?.server ||
-    meData?.user.currentServer ||
+    me?.currentServer ||
     serverByInviteTokenData?.server ||
     defaultServerData?.server;
 
@@ -116,14 +113,14 @@ export const useServerData = () => {
     isServerByInviteTokenLoading;
 
   const currentUserHasNoServers =
-    meData?.user.serversCount === 0 && !isMeError && !isLoading;
+    me?.serversCount === 0 && !isMeError && !isLoading;
 
   return {
     server,
     serverId: server?.id,
     serverSlug: resolvedServerSlug,
     serverPath: resolvedServerPath,
-    myServerCount: meData?.user.serversCount,
+    myServerCount: me?.serversCount,
     generalChannelId: server?.generalChannelId,
     currentUserHasNoServers,
     isLoading,

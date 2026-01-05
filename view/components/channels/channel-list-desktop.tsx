@@ -1,6 +1,6 @@
 import { api } from '@/client/api-client';
 import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
-import { useMeQuery } from '@/hooks/use-me-query';
+import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
@@ -10,10 +10,11 @@ import { useParams } from 'react-router-dom';
  * Channel list component for the left navigation panel on desktop
  */
 export const ChannelListDesktop = () => {
-  const { isAppLoading, accessToken, inviteToken } = useAppStore();
-  const { isSuccess: isMeSuccess, isError: isMeError } = useMeQuery();
-  const { serverId, serverSlug } = useServerData();
+  const { isAppLoading, inviteToken } = useAppStore();
   const { channelId } = useParams();
+
+  const { isMeSuccess, isAuthError } = useAuthData();
+  const { serverId, serverSlug } = useServerData();
 
   const { data: joinedChannelsData, isLoading: isJoinedChannelsLoading } =
     useQuery({
@@ -36,7 +37,7 @@ export const ChannelListDesktop = () => {
         }
         return api.getChannels(serverId, inviteToken);
       },
-      enabled: !!serverId && (isMeError || !accessToken),
+      enabled: !!serverId && isAuthError,
     });
 
   const isLoading =

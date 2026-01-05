@@ -29,7 +29,9 @@ export const SignUp = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
-  const { isFirstUser, isAnon, isRegistered, me } = useAuthData();
+  const { isFirstUser, isAnon, isRegistered, me } = useAuthData({
+    isFirstUserQueryEnabled: true,
+  });
 
   const { isLoading: isInviteLoading, error: inviteError } = useQuery({
     queryKey: ['invites', token],

@@ -4,8 +4,8 @@ import { ChannelTopNav } from '@/components/channels/channel-top-nav';
 import { MessageForm } from '@/components/messages/message-form';
 import { LeftNavDesktop } from '@/components/nav/left-nav-desktop';
 import { MESSAGES_PAGE_SIZE } from '@/constants/message.constants';
+import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useMeQuery } from '@/hooks/use-me-query';
 import { useServerData } from '@/hooks/use-server-data';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAppStore } from '@/store/app.store';
@@ -40,24 +40,17 @@ interface Props {
 }
 
 export const ChannelView = ({ channel }: Props) => {
-  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
+  const { inviteToken } = useAppStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
+  const feedBoxRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const isDesktop = useIsDesktop();
 
+  const { me, isMeSuccess, isAuthError } = useAuthData();
   const { serverId } = useServerData();
-  const feedBoxRef = useRef<HTMLDivElement>(null);
 
   const feedQueryKey = ['servers', serverId, 'channels', channel?.id, 'feed'];
-
-  const {
-    data: meData,
-    isSuccess: isMeSuccess,
-    isError: isMeError,
-  } = useMeQuery({
-    enabled: isLoggedIn,
-  });
 
   const { data: feedData, fetchNextPage } = useInfiniteQuery({
     queryKey: feedQueryKey,
@@ -82,12 +75,11 @@ export const ChannelView = ({ channel }: Props) => {
       return pages.flatMap((page) => page.feed).length;
     },
     initialPageParam: 0,
-    enabled:
-      !!serverId && !!channel?.id && (isMeSuccess || isMeError || !accessToken),
+    enabled: !!serverId && !!channel?.id && (isMeSuccess || isAuthError),
   });
 
   // Listen for new messages
-  useSubscription(`new-message-${serverId}-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-message-${serverId}-${channel?.id}-${me?.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewMessagePayload | ImageMessagePayload> =
         JSON.parse(event.data);
@@ -203,11 +195,11 @@ export const ChannelView = ({ channel }: Props) => {
 
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!serverId,
+    enabled: !!me && !!channel && !!serverId,
   });
 
   // Listen for new polls
-  useSubscription(`new-poll-${serverId}-${channel?.id}-${meData?.user.id}`, {
+  useSubscription(`new-poll-${serverId}-${channel?.id}-${me?.id}`, {
     onMessage: (event) => {
       const { body }: PubSubMessage<NewPollPayload> = JSON.parse(event.data);
       if (!body) {
@@ -246,7 +238,7 @@ export const ChannelView = ({ channel }: Props) => {
       }
       scrollToBottom();
     },
-    enabled: !!meData && !!channel && !!serverId,
+    enabled: !!me && !!channel && !!serverId,
   });
 
   // Reset isLastPage when switching channels
@@ -264,7 +256,7 @@ export const ChannelView = ({ channel }: Props) => {
 
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0 flex">
-      {isDesktop && <LeftNavDesktop me={meData?.user} />}
+      {isDesktop && <LeftNavDesktop me={me} />}
 
       <div className="flex flex-1 flex-col">
         <ChannelTopNav channel={channel} />
