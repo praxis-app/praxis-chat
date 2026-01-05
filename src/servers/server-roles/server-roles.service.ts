@@ -309,20 +309,9 @@ export const addServerRoleMembers = async (
     },
   });
 
-  const members = [...serverRole.members, ...newMembers];
-
-  // TODO: Remove profile pictures reference here - not needed at all for this function
-  const profilePictures = await usersService.getUserProfilePicturesMap(
-    members.map((member) => member.id),
-  );
-  const shapedMembers = members.map((member) => ({
-    ...member,
-    profilePicture: profilePictures[member.id],
-  }));
-
   await serverRoleRepository.save({
     ...serverRole,
-    members: shapedMembers,
+    members: [...serverRole.members, ...newMembers],
   });
 };
 
