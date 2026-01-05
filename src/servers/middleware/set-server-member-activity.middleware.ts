@@ -14,7 +14,6 @@ export const setServerMemberActivity = async (
 ) => {
   const currentUser: User | undefined = res.locals.user;
   const params = req.params as { serverId?: string; slug?: string };
-
   let serverId = params.serverId;
 
   if (!currentUser?.id) {
@@ -29,21 +28,21 @@ export const setServerMemberActivity = async (
     });
     serverId = server?.id;
   }
-
   if (!serverId) {
     res.status(404).send('Server not found');
     return;
   }
 
+  // Check if the user is a member of the server
   const serverMember = await serverMemberRepository.findOne({
     where: { userId: currentUser.id, serverId },
   });
-
   if (!serverMember) {
     res.status(404).send('Server member not found');
     return;
   }
 
+  // Update the server member's last active at timestamp
   await serverMemberRepository.update(serverMember.id, {
     lastActiveAt: new Date(),
   });
