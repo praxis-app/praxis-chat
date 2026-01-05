@@ -1,8 +1,9 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { cn } from '@/lib/shared.utils';
+import {
+  MIDDOT_WITH_SPACES,
+  NavigationPaths,
+} from '@/constants/shared.constants';
 import { ServerRes } from '@/types/server.types';
 import chroma from 'chroma-js';
 import ColorHash from 'color-hash';
@@ -16,7 +17,6 @@ interface Props {
 
 export const ServerListItem = ({ server }: Props) => {
   const { t } = useTranslation();
-  const isDesktop = useIsDesktop();
 
   const editPath = `${NavigationPaths.ManageServers}/${server.id}/edit`;
 
@@ -48,33 +48,26 @@ export const ServerListItem = ({ server }: Props) => {
             </AvatarFallback>
           </Avatar>
 
-          <div className="w-full">
-            <div
-              className={cn(
-                'flex items-center gap-2 truncate leading-tight',
-                server.name.length > 20 &&
-                  !isDesktop &&
-                  'flex-col items-stretch gap-0',
-              )}
-            >
-              <div className="truncate font-medium">{server.name}</div>
-              <div className="text-muted-foreground truncate text-xs font-normal">
-                /s/{server.slug}
-              </div>
+          <div className="flex min-w-0 flex-col gap-0.5 text-left">
+            <div className="flex items-center gap-2 truncate leading-tight font-semibold">
+              <div className="truncate">{server.name}</div>
               {server.isDefaultServer && (
-                <Badge variant="secondary" className="uppercase">
+                <Badge variant="secondary" className="shrink-0 uppercase">
                   {t('servers.labels.default')}
                 </Badge>
               )}
             </div>
-
+            <div className="text-muted-foreground truncate text-xs">
+              /s/{server.slug}
+              {server.memberCount !== undefined &&
+                `${MIDDOT_WITH_SPACES}${t('roles.labels.membersCount', {
+                  count: server.memberCount,
+                })}`}
+            </div>
             {server.description && (
-              <p
-                className="text-muted-foreground truncate pr-14 text-xs leading-tight"
-                title={server.description}
-              >
+              <div className="text-muted-foreground truncate text-xs leading-snug">
                 {server.description}
-              </p>
+              </div>
             )}
           </div>
         </div>
