@@ -1,13 +1,11 @@
-import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { truncate } from '@/lib/text.utils';
-import { useAppStore } from '@/store/app.store';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdExitToApp, MdPerson, MdPersonAdd } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useLogOut } from '../../hooks/use-log-out';
 import { LogOutDialogContent } from '../auth/log-out-dialog-content';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import {
@@ -20,21 +18,13 @@ import { UserAvatar } from '../users/user-avatar';
 import { UserProfileDrawer } from '../users/user-profile-drawer';
 
 export const LeftNavUserMenu = () => {
-  const { setIsLoggedIn } = useAppStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const { mutate: logOut, isPending: isLogoutPending } = useMutation({
-    mutationFn: api.logOut,
-    onSuccess: async () => {
-      await navigate(NavigationPaths.Home);
-      setShowLogoutDialog(false);
-      setIsLoggedIn(false);
-      queryClient.clear();
-    },
+  const { mutate: logOut, isPending: isLogoutPending } = useLogOut({
+    onSuccess: () => setShowLogoutDialog(false),
   });
 
   const { me, signUpPath } = useAuthData();

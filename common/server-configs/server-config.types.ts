@@ -5,6 +5,7 @@ import { ServerConfigErrorKeys } from './server-config.constants';
 
 export const serverConfigSchema = zod
   .object({
+    anonymousUsersEnabled: zod.boolean().optional(),
     decisionMakingModel: zod.enum(DECISION_MAKING_MODEL).optional(),
     disagreementsLimit: zod.number().min(0).max(10).optional(),
     abstainsLimit: zod.number().min(0).max(10).optional(),

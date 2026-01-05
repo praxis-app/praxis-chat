@@ -4,8 +4,10 @@ import { getUploadsPath } from '../images/images.utils';
 import * as messagesService from './messages.service';
 
 export const createMessage = async (req: Request, res: Response) => {
+  const { serverId, channelId } = req.params;
   const message = await messagesService.createMessage(
-    req.params.channelId,
+    serverId,
+    channelId,
     req.body,
     res.locals.user,
   );
@@ -18,9 +20,10 @@ export const uploadMessageImage = async (req: Request, res: Response) => {
     return;
   }
   const { user } = res.locals;
-  const { messageId, imageId } = req.params;
+  const { serverId, messageId, imageId } = req.params;
   const { filename } = req.file as Express.Multer.File;
   const image = await messagesService.saveMessageImage(
+    serverId,
     messageId,
     imageId,
     filename,

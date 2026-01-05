@@ -1,10 +1,9 @@
 import { ROLE_ATTRIBUTE_CHANGE_TYPE } from '@common/poll-actions/poll-action.constants';
 import { RoleAttributeChangeType } from '@common/poll-actions/poll-action.types';
-import { AbilityAction, AbilitySubject } from '@common/roles/app-ability';
-import {
-  ABILITY_ACTIONS,
-  ABILITY_SUBJECTS,
-} from '@common/roles/server-role.constants';
+import { ABILITY_ACTIONS } from '@common/roles/role.constants';
+import { AbilityAction } from '@common/roles/role.types';
+import { ServerAbilitySubject } from '@common/roles/server-roles/server-ability';
+import { SERVER_ROLE_ABILITY_SUBJECTS } from '@common/roles/server-roles/server-role.constants';
 import {
   Column,
   CreateDateColumn,
@@ -25,8 +24,8 @@ export class PollActionPermission {
   @Column({ type: 'enum', enum: ABILITY_ACTIONS })
   action: AbilityAction;
 
-  @Column({ type: 'enum', enum: ABILITY_SUBJECTS })
-  subject: AbilitySubject;
+  @Column({ type: 'enum', enum: SERVER_ROLE_ABILITY_SUBJECTS })
+  subject: ServerAbilitySubject;
 
   @Column({ type: 'enum', enum: ROLE_ATTRIBUTE_CHANGE_TYPE })
   changeType: RoleAttributeChangeType;

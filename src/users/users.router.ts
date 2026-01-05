@@ -11,6 +11,7 @@ import {
   createUserCoverPhoto,
   createUserProfilePicture,
   getCurrentUser,
+  getCurrentUserServers,
   getUserImage,
   getUserProfile,
   isFirstUser,
@@ -34,6 +35,7 @@ usersRouter
 usersRouter
   .use(authenticate)
   .get('/me', getCurrentUser)
+  .get('/me/servers', getCurrentUserServers)
   .get('/:userId/profile', canReadUserProfile, getUserProfile)
   .post('/profile-picture', isRegistered, uploadImage, createUserProfilePicture)
   .post('/cover-photo', isRegistered, uploadImage, createUserCoverPhoto)

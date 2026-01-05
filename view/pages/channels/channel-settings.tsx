@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { NavigationPaths } from '@/constants/shared.constants';
+import { useServerData } from '@/hooks/use-server-data';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -17,17 +17,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelSettings = () => {
   const { channelId } = useParams();
+  const { serverId, serverPath } = useServerData();
+
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { data: channelData } = useQuery({
-    queryKey: ['channels', channelId],
-    queryFn: () => api.getChannel(channelId!),
-    enabled: !!channelId,
+    queryKey: ['servers', serverId, 'channels', channelId],
+    queryFn: () => {
+      if (!serverId || !channelId) {
+        throw new Error('Server ID and channel ID are required');
+      }
+      return api.getChannel(serverId, channelId);
+    },
+    enabled: !!channelId && !!serverId,
   });
 
   const goBack = () => {
-    navigate(`${NavigationPaths.Channels}/${channelId}`);
+    navigate(`${serverPath}/c/${channelId}`);
   };
 
   if (!channelData?.channel) {

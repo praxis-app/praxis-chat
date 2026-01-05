@@ -7,6 +7,7 @@ export const isChannelMember = async (
   next: NextFunction,
 ) => {
   const isChannelMember = await channelsService.isChannelMember(
+    req.params.serverId,
     req.params.channelId,
     res.locals.user.id,
   );

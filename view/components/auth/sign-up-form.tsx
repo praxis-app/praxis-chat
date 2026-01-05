@@ -81,7 +81,7 @@ interface Props {
 }
 
 export const SignUpForm = ({ setIsRedirecting }: Props) => {
-  const { setIsLoggedIn } = useAppStore();
+  const { setIsLoggedIn, setAccessToken } = useAppStore();
 
   const form = useForm<zod.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -106,6 +106,8 @@ export const SignUpForm = ({ setIsRedirecting }: Props) => {
     },
     onSuccess({ access_token }) {
       localStorage.setItem(LocalStorageKeys.AccessToken, access_token);
+      localStorage.removeItem(LocalStorageKeys.InviteToken);
+      setAccessToken(access_token);
       navigate(NavigationPaths.Home);
       setIsLoggedIn(true);
     },

@@ -4,8 +4,9 @@ import { getUploadsPath } from '../images/images.utils';
 import * as pollsService from './polls.service';
 
 export const createPoll = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
+  const { serverId, channelId } = req.params;
   const poll = await pollsService.createPoll(
+    serverId,
     channelId,
     req.body,
     res.locals.user,
@@ -19,9 +20,10 @@ export const uploadPollImage = async (req: Request, res: Response) => {
     return;
   }
   const { user } = res.locals;
-  const { pollId, imageId } = req.params;
+  const { serverId, pollId, imageId } = req.params;
   const { filename } = req.file as Express.Multer.File;
   const image = await pollsService.savePollImage(
+    serverId,
     pollId,
     imageId,
     filename,

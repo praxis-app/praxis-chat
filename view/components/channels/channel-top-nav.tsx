@@ -22,11 +22,11 @@ export const ChannelTopNav = ({ channel }: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
-  const description = channel?.description ?? '';
+  const description = channel?.description || '';
   const truncatedDescription = truncate(description, 50);
 
   const truncatedChannelName = truncate(
-    channel?.name ?? '',
+    channel?.name || '',
     isDesktop ? 23 : 25,
   );
 

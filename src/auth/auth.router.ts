@@ -13,9 +13,11 @@ import { validateSignUp } from './middleware/validate-sign-up.middleware';
 
 export const authRouter = express.Router();
 
-authRouter.post('/signup', validateSignUp, signUp);
-authRouter.post('/login', loginRateLimiter, login);
-authRouter.delete('/logout', logOut);
+authRouter
+  .post('/signup', validateSignUp, signUp)
+  .post('/login', loginRateLimiter, login)
+  .delete('/logout', logOut);
 
-authRouter.post('/anon', validateCreateAnon, createAnonSession);
-authRouter.put('/anon', authenticate, validateSignUp, upgradeAnonSession);
+authRouter
+  .post('/anon', validateCreateAnon, createAnonSession)
+  .put('/anon', authenticate, validateSignUp, upgradeAnonSession);

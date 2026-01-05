@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Slider } from '../ui/slider';
+import { useServerData } from '../../hooks/use-server-data';
 
 interface Props {
   serverConfig: ServerConfigRes;
@@ -37,6 +38,8 @@ interface Props {
 export const PollSettingsForm = ({ serverConfig }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof serverConfigSchema>>({
     resolver: zodResolver(serverConfigSchema),
@@ -47,12 +50,15 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
   const { mutate: updateServerConfig, isPending: isUpdatePending } =
     useMutation({
       mutationFn: async (data: ServerConfigReq) => {
-        await api.updateServerConfig(data);
+        if (!serverId) {
+          throw new Error('Server ID is required');
+        }
+        await api.updateServerConfig(serverId, data);
         return data;
       },
       onSuccess: (data) => {
         queryClient.setQueryData<{ serverConfig: ServerConfigRes }>(
-          ['server-configs'],
+          ['servers', serverId, 'configs'],
           (oldData) => {
             if (!oldData) {
               throw new Error('Server config not found');
