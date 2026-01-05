@@ -1,4 +1,3 @@
-// TODO: Thoroughly test log outs on mobile and desktop
 // TODO: Add confirm dialog to log out
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';

@@ -135,8 +135,6 @@ export const EditServerPage = () => {
           },
         );
 
-        // TODO: Clean up logic for default server handling for cache update / invalidation
-
         if (updatedServer.isDefaultServer) {
           queryClient.setQueryData<{ server: ServerRes }>(
             ['servers', 'default'],

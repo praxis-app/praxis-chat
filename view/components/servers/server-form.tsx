@@ -38,27 +38,12 @@ export const ServerForm = ({
 
   const form = useForm<ServerReq>({
     resolver: zodResolver(serverFormSchema),
-    defaultValues: editServer
-      ? {
-          name: editServer.name,
-          slug: editServer.slug,
-          description: editServer.description ?? '',
-          isDefaultServer: editServer.isDefaultServer,
-        }
-      : {
-          name: '',
-          slug: '',
-          description: '',
-          isDefaultServer: false,
-        },
-    values: editServer
-      ? {
-          name: editServer.name,
-          slug: editServer.slug,
-          description: editServer.description ?? '',
-          isDefaultServer: editServer.isDefaultServer,
-        }
-      : undefined,
+    defaultValues: {
+      name: editServer?.name ?? '',
+      slug: editServer?.slug ?? '',
+      description: editServer?.description ?? '',
+      isDefaultServer: editServer?.isDefaultServer ?? false,
+    },
     mode: 'onChange',
   });
 
