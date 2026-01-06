@@ -1,8 +1,9 @@
+import { api } from '@/client/api-client';
+import { useInView } from '@/hooks/use-in-view';
+import { useServerData } from '@/hooks/use-server-data';
+import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { RefObject } from 'react';
-import { api } from '../client/api-client';
-import { useInView } from './use-in-view';
-import { useServerData } from './use-server-data';
 
 interface UseImageSrcProps {
   enabled?: boolean;
@@ -25,7 +26,9 @@ export const useImageSrc = ({
   onError,
   ref,
 }: UseImageSrcProps) => {
+  const { inviteToken } = useAppStore();
   const { serverId } = useServerData();
+
   const { viewed } = useInView(ref, '100px');
 
   const getImageSrc = async () => {
@@ -45,6 +48,7 @@ export const useImageSrc = ({
           channelId,
           messageId,
           imageId,
+          inviteToken,
         );
       } else if (pollId && channelId) {
         if (!serverId) {
