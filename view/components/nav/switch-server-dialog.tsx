@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
@@ -108,15 +110,24 @@ export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
                     {getInitial(server.name)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex w-[70vw] min-w-0 flex-col text-left">
-                  <div className="truncate leading-tight font-semibold">
-                    {server.name}
+                <div className="flex w-[70vw] min-w-0 flex-col gap-0.5 text-left">
+                  <div className="flex items-center gap-2 truncate leading-tight font-semibold">
+                    <div className="truncate">{server.name}</div>
+                    {server.isDefaultServer && (
+                      <Badge variant="secondary" className="shrink-0 uppercase">
+                        {t('servers.labels.default')}
+                      </Badge>
+                    )}
                   </div>
                   <div className="text-muted-foreground truncate text-xs">
                     /s/{server.slug}
+                    {server.memberCount !== undefined &&
+                      `${MIDDOT_WITH_SPACES}${t('roles.labels.membersCount', {
+                        count: server.memberCount,
+                      })}`}
                   </div>
                   {server.description && (
-                    <div className="text-muted-foreground mt-1 truncate text-xs leading-snug">
+                    <div className="text-muted-foreground truncate text-xs leading-snug">
                       {server.description}
                     </div>
                   )}

@@ -25,7 +25,7 @@ Refer to README.md for more information.
   - Import via `@common` alias
   - **Include**: TypeScript types/interfaces, constants/enums, pure utility functions, validation schemas
   - **Exclude**: Business logic, database models, Express middleware, React components
-  - **Examples**: `common/proposals/proposal.types.ts`, `common/votes/vote.constants.ts`
+  - **Examples**: `common/polls/poll.types.ts`, `common/votes/vote.constants.ts`
 
 ### Backend Architecture (`src/`)
 
@@ -60,8 +60,8 @@ Refer to README.md for more information.
 - `images/` - Image uploads (multer) and processing
 - `invites/` - Server invitations
 - `messages/` - Chat messages
-- `proposal-actions/` - Actions proposed for approval (roles, permissions, members)
-- `proposals/` - Formal proposals and voting
+- `poll-actions/` - Actions proposed for approval (roles, permissions, members)
+- `polls/` - Polls and proposals (proposals are implemented as polls with `pollType: 'proposal'`)
 - `pub-sub/` - WebSocket pub-sub server with Redis
 - `roles/` - RBAC with permissions (CASL-based)
 - `server-configs/` - Server-wide settings

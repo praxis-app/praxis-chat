@@ -226,9 +226,13 @@ class ApiClient {
     channelId: string,
     messageId: string,
     imageId: string,
+    inviteToken?: string | null,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/messages/${messageId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+    return this.executeRequest<Blob>('get', path, {
+      responseType: 'blob',
+      params: { inviteToken },
+    });
   };
 
   // -------------------------------------------------------------------------
@@ -251,9 +255,13 @@ class ApiClient {
     channelId: string,
     pollId: string,
     imageId: string,
+    inviteToken?: string | null,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/images/${imageId}`;
-    return this.executeRequest<Blob>('get', path, { responseType: 'blob' });
+    return this.executeRequest<Blob>('get', path, {
+      responseType: 'blob',
+      params: { inviteToken },
+    });
   };
 
   createVote = async (

@@ -53,7 +53,7 @@ export const ChannelSettingsForm = ({ editChannel, onSuccess }: Props) => {
           { channel },
         );
         queryClient.setQueryData<{ channels: ChannelRes[] }>(
-          ['servers', serverId, 'channels'],
+          ['servers', serverId, 'channels', 'joined'],
           (oldData) => {
             if (!oldData) {
               return { channels: [] };

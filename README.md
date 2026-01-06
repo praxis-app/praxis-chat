@@ -74,6 +74,10 @@ $ npm run typeorm:run
 
 To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` file. This will run migrations on startup via `start-prod.sh`.
 
+## Documentation
+
+For detailed documentation on architecture, deployment, planned features, and implementation details, see the [docs directory](docs/README.md).
+
 ## Contributions
 
 Praxis is open to contributions. Please read [CONTRIBUTING.md](https://github.com/praxis-app/praxis-chat/blob/main/CONTRIBUTING.md) for more details.

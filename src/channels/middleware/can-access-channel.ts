@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import { authenticateOptional } from '../../auth/middleware/authenticate-optional.middleware';
 import { withMiddleware } from '../../common/middleware.utils';
 import * as instanceService from '../../instance/instance.service';
-import { isValidInvite } from '../../invites/invites.service';
+import * as invitesService from '../../invites/invites.service';
 import { User } from '../../users/user.entity';
 import * as channelsService from '../channels.service';
 
 /**
  * Check if the user has access to a single channel
  */
-export const hasChannelAccess = withMiddleware(
+export const canAccessChannel = withMiddleware(
   authenticateOptional,
   async (req: Request, res: Response, next: NextFunction) => {
     const user: User | undefined = res.locals.user;
@@ -39,7 +39,7 @@ export const hasChannelAccess = withMiddleware(
       res.status(403).send('Forbidden');
       return;
     }
-    const isValid = await isValidInvite({
+    const isValid = await invitesService.isValidInvite({
       token: req.query.inviteToken,
       serverId: req.params.serverId,
     });
