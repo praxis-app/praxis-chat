@@ -2,6 +2,30 @@
 
 This document provides guidance for deploying Praxis to production, including environment configuration, database migration strategies, and step-by-step instructions for both first-time deployments and updates to existing instances.
 
+## Prerequisites
+
+Before deploying Praxis, you'll need to provision and configure a web server with the following components:
+
+### Server Provisioning
+
+Provision a Linux server (any distribution you prefer, such as Debian, Alma, or Rocky Linux). The server should have:
+
+- Sufficient resources (CPU, RAM, and disk space) for your expected load
+- Network access to allow incoming HTTP/HTTPS traffic
+- SSH access for deployment and management
+
+### Installing Docker and Docker Compose
+
+Praxis uses Docker and Docker Compose to containerize the application and manage dependencies. Install Docker and Docker Compose on your server using the installation methods appropriate for your chosen Linux distribution.
+
+### Installing a Reverse Proxy
+
+Install a reverse proxy like Nginx (or another reverse proxy of your choice) to handle HTTP/HTTPS requests and route them to the Praxis application. Configure the reverse proxy to forward requests to the Praxis application running in Docker.
+
+### Database and Redis
+
+The database (PostgreSQL) and Redis are handled by Docker Compose and run as containers alongside the application—no separate installation or configuration is required for these services.
+
 ## Production Requirements
 
 ### Environment Variables
