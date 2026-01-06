@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { authenticateOptional } from '../../auth/middleware/authenticate-optional.middleware';
 import { withMiddleware } from '../../common/middleware.utils';
 import * as instanceService from '../../instance/instance.service';
-import { isValidInvite } from '../../invites/invites.service';
+import * as invitesService from '../../invites/invites.service';
 import { User } from '../../users/user.entity';
 import * as channelsService from '../channels.service';
 
@@ -39,7 +39,7 @@ export const canAccessChannel = withMiddleware(
       res.status(403).send('Forbidden');
       return;
     }
-    const isValid = await isValidInvite({
+    const isValid = await invitesService.isValidInvite({
       token: req.query.inviteToken,
       serverId: req.params.serverId,
     });
