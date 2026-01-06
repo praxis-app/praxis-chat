@@ -6,15 +6,15 @@ This directory contains technical documentation for the Praxis codebase, coverin
 
 ### Architecture
 
-- **[Multi-Server](server-architecture.md)** - Overview of the multi-server architecture, including how servers, server members, and the default server work within a single instance.
+- **[Multi-Server](architecture/server-architecture.md)** - Overview of the multi-server architecture, including how servers, server members, and the default server work within a single instance.
 
-- **[Poll Entity](poll-entity-architecture.md)** - Documentation of the poll entity design and how it serves as the base abstraction for all decision-making processes.
+- **[Poll Entity](architecture/poll-entity-architecture.md)** - Documentation of the poll entity design and how it serves as the base abstraction for all decision-making processes.
 
-- **[Anonymous Users and Invites](anon-users-and-invites.md)** - Current implementation details for anonymous users and invite functionality.
+- **[Anonymous Users and Invites](architecture/anon-users-and-invites.md)** - Current implementation details for anonymous users and invite functionality.
 
 ### Deployment
 
-- **[Deployment](deployment.md)** - Production deployment guide covering environment configuration, database migration strategies, and instructions for first-time deployments and updates.
+- **[Deployment](deployment/deployment.md)** - Production deployment guide covering environment configuration, database migration strategies, and instructions for first-time deployments and updates.
 
 ### Project Proposals
 
