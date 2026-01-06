@@ -1,5 +1,7 @@
 # Deployment
 
+This document provides guidance for deploying Praxis to production, including environment configuration, database migration strategies, and step-by-step instructions for both first-time deployments and updates to existing instances.
+
 ## Production Requirements
 
 ### Environment Variables
