@@ -9,7 +9,7 @@ import * as channelsService from '../channels.service';
 /**
  * Check if the user has access to a single channel
  */
-export const hasChannelAccess = withMiddleware(
+export const canAccessChannel = withMiddleware(
   authenticateOptional,
   async (req: Request, res: Response, next: NextFunction) => {
     const user: User | undefined = res.locals.user;

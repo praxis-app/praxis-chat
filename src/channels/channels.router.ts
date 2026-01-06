@@ -16,8 +16,8 @@ import {
   getJoinedChannels,
   updateChannel,
 } from './channels.controller';
-import { hasChannelAccess } from './middleware/has-channel-access';
-import { hasChannelsAccess } from './middleware/has-channels-access';
+import { canAccessChannel } from './middleware/can-access-channel';
+import { canAccessChannels } from './middleware/can-access-channels';
 import { validateChannel } from './middleware/validate-channel.middleware';
 
 export const channelsRouter = express.Router({
@@ -35,9 +35,9 @@ channelsRouter.get(
 
 // Public routes
 channelsRouter
-  .get('/', hasChannelsAccess, getChannels)
-  .get('/:channelId', hasChannelAccess, getChannel)
-  .get('/:channelId/feed', hasChannelAccess, getChannelFeed)
+  .get('/', canAccessChannels, getChannels)
+  .get('/:channelId', canAccessChannel, getChannel)
+  .get('/:channelId/feed', canAccessChannel, getChannelFeed)
   .use('/:channelId/messages', messagesRouter)
   .use('/:channelId/polls', pollsRouter);
 
