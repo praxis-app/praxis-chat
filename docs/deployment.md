@@ -4,13 +4,9 @@
 
 ### Environment Variables
 
-For first-time deployments, set `DB_MIGRATIONS=true` in your production environment. This ensures database migrations run automatically on startup via `start-prod.sh` to create the initial database schema.
+For first-time deployments, ensure `DB_MIGRATIONS=true` is set in your production environment. This ensures database migrations run automatically on startup via `start-prod.sh` to create the initial database schema.
 
-**Important**: After your first deployment, you should set `DB_MIGRATIONS=false` for subsequent deployments. Automatic migrations in production are generally discouraged because they:
-- Remove control over when migrations run
-- Prevent reviewing and testing migrations before applying them
-- Make it difficult to coordinate migrations with deployments or rollbacks
-- Risk leaving the database in an inconsistent state if a migration fails
+**Important**: After your first deployment, you should set `DB_MIGRATIONS=false` for subsequent deployments. Automatic migrations in production are often discouraged because they remove control over when migrations run, make it difficult to coordinate with deployments or rollbacks, and risk leaving the database in an inconsistent state if a migration fails.
 
 Instead, run migrations manually as a separate step in your deployment process, allowing you to review, test, and apply them during appropriate maintenance windows.
 
