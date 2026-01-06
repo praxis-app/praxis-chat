@@ -76,7 +76,7 @@ To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` fi
 
 ## Documentation
 
-For detailed documentation on architecture, deployment, planned features, and implementation details, see the [documentation directory](docs/README.md).
+For detailed documentation on architecture, deployment, planned features, and implementation details, see the [docs directory](docs/README.md).
 
 ## Contributions
 
