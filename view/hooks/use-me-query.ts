@@ -11,7 +11,8 @@ type UseMeQueryOptions = Omit<
 >;
 
 export const useMeQuery = (options?: UseMeQueryOptions) => {
-  const { accessToken, setIsAppLoading, setIsLoggedIn } = useAppStore();
+  const { accessToken, setIsAppLoading, setIsLoggedIn, setAccessToken } =
+    useAppStore();
 
   const defaultOptions: Partial<UseMeQueryOptions> = {
     staleTime: 1000 * 60 * 30,
@@ -55,6 +56,7 @@ export const useMeQuery = (options?: UseMeQueryOptions) => {
       } catch (error) {
         if ((error as AxiosError).response?.status === 401) {
           localStorage.removeItem(LocalStorageKeys.AccessToken);
+          setAccessToken(null);
           setIsLoggedIn(false);
         }
         throw error;

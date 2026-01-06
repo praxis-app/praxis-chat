@@ -52,7 +52,7 @@ export const HomePage = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !generalChannelId) {
     return <ChannelSkeleton />;
   }
 
