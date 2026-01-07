@@ -57,7 +57,31 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 
 ## Implementation & Tech Stack
 
-Backend uses Node.js and Express with PostgreSQL and Redis; the front end uses React with Vite. Real-time updates are handled with websockets and Redis, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations.
+Praxis is implemented as a monolithic application containing both backend and frontend code in the same repository, deploying them together. The backend is located in `src/`, the frontend in `view/`, and shared TypeScript types and utilities are in `common/`. This structure enables code sharing between client and server while maintaining clear separation of concerns. Real-time updates are handled with WebSockets and Redis pub-sub, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations.
+
+### Backend Technologies
+
+- **Node.js**: Provides a unified JavaScript runtime for both frontend and backend development, enabling code sharing and reducing context switching. The LTS version ensures stability and long-term support.
+
+- **Express**: A minimal, unopinionated web framework that provides the flexibility needed for custom routing, middleware, and WebSocket integration while keeping the codebase lightweight and maintainable.
+
+- **TypeORM**: A TypeScript-first ORM that provides type safety, migrations, and relationship management for the complex data model (channels, threads, proposals, votes, roles, permissions). Its decorator-based entity definitions align well with TypeScript's type system.
+
+- **PostgreSQL**: A robust relational database that handles complex queries, transactions, and relationships required for structured decision-making data (proposals, votes, roles, permissions) while providing ACID guarantees for data integrity.
+
+- **Redis**: Used for both caching and WebSocket pub-sub. Redis pub-sub enables scalable real-time message distribution across multiple server instances, while caching improves response times for frequently accessed data.
+
+### Frontend Technologies
+
+- **React**: A component-based UI library that enables building reusable, maintainable chat interfaces and complex decision-making flows. Its ecosystem and developer experience support rapid feature development.
+
+- **Vite**: A fast build tool and development server that provides near-instant hot module replacement during development and optimized production builds, significantly improving developer productivity.
+
+- **React Query**: Handles server state management, caching, and synchronization for API data (messages, proposals, votes), reducing boilerplate and providing built-in loading and error states.
+
+- **Tailwind CSS**: A utility-first CSS framework that enables rapid UI development with consistent design tokens, making it easy to build a cohesive chat interface and maintain design consistency across features.
+
+- **Radix UI**: Accessible, unstyled component primitives that provide the building blocks for complex UI patterns (dialogs, dropdowns, tooltips) while maintaining full control over styling and ensuring accessibility compliance.
 
 ## Hosting & Infrastructure (initial phase)
 
