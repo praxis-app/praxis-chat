@@ -81,6 +81,12 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 - **shadcn/ui**: A component collection built on Tailwind and Radix primitives that gives us well designed, accessible components we can add to the project individually as needed. It combines Tailwind's utility-first approach for rapid, consistent styling with Radix's minimally styled primitives for accessible UI patterns, giving us full ownership and customization of our components.
 
+## Security & Privacy
+
+Authentication uses JWT tokens with 90-day expiration, bcrypt password hashing (10 salt rounds), and rate limiting on login endpoints (5 attempts per 10 minutes with automatic account locking). The authorization model is built on CASL with hierarchical roles scoped at both server (workspace) and instance levels, enforcing permissions through middleware that checks actions (create, read, update, delete, manage) against subjects (channels, messages, polls, roles). Channel access is controlled via membership checks and invite-based entry for private servers, with WebSocket subscriptions validated against channel membership before allowing real-time updates.
+
+Messages and proposals are encrypted at rest using AES-256-GCM with per-channel encryption keys wrapped by a master key, ensuring that content is protected in the database. All client-server communication uses HTTPS (TLS) for encryption in transit. Access controls enforce channel-level boundaries, with a default (demo) server being public and private servers requiring explicit membership or valid invite tokens. Future hardening opportunities include end-to-end encryption, token refresh mechanisms, and enhanced audit logging.
+
 ## Hosting & Infrastructure (initial phase)
 
 A single small VPS on DigitalOcean with 1 vCPU and 2 GB of RAM is enough for early development, demos, and pilot usage. One registered domain will be needed for the web app. PostgreSQL and Redis can share the VPS at first, with a plan to move them to managed services before broader rollout. HTTPS should use managed certificates such as Let’s Encrypt with a reverse proxy like Nginx on the VPS.
