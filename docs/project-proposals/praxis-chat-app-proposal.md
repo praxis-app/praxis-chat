@@ -73,9 +73,9 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 ### Frontend Technologies
 
-- **React**: A component based UI library that enables building reusable, maintainable chat interfaces and complex decision-making flows. Its ecosystem and developer experience support rapid feature development.
+- **React**: A component based UI library that enables building reusable, maintainable interfaces and complex UX flows. Its ecosystem supports rapid feature development and has a massive pool of developers and resources to pull from.
 
-- **Vite**: A fast build tool and development server that provides near-instant hot module replacement during development and optimized production builds, significantly improving developer productivity.
+- **Vite**: A fast build tool and development server that provides near-instant hot module replacement during development and optimized production builds, significantly improving developer productivity. Will help us avoid the bloat, complexity, and slow build times of tools like Next.js.
 
 - **React Query**: Handles server state management, caching, and synchronization for API data (messages, proposals, votes), reducing boilerplate and providing built-in loading and error states.
 
