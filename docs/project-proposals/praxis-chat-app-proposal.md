@@ -69,7 +69,7 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 - **PostgreSQL**: A robust relational database that handles complex queries, transactions, and relationships while providing ACID guarantees for data integrity.
 
-- **Redis**: Used for both caching and WebSocket pub-sub. Redis pub-sub enables scalable real-time message distribution across multiple server instances, while caching improves response times for frequently accessed data.
+- **Redis**: Used for caching and WebSocket subscription registration for pub-sub channels.
 
 ### Frontend Technologies
 
