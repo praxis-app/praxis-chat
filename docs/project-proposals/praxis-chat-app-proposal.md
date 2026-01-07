@@ -83,7 +83,7 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 ## Hosting & Infrastructure (initial phase)
 
-A single small VPS on DigitalOcean with 1 vCPU and 2 GB of RAM is enough for early development, demos, and pilot usage. One registered domain be needed for the web app. PostgreSQL and Redis can share the VPS at first, with a plan to move them to managed services before broader rollout. HTTPS should use managed certificates such as Let’s Encrypt with a reverse proxy like Nginx on the VPS.
+A single small VPS on DigitalOcean with 1 vCPU and 2 GB of RAM is enough for early development, demos, and pilot usage. One registered domain will be needed for the web app. PostgreSQL and Redis can share the VPS at first, with a plan to move them to managed services before broader rollout. HTTPS should use managed certificates such as Let’s Encrypt with a reverse proxy like Nginx on the VPS.
 
 ## Success Metrics
 
