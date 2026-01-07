@@ -91,4 +91,4 @@ Measure success by completing the V1 roadmap and exiting a structured QA/pilot p
 
 ## Next Steps
 
-Proceed with the initial deployment scaffolding to unblock development, keep the V1 roadmap as the guiding scope for the first six weeks, and recruit an additional engineer to accelerate delivery.
+Proceed with the initial deployment scaffolding to unblock development, keep the V1 roadmap as the guiding scope for the first six weeks, and find an additional engineer to help with the workload and accelerate delivery.
