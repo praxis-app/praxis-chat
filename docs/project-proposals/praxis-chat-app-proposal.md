@@ -61,13 +61,13 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 ### Backend Technologies
 
-- **Node.js**: Provides a unified JavaScript runtime for both frontend and backend development, enabling code sharing and reducing context switching. The LTS version ensures stability and long-term support.
+- **Node.js**: Provides a unified JavaScript runtime for both frontend and backend development, enabling code sharing and reducing context switching.
 
 - **Express**: A minimal, unopinionated web framework that provides the flexibility needed for custom routing, middleware, and WebSocket integration while keeping the codebase lightweight and maintainable.
 
-- **TypeORM**: A TypeScript-first ORM that provides type safety, migrations, and relationship management for the complex data model (channels, threads, proposals, votes, roles, permissions). Its decorator-based entity definitions align well with TypeScript's type system.
+- **TypeORM**: A TypeScript-first ORM that provides type safety, migrations, and relationship management for the application's data models (channels, proposals, votes, roles, permissions, etc.).
 
-- **PostgreSQL**: A robust relational database that handles complex queries, transactions, and relationships required for structured decision-making data (proposals, votes, roles, permissions) while providing ACID guarantees for data integrity.
+- **PostgreSQL**: A robust relational database that handles complex queries, transactions, and relationships while providing ACID guarantees for data integrity.
 
 - **Redis**: Used for both caching and WebSocket pub-sub. Redis pub-sub enables scalable real-time message distribution across multiple server instances, while caching improves response times for frequently accessed data.
 
