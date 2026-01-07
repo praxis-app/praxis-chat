@@ -28,7 +28,7 @@ Ship a production-ready V1 that demonstrates the core value proposition: seamles
 
 ## Scope and Feature Set (V1)
 
-The V1 scope matches the current roadmap. The feature estimates sum to roughly 8–9 months of combined engineering effort. With two engineers working in parallel and some overlap, this translates to about 5–6 months of elapsed time; some work can be parallelized, but dependencies and integration limit full overlap.
+The V1 scope matches the current roadmap for the project. The feature estimates sum to roughly 8–9 months of combined engineering effort. With two engineers working in parallel and some overlap, this translates to about 5–6 months of elapsed time; some work can be parallelized, but dependencies and integration limit full overlap.
 
 ### Basic Chat Features (about 1.5 months total)
 
