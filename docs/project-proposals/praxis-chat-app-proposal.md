@@ -55,7 +55,7 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 - Basic search: Search messages, proposals, threads, and forum posts (1.0 wk).
 - Notifications: Real-time updates and push alerts (1.0 wk).
 
-## Implementation Approach
+## Implementation & Tech Stack
 
 Backend uses Node.js and Express with PostgreSQL and Redis; the front end uses React with Vite. Real-time updates are handled with websockets and Redis, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations.
 
