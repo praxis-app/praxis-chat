@@ -33,7 +33,7 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 ### Basic Chat Features (about 1.5 months total)
 
 - Reply threads: Enable threaded conversations for focus and clarity (2.5 wks).
-- Forum-type channels: Structured deliberation with advanced sorting and filtering (1.5 wks).
+- Forum-type channels: Structured deliberation with advanced sorting, filtering, and proposal management (1.5 wks).
 
 ### Decision-Making (about 4.5 months total)
 
