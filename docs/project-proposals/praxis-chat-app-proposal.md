@@ -57,7 +57,7 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 
 ## Implementation & Tech Stack
 
-Praxis is implemented as a monolithic application containing both backend and frontend code in the same repository, deploying them together. The backend is located in `src/`, the frontend in `view/`, and shared TypeScript types and utilities are in `common/`. This structure enables code sharing between client and server while maintaining clear separation of concerns. Real-time updates are handled with WebSockets and Redis pub-sub, and the UI stays responsive with optimistic message sending. The data model covers channels, threads, proposals, votes, roles and permissions, events, and notifications, implemented with TypeORM entities and migrations.
+Praxis is implemented as a monolithic application containing both backend and frontend code in the same repository, deploying them together. The backend is located in `src/`, the frontend in `view/`, and shared TypeScript types and utilities are in `common/`. Real-time updates are handled with WebSockets and Redis, while the UI stays responsive with optimistic message sending. The data model covers channels, proposals, votes, roles and permissions, all implemented with TypeORM entities.
 
 ### Backend Technologies
 
