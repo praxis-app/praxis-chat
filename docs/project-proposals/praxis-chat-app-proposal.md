@@ -4,7 +4,7 @@ Praxis is a chat-based collaborative decision-making (CDM) app that seamlessly b
 
 ## Value proposition
 
-Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum-centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real-time chat environment. Unlike general purpose communication tools like Discord or Signal, Praxis will be purpose built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all in one environment where communication and decision-making are fully integrated.
+Praxis bridges the gap between traditional collaborative decision-making platforms and mainstream chat apps. Unlike Loomio or OpenSlides, which can feel rigid, forum centric, or limited to specific organizational contexts, Praxis integrates structured decision-making directly into a familiar, real time chat environment. Unlike general purpose communication tools like Discord or Signal, Praxis will be purpose built to make creating proposals, voting, and deliberation seamless and actionable, without disrupting conversation flow or losing momentum. It provides a cohesive, all in one environment where communication and decision-making are fully integrated.
 
 ## Why chat-based?
 
@@ -12,15 +12,15 @@ Praxis bridges the gap between traditional collaborative decision-making platfor
 
 - **Social decision-making** – Most decisions aren't purely analytical processes but deeply social ones. Chat interfaces excel at supporting the interpersonal dynamics, relationship building, and informal consensus-building that precede formal decisions, creating a more holistic decision-making environment.
 
-- **Real-time momentum preservation** – Traditional CDM tools often suffer from "context switching fatigue" - users have to leave their conversation flow to create proposals in separate interfaces. Chat-based approaches let decisions emerge organically from discussions, capturing momentum when engagement is highest.
+- **Real-time momentum preservation** – Traditional CDM tools often suffer from "context switching fatigue", where users have to leave their conversation flow to create proposals in separate interfaces. Chat-based approaches let decisions emerge organically from discussions, capturing momentum when engagement is highest.
 
 - **Mobile-first design** – Chat interfaces are much better optimized for mobile, crucial for organizers who coordinate on-the-go. Traditional CDM tools often have clunky mobile experiences that can hinder participation.
 
-- **Chat-first extensibility** – Chat interfaces can smoothly incorporate forum-like features (forum channels, threads, pinned content, slow mode) without disrupting the core experience. The inverse - adding fluid conversation to forum-based tools - typically results in awkward, bolted-on chat features that users avoid.
+- **Chat-first extensibility** – Chat interfaces can smoothly incorporate forum-like features (forum channels, threads, pinned content, slow mode) without disrupting the core experience. The inverse, adding fluid conversation to forum-based tools, typically results in awkward, bolted-on chat features that users avoid.
 
 - **Progressive disclosure of complexity** – Chat can start simple (just discussing) then progressively reveal more structured features (polls, ranked choice, model of consensus) as needed. This lowers the initial learning curve compared to other options (e.g. Loomio, OpenSlides) that present all features upfront.
 
-- **Integrated voice and video capabilities** – Chat platforms typically include VoIP and video calling, with well defined UX patterns that we can leverage. This enables quick escalation from text discussions to verbal deliberation when decisions require nuanced conversation, emotional connection, or complex negotiation. For distributed organizing, the ability to seamlessly transition between text and video within the same platform eliminates tool-switching friction and keeps all participants engaged regardless of their communication preferences. (Voice/video are out of scope for V1 but slated for future development.)
+- **Integrated voice and video capabilities** – Chat platforms typically include VoIP and video calling, with well defined UX patterns that we can leverage. This enables quick escalation from text discussions to verbal deliberation when decisions require nuanced conversation, emotional connection, or complex negotiation. For distributed organizing, the ability to seamlessly transition between text and video within the same platform eliminates tool switching friction and keeps all participants engaged regardless of their communication preferences. (Voice/video are out of scope for V1 but slated for future development.)
 
 ## Objectives
 
@@ -43,7 +43,7 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 - Proposals to change roles: Role and permission changes executed through proposals (2.0 wks).
 - Proposals to plan events: Integrated decision flow for event planning (1.0 wk).
 - Majority vote model: Standard majority-based voting system (2.5 wks).
-- Model of consensus: Decision model requiring full or near-unanimous agreement (2.0 wks).
+- Model of consensus: Decision model requiring full or near unanimous agreement (2.0 wks).
 - Consent model: A decision passes unless objections are raised (2.0 wks).
 - Basic polls: Lightweight, informal decision-making or preference collection (2.5 wks).
 
@@ -73,13 +73,13 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 ### Frontend Technologies
 
-- **React**: A component-based UI library that enables building reusable, maintainable chat interfaces and complex decision-making flows. Its ecosystem and developer experience support rapid feature development.
+- **React**: A component based UI library that enables building reusable, maintainable chat interfaces and complex decision-making flows. Its ecosystem and developer experience support rapid feature development.
 
 - **Vite**: A fast build tool and development server that provides near-instant hot module replacement during development and optimized production builds, significantly improving developer productivity.
 
 - **React Query**: Handles server state management, caching, and synchronization for API data (messages, proposals, votes), reducing boilerplate and providing built-in loading and error states.
 
-- **Tailwind CSS**: A utility-first CSS framework that enables rapid UI development with consistent design tokens, making it easy to build a cohesive chat interface and maintain design consistency across features.
+- **Tailwind CSS**: A utility first CSS framework that enables rapid UI development with consistent design tokens, making it easy to build a cohesive chat interface and maintain design consistency across features.
 
 - **Radix UI**: Accessible, unstyled component primitives that provide the building blocks for complex UI patterns (dialogs, dropdowns, tooltips) while maintaining full control over styling and ensuring accessibility compliance.
 
@@ -89,7 +89,7 @@ A single small VPS on DigitalOcean with 1 vCPU and 2 GB of RAM is enough for ear
 
 ## Success Metrics
 
-Measure success by completing the V1 roadmap and exiting a structured QA/pilot phase ready for initial rollout. Milestones include: all V1 features functionally complete, high-priority QA issues triaged and fixed, and pilot team feedback incorporated into a readiness review for launch.
+Measure success by completing the V1 roadmap and exiting a structured QA/pilot phase ready for initial rollout. Milestones include: all V1 features functionally complete, high priority QA issues triaged and fixed, and pilot team feedback incorporated into a readiness review for launch.
 
 ## Next Steps
 
