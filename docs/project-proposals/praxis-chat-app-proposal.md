@@ -24,7 +24,7 @@ Praxis bridges the gap between traditional collaborative decision-making platfor
 
 ## Objectives
 
-Deliver a familiar chat experience that can transition smoothly into structured decision flows without switching tools, support formal proposals and voting models inside the same interface, and ship a credible V1 for small to medium sized groups with a path to scaling and security hardening while keeping decisions transparent and auditable to build trust.
+Ship a production-ready V1 that demonstrates the core value proposition: seamless integration of chat and structured decision-making within a single interface. The initial release will support small to medium-sized groups with essential features for communication, proposals, and voting, establishing a foundation for future scaling, feature expansion, and security hardening.
 
 ## Scope and Feature Set (V1)
 
