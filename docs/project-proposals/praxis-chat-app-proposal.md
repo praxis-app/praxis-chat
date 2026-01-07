@@ -79,9 +79,7 @@ Praxis is implemented as a monolithic application containing both backend and fr
 
 - **React Query**: Handles server state management, caching, and synchronization for API data (messages, proposals, votes), reducing boilerplate and providing built-in loading and error states.
 
-- **Tailwind CSS**: A utility first CSS framework that enables rapid UI development with consistent design tokens, making it easy to build a cohesive chat interface and maintain design consistency across features.
-
-- **Radix UI**: Accessible, unstyled component primitives that provide the building blocks for complex UI patterns (dialogs, dropdowns, tooltips) while maintaining full control over styling and ensuring accessibility compliance.
+- **shadcn/ui**: A component collection built on Tailwind CSS and Radix UI that gives us well designed, accessible components we can copy directly into the project. It combines Tailwind's utility-first approach for rapid, consistent styling with Radix's minimally styled primitives for accessible UI patterns, giving us full ownership and customization of our components.
 
 ## Hosting & Infrastructure (initial phase)
 
