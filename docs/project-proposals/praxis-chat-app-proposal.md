@@ -39,7 +39,7 @@ The V1 scope matches the current roadmap. The feature estimates sum to roughly 8
 
 - Proposals and voting: Core feature for structured group decisions (2.5 wks).
 - General proposal type, manual: Non-functional, user defined proposals (2.5 wks).
-- Proposals to change settings: Formalize governance actions within the app (2.0 wks).
+- Proposals to change settings: Server-level settings changes executed through proposals (2.0 wks).
 - Proposals to change roles: Role and permission changes executed through proposals (2.0 wks).
 - Proposals to plan events: Integrated decision flow for event planning (1.0 wk).
 - Majority vote model: Standard majority-based voting system (2.5 wks).
