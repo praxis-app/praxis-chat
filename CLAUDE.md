@@ -10,7 +10,7 @@ Refer to README.md for more information.
 
 **Tech Stack**:
 
-- Backend: Node.js, Express, TypeORM, PostgreSQL, Redis (WebSocket pub-sub)
+- Backend: Node.js, Express, TypeORM, PostgreSQL, Redis
 - Frontend: React, React Router, Vite, Tailwind CSS, Radix UI
 - Testing: Vitest (both client and server)
 - Required: Node.js v22.11.0
@@ -62,7 +62,7 @@ Refer to README.md for more information.
 - `messages/` - Chat messages
 - `poll-actions/` - Actions proposed for approval (roles, permissions, members)
 - `polls/` - Polls and proposals (proposals are implemented as polls with `pollType: 'proposal'`)
-- `pub-sub/` - WebSocket pub-sub server with Redis
+- `pub-sub/` - WebSocket pub-sub server with Redis-backed channel subscriptions
 - `roles/` - RBAC with permissions (CASL-based)
 - `server-configs/` - Server-wide settings
 - `tests/` - Test utilities and fixtures
