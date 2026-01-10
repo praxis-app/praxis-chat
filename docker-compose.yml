@@ -42,7 +42,7 @@ services:
 
   cache:
     container_name: cache
-    image: redis:7.4.1
+    image: redis:8.4.0
     healthcheck:
       test:
         [
