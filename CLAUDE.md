@@ -13,7 +13,7 @@ Refer to README.md for more information.
 - Backend: Node.js, Express, TypeORM, PostgreSQL, Redis
 - Frontend: React, React Router, Vite, Tailwind CSS, Radix UI
 - Testing: Vitest (both client and server)
-- Required: Node.js v22.11.0
+- Required: Node.js v24.12.0
 
 ## Architecture
 

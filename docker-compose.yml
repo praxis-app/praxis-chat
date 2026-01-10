@@ -24,13 +24,12 @@ services:
 
   database:
     container_name: database
-    image: postgres:17
+    image: postgres:18.1
     command: ['postgres', '-c', 'port=${DB_PORT}']
     environment:
       POSTGRES_DB: ${DB_SCHEMA}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PG_DATA: /var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -p ${DB_PORT}']
       interval: 5s
@@ -39,11 +38,11 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
 
   cache:
     container_name: cache
-    image: redis:7.4.1
+    image: redis:8.4.0
     healthcheck:
       test:
         [

@@ -4,6 +4,10 @@ import * as channelsService from './channels.service';
 export const getChannel = async (req: Request, res: Response) => {
   const { serverId, channelId } = req.params;
   const channel = await channelsService.getChannel(serverId, channelId);
+  if (!channel) {
+    res.status(404).send('Channel not found');
+    return;
+  }
   res.json({ channel });
 };
 
