@@ -18,13 +18,13 @@ Praxis is set up as a monolithic application that contains both backend and fron
 
 **Stack**:
 
-- Backend: Node.js v22.11.0, Express, TypeORM, PostgreSQL, Redis
+- Backend: Node.js v24.12.0, Express, TypeORM, PostgreSQL, Redis
 - Frontend: React, React Router, Vite, Shadcn UI
 - Testing: Vitest (both client and server)
 
 ## Installation and setup
 
-Ensure that you have [Node.js](https://nodejs.org/en/download) v22.11.0 installed on your machine before proceeding.
+Ensure that you have [Node.js](https://nodejs.org/en/download) v24.12.0 installed on your machine before proceeding.
 
 ```bash
 # Install project dependencies
