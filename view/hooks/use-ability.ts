@@ -1,12 +1,12 @@
 import { createMongoAbility } from '@casl/ability';
 import { InstanceAbility } from '@common/roles/instance-roles/instance-ability';
 import { ServerAbility } from '@common/roles/server-roles/server-ability';
-import { useAuthSore } from '../store/auth.store';
+import { useAuthStore } from '../store/auth.store';
 import { useMeQuery } from './use-me-query';
 import { useServerData } from './use-server-data';
 
 export const useAbility = () => {
-  const { isLoggedIn } = useAuthSore();
+  const { isLoggedIn } = useAuthStore();
   const { serverId, isLoading: isServerDataLoading } = useServerData();
 
   const { data: meData, isLoading: isMeLoading } = useMeQuery({

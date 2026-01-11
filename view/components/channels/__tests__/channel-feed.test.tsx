@@ -1,5 +1,5 @@
 import { ChannelFeed } from '@/components/channels/channel-feed';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { customRender as render } from '@/test/lib/custom-render';
 import { FeedItemRes } from '@/types/channel.types';
 import { screen } from '@testing-library/react';
@@ -87,11 +87,11 @@ describe('ChannelFeed', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    (useAuthSore as unknown as Mock).mockClear();
+    (useAuthStore as unknown as Mock).mockClear();
   });
 
   it('should render messages when they are provided', () => {
-    (useAuthSore as unknown as Mock).mockReturnValue({
+    (useAuthStore as unknown as Mock).mockReturnValue({
       isLoggedIn: true,
       isAppLoading: false,
     });
@@ -111,7 +111,7 @@ describe('ChannelFeed', () => {
   });
 
   it('should render the welcome message when user is not logged in and there are no messages', () => {
-    (useAuthSore as unknown as Mock).mockReturnValue({
+    (useAuthStore as unknown as Mock).mockReturnValue({
       isLoggedIn: false,
       isAppLoading: false,
     });

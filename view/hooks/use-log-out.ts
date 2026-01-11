@@ -2,7 +2,7 @@
 
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useNavStore } from '@/store/nav.store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ interface UseLogOutOptions {
 }
 
 export const useLogOut = (options: UseLogOutOptions = {}) => {
-  const { setIsLoggedIn, setAccessToken, setInviteToken } = useAuthSore();
+  const { setIsLoggedIn, setAccessToken, setInviteToken } = useAuthStore();
   const { setIsNavSheetOpen } = useNavStore();
 
   const navigate = useNavigate();

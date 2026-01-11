@@ -17,7 +17,7 @@ import {
 } from '@/constants/shared.constants';
 import { handleError } from '@/lib/error.utils';
 import { t } from '@/lib/shared.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import {
   EMAIL_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
@@ -49,7 +49,7 @@ const loginFormSchema = zod.object({
 });
 
 export const LoginForm = () => {
-  const { setIsLoggedIn, setAccessToken } = useAuthSore();
+  const { setIsLoggedIn, setAccessToken } = useAuthStore();
 
   const form = useForm<zod.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),

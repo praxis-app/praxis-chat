@@ -1,5 +1,5 @@
 import { MessageForm } from '@/components/messages/message-form';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
@@ -33,11 +33,11 @@ vi.mock('@tanstack/react-query', async () => {
 describe('MessageForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAuthSore as unknown as Mock).mockClear();
+    (useAuthStore as unknown as Mock).mockClear();
   });
 
   it('should show an image preview when an image is selected', () => {
-    (useAuthSore as unknown as Mock).mockReturnValue({
+    (useAuthStore as unknown as Mock).mockReturnValue({
       isLoggedIn: true,
     });
 

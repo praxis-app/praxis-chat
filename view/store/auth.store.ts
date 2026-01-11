@@ -12,7 +12,7 @@ interface AuthState {
   setInviteToken(inviteToken: string | null): void;
 }
 
-export const useAuthSore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   accessToken: localStorage.getItem(LocalStorageKeys.AccessToken),
   inviteToken: localStorage.getItem(LocalStorageKeys.InviteToken),

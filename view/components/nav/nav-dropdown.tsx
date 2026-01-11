@@ -12,7 +12,7 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useLogOut } from '@/hooks/use-log-out';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { truncate } from '@/lib/text.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useNavStore } from '@/store/nav.store';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ interface Props {
 }
 
 export const NavDropdown = ({ trigger }: Props) => {
-  const { isLoggedIn } = useAuthSore();
+  const { isLoggedIn } = useAuthStore();
   const { setIsNavSheetOpen } = useNavStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 

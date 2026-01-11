@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { handleError } from '@/lib/error.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import chroma from 'chroma-js';
 import ColorHash from 'color-hash';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 export const JoinServerPage = () => {
-  const { setInviteToken } = useAuthSore();
+  const { setInviteToken } = useAuthStore();
   const { isLoggedIn, isMeError } = useAuthData();
 
   const navigate = useNavigate();

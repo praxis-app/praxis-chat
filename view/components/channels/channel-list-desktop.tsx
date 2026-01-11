@@ -3,7 +3,7 @@ import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
  * Channel list component for the left navigation panel on desktop
  */
 export const ChannelListDesktop = () => {
-  const { inviteToken } = useAuthSore();
+  const { inviteToken } = useAuthStore();
   const { isAppLoading } = useAppStore();
 
   const { isMeSuccess, isAuthError } = useAuthData();

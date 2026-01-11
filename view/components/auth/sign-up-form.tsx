@@ -18,7 +18,7 @@ import {
 import { useAuthData } from '@/hooks/use-auth-data';
 import { handleError } from '@/lib/error.utils';
 import { t } from '@/lib/shared.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
@@ -81,7 +81,7 @@ interface Props {
 }
 
 export const SignUpForm = ({ setIsRedirecting }: Props) => {
-  const { setIsLoggedIn, setAccessToken } = useAuthSore();
+  const { setIsLoggedIn, setAccessToken } = useAuthStore();
 
   const form = useForm<zod.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),

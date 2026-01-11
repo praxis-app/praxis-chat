@@ -5,13 +5,13 @@ import {
   NavigationPaths,
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
-import { useAuthSore } from '@/store/auth.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const InviteCheck = () => {
-  const { setInviteToken } = useAuthSore();
+  const { setInviteToken } = useAuthStore();
   const { isLoggedIn, isMeSuccess, isAuthError } = useAuthData();
 
   const { t } = useTranslation();
