@@ -25,7 +25,7 @@ export const ChannelSettingsSheet = ({ editChannel, trigger }: Props) => {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent
         side="left"
-        className="bg-accent dark:bg-background min-w-[100%] border-r-0 pt-4"
+        className="bg-accent dark:bg-background min-w-full border-r-0 pt-4"
       >
         <SheetHeader className="pb-4">
           <SheetTitle>{t('channels.headers.channelSettings')}</SheetTitle>
