@@ -87,7 +87,7 @@ export const NavSheet = ({ trigger }: Props) => {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent
         side="left"
-        className="bg-accent dark:bg-background min-w-[100%] border-r-0 px-0 pt-4"
+        className="bg-accent dark:bg-background min-w-full border-r-0 px-0 pt-4"
         onEscapeKeyDown={(e) => e.preventDefault()}
         hideCloseButton
       >
