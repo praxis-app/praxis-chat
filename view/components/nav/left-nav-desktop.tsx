@@ -27,6 +27,7 @@ import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
+import { useAppStore } from '@/store/app.store';
 import { useAuthSore } from '@/store/auth.store';
 import { CurrentUserRes } from '@/types/user.types';
 import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
@@ -47,7 +48,9 @@ interface Props {
 }
 
 export const LeftNavDesktop = ({ me }: Props) => {
-  const { isLoggedIn, isAppLoading } = useAuthSore();
+  const { isLoggedIn } = useAuthSore();
+  const { isAppLoading } = useAppStore();
+
   const [showRoomFormDialog, setShowRoomFormDialog] = useState(false);
   const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);
 

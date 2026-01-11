@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { truncate } from '@/lib/text.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAppStore } from '@/store/app.store';
 import { ChannelRes } from '@/types/channel.types';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const ChannelTopNav = ({ channel }: Props) => {
-  const { isAppLoading } = useAuthSore();
+  const { isAppLoading } = useAppStore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
