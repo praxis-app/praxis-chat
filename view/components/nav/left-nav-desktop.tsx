@@ -151,7 +151,7 @@ export const LeftNavDesktop = ({ me }: Props) => {
               </DialogFooter>
             )}
             onSubmit={() => setShowRoomFormDialog(false)}
-            className="min-w-[25rem]"
+            className="min-w-100"
           />
         </DialogContent>
       </Dialog>
