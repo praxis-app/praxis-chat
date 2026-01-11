@@ -47,7 +47,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
         userId={user.id}
         me={me}
         trigger={
-          <button className="flex-shrink-0 cursor-pointer self-start">
+          <button className="shrink-0 cursor-pointer self-start">
             <UserAvatar
               name={name}
               userId={user.id}

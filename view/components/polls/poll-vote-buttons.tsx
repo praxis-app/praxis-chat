@@ -146,7 +146,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
           size="sm"
           className={cn(
             'col-span-1',
-            myVote?.voteType === vote && '!bg-primary/15',
+            myVote?.voteType === vote && 'bg-primary/15!',
           )}
           onClick={() => handleVoteBtnClick(vote)}
           disabled={isPending}
