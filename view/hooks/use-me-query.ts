@@ -1,9 +1,10 @@
+import { api } from '@/client/api-client';
+import { LocalStorageKeys } from '@/constants/shared.constants';
+import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
+import { CurrentUser } from '@/types/user.types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { api } from '../client/api-client';
-import { LocalStorageKeys } from '../constants/shared.constants';
-import { useAuthSore } from '../store/auth.store';
-import { CurrentUser } from '../types/user.types';
 
 type UseMeQueryOptions = Omit<
   UseQueryOptions<{ user: CurrentUser }>,
@@ -11,8 +12,8 @@ type UseMeQueryOptions = Omit<
 >;
 
 export const useMeQuery = (options?: UseMeQueryOptions) => {
-  const { accessToken, setIsAppLoading, setIsLoggedIn, setAccessToken } =
-    useAuthSore();
+  const { accessToken, setIsLoggedIn, setAccessToken } = useAuthSore();
+  const { setIsAppLoading } = useAppStore();
 
   const defaultOptions: Partial<UseMeQueryOptions> = {
     staleTime: 1000 * 60 * 30,

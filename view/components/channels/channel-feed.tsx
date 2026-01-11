@@ -8,7 +8,7 @@ import { useInView } from '@/hooks/use-in-view';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { useServerData } from '@/hooks/use-server-data';
 import { debounce, throttle } from '@/lib/shared.utils';
-import { useAuthSore } from '@/store/auth.store';
+import { useAppStore } from '@/store/app.store';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import {
   RefObject,
@@ -37,7 +37,7 @@ export const ChannelFeed = ({
   isLastPage,
   onLoadMore,
 }: Props) => {
-  const { isAppLoading } = useAuthSore((state) => state);
+  const { isAppLoading } = useAppStore();
   const { me, isAnon, isLoggedIn } = useAuthData();
   const { serverId } = useServerData();
 

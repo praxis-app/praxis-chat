@@ -1,18 +1,19 @@
 // TODO: Add confirm dialog to log out
 
+import { api } from '@/client/api-client';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useAuthSore } from '@/store/auth.store';
+import { useNavStore } from '@/store/nav.store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { NavigationPaths } from '../constants/shared.constants';
 import { useNavigate } from 'react-router-dom';
-import { useAuthSore } from '../store/auth.store';
-import { api } from '../client/api-client';
 
 interface UseLogOutOptions {
   onSuccess?: () => void;
 }
 
 export const useLogOut = (options: UseLogOutOptions = {}) => {
-  const { setIsLoggedIn, setIsNavSheetOpen, setAccessToken, setInviteToken } =
-    useAuthSore();
+  const { setIsLoggedIn, setAccessToken, setInviteToken } = useAuthSore();
+  const { setIsNavSheetOpen } = useNavStore();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();

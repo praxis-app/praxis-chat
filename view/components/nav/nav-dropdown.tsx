@@ -1,29 +1,31 @@
-import { NavigationPaths } from '@/constants/shared.constants';
-import { useMeQuery } from '@/hooks/use-me-query';
-import { truncate } from '@/lib/text.utils';
-import { useAuthSore } from '@/store/auth.store';
-import { ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MdExitToApp, MdPerson } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
-import { useLogOut } from '../../hooks/use-log-out';
-import { LogOutDialogContent } from '../auth/log-out-dialog-content';
-import { Dialog, DialogTrigger } from '../ui/dialog';
+import { LogOutDialogContent } from '@/components/auth/log-out-dialog-content';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { UserAvatar } from '../users/user-avatar';
-import { UserProfileDrawer } from '../users/user-profile-drawer';
+} from '@/components/ui/dropdown-menu';
+import { UserAvatar } from '@/components/users/user-avatar';
+import { UserProfileDrawer } from '@/components/users/user-profile-drawer';
+import { NavigationPaths } from '@/constants/shared.constants';
+import { useLogOut } from '@/hooks/use-log-out';
+import { useMeQuery } from '@/hooks/use-me-query';
+import { truncate } from '@/lib/text.utils';
+import { useAuthSore } from '@/store/auth.store';
+import { useNavStore } from '@/store/nav.store';
+import { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { MdExitToApp, MdPerson } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   trigger: ReactNode;
 }
 
 export const NavDropdown = ({ trigger }: Props) => {
-  const { isLoggedIn, setIsNavSheetOpen } = useAuthSore();
+  const { isLoggedIn } = useAuthSore();
+  const { setIsNavSheetOpen } = useNavStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const navigate = useNavigate();

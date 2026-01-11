@@ -25,7 +25,7 @@ import { NavigationPaths } from '@/constants/shared.constants';
 import { useAbility } from '@/hooks/use-ability';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { useServerData } from '@/hooks/use-server-data';
-import { useAuthSore } from '@/store/auth.store';
+import { useNavStore } from '@/store/nav.store';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export const NavDrawer = ({ trigger, disabled }: Props) => {
-  const { setIsNavSheetOpen } = useAuthSore();
+  const { setIsNavSheetOpen } = useNavStore();
   const [showNavDrawer, setShowNavDrawer] = useState(false);
   const [showRoomFormDialog, setShowRoomFormDialog] = useState(false);
   const [showServerSwitchDialog, setShowServerSwitchDialog] = useState(false);

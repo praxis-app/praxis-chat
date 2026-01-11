@@ -18,6 +18,7 @@ import { useAbility } from '@/hooks/use-ability';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { useAuthSore } from '@/store/auth.store';
+import { useNavStore } from '@/store/nav.store';
 import { INITIAL_SERVER_NAME } from '@common/servers/server.constants';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +33,8 @@ interface Props {
 }
 
 export const NavSheet = ({ trigger }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen, inviteToken } = useAuthSore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useNavStore();
+  const { inviteToken } = useAuthSore();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
