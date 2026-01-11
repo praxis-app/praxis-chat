@@ -3,15 +3,14 @@ import { t } from '@/lib/shared.utils';
 import { ServerRoleRes } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
+import { POLL_BODY_MAX } from '@common/polls/poll.constants';
 import * as zod from 'zod';
-
-const PROPOSAL_BODY_MAX = 6000;
 
 export const createPollFormSchema = zod
   .object({
     body: zod
       .string()
-      .max(PROPOSAL_BODY_MAX, {
+      .max(POLL_BODY_MAX, {
         message: t('polls.errors.longBody'),
       })
       .optional(),

@@ -15,6 +15,7 @@ import { cn, debounce, t } from '@/lib/shared.utils';
 import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
+import { MESSAGE_BODY_MAX } from '@common/messages/message.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react';
@@ -25,8 +26,6 @@ import { MdAdd } from 'react-icons/md';
 import { TbMicrophoneFilled } from 'react-icons/tb';
 import { toast } from 'sonner';
 import * as zod from 'zod';
-
-const MESSAGE_BODY_MAX = 6000;
 
 const formSchema = zod.object({
   body: zod.string().max(MESSAGE_BODY_MAX, {
