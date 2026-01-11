@@ -7,8 +7,8 @@ interface AuthState {
   isLoggedIn: boolean;
   accessToken: string | null;
   inviteToken: string | null;
-  setAccessToken(accessToken: string | null): void;
   setIsLoggedIn(isLoggedIn: boolean): void;
+  setAccessToken(accessToken: string | null): void;
   setInviteToken(inviteToken: string | null): void;
 }
 
@@ -17,11 +17,11 @@ export const useAuthSore = create<AuthState>((set) => ({
   accessToken: localStorage.getItem(LocalStorageKeys.AccessToken),
   inviteToken: localStorage.getItem(LocalStorageKeys.InviteToken),
 
-  setAccessToken(accessToken) {
-    set({ accessToken });
-  },
   setIsLoggedIn(isLoggedIn) {
     set({ isLoggedIn });
+  },
+  setAccessToken(accessToken) {
+    set({ accessToken });
   },
   setInviteToken(inviteToken) {
     set({ inviteToken });
