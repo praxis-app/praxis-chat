@@ -1,15 +1,15 @@
+import { NavSheet } from '@/components/nav/nav-sheet';
+import { Button } from '@/components/ui/button';
 import { BrowserEvents, KeyCodes } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useAppStore } from '@/store/app.store';
+import { useServerData } from '@/hooks/use-server-data';
+import { useNavStore } from '@/store/nav.store';
 import { ReactNode, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
 import { MdSearch } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useServerData } from '../../hooks/use-server-data';
-import { Button } from '../ui/button';
-import { NavSheet } from './nav-sheet';
 
 interface Props {
   header?: string;
@@ -24,7 +24,7 @@ export const TopNav = ({
   backBtnIcon,
   goBackOnEscape = false,
 }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useNavStore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();

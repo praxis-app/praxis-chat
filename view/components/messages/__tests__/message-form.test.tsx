@@ -1,14 +1,14 @@
-import { useAppStore } from '@/store/app.store';
+import { MessageForm } from '@/components/messages/message-form';
+import { useAuthStore } from '@/store/auth.store';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { MessageForm } from '../message-form';
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({}),
 }));
 
-vi.mock('@/store/app.store');
+vi.mock('@/store/auth.store');
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -33,11 +33,11 @@ vi.mock('@tanstack/react-query', async () => {
 describe('MessageForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAppStore as unknown as Mock).mockClear();
+    (useAuthStore as unknown as Mock).mockClear();
   });
 
   it('should show an image preview when an image is selected', () => {
-    (useAppStore as unknown as Mock).mockReturnValue({
+    (useAuthStore as unknown as Mock).mockReturnValue({
       isLoggedIn: true,
     });
 

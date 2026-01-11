@@ -8,7 +8,7 @@ import { useAuthData } from '@/hooks/use-auth-data';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useAppStore } from '@/store/app.store';
+import { useAuthStore } from '@/store/auth.store';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
@@ -40,7 +40,7 @@ interface Props {
 }
 
 export const ChannelView = ({ channel }: Props) => {
-  const { inviteToken } = useAppStore();
+  const { inviteToken } = useAuthStore();
   const [isLastPage, setIsLastPage] = useState(false);
 
   const feedBoxRef = useRef<HTMLDivElement>(null);

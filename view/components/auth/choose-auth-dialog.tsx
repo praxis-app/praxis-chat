@@ -16,7 +16,7 @@ import {
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '@/lib/error.utils';
-import { useAppStore } from '@/store/app.store';
+import { useAuthStore } from '@/store/auth.store';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ interface Props {
 }
 
 export const ChooseAuthDialog = ({ isOpen, setIsOpen, sendMessage }: Props) => {
-  const { inviteToken, setIsLoggedIn, setAccessToken } = useAppStore(
+  const { inviteToken, setIsLoggedIn, setAccessToken } = useAuthStore(
     (state) => state,
   );
 

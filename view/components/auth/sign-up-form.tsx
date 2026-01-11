@@ -1,21 +1,7 @@
 // TODO: Add show password toggle
 
 import { api } from '@/client/api-client';
-import {
-  LocalStorageKeys,
-  NavigationPaths,
-} from '@/constants/shared.constants';
-import { useAuthData } from '@/hooks/use-auth-data';
-import { t } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
-import * as zod from 'zod';
-import { handleError } from '../../lib/error.utils';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -23,8 +9,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  LocalStorageKeys,
+  NavigationPaths,
+} from '@/constants/shared.constants';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { handleError } from '@/lib/error.utils';
+import { t } from '@/lib/shared.utils';
+import { useAuthStore } from '@/store/auth.store';
 import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
@@ -33,6 +27,12 @@ import {
   PASSWORD_MIN_LENGTH,
   VALID_NAME_REGEX,
 } from '@common/users/user.constants';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
+import * as zod from 'zod';
 
 const signUpFormSchema = zod
   .object({
@@ -81,7 +81,7 @@ interface Props {
 }
 
 export const SignUpForm = ({ setIsRedirecting }: Props) => {
-  const { setIsLoggedIn, setAccessToken } = useAppStore();
+  const { setIsLoggedIn, setAccessToken } = useAuthStore();
 
   const form = useForm<zod.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
