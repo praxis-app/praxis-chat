@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 
 interface UseAuthDataProps {
@@ -13,7 +13,7 @@ export const useAuthData = ({
   isMeQueryEnabled = true,
   isFirstUserQueryEnabled = false,
 }: UseAuthDataProps = {}) => {
-  const { isLoggedIn, accessToken, inviteToken } = useAppStore();
+  const { isLoggedIn, accessToken, inviteToken } = useAuthSore();
 
   const {
     data: meData,

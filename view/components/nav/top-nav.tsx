@@ -1,6 +1,6 @@
 import { BrowserEvents, KeyCodes } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { ReactNode, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
@@ -24,7 +24,7 @@ export const TopNav = ({
   backBtnIcon,
   goBackOnEscape = false,
 }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useAuthSore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();

@@ -12,7 +12,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { cn } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import chroma from 'chroma-js';
 import ColorHash from 'color-hash';
@@ -26,7 +26,7 @@ interface Props {
 }
 
 export const SwitchServerDialog = ({ open, onOpenChange, onSelect }: Props) => {
-  const { isLoggedIn } = useAppStore();
+  const { isLoggedIn } = useAuthSore();
 
   const { t } = useTranslation();
   const { serverSlug } = useParams();

@@ -12,13 +12,13 @@ import {
   NavigationPaths,
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const useServerData = () => {
-  const { inviteToken, setInviteToken } = useAppStore();
+  const { inviteToken, setInviteToken } = useAuthSore();
 
   const { serverSlug } = useParams();
   const navigate = useNavigate();

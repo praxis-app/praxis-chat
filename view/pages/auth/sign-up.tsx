@@ -15,7 +15,7 @@ import {
   NavigationPaths,
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export const SignUp = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const { isLoggedIn, setInviteToken } = useAppStore();
+  const { isLoggedIn, setInviteToken } = useAuthSore();
 
   const { t } = useTranslation();
   const { token } = useParams();

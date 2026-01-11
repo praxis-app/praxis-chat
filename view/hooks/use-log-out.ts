@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { NavigationPaths } from '../constants/shared.constants';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '../store/app.store';
+import { useAuthSore } from '../store/auth.store';
 import { api } from '../client/api-client';
 
 interface UseLogOutOptions {
@@ -12,7 +12,7 @@ interface UseLogOutOptions {
 
 export const useLogOut = (options: UseLogOutOptions = {}) => {
   const { setIsLoggedIn, setIsNavSheetOpen, setAccessToken, setInviteToken } =
-    useAppStore();
+    useAuthSore();
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();

@@ -1,11 +1,11 @@
-import { useAppStore } from '@/store/app.store';
+import { ChannelFeed } from '@/components/channels/channel-feed';
+import { useAuthSore } from '@/store/auth.store';
 import { customRender as render } from '@/test/lib/custom-render';
 import { FeedItemRes } from '@/types/channel.types';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { ChannelFeed } from '../channel-feed';
 
-vi.mock('@/store/app.store');
+vi.mock('@/store/auth.store');
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -87,11 +87,11 @@ describe('ChannelFeed', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    (useAppStore as unknown as Mock).mockClear();
+    (useAuthSore as unknown as Mock).mockClear();
   });
 
   it('should render messages when they are provided', () => {
-    (useAppStore as unknown as Mock).mockReturnValue({
+    (useAuthSore as unknown as Mock).mockReturnValue({
       isLoggedIn: true,
       isAppLoading: false,
     });
@@ -111,7 +111,7 @@ describe('ChannelFeed', () => {
   });
 
   it('should render the welcome message when user is not logged in and there are no messages', () => {
-    (useAppStore as unknown as Mock).mockReturnValue({
+    (useAuthSore as unknown as Mock).mockReturnValue({
       isLoggedIn: false,
       isAppLoading: false,
     });

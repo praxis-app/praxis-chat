@@ -1,7 +1,7 @@
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useMeQuery } from '@/hooks/use-me-query';
 import { truncate } from '@/lib/text.utils';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdExitToApp, MdPerson } from 'react-icons/md';
@@ -23,7 +23,7 @@ interface Props {
 }
 
 export const NavDropdown = ({ trigger }: Props) => {
-  const { isLoggedIn, setIsNavSheetOpen } = useAppStore();
+  const { isLoggedIn, setIsNavSheetOpen } = useAuthSore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const navigate = useNavigate();

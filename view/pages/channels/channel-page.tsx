@@ -2,12 +2,12 @@ import { api } from '@/client/api-client';
 import { ChannelView } from '@/components/channels/channel-view';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 export const ChannelPage = () => {
-  const { inviteToken } = useAppStore();
+  const { inviteToken } = useAuthSore();
   const { serverId } = useServerData();
 
   const { channelId, serverSlug } = useParams();

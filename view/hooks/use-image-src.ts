@@ -1,7 +1,7 @@
 import { api } from '@/client/api-client';
 import { useInView } from '@/hooks/use-in-view';
 import { useServerData } from '@/hooks/use-server-data';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { RefObject } from 'react';
 
@@ -26,7 +26,7 @@ export const useImageSrc = ({
   onError,
   ref,
 }: UseImageSrcProps) => {
-  const { inviteToken } = useAppStore();
+  const { inviteToken } = useAuthSore();
   const { serverId } = useServerData();
 
   const { viewed } = useInView(ref, '100px');

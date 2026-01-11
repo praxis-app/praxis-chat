@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import { LocalStorageKeys } from '../constants/shared.constants';
 
-interface AppState {
+interface AuthState {
   isLoggedIn: boolean;
   isAppLoading: boolean;
   accessToken: string | null;
@@ -19,7 +19,7 @@ interface AppState {
   setIsNavSheetOpen(isNavSheetOpen: boolean): void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAuthSore = create<AuthState>((set) => ({
   isLoggedIn: false,
   isNavSheetOpen: false,
   isAppLoading: !!localStorage.getItem(LocalStorageKeys.AccessToken),

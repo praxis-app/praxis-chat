@@ -1,9 +1,14 @@
+import { WelcomeMessage } from '@/components/invites/welcome-message';
+import { BotMessage } from '@/components/messages/bot-message';
+import { Message } from '@/components/messages/message';
+import { InlinePoll } from '@/components/polls/inline-poll';
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useInView } from '@/hooks/use-in-view';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
+import { useServerData } from '@/hooks/use-server-data';
 import { debounce, throttle } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import {
   RefObject,
@@ -13,11 +18,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useServerData } from '../../hooks/use-server-data';
-import { WelcomeMessage } from '../invites/welcome-message';
-import { BotMessage } from '../messages/bot-message';
-import { Message } from '../messages/message';
-import { InlinePoll } from '../polls/inline-poll';
 
 const LOAD_MORE_THROTTLE_MS = 1500;
 const IN_VIEW_THRESHOLD = 50;
@@ -37,7 +37,7 @@ export const ChannelFeed = ({
   isLastPage,
   onLoadMore,
 }: Props) => {
-  const { isAppLoading } = useAppStore((state) => state);
+  const { isAppLoading } = useAuthSore((state) => state);
   const { me, isAnon, isLoggedIn } = useAuthData();
   const { serverId } = useServerData();
 

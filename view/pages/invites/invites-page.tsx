@@ -6,14 +6,14 @@ import { TopNav } from '@/components/nav/top-nav';
 import { Card, CardContent } from '@/components/ui/card';
 import { NavigationPaths } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useServerData } from '../../hooks/use-server-data';
 
 export const InvitesPage = () => {
-  const { isLoggedIn } = useAppStore();
+  const { isLoggedIn } = useAuthSore();
 
   const { t } = useTranslation();
   const navigate = useNavigate();

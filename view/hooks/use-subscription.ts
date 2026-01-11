@@ -1,6 +1,6 @@
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { getWebSocketURL } from '@/lib/shared.utils';
-import { useAppStore } from '@/store/app.store';
+import { useAuthSore } from '@/store/auth.store';
 import { PubSubMessage, SubscriptionOptions } from '@/types/shared.types';
 import { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
@@ -9,7 +9,7 @@ export const useSubscription = (
   channel: string,
   options?: SubscriptionOptions,
 ) => {
-  const isLoggedIn = useAppStore((state) => state.isLoggedIn);
+  const isLoggedIn = useAuthSore((state) => state.isLoggedIn);
   const isEnabled = options?.enabled ?? true;
 
   const getOptions = () => {
