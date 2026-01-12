@@ -36,6 +36,18 @@ export const createPollFormSchema = zod
     },
   )
   .refine(
+    (data) => {
+      if (data.action === 'general') {
+        return !!data.body;
+      }
+      return true;
+    },
+    {
+      path: ['body'],
+      message: t('polls.errors.generalProposalRequiresBody'),
+    },
+  )
+  .refine(
     (data) =>
       data.action === 'general' ||
       data.action === 'change-role' ||
