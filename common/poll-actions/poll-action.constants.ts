@@ -3,6 +3,7 @@ export const POLL_ACTION_TYPE = [
   'change-role',
   'create-role',
   'plan-event',
+  'general',
   'test',
 ] as const;
 
