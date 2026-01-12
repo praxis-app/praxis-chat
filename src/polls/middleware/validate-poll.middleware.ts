@@ -85,6 +85,17 @@ const pollSchema = zod
     {
       message: 'Test polls must include a body',
     },
+  )
+  .refine(
+    (data) => {
+      if (data.action.actionType === 'general') {
+        return !!data.body;
+      }
+      return true;
+    },
+    {
+      message: 'General polls must include a body',
+    },
   );
 
 export const validatePoll = async (

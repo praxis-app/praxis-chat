@@ -205,6 +205,7 @@
       "changeSettings": "Change settings",
       "createRole": "Create role",
       "planEvent": "Plan event",
+      "general": "General decision",
       "test": "Test"
     },
     "prompts": {
@@ -218,7 +219,8 @@
       "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role.",
       "errorCreatingProposal": "Error creating proposal",
       "longBody": "Proposal body cannot exceed 6000 characters",
-      "testProposalRequiresBody": "Test proposals must include a body"
+      "testProposalRequiresBody": "Test proposals must include a body",
+      "generalProposalRequiresBody": "General proposals must include a body"
     }
   },
 

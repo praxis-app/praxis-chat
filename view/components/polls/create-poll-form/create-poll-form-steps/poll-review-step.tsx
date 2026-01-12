@@ -73,6 +73,9 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const { t } = useTranslation();
 
   const getPollActionLabel = (action: PollActionType | '') => {
+    if (action === 'general') {
+      return t('polls.actionTypes.general');
+    }
     if (action === 'change-role') {
       return t('polls.actionTypes.changeRole');
     }
@@ -99,16 +102,18 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   };
 
   const handleSubmitBtnClick = () => {
-    if (
-      !nameChanged &&
-      !colorChanged &&
-      !memberChanges.length &&
-      !Object.keys(permissionChanges).length
-    ) {
-      form.setError('root', {
-        message: t('polls.errors.changeRoleRequiresChanges'),
-      });
-      return;
+    if (action === 'change-role') {
+      if (
+        !nameChanged &&
+        !colorChanged &&
+        !memberChanges.length &&
+        !Object.keys(permissionChanges).length
+      ) {
+        form.setError('root', {
+          message: t('polls.errors.changeRoleRequiresChanges'),
+        });
+        return;
+      }
     }
     onSubmit();
   };
