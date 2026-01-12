@@ -45,6 +45,9 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
   };
 
   const getPollActionLabel = (action: PollActionType | '') => {
+    if (action === 'general') {
+      return t('polls.actionTypes.general');
+    }
     if (action === 'change-role') {
       return t('polls.actionTypes.changeRole');
     }

@@ -35,10 +35,16 @@ export const createPollFormSchema = zod
       message: t('polls.errors.testProposalRequiresBody'),
     },
   )
-  .refine((data) => data.action === 'test' || data.action === 'change-role', {
-    message: t('prompts.inDev'),
-    path: ['action'],
-  });
+  .refine(
+    (data) =>
+      data.action === 'general' ||
+      data.action === 'change-role' ||
+      data.action === 'test',
+    {
+      message: t('prompts.inDev'),
+      path: ['action'],
+    },
+  );
 
 export type CreatePollFormSchema = zod.infer<typeof createPollFormSchema>;
 
