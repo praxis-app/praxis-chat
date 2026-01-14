@@ -56,12 +56,6 @@ export const getInlinePolls = async (
       'pollAction.actionType',
     ])
     .addSelect([
-      'pollVotes.id',
-      'pollVotes.voteType',
-      'pollVotes.createdAt',
-      'pollVotes.updatedAt',
-    ])
-    .addSelect([
       'pollConfig.decisionMakingModel',
       'pollConfig.ratificationThreshold',
       'pollConfig.quorumEnabled',
@@ -90,6 +84,7 @@ export const getInlinePolls = async (
       'pollActionRoleMemberUser.name',
       'pollActionRoleMemberUser.displayName',
     ])
+    .addSelect(['pollVotes.id', 'pollVotes.voteType'])
     .addSelect(['pollUser.id', 'pollUser.name', 'pollUser.displayName'])
     .addSelect(['pollImage.id', 'pollImage.filename', 'pollImage.createdAt'])
     .leftJoin('poll.user', 'pollUser')

@@ -1,6 +1,11 @@
 import { VoteType } from '@common/votes/vote.types';
 import { UpdateResult } from 'typeorm';
 
+export interface VoteRes {
+  id: string;
+  voteType: VoteType;
+}
+
 export interface CreateVoteRes {
   id: string;
   pollId: string;
