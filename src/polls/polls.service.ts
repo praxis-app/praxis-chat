@@ -64,6 +64,8 @@ export const getInlinePolls = async (
     .addSelect([
       'pollConfig.decisionMakingModel',
       'pollConfig.ratificationThreshold',
+      'pollConfig.quorumEnabled',
+      'pollConfig.quorumThreshold',
       'pollConfig.disagreementsLimit',
       'pollConfig.abstainsLimit',
       'pollConfig.closingAt',
@@ -247,6 +249,8 @@ export const createPoll = async (
   const pollConfig: Partial<PollConfig> = {
     decisionMakingModel: serverConfig.decisionMakingModel,
     ratificationThreshold: serverConfig.ratificationThreshold,
+    quorumEnabled: serverConfig.quorumEnabled,
+    quorumThreshold: serverConfig.quorumThreshold,
     disagreementsLimit: serverConfig.disagreementsLimit,
     abstainsLimit: serverConfig.abstainsLimit,
     closingAt: closingAt || configClosingAt,
@@ -422,6 +426,8 @@ export const deletePoll = async (pollId: string) => {
 const hasConsensus = async (
   votes: Vote[],
   {
+    quorumEnabled,
+    quorumThreshold,
     ratificationThreshold,
     disagreementsLimit,
     abstainsLimit,
@@ -433,12 +439,33 @@ const hasConsensus = async (
     return false;
   }
 
-  const agreementsNeeded = memberCount * (ratificationThreshold * 0.01);
+  // Quorum check (if enabled)
+  if (quorumEnabled) {
+    const totalParticipants = votes.length;
+    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    if (totalParticipants < requiredQuorum) {
+      return false;
+    }
+  }
+
+  // Threshold check (always performed)
   const { agreements, disagreements, abstains, blocks } =
     sortConsensusVotesByType(votes);
+  const yesVotes = agreements.length;
+  const noVotes = disagreements.length;
+  const totalParticipantVotes = yesVotes + noVotes;
+
+  if (totalParticipantVotes === 0) {
+    return false;
+  }
+
+  const requiredThreshold =
+    totalParticipantVotes * (ratificationThreshold * 0.01);
+  if (yesVotes < requiredThreshold) {
+    return false;
+  }
 
   const isRatifiable =
-    agreements.length >= agreementsNeeded &&
     disagreements.length <= disagreementsLimit &&
     abstains.length <= abstainsLimit &&
     blocks.length === 0;
@@ -460,15 +487,42 @@ const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
 
 const hasMajorityVote = (
   votes: Vote[],
-  { ratificationThreshold, closingAt }: PollConfig,
+  {
+    ratificationThreshold,
+    quorumEnabled,
+    quorumThreshold,
+    closingAt,
+  }: PollConfig,
   memberCount: number,
 ) => {
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
-  const { agreements } = sortMajorityVotesByType(votes);
 
-  return agreements.length >= memberCount * (ratificationThreshold * 0.01);
+  // Quorum check (if enabled)
+  if (quorumEnabled) {
+    const totalParticipants = votes.length;
+    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    if (totalParticipants < requiredQuorum) {
+      return false;
+    }
+  }
+
+  // Threshold check (always performed)
+  const { agreements, disagreements } = sortMajorityVotesByType(votes);
+  const yesVotes = agreements.length;
+  const noVotes = disagreements.length;
+  const totalParticipantVotes = yesVotes + noVotes;
+
+  if (totalParticipantVotes === 0) {
+    return false;
+  }
+
+  const requiredThreshold =
+    totalParticipantVotes * (ratificationThreshold * 0.01);
+  const isRatifiable = yesVotes >= requiredThreshold;
+
+  return isRatifiable;
 };
 
 /** Synchronizes polls with regard to voting duration and ratifiability */
