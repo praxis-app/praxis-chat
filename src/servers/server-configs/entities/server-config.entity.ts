@@ -29,6 +29,12 @@ export class ServerConfig {
   @Column({ default: 51 })
   ratificationThreshold: number;
 
+  @Column({ type: 'boolean', default: true })
+  quorumEnabled: boolean;
+
+  @Column({ type: 'int', default: 0 })
+  quorumThreshold: number;
+
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
 
