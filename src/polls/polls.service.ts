@@ -1,6 +1,7 @@
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
@@ -23,9 +24,9 @@ import { PollDto } from './dtos/poll.dto';
 import { PollConfig } from './entities/poll-config.entity';
 import { Poll } from './entities/poll.entity';
 
+const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
 const pollRepository = dataSource.getRepository(Poll);
-const userRepository = dataSource.getRepository(User);
 const voteRepository = dataSource.getRepository(Vote);
 
 export const getPoll = (id: string, relations?: string[]) => {
@@ -104,20 +105,22 @@ export const getInlinePolls = async (
     .take(limit)
     .getRawAndEntities();
 
-  // Fetch the current user's votes
+  // Get the current user's vote for each poll
   const pollIds = polls.map((p) => p.id);
   const myVotesMap = currentUserId
     ? await getMyVotesMap(pollIds, currentUserId)
     : {};
 
   // Get users eligible to vote on polls (used for quorum calculation)
-  const pollMemberCount = await getPollMemberCount();
+  const pollMemberCountMap = await getPollMemberCountMap(pollIds);
 
+  // Get unwrapped channel keys for polls
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
     polls.filter((poll) => poll.keyId).map((poll) => poll.keyId!),
   );
 
-  const profilePictures = await usersService.getUserProfilePicturesMap(
+  // Get profile pictures for poll authors
+  const profilePicturesMap = await usersService.getUserProfilePicturesMap(
     polls.map((p) => p.user.id),
   );
 
@@ -170,13 +173,13 @@ export const getInlinePolls = async (
       })),
       user: {
         ...poll.user,
-        profilePicture: profilePictures[poll.user.id],
+        profilePicture: profilePicturesMap[poll.user.id],
       },
       votes: poll.votes,
       config: poll.config,
       createdAt: poll.createdAt,
       agreementVoteCount,
-      memberCount: pollMemberCount,
+      memberCount: pollMemberCountMap[poll.id],
       myVote,
       body,
     };
@@ -191,7 +194,7 @@ export const isPollRatifiable = async (pollId: string) => {
     return false;
   }
 
-  const memberCount = await getPollMemberCount();
+  const memberCount = await getPollMemberCount(pollId);
 
   if (config.decisionMakingModel === 'consensus') {
     return hasConsensus(votes, config, memberCount);
@@ -276,7 +279,7 @@ export const createPoll = async (
 
   const poll = await pollRepository.save(pollData);
 
-  const pollMemberCount = await getPollMemberCount();
+  const pollMemberCount = await getPollMemberCount(poll.id);
 
   let pollActionRole: PollActionRole | undefined;
   if (action.serverRole) {
@@ -542,14 +545,43 @@ const getMyVotesMap = async (pollIds: string[], currentUserId: string) => {
   }, {});
 };
 
-// TODO: Account for instances with multiple servers / guilds
-const getPollMemberCount = async () => {
-  return userRepository.count({
-    where: {
-      anonymous: false,
-      locked: false,
-    },
-  });
+const getPollMemberCount = async (pollId: string) => {
+  return channelMemberRepository
+    .createQueryBuilder('channelMember')
+    .innerJoin('channelMember.channel', 'channel')
+    .innerJoin('channel.polls', 'poll', 'poll.id = :pollId', { pollId })
+    .getCount();
+};
+
+const getPollMemberCountMap = async (pollIds: string[]) => {
+  if (pollIds.length === 0) {
+    return {};
+  }
+
+  const results = await channelMemberRepository
+    .createQueryBuilder('channelMember')
+    .select('poll.id', 'pollId')
+    .addSelect('COUNT(channelMember.id)', 'count')
+    .innerJoin('channelMember.channel', 'channel')
+    .innerJoin('channel.polls', 'poll', 'poll.id IN (:...pollIds)', {
+      pollIds,
+    })
+    .groupBy('poll.id')
+    .getRawMany();
+
+  const map: Record<string, number> = {};
+  for (const result of results) {
+    map[result.pollId] = parseInt(result.count, 10);
+  }
+
+  // Ensure all pollIds have an entry (default to 0 if not found)
+  for (const pollId of pollIds) {
+    if (!(pollId in map)) {
+      map[pollId] = 0;
+    }
+  }
+
+  return map;
 };
 
 const getNewPollKey = (serverId: string, channelId: string, userId: string) => {
