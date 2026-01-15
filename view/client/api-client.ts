@@ -168,7 +168,7 @@ class ApiClient {
     inviteToken?: string | null,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/feed`;
-    return this.executeRequest<{ feed: FeedItemRes[]; pollMemberCount: number }>(
+    return this.executeRequest<{ feed: FeedItemRes[] }>(
       'get',
       path,
       {
@@ -249,7 +249,7 @@ class ApiClient {
     data: CreatePollReq,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/polls`;
-    return this.executeRequest<{ poll: PollRes; pollMemberCount: number }>(
+    return this.executeRequest<{ poll: PollRes }>(
       'post',
       path,
       {

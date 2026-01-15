@@ -12,10 +12,11 @@ export interface PollRes {
   config: PollConfigRes;
   images: ImageRes[];
   user: UserRes;
-  createdAt: string;
   votes: VoteRes[];
   myVote?: VoteRes;
   agreementVoteCount: number;
+  memberCount: number;
+  createdAt: string;
 }
 
 export interface PollConfigRes {

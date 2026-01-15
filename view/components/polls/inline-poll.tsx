@@ -26,16 +26,25 @@ import { PollVoteButtons } from './poll-vote-buttons';
 interface Props {
   poll: PollRes;
   channel: ChannelRes;
-  pollMemberCount: number;
   me?: CurrentUser;
 }
 
-export const InlinePoll = ({ poll, channel, pollMemberCount, me }: Props) => {
+export const InlinePoll = ({ poll, channel, me }: Props) => {
   const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { id, body, user, myVote, config, action, stage, votes, createdAt } =
-    poll;
+  const {
+    id,
+    body,
+    user,
+    myVote,
+    config,
+    action,
+    stage,
+    votes,
+    createdAt,
+    memberCount,
+  } = poll;
 
   const totalVotes = votes?.length ?? 0;
 
@@ -65,7 +74,7 @@ export const InlinePoll = ({ poll, channel, pollMemberCount, me }: Props) => {
       return null;
     }
     const requiredQuorum = Math.ceil(
-      pollMemberCount * (config.quorumThreshold * 0.01),
+      memberCount * (config.quorumThreshold * 0.01),
     );
     const percentage =
       requiredQuorum > 0
@@ -74,12 +83,12 @@ export const InlinePoll = ({ poll, channel, pollMemberCount, me }: Props) => {
     return {
       current: totalVotes,
       required: requiredQuorum,
-      total: pollMemberCount,
+      total: memberCount,
       threshold: config.quorumThreshold,
       percentage,
       met: totalVotes >= requiredQuorum,
     };
-  }, [config, totalVotes, pollMemberCount]);
+  }, [config, totalVotes, memberCount]);
 
   const thresholdProgress = useMemo(() => {
     const { yesVotes, noVotes } = voteStats;

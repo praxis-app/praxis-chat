@@ -31,7 +31,6 @@ interface NewMessagePayload {
 interface NewPollPayload {
   type: PubSubMessageType.POLL;
   poll: PollRes;
-  pollMemberCount: number;
 }
 
 interface ImageMessagePayload {
@@ -127,7 +126,7 @@ export const ChannelView = ({ channel }: Props) => {
         queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
           if (!oldData) {
             return {
-              pages: [{ feed: [buildFeedItem()], pollMemberCount: 0 }],
+              pages: [{ feed: [buildFeedItem()] }],
               pageParams: [0],
             };
           }
@@ -150,7 +149,7 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return { feed: updatedFeed, pollMemberCount: page.pollMemberCount };
+              return { feed: updatedFeed };
             }
 
             // Add new message to first page only
@@ -162,7 +161,7 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return { feed: updatedFeed, pollMemberCount: page.pollMemberCount };
+              return { feed: updatedFeed };
             }
             return page;
           });
@@ -192,7 +191,7 @@ export const ChannelView = ({ channel }: Props) => {
               );
               return { ...item, images } as FeedItemRes;
             });
-            return { feed, pollMemberCount: page.pollMemberCount };
+            return { feed };
           });
 
           return { pages, pageParams: oldData.pageParams };
@@ -219,9 +218,7 @@ export const ChannelView = ({ channel }: Props) => {
         queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
           if (!oldData) {
             return {
-              pages: [
-                { feed: [newFeedItem], pollMemberCount: body.pollMemberCount },
-              ],
+              pages: [{ feed: [newFeedItem] }],
               pageParams: [0],
             };
           }
@@ -240,10 +237,7 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return {
-                feed: updatedFeed,
-                pollMemberCount: body.pollMemberCount,
-              };
+              return { feed: updatedFeed };
             }
             return page;
           });
@@ -280,7 +274,6 @@ export const ChannelView = ({ channel }: Props) => {
           feedBoxRef={feedBoxRef}
           onLoadMore={fetchNextPage}
           feed={feedData?.pages.flatMap((page) => page.feed) || []}
-          pollMemberCount={feedData?.pages[0]?.pollMemberCount ?? 0}
           isLastPage={isLastPage}
         />
 

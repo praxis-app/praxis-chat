@@ -27,7 +27,6 @@ export type FeedItemRes =
 
 export interface FeedQueryPage {
   feed: FeedItemRes[];
-  pollMemberCount: number;
 }
 
 export interface FeedQuery {

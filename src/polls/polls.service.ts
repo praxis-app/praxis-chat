@@ -176,12 +176,13 @@ export const getInlinePolls = async (
       config: poll.config,
       createdAt: poll.createdAt,
       agreementVoteCount,
+      memberCount: pollMemberCount,
       myVote,
       body,
     };
   });
 
-  return { polls: shapedPolls, pollMemberCount };
+  return { polls: shapedPolls };
 };
 
 export const isPollRatifiable = async (pollId: string) => {
@@ -323,6 +324,7 @@ export const createPoll = async (
     images: attachedImages,
     createdAt: poll.createdAt,
     agreementVoteCount: 0,
+    memberCount: pollMemberCount,
   };
 
   // Publish poll to all other channel members for realtime feed updates
@@ -336,12 +338,11 @@ export const createPoll = async (
       {
         type: PubSubMessageType.POLL,
         poll: shapedPoll,
-        pollMemberCount,
       },
     );
   }
 
-  return { poll: shapedPoll, pollMemberCount };
+  return { poll: shapedPoll };
 };
 
 export const savePollImage = async (
