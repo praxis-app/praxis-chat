@@ -110,7 +110,7 @@ export const getInlinePolls = async (
     ? await getMyVotesMap(pollIds, currentUserId)
     : {};
 
-  // Get users eligible to vote on this poll
+  // Get users eligible to vote on polls (used for quorum calculation)
   const pollMemberCount = await getPollMemberCount();
 
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
@@ -129,9 +129,6 @@ export const getInlinePolls = async (
       const unwrappedKey = unwrappedKeyMap[keyId];
       body = decryptText(ciphertext, tag, iv, unwrappedKey);
     }
-    const votesNeededToRatify = Math.ceil(
-      pollMemberCount * (poll.config.ratificationThreshold * 0.01),
-    );
 
     const agreementVoteCount = poll.votes.filter(
       (vote) => vote.voteType === 'agree',
@@ -178,14 +175,13 @@ export const getInlinePolls = async (
       votes: poll.votes,
       config: poll.config,
       createdAt: poll.createdAt,
-      votesNeededToRatify,
       agreementVoteCount,
       myVote,
       body,
     };
   });
 
-  return shapedPolls;
+  return { polls: shapedPolls, pollMemberCount };
 };
 
 export const isPollRatifiable = async (pollId: string) => {
@@ -280,9 +276,6 @@ export const createPoll = async (
   const poll = await pollRepository.save(pollData);
 
   const pollMemberCount = await getPollMemberCount();
-  const votesNeededToRatify = Math.ceil(
-    pollMemberCount * (serverConfig.ratificationThreshold * 0.01),
-  );
 
   let pollActionRole: PollActionRole | undefined;
   if (action.serverRole) {
@@ -320,6 +313,7 @@ export const createPoll = async (
       actionType: poll.action?.actionType,
       serverRole: pollActionRole,
     },
+    config: pollConfig,
     user: {
       id: user.id,
       name: user.name,
@@ -329,7 +323,6 @@ export const createPoll = async (
     images: attachedImages,
     createdAt: poll.createdAt,
     agreementVoteCount: 0,
-    votesNeededToRatify,
   };
 
   // Publish poll to all other channel members for realtime feed updates
@@ -343,11 +336,12 @@ export const createPoll = async (
       {
         type: PubSubMessageType.POLL,
         poll: shapedPoll,
+        pollMemberCount,
       },
     );
   }
 
-  return shapedPoll;
+  return { poll: shapedPoll, pollMemberCount };
 };
 
 export const savePollImage = async (

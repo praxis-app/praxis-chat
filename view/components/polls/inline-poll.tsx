@@ -1,13 +1,22 @@
 import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
 import { PollRes } from '@/types/poll.types';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaClipboard } from 'react-icons/fa';
+import { FaClipboard, FaVoteYea } from 'react-icons/fa';
 import { truncate } from '../../lib/text.utils';
 import { CurrentUser } from '../../types/user.types';
 import { FormattedText } from '../shared/formatted-text';
 import { Badge } from '../ui/badge';
 import { Card, CardAction } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
+import { Progress } from '../ui/progress';
 import { Separator } from '../ui/separator';
 import { UserAvatar } from '../users/user-avatar';
 import { UserProfileDrawer } from '../users/user-profile-drawer';
@@ -17,24 +26,81 @@ import { PollVoteButtons } from './poll-vote-buttons';
 interface Props {
   poll: PollRes;
   channel: ChannelRes;
+  pollMemberCount: number;
   me?: CurrentUser;
 }
 
-export const InlinePoll = ({ poll, channel, me }: Props) => {
+export const InlinePoll = ({ poll, channel, pollMemberCount, me }: Props) => {
   const { t } = useTranslation();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const {
-    id,
-    body,
-    user,
-    myVote,
-    config,
-    action,
-    stage,
-    votesNeededToRatify,
-    agreementVoteCount,
-    createdAt,
-  } = poll;
+  const { id, body, user, myVote, config, action, stage, votes, createdAt } =
+    poll;
+
+  const totalVotes = votes?.length ?? 0;
+
+  const voteStats = useMemo(() => {
+    if (!votes || votes.length === 0) {
+      return { yesVotes: 0, noVotes: 0, abstains: 0, blocks: 0 };
+    }
+    return votes.reduce(
+      (counts, vote) => {
+        if (vote.voteType === 'agree') {
+          counts.yesVotes++;
+        } else if (vote.voteType === 'disagree') {
+          counts.noVotes++;
+        } else if (vote.voteType === 'abstain') {
+          counts.abstains++;
+        } else if (vote.voteType === 'block') {
+          counts.blocks++;
+        }
+        return counts;
+      },
+      { yesVotes: 0, noVotes: 0, abstains: 0, blocks: 0 },
+    );
+  }, [votes]);
+
+  const quorumProgress = useMemo(() => {
+    if (!config?.quorumEnabled) {
+      return null;
+    }
+    const requiredQuorum = Math.ceil(
+      pollMemberCount * (config.quorumThreshold * 0.01),
+    );
+    const percentage =
+      requiredQuorum > 0
+        ? Math.min(100, Math.round((totalVotes / requiredQuorum) * 100))
+        : 100;
+    return {
+      current: totalVotes,
+      required: requiredQuorum,
+      total: pollMemberCount,
+      threshold: config.quorumThreshold,
+      percentage,
+      met: totalVotes >= requiredQuorum,
+    };
+  }, [config, totalVotes, pollMemberCount]);
+
+  const thresholdProgress = useMemo(() => {
+    const { yesVotes, noVotes } = voteStats;
+    const participantVotes = yesVotes + noVotes;
+    const requiredThreshold =
+      participantVotes > 0
+        ? Math.ceil(participantVotes * (config.ratificationThreshold * 0.01))
+        : 0;
+    const percentage =
+      participantVotes > 0
+        ? Math.min(100, Math.round((yesVotes / participantVotes) * 100))
+        : 0;
+    return {
+      current: yesVotes,
+      required: requiredThreshold,
+      total: participantVotes,
+      threshold: config.ratificationThreshold,
+      percentage,
+      met: yesVotes >= requiredThreshold && participantVotes > 0,
+    };
+  }, [voteStats, config]);
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
@@ -96,12 +162,78 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
 
           <div className="flex justify-between">
             <div className="text-muted-foreground flex gap-3 text-sm">
-              <div className="flex items-center">
-                {t('polls.labels.voteCount', {
-                  agreementVoteCount,
-                  votesNeededToRatify,
-                })}
-              </div>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <button className="flex cursor-pointer items-center gap-1.5 hover:underline">
+                    <FaVoteYea className="text-muted-foreground" />
+                    <span>{t('polls.labels.totalVotes', { count: totalVotes })}</span>
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('polls.headers.voteProgress')}</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-6 pt-2">
+                    {quorumProgress && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium">
+                            {t('polls.labels.quorumProgress')}
+                          </span>
+                          <span
+                            className={
+                              quorumProgress.met
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-muted-foreground'
+                            }
+                          >
+                            {quorumProgress.met
+                              ? t('polls.labels.quorumMet')
+                              : t('polls.labels.quorumNotMet')}
+                          </span>
+                        </div>
+                        <Progress value={quorumProgress.percentage} />
+                        <p className="text-muted-foreground text-sm">
+                          {t('polls.descriptions.quorumStatus', {
+                            current: quorumProgress.current,
+                            total: quorumProgress.total,
+                            required: quorumProgress.required,
+                            threshold: quorumProgress.threshold,
+                          })}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">
+                          {t('polls.labels.thresholdProgress')}
+                        </span>
+                        <span
+                          className={
+                            thresholdProgress.met
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-muted-foreground'
+                          }
+                        >
+                          {thresholdProgress.met
+                            ? t('polls.labels.thresholdMet')
+                            : t('polls.labels.thresholdNotMet')}
+                        </span>
+                      </div>
+                      <Progress value={thresholdProgress.percentage} />
+                      <p className="text-muted-foreground text-sm">
+                        {t('polls.descriptions.thresholdStatus', {
+                          current: thresholdProgress.current,
+                          total: thresholdProgress.total,
+                          required: thresholdProgress.required,
+                          threshold: thresholdProgress.threshold,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <div className="flex items-center">
                 {config?.closingAt ? (
                   timeFromNow(config.closingAt, true)

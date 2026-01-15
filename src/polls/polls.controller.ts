@@ -5,13 +5,13 @@ import * as pollsService from './polls.service';
 
 export const createPoll = async (req: Request, res: Response) => {
   const { serverId, channelId } = req.params;
-  const poll = await pollsService.createPoll(
+  const { poll, pollMemberCount } = await pollsService.createPoll(
     serverId,
     channelId,
     req.body,
     res.locals.user,
   );
-  res.json({ poll });
+  res.json({ poll, pollMemberCount });
 };
 
 export const uploadPollImage = async (req: Request, res: Response) => {

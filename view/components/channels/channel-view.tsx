@@ -9,7 +9,12 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAuthStore } from '@/store/auth.store';
-import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
+import {
+  ChannelRes,
+  FeedItemRes,
+  FeedQuery,
+  FeedQueryPage,
+} from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
 import { PollRes } from '@/types/poll.types';
@@ -26,6 +31,7 @@ interface NewMessagePayload {
 interface NewPollPayload {
   type: PubSubMessageType.POLL;
   poll: PollRes;
+  pollMemberCount: number;
 }
 
 interface ImageMessagePayload {
@@ -121,11 +127,11 @@ export const ChannelView = ({ channel }: Props) => {
         queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
           if (!oldData) {
             return {
-              pages: [{ feed: [buildFeedItem()] }],
+              pages: [{ feed: [buildFeedItem()], pollMemberCount: 0 }],
               pageParams: [0],
             };
           }
-          const pages = oldData.pages.map((page, index) => {
+          const pages = oldData.pages.map((page, index): FeedQueryPage => {
             // Check if message already exists (for bot message updates)
             const existingIndex = page.feed.findIndex(
               (item) =>
@@ -144,7 +150,7 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return { feed: updatedFeed };
+              return { feed: updatedFeed, pollMemberCount: page.pollMemberCount };
             }
 
             // Add new message to first page only
@@ -156,7 +162,7 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return { feed: updatedFeed };
+              return { feed: updatedFeed, pollMemberCount: page.pollMemberCount };
             }
             return page;
           });
@@ -171,7 +177,7 @@ export const ChannelView = ({ channel }: Props) => {
             return { pages: [], pageParams: [] };
           }
 
-          const pages = oldData.pages.map((page) => {
+          const pages = oldData.pages.map((page): FeedQueryPage => {
             const feed = page.feed.map((item) => {
               if (item.type !== 'message') {
                 return item;
@@ -186,7 +192,7 @@ export const ChannelView = ({ channel }: Props) => {
               );
               return { ...item, images } as FeedItemRes;
             });
-            return { feed };
+            return { feed, pollMemberCount: page.pollMemberCount };
           });
 
           return { pages, pageParams: oldData.pageParams };
@@ -212,9 +218,14 @@ export const ChannelView = ({ channel }: Props) => {
         };
         queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
           if (!oldData) {
-            return { pages: [{ feed: [newFeedItem] }], pageParams: [0] };
+            return {
+              pages: [
+                { feed: [newFeedItem], pollMemberCount: body.pollMemberCount },
+              ],
+              pageParams: [0],
+            };
           }
-          const pages = oldData.pages.map((page, index) => {
+          const pages = oldData.pages.map((page, index): FeedQueryPage => {
             if (index === 0) {
               const exists = page.feed.some(
                 (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,
@@ -229,7 +240,10 @@ export const ChannelView = ({ channel }: Props) => {
                   new Date(b.createdAt).getTime() -
                   new Date(a.createdAt).getTime(),
               );
-              return { feed: updatedFeed };
+              return {
+                feed: updatedFeed,
+                pollMemberCount: body.pollMemberCount,
+              };
             }
             return page;
           });
@@ -266,6 +280,7 @@ export const ChannelView = ({ channel }: Props) => {
           feedBoxRef={feedBoxRef}
           onLoadMore={fetchNextPage}
           feed={feedData?.pages.flatMap((page) => page.feed) || []}
+          pollMemberCount={feedData?.pages[0]?.pollMemberCount ?? 0}
           isLastPage={isLastPage}
         />
 

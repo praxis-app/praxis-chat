@@ -88,7 +88,7 @@ export const getChannelFeed = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const [messages, polls] = await Promise.all([
+  const [messages, pollsResult] = await Promise.all([
     messagesService.getMessages(serverId, channelId, offset, limit),
     pollsService.getInlinePolls(
       serverId,
@@ -104,7 +104,7 @@ export const getChannelFeed = async (
     type: 'message',
   }));
 
-  const shapedPolls = polls.map((poll) => ({
+  const shapedPolls = pollsResult.polls.map((poll) => ({
     ...poll,
     type: 'poll',
   }));
@@ -113,7 +113,7 @@ export const getChannelFeed = async (
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
 
-  return feed;
+  return { feed, pollMemberCount: pollsResult.pollMemberCount };
 };
 
 export const isChannelMember = async (

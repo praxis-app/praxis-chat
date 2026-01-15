@@ -156,7 +156,14 @@
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
       "roleSelection": "Role selection",
-      "voteCount": "{{agreementVoteCount}}/{{votesNeededToRatify}} voted",
+      "totalVotes": "{{count}} vote",
+      "totalVotes_plural": "{{count}} votes",
+      "quorumProgress": "Quorum (participation)",
+      "quorumMet": "Met",
+      "quorumNotMet": "Not met",
+      "thresholdProgress": "Threshold (approval)",
+      "thresholdMet": "Met",
+      "thresholdNotMet": "Not met",
       "voting": "Voting"
     },
     "headers": {
@@ -175,7 +182,8 @@
       "searchMembers": "Search Members",
       "selectRole": "Select Role",
       "selectedRole": "Selected Role",
-      "selectedRoleInfo": "Selected Role Information"
+      "selectedRoleInfo": "Selected Role Information",
+      "voteProgress": "Vote Progress"
     },
     "placeholders": {
       "action": "Select an action type",
@@ -194,6 +202,8 @@
       "basicInfoDescription": "Provide the basic details for your proposal",
       "body": "Enter your proposal",
       "create": "Submit a proposal to discuss and vote on.",
+      "quorumStatus": "{{current}} of {{total}} members participated ({{required}} required, {{threshold}}% threshold)",
+      "thresholdStatus": "{{current}} of {{total}} votes in favor ({{required}} required, {{threshold}}% threshold)",
       "reviewDescription": "Review your proposal before submitting",
       "roleAttributesDescription": "Modify the role's name and color",
       "roleMembersDescription": "Add or remove members from the role",
@@ -395,6 +405,8 @@
     "names": {
       "decisionMakingModel": "Decision making model",
       "ratificationThreshold": "Ratification threshold",
+      "quorumEnabled": "Require quorum",
+      "quorumThreshold": "Quorum threshold",
       "disagreementsLimit": "Disagreements limit",
       "abstainsLimit": "Abstains limit",
       "votingTimeLimit": "Voting time limit",
@@ -402,7 +414,9 @@
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
-      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
+      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Require a minimum number of members to participate before a proposal can pass.",
+      "quorumThreshold": "Set the minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified.",
@@ -410,7 +424,9 @@
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
-      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to reach consensus.",
+      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Whether a minimum participation threshold is required for proposals to be valid.",
+      "quorumThreshold": "The minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."

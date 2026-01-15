@@ -27,6 +27,7 @@ interface Props {
   feed: FeedItemRes[];
   feedBoxRef: RefObject<HTMLDivElement>;
   isLastPage: boolean;
+  pollMemberCount: number;
   onLoadMore: () => void;
 }
 
@@ -35,6 +36,7 @@ export const ChannelFeed = ({
   feed,
   feedBoxRef,
   isLastPage,
+  pollMemberCount,
   onLoadMore,
 }: Props) => {
   const { isAppLoading } = useAppStore();
@@ -126,6 +128,7 @@ export const ChannelFeed = ({
             key={`poll-${item.id}`}
             poll={item}
             channel={channel}
+            pollMemberCount={pollMemberCount}
             me={me}
           />
         );

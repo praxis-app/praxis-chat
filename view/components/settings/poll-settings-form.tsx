@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Slider } from '../ui/slider';
+import { Switch } from '../ui/switch';
 import { useServerData } from '../../hooks/use-server-data';
 
 interface Props {
@@ -79,22 +80,28 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
       },
     });
 
-  const handleSliderInputBlur = (value?: number | null) => {
+  const handleSliderInputBlur = (
+    fieldName: 'ratificationThreshold' | 'quorumThreshold',
+    value?: number | null,
+    minValue = 0,
+  ) => {
     if (value === undefined || value === null) {
       return;
     }
-    if (value < 0) {
-      form.setValue('ratificationThreshold', 0);
+    if (value < minValue) {
+      form.setValue(fieldName, minValue);
       return;
     }
     if (value > 100) {
-      form.setValue('ratificationThreshold', 100);
+      form.setValue(fieldName, 100);
       return;
     }
     if (!Number.isInteger(value)) {
-      form.setValue('ratificationThreshold', Math.round(value));
+      form.setValue(fieldName, Math.round(value));
     }
   };
+
+  const quorumEnabled = form.watch('quorumEnabled');
 
   return (
     <Form {...form}>
@@ -238,7 +245,13 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
                       max={100}
                       value={field.value}
                       onChange={(e) => field.onChange(Number(e.target.value))}
-                      onBlur={() => handleSliderInputBlur(field.value)}
+                      onBlur={() =>
+                        handleSliderInputBlur(
+                          'ratificationThreshold',
+                          field.value,
+                          1,
+                        )
+                      }
                       className="w-20"
                     />
                   </FormControl>
@@ -255,6 +268,73 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="quorumEnabled"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">
+                  {t('settings.names.quorumEnabled')}
+                </FormLabel>
+                <FormDescription>
+                  {t('settings.descriptions.quorumEnabled')}
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {quorumEnabled && (
+          <FormField
+            control={form.control}
+            name="quorumThreshold"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('settings.names.quorumThreshold')}</FormLabel>
+                <FormDescription>
+                  {t('settings.descriptions.quorumThreshold')}
+                </FormDescription>
+                <div className="flex gap-3">
+                  <FormControl>
+                    <Slider
+                      value={[field.value ?? 0]}
+                      onValueChange={(values) => field.onChange(values[0])}
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="mb-0 w-full"
+                    />
+                  </FormControl>
+                  <div className="flex items-center space-x-2">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={field.value}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onBlur={() =>
+                          handleSliderInputBlur('quorumThreshold', field.value)
+                        }
+                        className="w-20"
+                      />
+                    </FormControl>
+                    <span className="text-muted-foreground text-sm">%</span>
+                  </div>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}

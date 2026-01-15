@@ -167,7 +167,7 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
       queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
         if (!oldData) {
           return {
-            pages: [{ feed: [optimisticFeedItem] }],
+            pages: [{ feed: [optimisticFeedItem], pollMemberCount: 0 }],
             pageParams: [0],
           };
         }
@@ -178,7 +178,7 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
               optimisticFeedItem,
               ...page.feed,
             ]);
-            return { feed: sortedFeed };
+            return { feed: sortedFeed, pollMemberCount: page.pollMemberCount };
           }
           return page;
         });
@@ -208,7 +208,7 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
       queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
         if (!oldData) {
           return {
-            pages: [{ feed: [newFeedItem] }],
+            pages: [{ feed: [newFeedItem], pollMemberCount: 0 }],
             pageParams: [0],
           };
         }
@@ -223,13 +223,16 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
               (item) => item.type === 'message' && item.id === message.id,
             );
             if (alreadyExists) {
-              return { feed: feedWithoutOptimistic };
+              return {
+                feed: feedWithoutOptimistic,
+                pollMemberCount: page.pollMemberCount,
+              };
             }
             const sortedFeed = sortFeedByDate([
               newFeedItem,
               ...feedWithoutOptimistic,
             ]);
-            return { feed: sortedFeed };
+            return { feed: sortedFeed, pollMemberCount: page.pollMemberCount };
           }
           return page;
         });

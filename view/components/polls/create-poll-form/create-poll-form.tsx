@@ -223,7 +223,7 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
         },
       });
     },
-    onSuccess: ({ poll }) => {
+    onSuccess: ({ poll, pollMemberCount }) => {
       if (!channelId || !serverId) {
         return;
       }
@@ -237,7 +237,10 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
             type: 'poll',
           };
           if (!old) {
-            return { pages: [{ feed: [newItem] }], pageParams: [0] };
+            return {
+              pages: [{ feed: [newItem], pollMemberCount }],
+              pageParams: [0],
+            };
           }
           const pages = old.pages.map((page, idx) => {
             if (idx !== 0) {
@@ -249,7 +252,10 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
             if (exists) {
               return page;
             }
-            return { feed: [newItem, ...page.feed] };
+            return {
+              feed: [newItem, ...page.feed],
+              pollMemberCount: pollMemberCount,
+            };
           });
           return { pages, pageParams: old.pageParams };
         },

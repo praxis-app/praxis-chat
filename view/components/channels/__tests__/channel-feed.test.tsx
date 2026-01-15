@@ -101,6 +101,7 @@ describe('ChannelFeed', () => {
         feed={mockFeed}
         feedBoxRef={mockFeedBoxRef}
         onLoadMore={mockOnLoadMore}
+        pollMemberCount={10}
         isLastPage={false}
       />,
     );
@@ -121,6 +122,7 @@ describe('ChannelFeed', () => {
         feed={[]}
         feedBoxRef={mockFeedBoxRef}
         onLoadMore={mockOnLoadMore}
+        pollMemberCount={10}
         isLastPage={false}
       />,
     );

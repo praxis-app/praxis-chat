@@ -6,6 +6,8 @@ export interface ServerConfigReq {
   disagreementsLimit?: number;
   abstainsLimit?: number;
   ratificationThreshold?: number;
+  quorumEnabled?: boolean;
+  quorumThreshold?: number;
   votingTimeLimit?: number;
 }
 
@@ -15,6 +17,8 @@ export interface ServerConfigRes {
   disagreementsLimit: number;
   abstainsLimit: number;
   ratificationThreshold: number;
+  quorumEnabled: boolean;
+  quorumThreshold: number;
   votingTimeLimit: number;
   updatedAt: Date;
 }

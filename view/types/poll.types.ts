@@ -15,13 +15,14 @@ export interface PollRes {
   createdAt: string;
   votes: VoteRes[];
   myVote?: VoteRes;
-  votesNeededToRatify: number;
   agreementVoteCount: number;
 }
 
 export interface PollConfigRes {
   decisionMakingModel: DecisionMakingModel;
   ratificationThreshold: number;
+  quorumEnabled: boolean;
+  quorumThreshold: number;
   disagreementsLimit: number;
   abstainsLimit: number;
   closingAt?: string;
