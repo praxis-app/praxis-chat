@@ -1,15 +1,16 @@
 import { api } from '@/client/api-client';
+import { Button } from '@/components/ui/button';
 import { useServerData } from '@/hooks/use-server-data';
+import { handleError } from '@/lib/error.utils';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, FeedItemRes } from '@/types/channel.types';
+import { VoteRes } from '@/types/vote.types';
 import { PollStage } from '@common/polls/poll.types';
 import { VOTE_TYPES } from '@common/votes/vote.constants';
 import { VoteType } from '@common/votes/vote.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { handleError } from '../../lib/error.utils';
-import { Button } from '../ui/button';
 
 interface Props {
   channel: ChannelRes;
@@ -82,20 +83,28 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
             }
 
             let agreementVoteCount = item.agreementVoteCount;
+            let votes: VoteRes[] = item.votes ? [...item.votes] : [];
+
             if (result.action === 'delete') {
               if (myVote?.voteType === 'agree') {
                 agreementVoteCount -= 1;
               }
+              votes = votes.filter((vote) => vote.id !== result.voteId);
               return {
                 ...item,
+                votes,
                 agreementVoteCount,
                 myVote: undefined,
               };
             }
 
-            if (result.action === 'create' && result.voteType === 'agree') {
-              agreementVoteCount += 1;
+            if (result.action === 'create') {
+              if (result.voteType === 'agree') {
+                agreementVoteCount += 1;
+              }
+              votes.push({ id: result.voteId, voteType: result.voteType! });
             }
+
             if (result.action === 'update') {
               if (myVote?.voteType !== 'agree' && result.voteType === 'agree') {
                 agreementVoteCount += 1;
@@ -103,12 +112,19 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
               if (myVote?.voteType === 'agree' && result.voteType !== 'agree') {
                 agreementVoteCount -= 1;
               }
+              votes = votes.map((vote) =>
+                vote.id === result.voteId
+                  ? { ...vote, voteType: result.voteType! }
+                  : vote,
+              );
             }
+
             return {
               ...item,
+              votes,
               agreementVoteCount,
               stage: result.isRatifyingVote ? 'ratified' : item.stage,
-              myVote: { id: result.voteId, voteType: result.voteType },
+              myVote: { id: result.voteId, voteType: result.voteType! },
             };
           });
           return { feed };
