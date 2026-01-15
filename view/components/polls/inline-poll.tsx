@@ -3,7 +3,8 @@ import { ChannelRes } from '@/types/channel.types';
 import { PollRes } from '@/types/poll.types';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaClipboard, FaVoteYea } from 'react-icons/fa';
+import { FaClipboard } from 'react-icons/fa';
+import { MdHowToVote } from 'react-icons/md';
 import { truncate } from '../../lib/text.utils';
 import { CurrentUser } from '../../types/user.types';
 import { FormattedText } from '../shared/formatted-text';
@@ -174,8 +175,10 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <button className="flex cursor-pointer items-center gap-1.5 hover:underline">
-                    <FaVoteYea className="text-muted-foreground" />
-                    <span>{t('polls.labels.totalVotes', { count: totalVotes })}</span>
+                    <MdHowToVote className="text-muted-foreground" />
+                    <span>
+                      {t('polls.labels.totalVotes', { count: totalVotes })}
+                    </span>
                   </button>
                 </DialogTrigger>
                 <DialogContent>
