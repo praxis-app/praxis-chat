@@ -282,11 +282,13 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
           control={form.control}
           name="quorumEnabled"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('settings.names.quorumEnabled')}</FormLabel>
-              <FormDescription>
-                {t('settings.descriptions.quorumEnabled')}
-              </FormDescription>
+            <FormItem className="flex items-center justify-between gap-4 md:gap-16">
+              <div className="space-y-1">
+                <FormLabel>{t('settings.names.quorumEnabled')}</FormLabel>
+                <FormDescription>
+                  {t('settings.descriptions.quorumEnabled')}
+                </FormDescription>
+              </div>
               <FormControl>
                 <Switch
                   checked={field.value}
@@ -332,7 +334,10 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
                             field.onChange(Number(e.target.value))
                           }
                           onBlur={() =>
-                            handleSliderInputBlur('quorumThreshold', field.value)
+                            handleSliderInputBlur(
+                              'quorumThreshold',
+                              field.value,
+                            )
                           }
                           className="w-20"
                         />
