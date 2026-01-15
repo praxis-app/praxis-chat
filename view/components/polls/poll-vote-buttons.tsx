@@ -1,5 +1,6 @@
 import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
+import { useAuthData } from '@/hooks/use-auth-data';
 import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '@/lib/error.utils';
 import { cn } from '@/lib/shared.utils';
@@ -23,6 +24,7 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { serverId } = useServerData();
+  const { isLoggedIn } = useAuthData();
 
   const { mutate: castVote, isPending } = useMutation({
     mutationFn: async (voteType: VoteType) => {
@@ -142,6 +144,10 @@ export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   });
 
   const handleVoteBtnClick = (voteType: VoteType) => {
+    if (!isLoggedIn) {
+      toast(t('polls.prompts.signInToVote'));
+      return;
+    }
     if (stage === 'closed') {
       toast(t('polls.prompts.noVotingAfterClose'));
       return;

@@ -222,7 +222,8 @@
       "noUsersFound": "No users found",
       "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
       "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on.",
-      "ratifiedSuccess": "This proposal has been ratified! 🎉"
+      "ratifiedSuccess": "This proposal has been ratified! 🎉",
+      "signInToVote": "Sign in to vote on proposals"
     },
     "errors": {
       "registerToCreateNonTestProposals": "Anonymous users can only create test proposals. Please register to create other proposal types.",
