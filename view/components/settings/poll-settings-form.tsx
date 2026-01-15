@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Separator } from '../ui/separator';
 import { Slider } from '../ui/slider';
 import { Switch } from '../ui/switch';
 import { useServerData } from '../../hooks/use-server-data';
@@ -147,6 +148,8 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
           )}
         />
 
+        <Separator />
+
         <FormField
           control={form.control}
           name="disagreementsLimit"
@@ -182,6 +185,8 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
           )}
         />
 
+        <Separator />
+
         <FormField
           control={form.control}
           name="abstainsLimit"
@@ -216,6 +221,8 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
             </FormItem>
           )}
         />
+
+        <Separator />
 
         <FormField
           control={form.control}
@@ -269,19 +276,17 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
           )}
         />
 
+        <Separator />
+
         <FormField
           control={form.control}
           name="quorumEnabled"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  {t('settings.names.quorumEnabled')}
-                </FormLabel>
-                <FormDescription>
-                  {t('settings.descriptions.quorumEnabled')}
-                </FormDescription>
-              </div>
+            <FormItem>
+              <FormLabel>{t('settings.names.quorumEnabled')}</FormLabel>
+              <FormDescription>
+                {t('settings.descriptions.quorumEnabled')}
+              </FormDescription>
               <FormControl>
                 <Switch
                   checked={field.value}
@@ -293,48 +298,56 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
         />
 
         {quorumEnabled && (
-          <FormField
-            control={form.control}
-            name="quorumThreshold"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('settings.names.quorumThreshold')}</FormLabel>
-                <FormDescription>
-                  {t('settings.descriptions.quorumThreshold')}
-                </FormDescription>
-                <div className="flex gap-3">
-                  <FormControl>
-                    <Slider
-                      value={[field.value ?? 0]}
-                      onValueChange={(values) => field.onChange(values[0])}
-                      min={0}
-                      max={100}
-                      step={1}
-                      className="mb-0 w-full"
-                    />
-                  </FormControl>
-                  <div className="flex items-center space-x-2">
+          <>
+            <Separator />
+
+            <FormField
+              control={form.control}
+              name="quorumThreshold"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('settings.names.quorumThreshold')}</FormLabel>
+                  <FormDescription>
+                    {t('settings.descriptions.quorumThreshold')}
+                  </FormDescription>
+                  <div className="flex gap-3">
                     <FormControl>
-                      <Input
-                        type="number"
+                      <Slider
+                        value={[field.value ?? 0]}
+                        onValueChange={(values) => field.onChange(values[0])}
                         min={0}
                         max={100}
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        onBlur={() =>
-                          handleSliderInputBlur('quorumThreshold', field.value)
-                        }
-                        className="w-20"
+                        step={1}
+                        className="mb-0 w-full"
                       />
                     </FormControl>
-                    <span className="text-muted-foreground text-sm">%</span>
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={field.value}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                          onBlur={() =>
+                            handleSliderInputBlur('quorumThreshold', field.value)
+                          }
+                          className="w-20"
+                        />
+                      </FormControl>
+                      <span className="text-muted-foreground text-sm">%</span>
+                    </div>
                   </div>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         )}
+
+        <Separator />
 
         <FormField
           control={form.control}
