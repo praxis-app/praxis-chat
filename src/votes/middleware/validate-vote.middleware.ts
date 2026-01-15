@@ -35,10 +35,8 @@ export const validateVote = async (
       return;
     }
 
-    if (poll.stage === 'ratified') {
-      res
-        .status(422)
-        .send('Poll has been ratified and can no longer be voted on');
+    if (poll.stage !== 'voting') {
+      res.status(422).send('Poll is no longer accepting votes');
       return;
     }
 
