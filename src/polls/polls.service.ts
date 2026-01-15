@@ -396,6 +396,7 @@ export const synchronizePolls = async () => {
   for (const poll of polls) {
     await synchronizePoll(poll);
   }
+  console.info('Synchronized polls 🗳️');
 };
 
 export const deletePoll = async (pollId: string) => {
