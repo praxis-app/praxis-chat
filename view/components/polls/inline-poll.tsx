@@ -1,6 +1,7 @@
 import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
 import { PollRes } from '@/types/poll.types';
+import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
@@ -49,26 +50,10 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
 
   const totalVotes = votes?.length ?? 0;
 
-  const voteStats = useMemo(() => {
-    if (!votes || votes.length === 0) {
-      return { yesVotes: 0, noVotes: 0, abstains: 0, blocks: 0 };
-    }
-    return votes.reduce(
-      (counts, vote) => {
-        if (vote.voteType === 'agree') {
-          counts.yesVotes++;
-        } else if (vote.voteType === 'disagree') {
-          counts.noVotes++;
-        } else if (vote.voteType === 'abstain') {
-          counts.abstains++;
-        } else if (vote.voteType === 'block') {
-          counts.blocks++;
-        }
-        return counts;
-      },
-      { yesVotes: 0, noVotes: 0, abstains: 0, blocks: 0 },
-    );
-  }, [votes]);
+  const { agreements, disagreements } = useMemo(
+    () => sortConsensusVotesByType(votes ?? []),
+    [votes],
+  );
 
   const quorumProgress = useMemo(() => {
     if (!config?.quorumEnabled) {
@@ -92,25 +77,27 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   }, [config, totalVotes, memberCount]);
 
   const thresholdProgress = useMemo(() => {
-    const { yesVotes, noVotes } = voteStats;
-    const participantVotes = yesVotes + noVotes;
+    const participantVotes = agreements.length + disagreements.length;
     const requiredThreshold =
       participantVotes > 0
         ? Math.ceil(participantVotes * (config.ratificationThreshold * 0.01))
         : 0;
     const percentage =
       participantVotes > 0
-        ? Math.min(100, Math.round((yesVotes / participantVotes) * 100))
+        ? Math.min(
+            100,
+            Math.round((agreements.length / participantVotes) * 100),
+          )
         : 0;
     return {
-      current: yesVotes,
+      current: agreements.length,
       required: requiredThreshold,
       total: participantVotes,
       threshold: config.ratificationThreshold,
       percentage,
-      met: yesVotes >= requiredThreshold && participantVotes > 0,
+      met: agreements.length >= requiredThreshold && participantVotes > 0,
     };
-  }, [voteStats, config]);
+  }, [agreements, disagreements, config]);
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
