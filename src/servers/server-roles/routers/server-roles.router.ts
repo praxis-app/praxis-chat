@@ -15,12 +15,13 @@ export const serverRolesRouter = express.Router({
   mergeParams: true,
 });
 
-serverRolesRouter.use(authenticate);
-
 serverRolesRouter
+  .use(authenticate)
+
   // All authenticated users can read server roles
   .get('/:serverRoleId', getServerRole)
   .get('/', getServerRoles)
+
   // Only users with permission can make direct changes
   .post('/', can('create', 'ServerRole'), createServerRole)
   .put('/:serverRoleId', can('update', 'ServerRole'), updateServerRole)
