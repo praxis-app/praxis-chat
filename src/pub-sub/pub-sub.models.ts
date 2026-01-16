@@ -27,6 +27,7 @@ export interface PubSubChannel {
 
 export class WebSocketWithId extends WebSocket {
   id!: string;
+  subscribedChannels: Set<string> = new Set();
 }
 
 export class WebSocketServerWithIds extends WebSocketServer<

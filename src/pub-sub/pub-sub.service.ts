@@ -92,24 +92,39 @@ const subscribe = async (
   token: string,
   subscriber: WebSocketWithId,
 ) => {
+  const isFirstSubscription = !subscriber.id;
+
   subscriber.id = token;
+
+  if (!subscriber.subscribedChannels) {
+    subscriber.subscribedChannels = new Set();
+  }
+  subscriber.subscribedChannels.add(channel);
 
   // Add subscriber to Redis set and local map
   const channelKey = getChannelCacheKey(channel);
   await cacheService.addSetMember(channelKey, token);
   subscribers[token] = subscriber;
 
-  // Clean up on disconnect
-  subscriber.on('close', async () => {
-    await unsubscribe(channel, token);
-    delete subscribers[token];
-  });
+  // Clean up on disconnect (only add listener once per WebSocket)
+  if (isFirstSubscription) {
+    subscriber.on('close', async () => {
+      for (const subscribedChannel of subscriber.subscribedChannels) {
+        await unsubscribe(subscribedChannel, token);
+      }
+      delete subscribers[token];
+    });
+  }
 };
 
 const unsubscribe = async (channel: string, token: string) => {
   const channelKey = getChannelCacheKey(channel);
   await cacheService.removeSetMember(channelKey, token);
-  delete subscribers[token];
+
+  const subscriber = subscribers[token];
+  if (subscriber?.subscribedChannels) {
+    subscriber.subscribedChannels.delete(channel);
+  }
 };
 
 /** Check if a user can access a given pub-sub channel */
