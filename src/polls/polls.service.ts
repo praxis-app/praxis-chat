@@ -1,3 +1,7 @@
+import {
+  getRequiredQuorum,
+  getRequiredThreshold,
+} from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
@@ -438,7 +442,7 @@ const hasConsensus = async (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -455,10 +459,11 @@ const hasConsensus = async (
     return false;
   }
 
-  const requiredThreshold = Math.floor(
-    memberCount * (ratificationThreshold * 0.01),
+  const requiredAgreements = getRequiredThreshold(
+    memberCount,
+    ratificationThreshold,
   );
-  if (yesVotes < requiredThreshold) {
+  if (yesVotes < requiredAgreements) {
     return false;
   }
 
@@ -499,7 +504,7 @@ const hasMajorityVote = (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -515,8 +520,11 @@ const hasMajorityVote = (
     return false;
   }
 
-  const requiredThreshold =
-    totalParticipantVotes * (ratificationThreshold * 0.01);
+  // TODO: Rename to requiredAgreements, along with renaming utils and other similar references
+  const requiredThreshold = getRequiredThreshold(
+    totalParticipantVotes,
+    ratificationThreshold,
+  );
   const isRatifiable = yesVotes >= requiredThreshold;
 
   return isRatifiable;

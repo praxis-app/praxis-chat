@@ -8,6 +8,10 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { PollConfigRes } from '@/types/poll.types';
 import { VoteRes } from '@/types/vote.types';
+import {
+  getQuorumProgress,
+  getThresholdProgress,
+} from '@common/polls/poll.utils';
 import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,35 +34,25 @@ export const VoteProgressDialog = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const { agreements, disagreements } = useMemo(
+  const { agreements } = useMemo(
     () => sortConsensusVotesByType(votes),
     [votes],
   );
 
   const totalVotes = votes.length;
   const agreementCount = agreements.length;
-  const participantVotes = agreementCount + disagreements.length;
 
-  // Quorum progress
-  const requiredQuorum = Math.ceil(
-    memberCount * (config.quorumThreshold * 0.01),
+  const quorumProgress = getQuorumProgress(
+    totalVotes,
+    memberCount,
+    config.quorumThreshold,
   );
-  const quorumPercentage =
-    requiredQuorum > 0
-      ? Math.min(100, Math.round((totalVotes / requiredQuorum) * 100))
-      : 100;
-  const quorumMet = totalVotes >= requiredQuorum;
 
-  // Threshold progress - always require at least 1 agreement to ratify
-  const requiredThreshold = Math.floor(
-    memberCount * (config.ratificationThreshold * 0.01),
+  const thresholdProgress = getThresholdProgress(
+    agreementCount,
+    memberCount,
+    config.ratificationThreshold,
   );
-  const thresholdPercentage =
-    participantVotes > 0
-      ? Math.min(100, Math.round((agreementCount / participantVotes) * 100))
-      : 0;
-  const thresholdMet =
-    agreementCount >= requiredThreshold && participantVotes > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -81,21 +75,21 @@ export const VoteProgressDialog = ({
                 </span>
                 <span
                   className={
-                    quorumMet
+                    quorumProgress.isMet
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-muted-foreground'
                   }
                 >
-                  {quorumMet
+                  {quorumProgress.isMet
                     ? t('polls.labels.quorumMet')
                     : t('polls.labels.quorumNotMet')}
                 </span>
               </div>
-              <Progress value={quorumPercentage} />
+              <Progress value={quorumProgress.percentage} />
               <p className="text-muted-foreground text-sm">
                 {t('polls.descriptions.quorumStatus', {
                   current: totalVotes,
-                  required: requiredQuorum,
+                  required: quorumProgress.required,
                   threshold: config.quorumThreshold,
                 })}
               </p>
@@ -109,21 +103,21 @@ export const VoteProgressDialog = ({
               </span>
               <span
                 className={
-                  thresholdMet
+                  thresholdProgress.isMet
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-muted-foreground'
                 }
               >
-                {thresholdMet
+                {thresholdProgress.isMet
                   ? t('polls.labels.thresholdMet')
                   : t('polls.labels.thresholdNotMet')}
               </span>
             </div>
-            <Progress value={thresholdPercentage} />
+            <Progress value={thresholdProgress.percentage} />
             <p className="text-muted-foreground text-sm">
               {t('polls.descriptions.thresholdStatus', {
                 current: agreementCount,
-                required: requiredThreshold,
+                required: thresholdProgress.required,
                 threshold: config.ratificationThreshold,
               })}
             </p>
