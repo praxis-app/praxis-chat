@@ -1,20 +1,20 @@
+import { VoteProgressDialog } from '@/components/polls/inline-poll/vote-progress-dialog';
+import { PollAction } from '@/components/polls/poll-actions/poll-action';
+import { PollVoteButtons } from '@/components/polls/poll-vote-buttons';
+import { FormattedText } from '@/components/shared/formatted-text';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardAction } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { UserAvatar } from '@/components/users/user-avatar';
+import { UserProfileDrawer } from '@/components/users/user-profile-drawer';
+import { truncate } from '@/lib/text.utils';
 import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes } from '@/types/channel.types';
 import { PollRes } from '@/types/poll.types';
+import { CurrentUser } from '@/types/user.types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
-import { truncate } from '../../../lib/text.utils';
-import { CurrentUser } from '../../../types/user.types';
-import { FormattedText } from '../../shared/formatted-text';
-import { Badge } from '../../ui/badge';
-import { Card, CardAction } from '../../ui/card';
-import { Separator } from '../../ui/separator';
-import { UserAvatar } from '../../users/user-avatar';
-import { UserProfileDrawer } from '../../users/user-profile-drawer';
-import { PollAction } from '../poll-actions/poll-action';
-import { PollVoteButtons } from '../poll-vote-buttons';
-import { VoteProgressDialog } from './vote-progress-dialog';
 
 interface Props {
   poll: PollRes;
