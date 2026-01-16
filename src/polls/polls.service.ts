@@ -388,6 +388,7 @@ export const ratifyPoll = async (pollId: string) => {
   });
 };
 
+/** Synchronizes polls with regard to voting duration and ratifiability */
 export const synchronizePolls = async () => {
   const polls = await pollRepository.find({
     where: {

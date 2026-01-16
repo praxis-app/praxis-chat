@@ -26,6 +26,13 @@ const resetDisableTimeout = () => {
   addDisableTimeout();
 };
 
+/**
+ * Synchronizes polls with regard to voting duration and ratifiability
+ *
+ * TODO: Implement consent decision making model. `synchronizePolls` basically
+ * has no effect until consent is implemented, since it's the only model that
+ * requires a set voting duration
+ */
 export const synchronizePolls = async (
   _req: Request,
   _res: Response,
