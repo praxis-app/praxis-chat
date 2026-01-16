@@ -68,7 +68,7 @@ export const VoteProgressDialog = ({
           <span>{t('polls.labels.totalVotes', { count: totalVotes })}</span>
         </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="md:w-lg">
         <DialogHeader>
           <DialogTitle>{t('polls.headers.voteProgress')}</DialogTitle>
         </DialogHeader>
@@ -95,7 +95,6 @@ export const VoteProgressDialog = ({
               <p className="text-muted-foreground text-sm">
                 {t('polls.descriptions.quorumStatus', {
                   current: totalVotes,
-                  total: memberCount,
                   required: requiredQuorum,
                   threshold: config.quorumThreshold,
                 })}
