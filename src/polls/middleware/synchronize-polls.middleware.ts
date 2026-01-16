@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { CronExpression } from '../../common/common.constants';
 import * as pollsService from '../polls.service';
 
-const ONE_HOUR_MS = 1000 * 60 * 60;
+const HALF_HOUR_MS = 1000 * 60 * 30;
 
 let disableTimeout: NodeJS.Timeout | null = null;
 
@@ -17,7 +17,7 @@ const synchronizePollsJob = CronJob.from({
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
     synchronizePollsJob.stop();
-  }, ONE_HOUR_MS);
+  }, HALF_HOUR_MS);
 };
 
 const resetDisableTimeout = () => {
