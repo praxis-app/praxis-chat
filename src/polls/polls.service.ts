@@ -394,7 +394,8 @@ export const synchronizePolls = async () => {
       config: { closingAt: Not(IsNull()) },
       stage: 'voting',
     },
-    select: { id: true },
+    select: { id: true, config: { id: true, closingAt: true } },
+    relations: ['config'],
   });
 
   for (const poll of polls) {
