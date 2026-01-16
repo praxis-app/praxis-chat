@@ -88,7 +88,7 @@ export const getChannelFeed = async (
   limit?: number,
   currentUserId?: string,
 ) => {
-  const [messages, pollsResult] = await Promise.all([
+  const [messages, polls] = await Promise.all([
     messagesService.getMessages(serverId, channelId, offset, limit),
     pollsService.getInlinePolls(
       serverId,
@@ -104,7 +104,7 @@ export const getChannelFeed = async (
     type: 'message',
   }));
 
-  const shapedPolls = pollsResult.polls.map((poll) => ({
+  const shapedPolls = polls.map((poll) => ({
     ...poll,
     type: 'poll',
   }));

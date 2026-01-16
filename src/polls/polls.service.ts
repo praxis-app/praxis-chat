@@ -185,7 +185,7 @@ export const getInlinePolls = async (
     };
   });
 
-  return { polls: shapedPolls };
+  return shapedPolls;
 };
 
 export const isPollRatifiable = async (pollId: string) => {
@@ -345,7 +345,7 @@ export const createPoll = async (
     );
   }
 
-  return { poll: shapedPoll };
+  return shapedPoll;
 };
 
 export const savePollImage = async (

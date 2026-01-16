@@ -5,7 +5,7 @@ import * as pollsService from './polls.service';
 
 export const createPoll = async (req: Request, res: Response) => {
   const { serverId, channelId } = req.params;
-  const { poll } = await pollsService.createPoll(
+  const poll = await pollsService.createPoll(
     serverId,
     channelId,
     req.body,
