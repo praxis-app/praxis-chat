@@ -113,7 +113,7 @@ export const getChannelFeed = async (
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     .slice(0, limit ?? Number.MAX_SAFE_INTEGER);
 
-  return { feed };
+  return feed;
 };
 
 export const isChannelMember = async (

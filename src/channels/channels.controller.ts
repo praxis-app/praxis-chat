@@ -29,7 +29,7 @@ export const getChannelFeed = async (req: Request, res: Response) => {
   const offset = req.query.offset ? Number(req.query.offset) : undefined;
   const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
-  const { feed } = await channelsService.getChannelFeed(
+  const feed = await channelsService.getChannelFeed(
     serverId,
     channelId,
     offset,
