@@ -203,7 +203,7 @@
       "body": "Enter your proposal",
       "create": "Submit a proposal to discuss and vote on.",
       "quorumStatus": "{{current}} of {{total}} members participated ({{required}} required, {{threshold}}% threshold)",
-      "thresholdStatus": "{{current}} of {{total}} votes in favor ({{required}} required, {{threshold}}% threshold)",
+      "thresholdStatus": "{{current}} of {{required}} agreements needed ({{threshold}}% threshold)",
       "reviewDescription": "Review your proposal before submitting",
       "roleAttributesDescription": "Modify the role's name and color",
       "roleMembersDescription": "Add or remove members from the role",

@@ -453,8 +453,9 @@ const hasConsensus = async (
     return false;
   }
 
-  const requiredThreshold =
-    totalParticipantVotes * (ratificationThreshold * 0.01);
+  const requiredThreshold = Math.floor(
+    memberCount * (ratificationThreshold * 0.01),
+  );
   if (yesVotes < requiredThreshold) {
     return false;
   }
