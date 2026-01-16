@@ -7,12 +7,12 @@ const ONE_HOUR_MS = 1000 * 60 * 60;
 
 let disableTimeout: NodeJS.Timeout | null = null;
 
-const synchronizePollsJob = new CronJob(
-  CronExpression.EVERY_5_MINUTES,
-  async () => {
+const synchronizePollsJob = CronJob.from({
+  cronTime: CronExpression.EVERY_5_MINUTES,
+  onTick: async () => {
     await pollsService.synchronizePolls();
   },
-);
+});
 
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
