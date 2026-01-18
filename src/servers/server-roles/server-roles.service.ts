@@ -216,20 +216,27 @@ export const createAdminServerRole = async (
   });
 };
 
-export const updateServerRole = async (
+export const updateServerRoleDetails = async (
   serverId: string,
   serverRoleId: string,
   { name, color }: UpdateServerRoleDto,
 ) => {
-  const sanitizedName = sanitizeText(name);
-  const sanitizedColor = sanitizeText(color);
+  const updateData: Partial<ServerRole> = {};
+
+  if (!!name) {
+    updateData.name = sanitizeText(name);
+  }
+  if (!!color) {
+    updateData.color = sanitizeText(color);
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return;
+  }
 
   return serverRoleRepository.update(
     { id: serverRoleId, serverId },
-    {
-      name: sanitizedName,
-      color: sanitizedColor,
-    },
+    updateData,
   );
 };
 
