@@ -30,37 +30,10 @@ Set up SSH key authentication for passwordless login:
 ssh-copy-id root@<IP_ADDRESS>
 ```
 
-## Initial Server Configuration
-
-### System Updates
+Update the system:
 
 ```bash
 apt update && apt upgrade -y
-```
-
-### Install ZSH and Oh My Zsh (Optional)
-
-```bash
-apt install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-Configure your preferred theme in `~/.zshrc`:
-
-```bash
-ZSH_THEME="af-magic"
-```
-
-Apply changes:
-
-```bash
-source ~/.zshrc
-```
-
-### Install Useful Tools
-
-```bash
-apt install micro htop
 ```
 
 ## Security Configuration
@@ -136,11 +109,7 @@ sudo chown -R $USER:$USER /var/www/example.com/html
 sudo chmod -R 755 /var/www/example.com
 ```
 
-Create a test page to verify Nginx is working:
-
-```bash
-sudo micro /var/www/example.com/html/index.html
-```
+Create a test page at `/var/www/example.com/html/index.html` to verify Nginx is working:
 
 ```html
 <html>
@@ -253,26 +222,3 @@ For subsequent deployments:
 2. Review and test new migrations in a staging environment
 3. Run migrations manually before deploying the new version
 4. Deploy the application update
-
-## Optional Enhancements
-
-### ZSH Autosuggestions
-
-```bash
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-```
-
-Add to `~/.zshrc`:
-
-```bash
-plugins=(
-    # other plugins...
-    zsh-autosuggestions
-)
-```
-
-### Remove Ubuntu Pro Notifications
-
-```bash
-sudo apt-get --assume-yes --purge remove ubuntu-advantage-tools
-```
