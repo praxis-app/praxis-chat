@@ -459,12 +459,8 @@ const hasConsensus = (
     return false;
   }
 
-  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
-  if (yesVotes < requiredAgreements) {
-    return false;
-  }
-
   const isRatifiable =
+    yesVotes >= getRequiredCount(memberCount, agreementThreshold) &&
     disagreements.length <= disagreementsLimit &&
     abstains.length <= abstainsLimit &&
     blocks.length === 0;
