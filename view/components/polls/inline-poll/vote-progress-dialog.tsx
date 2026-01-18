@@ -44,10 +44,7 @@ export const VoteProgressDialog = ({
   const totalVotes = votes.length;
 
   // Agreement progress
-  const requiredAgreements = getRequiredCount(
-    memberCount,
-    agreementThreshold,
-  );
+  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
   const agreementsPercentage = getProgressPercentage(
     agreementCount,
     requiredAgreements,

@@ -168,13 +168,9 @@ class ApiClient {
     inviteToken?: string | null,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/feed`;
-    return this.executeRequest<{ feed: FeedItemRes[] }>(
-      'get',
-      path,
-      {
-        params: { offset, limit, inviteToken },
-      },
-    );
+    return this.executeRequest<{ feed: FeedItemRes[] }>('get', path, {
+      params: { offset, limit, inviteToken },
+    });
   };
 
   createChannel = async (serverId: string, data: CreateChannelReq) => {
@@ -249,13 +245,9 @@ class ApiClient {
     data: CreatePollReq,
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/polls`;
-    return this.executeRequest<{ poll: PollRes }>(
-      'post',
-      path,
-      {
-        data,
-      },
-    );
+    return this.executeRequest<{ poll: PollRes }>('post', path, {
+      data,
+    });
   };
 
   getPollImage = (

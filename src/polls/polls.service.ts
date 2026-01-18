@@ -459,10 +459,7 @@ const hasConsensus = (
     return false;
   }
 
-  const requiredAgreements = getRequiredCount(
-    memberCount,
-    agreementThreshold,
-  );
+  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
   if (yesVotes < requiredAgreements) {
     return false;
   }
@@ -489,12 +486,7 @@ const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
 
 const hasMajorityVote = (
   votes: Vote[],
-  {
-    agreementThreshold,
-    quorumEnabled,
-    quorumThreshold,
-    closingAt,
-  }: PollConfig,
+  { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
   memberCount: number,
 ) => {
   if (closingAt && Date.now() < Number(closingAt)) {
@@ -519,10 +511,7 @@ const hasMajorityVote = (
     return false;
   }
 
-  const requiredAgreements = getRequiredCount(
-    memberCount,
-    agreementThreshold,
-  );
+  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
   const isRatifiable = yesVotes >= requiredAgreements;
 
   return isRatifiable;
