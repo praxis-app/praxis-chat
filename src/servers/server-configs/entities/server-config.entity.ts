@@ -32,7 +32,7 @@ export class ServerConfig {
   @Column({ type: 'boolean', default: true })
   quorumEnabled: boolean;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'int', default: 25 })
   quorumThreshold: number;
 
   @Column({ default: VotingTimeLimit.Unlimited })
