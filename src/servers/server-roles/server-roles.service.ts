@@ -223,10 +223,10 @@ export const updateServerRoleDetails = async (
 ) => {
   const updateData: Partial<ServerRole> = {};
 
-  if (!!name) {
+  if (name) {
     updateData.name = sanitizeText(name);
   }
-  if (!!color) {
+  if (color) {
     updateData.color = sanitizeText(color);
   }
 
