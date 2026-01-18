@@ -13,6 +13,8 @@ export const getProgressPercentage = (
  * Calculate the required number of votes to meet quorum
  * @param memberCount Total eligible voters
  * @param quorumThreshold Percentage threshold (e.g., 51 for 51%)
+ *
+ * TODO: Combine with getRequiredAgreements
  */
 export const getRequiredQuorum = (
   memberCount: number,

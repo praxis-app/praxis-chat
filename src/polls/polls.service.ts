@@ -456,9 +456,8 @@ const hasConsensus = async (
     sortConsensusVotesByType(votes);
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
-  const totalParticipantVotes = yesVotes + noVotes;
 
-  if (totalParticipantVotes === 0) {
+  if (yesVotes + noVotes === 0) {
     return false;
   }
 
@@ -517,14 +516,13 @@ const hasMajorityVote = (
   const { agreements, disagreements } = sortMajorityVotesByType(votes);
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
-  const totalParticipantVotes = yesVotes + noVotes;
 
-  if (totalParticipantVotes === 0) {
+  if (yesVotes + noVotes === 0) {
     return false;
   }
 
   const requiredAgreements = getRequiredAgreements(
-    totalParticipantVotes,
+    memberCount,
     ratificationThreshold,
   );
   const isRatifiable = yesVotes >= requiredAgreements;
