@@ -148,6 +148,9 @@ export const getInlinePolls = async (
         }
       : undefined;
 
+    const memberCount = pollMemberCountMap[poll.id];
+    const profilePicture = profilePicturesMap[poll.user.id];
+
     const rowsForPoll = raw.filter((r) => {
       return r.poll_id === poll.id;
     });
@@ -177,13 +180,13 @@ export const getInlinePolls = async (
       })),
       user: {
         ...poll.user,
-        profilePicture: profilePicturesMap[poll.user.id],
+        profilePicture,
       },
       votes: poll.votes,
       config: poll.config,
       createdAt: poll.createdAt,
       agreementVoteCount,
-      memberCount: pollMemberCountMap[poll.id],
+      memberCount,
       myVote,
       body,
     };
