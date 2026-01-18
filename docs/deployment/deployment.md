@@ -125,11 +125,45 @@ Create a test page at `/var/www/example.com/html/index.html` to verify Nginx is 
 ### Configure Domain
 
 1. Point your domain's DNS A record to your server's IP address
-2. Copy the application's Nginx config to the sites-available directory:
+2. Create the Nginx config at `/etc/nginx/sites-available/example.com`:
 
-```bash
-sudo cp nginx.conf /etc/nginx/sites-available/example.com
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com;
+
+    client_max_body_size 10M;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name example.com;
+
+    server_tokens off;
+    more_clear_headers Server;
+
+    client_max_body_size 10M;
+
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://localhost:3100;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
 ```
+
+> **Note**: Replace `example.com` with your domain and ensure the port in `proxy_pass` matches your `VITE_SERVER_PORT` environment variable.
 
 3. Enable the site:
 
