@@ -34,34 +34,39 @@ export const VoteProgressDialog = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const { agreements } = useMemo(
+  const { agreements, disagreements } = useMemo(
     () => sortConsensusVotesByType(votes),
     [votes],
   );
 
   const { agreementThreshold, quorumThreshold } = config;
-  const agreementCount = agreements.length;
-  const totalVotes = votes.length;
+
+  const quorum = votes.length;
+  const yesVotes = agreements.length;
+  const noVotes = disagreements.length;
 
   // Agreement progress
-  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
+  const requiredAgreements = getRequiredCount(
+    yesVotes + noVotes,
+    agreementThreshold,
+  );
   const agreementsPercentage = getProgressPercentage(
-    agreementCount,
+    yesVotes,
     requiredAgreements,
   );
-  const isAgreementMet = agreementCount >= requiredAgreements;
+  const isAgreementMet = yesVotes >= requiredAgreements;
 
   // Quorum progress
   const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
-  const quorumPercentage = getProgressPercentage(totalVotes, requiredQuorum);
-  const isQuorumMet = totalVotes >= requiredQuorum;
+  const quorumPercentage = getProgressPercentage(quorum, requiredQuorum);
+  const isQuorumMet = quorum >= requiredQuorum;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <button className="flex cursor-pointer items-center gap-1.5 hover:underline">
           <MdHowToVote className="text-muted-foreground" />
-          <span>{t('polls.labels.totalVotes', { count: totalVotes })}</span>
+          <span>{t('polls.labels.totalVotes', { count: quorum })}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="md:w-lg">
@@ -90,7 +95,7 @@ export const VoteProgressDialog = ({
               <Progress value={quorumPercentage} />
               <p className="text-muted-foreground text-sm">
                 {t('polls.descriptions.quorumStatus', {
-                  current: totalVotes,
+                  current: quorum,
                   required: requiredQuorum,
                   threshold: config.quorumThreshold,
                 })}
@@ -118,7 +123,7 @@ export const VoteProgressDialog = ({
             <Progress value={agreementsPercentage} />
             <p className="text-muted-foreground text-sm">
               {t('polls.descriptions.thresholdStatus', {
-                current: agreementCount,
+                current: yesVotes,
                 required: requiredAgreements,
                 threshold: config.agreementThreshold,
               })}

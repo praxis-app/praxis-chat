@@ -442,28 +442,63 @@ const hasConsensus = (
 
   // Quorum check (if enabled)
   if (quorumEnabled) {
-    const totalParticipants = votes.length;
+    const quorum = votes.length;
     const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
-    if (totalParticipants < requiredQuorum) {
+    if (quorum < requiredQuorum) {
+      return false;
+    }
+  }
+
+  // Agreement check (always performed)
+  const { agreements, disagreements, abstains, blocks } =
+    sortConsensusVotesByType(votes);
+  const yesVotes = agreements.length;
+  const noVotes = disagreements.length;
+  const participants = yesVotes + noVotes;
+
+  if (participants === 0) {
+    return false;
+  }
+
+  const isRatifiable =
+    yesVotes >= getRequiredCount(participants, agreementThreshold) &&
+    disagreements.length <= disagreementsLimit &&
+    abstains.length <= abstainsLimit &&
+    blocks.length === 0;
+
+  return isRatifiable;
+};
+
+const hasMajorityVote = (
+  votes: Vote[],
+  { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
+  memberCount: number,
+) => {
+  if (closingAt && Date.now() < Number(closingAt)) {
+    return false;
+  }
+
+  // Quorum check (if enabled)
+  if (quorumEnabled) {
+    const quorum = votes.length;
+    const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
+    if (quorum < requiredQuorum) {
       return false;
     }
   }
 
   // Threshold check (always performed)
-  const { agreements, disagreements, abstains, blocks } =
-    sortConsensusVotesByType(votes);
+  const { agreements, disagreements } = sortMajorityVotesByType(votes);
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
+  const participants = yesVotes + noVotes;
 
-  if (yesVotes + noVotes === 0) {
+  if (participants === 0) {
     return false;
   }
 
-  const isRatifiable =
-    yesVotes >= getRequiredCount(memberCount, agreementThreshold) &&
-    disagreements.length <= disagreementsLimit &&
-    abstains.length <= abstainsLimit &&
-    blocks.length === 0;
+  const requiredAgreements = getRequiredCount(participants, agreementThreshold);
+  const isRatifiable = yesVotes >= requiredAgreements;
 
   return isRatifiable;
 };
@@ -478,39 +513,6 @@ const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
     abstains.length <= abstainsLimit &&
     blocks.length === 0
   );
-};
-
-const hasMajorityVote = (
-  votes: Vote[],
-  { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
-  memberCount: number,
-) => {
-  if (closingAt && Date.now() < Number(closingAt)) {
-    return false;
-  }
-
-  // Quorum check (if enabled)
-  if (quorumEnabled) {
-    const totalParticipants = votes.length;
-    const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
-    if (totalParticipants < requiredQuorum) {
-      return false;
-    }
-  }
-
-  // Threshold check (always performed)
-  const { agreements, disagreements } = sortMajorityVotesByType(votes);
-  const yesVotes = agreements.length;
-  const noVotes = disagreements.length;
-
-  if (yesVotes + noVotes === 0) {
-    return false;
-  }
-
-  const requiredAgreements = getRequiredCount(memberCount, agreementThreshold);
-  const isRatifiable = yesVotes >= requiredAgreements;
-
-  return isRatifiable;
 };
 
 /** Synchronizes polls with regard to voting duration and ratifiability */
