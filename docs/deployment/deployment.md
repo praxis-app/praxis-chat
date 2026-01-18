@@ -1,66 +1,258 @@
 # Deployment
 
-This document provides guidance for deploying Praxis to production, including environment configuration, database migration strategies, and step-by-step instructions for both first-time deployments and updates to existing instances.
+This guide describes a recommended path for deploying Praxis to production on a single server using Docker. It covers server setup, environment configuration, and database migration. For high traffic deployments or greater scale, additional configuration will be required (e.g., load balancing, database replication, container orchestration).
 
 ## Prerequisites
 
-Before deploying Praxis, you'll need to provision and configure a web server with the following components:
+Before deploying Praxis, ensure you have:
 
-### Server Provisioning
+- A Linux server (Ubuntu recommended) with SSH access
+- A registered domain name
+- Basic familiarity with the command line
 
-Provision a Linux server (any distribution you prefer, such as Debian, Alma, or Rocky Linux). The server should have:
+## Server Provisioning
 
-- Sufficient resources (CPU, RAM, and disk space) for your expected load
-- Network access to allow incoming HTTP/HTTPS traffic
-- SSH access for deployment and management
+Create a new server with the following specifications:
 
-### Installing Docker and Docker Compose
+- **OS**: Latest Ubuntu LTS
+- **Region**: Choose based on your target users
+- **Size**: Minimum 2GB RAM recommended
 
-Praxis uses Docker and Docker Compose to containerize the application and manage dependencies. Install Docker and Docker Compose on your server using the installation methods appropriate for your chosen Linux distribution.
+After provisioning, verify SSH access:
 
-### Installing a Reverse Proxy
+```bash
+ssh root@<IP_ADDRESS>
+```
 
-Install a reverse proxy like Nginx (or another reverse proxy of your choice) to handle HTTP/HTTPS requests and route them to the Praxis application. Configure the reverse proxy to forward requests to the Praxis application running in Docker.
+Set up SSH key authentication for passwordless login:
 
-### Database and Redis
+```bash
+ssh-copy-id root@<IP_ADDRESS>
+```
 
-The database (PostgreSQL) and Redis are handled by Docker Compose and run as containers alongside the application—no separate installation or configuration is required for these services.
+Update the system:
 
-## Production Requirements
+```bash
+apt update && apt upgrade -y
+```
 
-### Environment Variables
+## Security Configuration
 
-Set `DB_MIGRATIONS=true` for first-time deployments. After your first deployment, you may want to set `DB_MIGRATIONS=false` for subsequent deployments, depending on your migration strategy. Automatic migrations in production are often discouraged because they remove control over when migrations run, make it difficult to coordinate with deployments or rollbacks, and risk leaving the database in an inconsistent state if a migration fails.
+### Create Non-Root User
 
-Instead, run migrations manually as a separate step in your deployment process, allowing you to review, test, and apply them during appropriate maintenance windows.
+```bash
+useradd -m admin
+passwd admin
+```
 
-### Running Migrations
+### Configure Firewall (UFW)
 
-For first-time deployments, see the [First-Time Deployment](#first-time-deployment) section below. For subsequent deployments, run migrations manually using `npm run typeorm:run` before deploying the application update.
+```bash
+ufw allow ssh
+ufw allow 'Nginx Full'
+ufw enable
+```
 
-## First-Time Deployment
+### Disable SSH Root Login
 
-When deploying the instance for the first time (initial setup):
+Edit `/etc/ssh/sshd_config` and set:
 
-1. Deploy the application with `DB_MIGRATIONS=true` set in your environment variables.
+```
+PermitRootLogin no
+```
 
-2. The application will automatically:
-   - Run database migrations
-   - Create the initial instance configuration
-   - Create a default server
+Restart SSH service to apply changes.
 
-3. **Important**: Immediately after deployment, sign up as the first user on the server. This initial signup will:
-   - Initialize admin roles for the instance
-   - Initialize admin roles for the default server
-   - Add you as a member to the default server
+## Install Docker
 
-Without this initial admin signup, the instance will not have proper administrative access configured.
+Install Docker and Docker Compose following the [official Docker documentation](https://docs.docker.com/engine/install/ubuntu/):
 
-## Updating an Existing Deployment
+```bash
+sudo apt-get install ca-certificates curl gnupg lsb-release
 
-For subsequent deployments (updates to an existing instance):
+sudo mkdir -m 0755 -p /etc/apt/keyrings
 
-1. If you're using manual migrations, ensure `DB_MIGRATIONS=false` is set in your environment (or unset)
-2. Review and test any new migrations in a staging environment first
-3. Run migrations manually using `npm run typeorm:run` before or during your deployment window
-4. Deploy the new version of the application
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+## Install Nginx
+
+```bash
+apt install nginx
+```
+
+## Install Certbot (SSL)
+
+```bash
+sudo snap install core && sudo snap refresh core
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+```
+
+## Nginx Configuration
+
+### Set Up Server Block
+
+Create the web root directory:
+
+```bash
+sudo mkdir -p /var/www/example.com/html
+sudo chown -R $USER:$USER /var/www/example.com/html
+sudo chmod -R 755 /var/www/example.com
+```
+
+Create a test page at `/var/www/example.com/html/index.html` to verify Nginx is working:
+
+```html
+<html>
+  <head>
+    <title>Welcome to example.com!</title>
+  </head>
+  <body>
+    <h1>Success! The server block is working!</h1>
+  </body>
+</html>
+```
+
+### Configure Domain
+
+1. Point your domain's DNS A record to your server's IP address
+2. Create the Nginx config at `/etc/nginx/sites-available/example.com`. Your configuration should look something like the following:
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com;
+
+    client_max_body_size 10M;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name example.com;
+
+    server_tokens off;
+    more_clear_headers Server;
+
+    client_max_body_size 10M;
+
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://localhost:3100;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+> **Note**: Replace `example.com` with your domain and ensure the port in `proxy_pass` matches your `VITE_SERVER_PORT` environment variable.
+
+3. Enable the site:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+```
+
+## SSL Certificate
+
+Obtain an SSL certificate with Certbot:
+
+```bash
+sudo certbot certonly --nginx -d example.com -d www.example.com
+```
+
+After running Certbot, revert any changes it made to your `nginx.conf` if needed.
+
+Restart Nginx:
+
+```bash
+service nginx restart
+```
+
+## Application Deployment
+
+### Clone Repository
+
+```bash
+git clone https://github.com/praxis-app/praxis-chat.git
+cd praxis-chat
+```
+
+### Environment Configuration
+
+Create a `.env` file with your configuration. **Use a strong, unique password for PostgreSQL.**
+
+> **Warning**: Failing to set a secure database password can result in your server being compromised.
+
+### Start the Application
+
+Build and start the Docker containers:
+
+```bash
+sudo docker compose up -d
+```
+
+## Database Migrations
+
+### First-Time Deployment
+
+For initial setup, deploy with `DB_MIGRATIONS=true` in your environment variables. The application will automatically:
+
+- Run database migrations
+- Create the initial instance configuration
+- Create a default server
+
+**Important**: Immediately after deployment, sign up as the first user. This initial signup will:
+
+- Initialize admin roles for the instance
+- Initialize admin roles for the default server
+- Add you as a member to the default server
+
+### Running Migrations Manually
+
+If you prefer manual control over migrations:
+
+1. Get the API container ID:
+
+```bash
+sudo docker ps
+```
+
+2. SSH into the container:
+
+```bash
+sudo docker exec -it <CONTAINER_ID> sh
+```
+
+3. Run migrations:
+
+```bash
+cd app && npm run typeorm:run ./dist/database/data-source.js
+```
+
+### Updating an Existing Deployment
+
+For subsequent deployments:
+
+1. Set `DB_MIGRATIONS=false` (or unset) if using manual migrations
+2. Review and test new migrations in a staging environment
+3. Run migrations manually before deploying the new version
+4. Deploy the application update
