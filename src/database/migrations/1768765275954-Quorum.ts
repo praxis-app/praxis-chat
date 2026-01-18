@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Quorum1768763341207 implements MigrationInterface {
-  name = 'Quorum1768763341207';
+export class Quorum1768765275954 implements MigrationInterface {
+  name = 'Quorum1768765275954';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -20,7 +20,7 @@ export class Quorum1768763341207 implements MigrationInterface {
         `);
     await queryRunner.query(`
             ALTER TABLE "server_config"
-            ADD "quorumThreshold" integer NOT NULL DEFAULT '25'
+            ADD "quorumThreshold" integer NOT NULL DEFAULT '51'
         `);
     await queryRunner.query(`
             ALTER TABLE "poll_config"
@@ -32,7 +32,7 @@ export class Quorum1768763341207 implements MigrationInterface {
         `);
     await queryRunner.query(`
             ALTER TABLE "poll_config"
-            ADD "quorumThreshold" integer NOT NULL DEFAULT '25'
+            ADD "quorumThreshold" integer NOT NULL DEFAULT '51'
         `);
   }
 
