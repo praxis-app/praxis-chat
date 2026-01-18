@@ -10,17 +10,26 @@ import {
   getServerRoles,
   updateServerRole,
 } from '../server-roles.controller';
+import { canReadServerRole } from '../middleware/can-read-server-role.middleware';
+import { authenticateOptional } from '../../../auth/middleware/authenticate-optional.middleware';
 
 export const serverRolesRouter = express.Router({
   mergeParams: true,
 });
 
-serverRolesRouter.use(authenticate);
+serverRolesRouter.get(
+  '/:serverRoleId',
+  authenticateOptional,
+  canReadServerRole,
+  getServerRole,
+);
 
 serverRolesRouter
-  // All authenticated users can read server roles
-  .get('/:serverRoleId', getServerRole)
+  .use(authenticate)
+
+  // All authed users can read server roles
   .get('/', getServerRoles)
+
   // Only users with permission can make direct changes
   .post('/', can('create', 'ServerRole'), createServerRole)
   .put('/:serverRoleId', can('update', 'ServerRole'), updateServerRole)

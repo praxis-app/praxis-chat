@@ -3,21 +3,21 @@ import { NextFunction, Request, Response } from 'express';
 import { CronExpression } from '../../common/common.constants';
 import * as pollsService from '../polls.service';
 
-const ONE_HOUR_MS = 1000 * 60 * 60;
+const HALF_HOUR_MS = 1000 * 60 * 30;
 
 let disableTimeout: NodeJS.Timeout | null = null;
 
-const synchronizePollsJob = new CronJob(
-  CronExpression.EVERY_5_MINUTES,
-  async () => {
+const synchronizePollsJob = CronJob.from({
+  cronTime: CronExpression.EVERY_5_MINUTES,
+  onTick: async () => {
     await pollsService.synchronizePolls();
   },
-);
+});
 
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
     synchronizePollsJob.stop();
-  }, ONE_HOUR_MS);
+  }, HALF_HOUR_MS);
 };
 
 const resetDisableTimeout = () => {
@@ -26,6 +26,13 @@ const resetDisableTimeout = () => {
   addDisableTimeout();
 };
 
+/**
+ * Synchronizes polls with regard to voting duration and ratifiability
+ *
+ * TODO: Implement consent decision making model. `synchronizePolls` basically
+ * has no effect until consent is implemented, since it's the only model that
+ * requires a set voting duration
+ */
 export const synchronizePolls = async (
   _req: Request,
   _res: Response,

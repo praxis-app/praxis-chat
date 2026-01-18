@@ -9,7 +9,12 @@ import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAuthStore } from '@/store/auth.store';
-import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
+import {
+  ChannelRes,
+  FeedItemRes,
+  FeedQuery,
+  FeedQueryPage,
+} from '@/types/channel.types';
 import { ImageRes } from '@/types/image.types';
 import { MessageRes } from '@/types/message.types';
 import { PollRes } from '@/types/poll.types';
@@ -125,7 +130,7 @@ export const ChannelView = ({ channel }: Props) => {
               pageParams: [0],
             };
           }
-          const pages = oldData.pages.map((page, index) => {
+          const pages = oldData.pages.map((page, index): FeedQueryPage => {
             // Check if message already exists (for bot message updates)
             const existingIndex = page.feed.findIndex(
               (item) =>
@@ -171,7 +176,7 @@ export const ChannelView = ({ channel }: Props) => {
             return { pages: [], pageParams: [] };
           }
 
-          const pages = oldData.pages.map((page) => {
+          const pages = oldData.pages.map((page): FeedQueryPage => {
             const feed = page.feed.map((item) => {
               if (item.type !== 'message') {
                 return item;
@@ -212,9 +217,12 @@ export const ChannelView = ({ channel }: Props) => {
         };
         queryClient.setQueryData<FeedQuery>(feedQueryKey, (oldData) => {
           if (!oldData) {
-            return { pages: [{ feed: [newFeedItem] }], pageParams: [0] };
+            return {
+              pages: [{ feed: [newFeedItem] }],
+              pageParams: [0],
+            };
           }
-          const pages = oldData.pages.map((page, index) => {
+          const pages = oldData.pages.map((page, index): FeedQueryPage => {
             if (index === 0) {
               const exists = page.feed.some(
                 (fi) => fi.type === 'poll' && fi.id === newFeedItem.id,

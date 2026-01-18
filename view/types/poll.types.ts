@@ -12,16 +12,18 @@ export interface PollRes {
   config: PollConfigRes;
   images: ImageRes[];
   user: UserRes;
-  createdAt: string;
   votes: VoteRes[];
   myVote?: VoteRes;
-  votesNeededToRatify: number;
   agreementVoteCount: number;
+  memberCount: number;
+  createdAt: string;
 }
 
 export interface PollConfigRes {
   decisionMakingModel: DecisionMakingModel;
   ratificationThreshold: number;
+  quorumEnabled: boolean;
+  quorumThreshold: number;
   disagreementsLimit: number;
   abstainsLimit: number;
   closingAt?: string;

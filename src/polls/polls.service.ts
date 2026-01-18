@@ -1,6 +1,11 @@
+import {
+  getRequiredQuorum,
+  getRequiredAgreements,
+} from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
+import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
@@ -23,9 +28,9 @@ import { PollDto } from './dtos/poll.dto';
 import { PollConfig } from './entities/poll-config.entity';
 import { Poll } from './entities/poll.entity';
 
+const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
 const pollRepository = dataSource.getRepository(Poll);
-const userRepository = dataSource.getRepository(User);
 const voteRepository = dataSource.getRepository(Vote);
 
 export const getPoll = (id: string, relations?: string[]) => {
@@ -104,20 +109,22 @@ export const getInlinePolls = async (
     .take(limit)
     .getRawAndEntities();
 
-  // Fetch the current user's votes
+  // Get the current user's vote for each poll
   const pollIds = polls.map((p) => p.id);
   const myVotesMap = currentUserId
     ? await getMyVotesMap(pollIds, currentUserId)
     : {};
 
-  // Get users eligible to vote on this poll
-  const pollMemberCount = await getPollMemberCount();
+  // Get users eligible to vote on polls (used for quorum calculation)
+  const pollMemberCountMap = await getPollMemberCountMap(pollIds);
 
+  // Get unwrapped channel keys for polls
   const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap(
     polls.filter((poll) => poll.keyId).map((poll) => poll.keyId!),
   );
 
-  const profilePictures = await usersService.getUserProfilePicturesMap(
+  // Get profile pictures for poll authors
+  const profilePicturesMap = await usersService.getUserProfilePicturesMap(
     polls.map((p) => p.user.id),
   );
 
@@ -129,9 +136,6 @@ export const getInlinePolls = async (
       const unwrappedKey = unwrappedKeyMap[keyId];
       body = decryptText(ciphertext, tag, iv, unwrappedKey);
     }
-    const votesNeededToRatify = Math.ceil(
-      pollMemberCount * (poll.config.ratificationThreshold * 0.01),
-    );
 
     const agreementVoteCount = poll.votes.filter(
       (vote) => vote.voteType === 'agree',
@@ -143,6 +147,9 @@ export const getInlinePolls = async (
           voteType: myVotesMap[poll.id].voteType,
         }
       : undefined;
+
+    const memberCount = pollMemberCountMap[poll.id];
+    const profilePicture = profilePicturesMap[poll.user.id];
 
     const rowsForPoll = raw.filter((r) => {
       return r.poll_id === poll.id;
@@ -173,13 +180,13 @@ export const getInlinePolls = async (
       })),
       user: {
         ...poll.user,
-        profilePicture: profilePictures[poll.user.id],
+        profilePicture,
       },
       votes: poll.votes,
       config: poll.config,
       createdAt: poll.createdAt,
-      votesNeededToRatify,
       agreementVoteCount,
+      memberCount,
       myVote,
       body,
     };
@@ -194,7 +201,7 @@ export const isPollRatifiable = async (pollId: string) => {
     return false;
   }
 
-  const memberCount = await getPollMemberCount();
+  const memberCount = await getPollMemberCount(pollId);
 
   if (config.decisionMakingModel === 'consensus') {
     return hasConsensus(votes, config, memberCount);
@@ -279,10 +286,7 @@ export const createPoll = async (
 
   const poll = await pollRepository.save(pollData);
 
-  const pollMemberCount = await getPollMemberCount();
-  const votesNeededToRatify = Math.ceil(
-    pollMemberCount * (serverConfig.ratificationThreshold * 0.01),
-  );
+  const pollMemberCount = await getPollMemberCount(poll.id);
 
   let pollActionRole: PollActionRole | undefined;
   if (action.serverRole) {
@@ -320,6 +324,7 @@ export const createPoll = async (
       actionType: poll.action?.actionType,
       serverRole: pollActionRole,
     },
+    config: pollConfig,
     user: {
       id: user.id,
       name: user.name,
@@ -329,7 +334,7 @@ export const createPoll = async (
     images: attachedImages,
     createdAt: poll.createdAt,
     agreementVoteCount: 0,
-    votesNeededToRatify,
+    memberCount: pollMemberCount,
   };
 
   // Publish poll to all other channel members for realtime feed updates
@@ -390,18 +395,21 @@ export const ratifyPoll = async (pollId: string) => {
   });
 };
 
+/** Synchronizes polls with regard to voting duration and ratifiability */
 export const synchronizePolls = async () => {
   const polls = await pollRepository.find({
     where: {
       config: { closingAt: Not(IsNull()) },
       stage: 'voting',
     },
-    select: { id: true },
+    select: { id: true, config: { id: true, closingAt: true } },
+    relations: ['config'],
   });
 
   for (const poll of polls) {
     await synchronizePoll(poll);
   }
+  console.info('Synchronized polls 🗳️');
 };
 
 export const deletePoll = async (pollId: string) => {
@@ -437,7 +445,7 @@ const hasConsensus = async (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -454,9 +462,11 @@ const hasConsensus = async (
     return false;
   }
 
-  const requiredThreshold =
-    totalParticipantVotes * (ratificationThreshold * 0.01);
-  if (yesVotes < requiredThreshold) {
+  const requiredAgreements = getRequiredAgreements(
+    memberCount,
+    ratificationThreshold,
+  );
+  if (yesVotes < requiredAgreements) {
     return false;
   }
 
@@ -497,7 +507,7 @@ const hasMajorityVote = (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = memberCount * (quorumThreshold * 0.01);
+    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -513,9 +523,11 @@ const hasMajorityVote = (
     return false;
   }
 
-  const requiredThreshold =
-    totalParticipantVotes * (ratificationThreshold * 0.01);
-  const isRatifiable = yesVotes >= requiredThreshold;
+  const requiredAgreements = getRequiredAgreements(
+    totalParticipantVotes,
+    ratificationThreshold,
+  );
+  const isRatifiable = yesVotes >= requiredAgreements;
 
   return isRatifiable;
 };
@@ -546,14 +558,43 @@ const getMyVotesMap = async (pollIds: string[], currentUserId: string) => {
   }, {});
 };
 
-// TODO: Account for instances with multiple servers / guilds
-const getPollMemberCount = async () => {
-  return userRepository.count({
-    where: {
-      anonymous: false,
-      locked: false,
-    },
-  });
+const getPollMemberCount = async (pollId: string) => {
+  return channelMemberRepository
+    .createQueryBuilder('channelMember')
+    .innerJoin('channelMember.channel', 'channel')
+    .innerJoin('channel.polls', 'poll', 'poll.id = :pollId', { pollId })
+    .getCount();
+};
+
+const getPollMemberCountMap = async (pollIds: string[]) => {
+  if (pollIds.length === 0) {
+    return {};
+  }
+
+  const results = await channelMemberRepository
+    .createQueryBuilder('channelMember')
+    .select('poll.id', 'pollId')
+    .addSelect('COUNT(channelMember.id)', 'count')
+    .innerJoin('channelMember.channel', 'channel')
+    .innerJoin('channel.polls', 'poll', 'poll.id IN (:...pollIds)', {
+      pollIds,
+    })
+    .groupBy('poll.id')
+    .getRawMany();
+
+  const map: Record<string, number> = {};
+  for (const result of results) {
+    map[result.pollId] = parseInt(result.count, 10);
+  }
+
+  // Ensure all pollIds have an entry (default to 0 if not found)
+  for (const pollId of pollIds) {
+    if (!(pollId in map)) {
+      map[pollId] = 0;
+    }
+  }
+
+  return map;
 };
 
 const getNewPollKey = (serverId: string, channelId: string, userId: string) => {
