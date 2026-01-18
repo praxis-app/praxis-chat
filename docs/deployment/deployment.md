@@ -1,8 +1,6 @@
 # Deployment
 
-This document provides guidance for deploying Praxis to production, including server setup, environment configuration, and database migration strategies.
-
-> **Note**: This guide describes a recommended path for getting Praxis up and running quickly on a single server. For high traffic deployments or greater scale, additional configuration will be required (e.g., load balancing, database replication, container orchestration).
+This guide describes a recommended path for deploying Praxis to production on a single server using Docker. It covers server setup, environment configuration, and database migration. For high traffic deployments or greater scale, additional configuration will be required (e.g., load balancing, database replication, container orchestration).
 
 ## Prerequisites
 
