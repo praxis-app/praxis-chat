@@ -46,9 +46,9 @@ export const VoteProgressDialog = ({
   const noVotes = disagreements.length;
 
   // Agreement progress
-  const requiredAgreements = getRequiredCount(
-    yesVotes + noVotes,
-    agreementThreshold,
+  const requiredAgreements = Math.max(
+    1,
+    getRequiredCount(yesVotes + noVotes, agreementThreshold),
   );
   const agreementsPercentage = getProgressPercentage(
     yesVotes,
@@ -74,6 +74,33 @@ export const VoteProgressDialog = ({
           <DialogTitle>{t('polls.headers.voteProgress')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 pt-2">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">
+                {t('polls.labels.thresholdProgress')}
+              </span>
+              <span
+                className={
+                  isAgreementMet
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-muted-foreground'
+                }
+              >
+                {isAgreementMet
+                  ? t('polls.labels.thresholdMet')
+                  : t('polls.labels.thresholdNotMet')}
+              </span>
+            </div>
+            <Progress value={agreementsPercentage} />
+            <p className="text-muted-foreground text-sm">
+              {t('polls.descriptions.thresholdStatus', {
+                current: yesVotes,
+                required: requiredAgreements,
+                threshold: config.agreementThreshold,
+              })}
+            </p>
+          </div>
+
           {config.quorumEnabled && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
@@ -102,33 +129,6 @@ export const VoteProgressDialog = ({
               </p>
             </div>
           )}
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">
-                {t('polls.labels.thresholdProgress')}
-              </span>
-              <span
-                className={
-                  isAgreementMet
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-muted-foreground'
-                }
-              >
-                {isAgreementMet
-                  ? t('polls.labels.thresholdMet')
-                  : t('polls.labels.thresholdNotMet')}
-              </span>
-            </div>
-            <Progress value={agreementsPercentage} />
-            <p className="text-muted-foreground text-sm">
-              {t('polls.descriptions.thresholdStatus', {
-                current: yesVotes,
-                required: requiredAgreements,
-                threshold: config.agreementThreshold,
-              })}
-            </p>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
