@@ -10,8 +10,7 @@ import { PollConfigRes } from '@/types/poll.types';
 import { VoteRes } from '@/types/vote.types';
 import {
   getProgressPercentage,
-  getRequiredQuorum,
-  getRequiredAgreements,
+  getRequiredCount,
 } from '@common/polls/poll.utils';
 import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { useMemo } from 'react';
@@ -45,7 +44,7 @@ export const VoteProgressDialog = ({
   const totalVotes = votes.length;
 
   // Agreement progress
-  const requiredAgreements = getRequiredAgreements(
+  const requiredAgreements = getRequiredCount(
     memberCount,
     ratificationThreshold,
   );
@@ -56,7 +55,7 @@ export const VoteProgressDialog = ({
   const isAgreementMet = agreementCount >= requiredAgreements;
 
   // Quorum progress
-  const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
+  const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
   const quorumPercentage = getProgressPercentage(totalVotes, requiredQuorum);
   const isQuorumMet = totalVotes >= requiredQuorum;
 

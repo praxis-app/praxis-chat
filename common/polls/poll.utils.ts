@@ -10,27 +10,13 @@ export const getProgressPercentage = (
   required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
 
 /**
- * Calculate the required number of votes to meet quorum
+ * Calculate the required count to meet a given threshold in voting
  * @param memberCount Total eligible voters
- * @param quorumThreshold Percentage threshold (e.g., 51 for 51%)
- *
- * TODO: Combine with getRequiredAgreements
+ * @param threshold Percentage threshold (e.g., 51 for 51%)
  */
-export const getRequiredQuorum = (
+export const getRequiredCount = (
   memberCount: number,
-  quorumThreshold: number,
+  threshold: number,
 ): number => {
-  return Math.ceil(memberCount * (quorumThreshold * 0.01));
-};
-
-/**
- * Calculate the required number of agreements to meet threshold
- * @param memberCount Total eligible voters
- * @param ratificationThreshold Percentage threshold (e.g., 51 for 51%)
- */
-export const getRequiredAgreements = (
-  memberCount: number,
-  ratificationThreshold: number,
-): number => {
-  return Math.ceil(memberCount * (ratificationThreshold * 0.01));
+  return Math.ceil(memberCount * (threshold * 0.01));
 };

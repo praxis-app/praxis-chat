@@ -1,7 +1,4 @@
-import {
-  getRequiredQuorum,
-  getRequiredAgreements,
-} from '@common/polls/poll.utils';
+import { getRequiredCount } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
@@ -446,7 +443,7 @@ const hasConsensus = (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
+    const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -462,7 +459,7 @@ const hasConsensus = (
     return false;
   }
 
-  const requiredAgreements = getRequiredAgreements(
+  const requiredAgreements = getRequiredCount(
     memberCount,
     ratificationThreshold,
   );
@@ -507,7 +504,7 @@ const hasMajorityVote = (
   // Quorum check (if enabled)
   if (quorumEnabled) {
     const totalParticipants = votes.length;
-    const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
+    const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (totalParticipants < requiredQuorum) {
       return false;
     }
@@ -522,7 +519,7 @@ const hasMajorityVote = (
     return false;
   }
 
-  const requiredAgreements = getRequiredAgreements(
+  const requiredAgreements = getRequiredCount(
     memberCount,
     ratificationThreshold,
   );
