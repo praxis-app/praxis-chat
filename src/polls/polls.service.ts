@@ -332,9 +332,10 @@ export const createPoll = async (
       profilePicture,
     },
     images: attachedImages,
-    createdAt: poll.createdAt,
+    votes: [],
     agreementVoteCount: 0,
     memberCount: pollMemberCount,
+    createdAt: poll.createdAt,
   };
 
   // Publish poll to all other channel members for realtime feed updates
@@ -426,7 +427,7 @@ export const deletePoll = async (pollId: string) => {
 // Helper functions
 // -------------------------------------------------------------------------
 
-const hasConsensus = async (
+const hasConsensus = (
   votes: Vote[],
   {
     quorumEnabled,
