@@ -48,7 +48,7 @@ export const getQuorumProgress = (
  * @param memberCount Total eligible voters
  * @param ratificationThreshold Percentage threshold (e.g., 51 for 51%)
  */
-export const getRequiredThreshold = (
+export const getRequiredAgreements = (
   memberCount: number,
   ratificationThreshold: number,
 ): number => {
@@ -61,12 +61,12 @@ export const getRequiredThreshold = (
  * @param memberCount Total eligible voters
  * @param ratificationThreshold Percentage threshold (e.g., 51 for 51%)
  */
-export const getThresholdProgress = (
+export const getAgreementsProgress = (
   agreementCount: number,
   memberCount: number,
   ratificationThreshold: number,
 ): ThresholdProgress => {
-  const required = getRequiredThreshold(memberCount, ratificationThreshold);
+  const required = getRequiredAgreements(memberCount, ratificationThreshold);
   const percentage =
     required > 0
       ? Math.min(100, Math.round((agreementCount / required) * 100))

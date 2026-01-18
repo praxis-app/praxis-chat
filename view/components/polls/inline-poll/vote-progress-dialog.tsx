@@ -10,7 +10,7 @@ import { PollConfigRes } from '@/types/poll.types';
 import { VoteRes } from '@/types/vote.types';
 import {
   getQuorumProgress,
-  getThresholdProgress,
+  getAgreementsProgress,
 } from '@common/polls/poll.utils';
 import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { useMemo } from 'react';
@@ -48,7 +48,7 @@ export const VoteProgressDialog = ({
     config.quorumThreshold,
   );
 
-  const thresholdProgress = getThresholdProgress(
+  const agreementsProgress = getAgreementsProgress(
     agreementCount,
     memberCount,
     config.ratificationThreshold,
@@ -103,21 +103,21 @@ export const VoteProgressDialog = ({
               </span>
               <span
                 className={
-                  thresholdProgress.isMet
+                  agreementsProgress.isMet
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-muted-foreground'
                 }
               >
-                {thresholdProgress.isMet
+                {agreementsProgress.isMet
                   ? t('polls.labels.thresholdMet')
                   : t('polls.labels.thresholdNotMet')}
               </span>
             </div>
-            <Progress value={thresholdProgress.percentage} />
+            <Progress value={agreementsProgress.percentage} />
             <p className="text-muted-foreground text-sm">
               {t('polls.descriptions.thresholdStatus', {
                 current: agreementCount,
-                required: thresholdProgress.required,
+                required: agreementsProgress.required,
                 threshold: config.ratificationThreshold,
               })}
             </p>

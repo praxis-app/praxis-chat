@@ -1,6 +1,6 @@
 import {
   getRequiredQuorum,
-  getRequiredThreshold,
+  getRequiredAgreements,
 } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
@@ -462,7 +462,7 @@ const hasConsensus = async (
     return false;
   }
 
-  const requiredAgreements = getRequiredThreshold(
+  const requiredAgreements = getRequiredAgreements(
     memberCount,
     ratificationThreshold,
   );
@@ -523,12 +523,11 @@ const hasMajorityVote = (
     return false;
   }
 
-  // TODO: Rename to requiredAgreements, along with renaming utils and other similar references
-  const requiredThreshold = getRequiredThreshold(
+  const requiredAgreements = getRequiredAgreements(
     totalParticipantVotes,
     ratificationThreshold,
   );
-  const isRatifiable = yesVotes >= requiredThreshold;
+  const isRatifiable = yesVotes >= requiredAgreements;
 
   return isRatifiable;
 };
