@@ -39,14 +39,14 @@ export const VoteProgressDialog = ({
     [votes],
   );
 
-  const { ratificationThreshold, quorumThreshold } = config;
+  const { agreementThreshold, quorumThreshold } = config;
   const agreementCount = agreements.length;
   const totalVotes = votes.length;
 
   // Agreement progress
   const requiredAgreements = getRequiredCount(
     memberCount,
-    ratificationThreshold,
+    agreementThreshold,
   );
   const agreementsPercentage = getProgressPercentage(
     agreementCount,
@@ -123,7 +123,7 @@ export const VoteProgressDialog = ({
               {t('polls.descriptions.thresholdStatus', {
                 current: agreementCount,
                 required: requiredAgreements,
-                threshold: config.ratificationThreshold,
+                threshold: config.agreementThreshold,
               })}
             </p>
           </div>

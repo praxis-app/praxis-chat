@@ -59,7 +59,7 @@ export const getInlinePolls = async (
     ])
     .addSelect([
       'pollConfig.decisionMakingModel',
-      'pollConfig.ratificationThreshold',
+      'pollConfig.agreementThreshold',
       'pollConfig.quorumEnabled',
       'pollConfig.quorumThreshold',
       'pollConfig.disagreementsLimit',
@@ -247,7 +247,7 @@ export const createPoll = async (
 
   const pollConfig: Partial<PollConfig> = {
     decisionMakingModel: serverConfig.decisionMakingModel,
-    ratificationThreshold: serverConfig.ratificationThreshold,
+    agreementThreshold: serverConfig.agreementThreshold,
     quorumEnabled: serverConfig.quorumEnabled,
     quorumThreshold: serverConfig.quorumThreshold,
     disagreementsLimit: serverConfig.disagreementsLimit,
@@ -429,7 +429,7 @@ const hasConsensus = (
   {
     quorumEnabled,
     quorumThreshold,
-    ratificationThreshold,
+    agreementThreshold,
     disagreementsLimit,
     abstainsLimit,
     closingAt,
@@ -461,7 +461,7 @@ const hasConsensus = (
 
   const requiredAgreements = getRequiredCount(
     memberCount,
-    ratificationThreshold,
+    agreementThreshold,
   );
   if (yesVotes < requiredAgreements) {
     return false;
@@ -490,7 +490,7 @@ const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
 const hasMajorityVote = (
   votes: Vote[],
   {
-    ratificationThreshold,
+    agreementThreshold,
     quorumEnabled,
     quorumThreshold,
     closingAt,
@@ -521,7 +521,7 @@ const hasMajorityVote = (
 
   const requiredAgreements = getRequiredCount(
     memberCount,
-    ratificationThreshold,
+    agreementThreshold,
   );
   const isRatifiable = yesVotes >= requiredAgreements;
 

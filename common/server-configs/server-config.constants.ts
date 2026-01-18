@@ -1,4 +1,4 @@
 export enum ServerConfigErrorKeys {
-  MajorityVoteRatificationThreshold = 'majority-vote-ratification-threshold',
+  MajorityVoteAgreementThreshold = 'majority-vote-agreement-threshold',
   ConsentVotingTimeLimitRequired = 'consent-voting-time-limit-required',
 }

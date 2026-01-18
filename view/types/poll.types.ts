@@ -21,7 +21,7 @@ export interface PollRes {
 
 export interface PollConfigRes {
   decisionMakingModel: DecisionMakingModel;
-  ratificationThreshold: number;
+  agreementThreshold: number;
   quorumEnabled: boolean;
   quorumThreshold: number;
   disagreementsLimit: number;

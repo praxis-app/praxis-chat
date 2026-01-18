@@ -27,7 +27,7 @@ export class ServerConfig {
   abstainsLimit: number;
 
   @Column({ default: 51 })
-  ratificationThreshold: number;
+  agreementThreshold: number;
 
   @Column({ type: 'boolean', default: true })
   quorumEnabled: boolean;

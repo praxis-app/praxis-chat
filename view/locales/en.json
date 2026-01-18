@@ -405,7 +405,7 @@
     },
     "names": {
       "decisionMakingModel": "Decision making model",
-      "ratificationThreshold": "Ratification threshold",
+      "agreementThreshold": "Agreement threshold",
       "quorumEnabled": "Require quorum",
       "quorumThreshold": "Quorum threshold",
       "disagreementsLimit": "Disagreements limit",
@@ -415,7 +415,7 @@
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
-      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to pass.",
+      "agreementThreshold": "Set the minimum percentage of positive votes required for a proposal to pass.",
       "quorumEnabled": "Require a minimum number of members to participate before a proposal can pass.",
       "quorumThreshold": "Set the minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
@@ -425,7 +425,7 @@
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
-      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to pass.",
+      "agreementThreshold": "The minimum percentage of positive votes required for a proposal to pass.",
       "quorumEnabled": "Whether a minimum participation threshold is required for proposals to be valid.",
       "quorumThreshold": "The minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
@@ -434,7 +434,7 @@
     },
     "errors": {
       "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
-      "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
+      "majorityVoteAgreementThreshold": "Agreement threshold must be greater than 50% for majority vote."
     }
   },
 

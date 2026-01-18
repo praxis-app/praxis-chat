@@ -82,7 +82,7 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
     });
 
   const handleSliderInputBlur = (
-    fieldName: 'ratificationThreshold' | 'quorumThreshold',
+    fieldName: 'agreementThreshold' | 'quorumThreshold',
     value?: number | null,
     minValue = 0,
   ) => {
@@ -226,12 +226,12 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
 
         <FormField
           control={form.control}
-          name="ratificationThreshold"
+          name="agreementThreshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('settings.names.ratificationThreshold')}</FormLabel>
+              <FormLabel>{t('settings.names.agreementThreshold')}</FormLabel>
               <FormDescription>
-                {t('settings.descriptions.ratificationThreshold')}
+                {t('settings.descriptions.agreementThreshold')}
               </FormDescription>
               <div className="flex gap-3">
                 <FormControl>
@@ -254,7 +254,7 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       onBlur={() =>
                         handleSliderInputBlur(
-                          'ratificationThreshold',
+                          'agreementThreshold',
                           field.value,
                           1,
                         )
@@ -267,8 +267,8 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
               </div>
               <FormMessage
                 errorOverrides={{
-                  [ServerConfigErrorKeys.MajorityVoteRatificationThreshold]: t(
-                    'settings.errors.majorityVoteRatificationThreshold',
+                  [ServerConfigErrorKeys.MajorityVoteAgreementThreshold]: t(
+                    'settings.errors.majorityVoteAgreementThreshold',
                   ),
                 }}
               />

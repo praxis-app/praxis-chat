@@ -9,7 +9,7 @@ export const serverConfigSchema = zod
     decisionMakingModel: zod.enum(DECISION_MAKING_MODEL).optional(),
     disagreementsLimit: zod.number().min(0).max(10).optional(),
     abstainsLimit: zod.number().min(0).max(10).optional(),
-    ratificationThreshold: zod.number().min(1).max(100).optional(),
+    agreementThreshold: zod.number().min(1).max(100).optional(),
     quorumEnabled: zod.boolean().optional(),
     quorumThreshold: zod.number().min(0).max(100).optional(),
     votingTimeLimit: zod.number().optional(),
@@ -18,12 +18,12 @@ export const serverConfigSchema = zod
     (data) =>
       !(
         data.decisionMakingModel === 'majority-vote' &&
-        data.ratificationThreshold !== undefined &&
-        data.ratificationThreshold <= 50
+        data.agreementThreshold !== undefined &&
+        data.agreementThreshold <= 50
       ),
     {
-      message: ServerConfigErrorKeys.MajorityVoteRatificationThreshold,
-      path: ['ratificationThreshold'],
+      message: ServerConfigErrorKeys.MajorityVoteAgreementThreshold,
+      path: ['agreementThreshold'],
     },
   )
   .refine(

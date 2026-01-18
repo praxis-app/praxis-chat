@@ -26,7 +26,7 @@ export class PollConfig {
   abstainsLimit: number;
 
   @Column({ type: 'int', default: 51 })
-  ratificationThreshold: number;
+  agreementThreshold: number;
 
   @Column({ type: 'boolean', default: true })
   quorumEnabled: boolean;
