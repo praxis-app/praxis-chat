@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { PollConfigRes } from '@/types/poll.types';
 import { VoteRes } from '@/types/vote.types';
 import {
+  getProgressPercentage,
   getRequiredQuorum,
   getRequiredAgreements,
 } from '@common/polls/poll.utils';
@@ -39,25 +40,24 @@ export const VoteProgressDialog = ({
     [votes],
   );
 
-  // Agreement progress
+  const { ratificationThreshold, quorumThreshold } = config;
   const agreementCount = agreements.length;
+  const totalVotes = votes.length;
+
+  // Agreement progress
   const requiredAgreements = getRequiredAgreements(
     memberCount,
-    config.ratificationThreshold,
+    ratificationThreshold,
   );
-  const agreementsPercentage =
-    requiredAgreements > 0
-      ? Math.min(100, Math.round((agreementCount / requiredAgreements) * 100))
-      : 100;
+  const agreementsPercentage = getProgressPercentage(
+    agreementCount,
+    requiredAgreements,
+  );
   const isAgreementMet = agreementCount >= requiredAgreements;
 
   // Quorum progress
-  const totalVotes = votes.length;
-  const requiredQuorum = getRequiredQuorum(memberCount, config.quorumThreshold);
-  const quorumPercentage =
-    requiredQuorum > 0
-      ? Math.min(100, Math.round((totalVotes / requiredQuorum) * 100))
-      : 100;
+  const requiredQuorum = getRequiredQuorum(memberCount, quorumThreshold);
+  const quorumPercentage = getProgressPercentage(totalVotes, requiredQuorum);
   const isQuorumMet = totalVotes >= requiredQuorum;
 
   return (
