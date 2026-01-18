@@ -1,4 +1,4 @@
-# Deployment
+# Deploying Praxis to Production
 
 This guide describes a recommended path for deploying Praxis to production on a single server using Docker. It covers server setup, environment configuration, and database migration. For high traffic deployments or greater scale, additional configuration will be required (e.g., load balancing, database replication, container orchestration).
 
@@ -245,7 +245,7 @@ sudo docker exec -it <CONTAINER_ID> sh
 3. Run migrations:
 
 ```bash
-cd app && npm run typeorm:run ./dist/database/data-source.js
+cd app && npm run typeorm:run
 ```
 
 ### Updating an Existing Deployment
