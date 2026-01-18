@@ -2,6 +2,8 @@
 
 This document provides guidance for deploying Praxis to production, including server setup, environment configuration, and database migration strategies.
 
+> **Note**: This guide describes a recommended path for getting Praxis up and running quickly on a single server. For high traffic deployments or greater scale, additional configuration will be required (e.g., load balancing, database replication, container orchestration).
+
 ## Prerequisites
 
 Before deploying Praxis, ensure you have:
@@ -125,7 +127,7 @@ Create a test page at `/var/www/example.com/html/index.html` to verify Nginx is 
 ### Configure Domain
 
 1. Point your domain's DNS A record to your server's IP address
-2. Create the Nginx config at `/etc/nginx/sites-available/example.com`:
+2. Create the Nginx config at `/etc/nginx/sites-available/example.com`. Your configuration should look something like the following:
 
 ```nginx
 server {
