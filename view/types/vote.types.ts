@@ -1,5 +1,4 @@
 import { VoteType } from '@common/votes/vote.types';
-import { UpdateResult } from 'typeorm';
 
 export interface VoteRes {
   id: string;
@@ -14,7 +13,7 @@ export interface CreateVoteRes {
   isRatifyingVote: boolean;
 }
 
-export type UpdateVoteRes = UpdateResult & {
+export type UpdateVoteRes = {
   isRatifyingVote: boolean;
 };
 

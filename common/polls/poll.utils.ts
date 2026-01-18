@@ -30,5 +30,5 @@ export const getRequiredAgreements = (
   memberCount: number,
   ratificationThreshold: number,
 ): number => {
-  return Math.floor(memberCount * (ratificationThreshold * 0.01));
+  return Math.ceil(memberCount * (ratificationThreshold * 0.01));
 };
