@@ -25,6 +25,8 @@ import { PollDto } from './dtos/poll.dto';
 import { PollConfig } from './entities/poll-config.entity';
 import { Poll } from './entities/poll.entity';
 
+const POLL_SYNC_BATCH_SIZE = 20;
+
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
 const pollRepository = dataSource.getRepository(Poll);
@@ -408,9 +410,8 @@ export const synchronizePolls = async () => {
   }
 
   // Synchronize polls in batches
-  const batchSize = 20;
-  for (let i = 0; i < polls.length; i += batchSize) {
-    const batch = polls.slice(i, i + batchSize);
+  for (let i = 0; i < polls.length; i += POLL_SYNC_BATCH_SIZE) {
+    const batch = polls.slice(i, i + POLL_SYNC_BATCH_SIZE);
     const results = await Promise.allSettled(batch.map(synchronizePoll));
     const failures = results.filter((r) => r.status === 'rejected');
 
