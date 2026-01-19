@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,6 +14,7 @@ import {
   getRequiredCount,
 } from '@common/polls/poll.utils';
 import { sortConsensusVotesByType } from '@common/votes/vote.utils';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdHowToVote } from 'react-icons/md';
@@ -71,7 +73,14 @@ export const VoteProgressDialog = ({
       </DialogTrigger>
       <DialogContent className="md:w-lg">
         <DialogHeader>
-          <DialogTitle>{t('polls.headers.voteProgress')}</DialogTitle>
+          <DialogTitle className="mb-0">
+            {t('polls.headers.voteProgress')}
+          </DialogTitle>
+          <VisuallyHidden>
+            <DialogDescription>
+              {t('polls.headers.voteProgress')}
+            </DialogDescription>
+          </VisuallyHidden>
         </DialogHeader>
         <div className="space-y-6 pt-2">
           <div className="space-y-2">
