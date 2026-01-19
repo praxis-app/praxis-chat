@@ -407,8 +407,20 @@ export const synchronizePolls = async () => {
     return;
   }
 
-  // Synchronize polls in parallel
-  await Promise.all(polls.map(synchronizePoll));
+  // Synchronize polls in batches
+  const batchSize = 20;
+  for (let i = 0; i < polls.length; i += batchSize) {
+    const batch = polls.slice(i, i + batchSize);
+    const results = await Promise.allSettled(batch.map(synchronizePoll));
+    const failures = results.filter((r) => r.status === 'rejected');
+
+    if (failures.length > 0) {
+      console.error(
+        `Failed to synchronize ${failures.length} polls:`,
+        failures,
+      );
+    }
+  }
 
   // TODO: Set up logging with winston or a similar tool
   console.info(`Synchronized ${polls.length} polls 🗳️`);
