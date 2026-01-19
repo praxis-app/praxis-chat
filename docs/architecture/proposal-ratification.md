@@ -115,7 +115,7 @@ The consensus model should be used for production deployments until the other mo
 
 ## Related Files
 
-- `src/polls/polls.service.ts`: Core ratification logic
-- `common/polls/poll.utils.ts`: Threshold calculation utilities
-- `common/votes/vote.utils.ts`: Vote sorting utilities
-- `src/polls/entities/poll-config.entity.ts`: Configuration entity
+- [src/polls/polls.service.ts](../../src/polls/polls.service.ts): Core ratification logic
+- [common/polls/poll.utils.ts](../../common/polls/poll.utils.ts): Threshold calculation utilities
+- [common/votes/vote.utils.ts](../../common/votes/vote.utils.ts): Vote sorting utilities
+- [src/polls/entities/poll-config.entity.ts](../../src/polls/entities/poll-config.entity.ts): Configuration entity
