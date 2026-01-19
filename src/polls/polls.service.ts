@@ -1,3 +1,5 @@
+// TODO: Set up logging with winston or a similar tool
+
 import { getRequiredCount } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
@@ -420,11 +422,11 @@ export const synchronizePolls = async () => {
         `Failed to synchronize ${failures.length} polls:`,
         failures,
       );
+      continue;
     }
-  }
 
-  // TODO: Set up logging with winston or a similar tool
-  console.info(`Synchronized ${polls.length} polls 🗳️`);
+    console.info(`Synchronized ${batch.length} polls 🗳️`);
+  }
 };
 
 export const deletePoll = async (pollId: string) => {
