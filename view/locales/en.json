@@ -466,7 +466,7 @@
     "prompts": {
       "creating": "Creating server...",
       "removeMember": "Remove server member?",
-      "switchServersDescription": "Pick another server to jump to.",
+      "switchServersDescription": "Choose another server to explore.",
       "noServersAvailable": "No other servers available."
     },
     "errors": {
