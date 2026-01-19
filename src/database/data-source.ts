@@ -25,7 +25,7 @@ import { User } from '../users/user.entity';
 import { Vote } from '../votes/vote.entity';
 import { Initial1767572300125 } from './migrations/1767572300125-Initial';
 import { GeneralProposals1768246067251 } from './migrations/1768246067251-GeneralProposals';
-import { Quorum1768765275954 } from './migrations/1768765275954-Quorum';
+import { Quorum1768785488966 } from './migrations/1768785488966-Quorum';
 
 dotenv.config();
 
@@ -65,6 +65,6 @@ export const dataSource = new DataSource({
   migrations: [
     Initial1767572300125,
     GeneralProposals1768246067251,
-    Quorum1768765275954,
+    Quorum1768785488966,
   ],
 });
