@@ -11,7 +11,7 @@ export const serverConfigSchema = zod
     abstainsLimit: zod.number().min(0).max(10).optional(),
     agreementThreshold: zod.number().min(1).max(100).optional(),
     quorumEnabled: zod.boolean().optional(),
-    quorumThreshold: zod.number().min(0).max(100).optional(),
+    quorumThreshold: zod.number().min(1).max(100).optional(),
     votingTimeLimit: zod.number().optional(),
   })
   .refine(

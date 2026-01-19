@@ -486,6 +486,7 @@ const hasConsensus = (
   return isRatifiable;
 };
 
+// TODO: Fully implement this majority vote logic
 const hasMajorityVote = (
   votes: Vote[],
   { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
