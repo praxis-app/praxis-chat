@@ -156,8 +156,8 @@
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
       "roleSelection": "Role selection",
-      "totalVotes": "{{count}} vote",
-      "totalVotes_plural": "{{count}} votes",
+      "totalVotes_one": "{{count}} vote",
+      "totalVotes_other": "{{count}} votes",
       "quorumProgress": "Quorum (participation)",
       "quorumMet": "Met",
       "quorumNotMet": "Not met",
@@ -507,8 +507,8 @@
       },
       "maxUsesOptions": {
         "noLimit": "No limit (default)",
-        "xUses": "{{uses}} use",
-        "xUses_plural": "{{uses}} uses"
+        "xUses_one": "{{uses}} use",
+        "xUses_other": "{{uses}} uses"
       },
       "labels": {
         "expiresAt": "Expires after",
@@ -560,28 +560,28 @@
 
   "time": {
     "days": "{{days}}d",
-    "daysEndsIn": "Ends in {{days}} day",
-    "daysEndsIn_plural": "Ends in {{days}} days",
-    "daysFull": "{{count}} day",
-    "daysFull_plural": "{{count}} days",
+    "daysEndsIn_one": "Ends in {{days}} day",
+    "daysEndsIn_other": "Ends in {{days}} days",
+    "daysFull_one": "{{count}} day",
+    "daysFull_other": "{{count}} days",
     "hours": "{{hours}}h",
-    "hoursEndsIn": "Ends in {{hours}} hour",
-    "hoursEndsIn_plural": "Ends in {{hours}} hours",
-    "hoursFull": "{{count}} hour",
-    "hoursFull_plural": "{{count}} hours",
+    "hoursEndsIn_one": "Ends in {{hours}} hour",
+    "hoursEndsIn_other": "Ends in {{hours}} hours",
+    "hoursFull_one": "{{count}} hour",
+    "hoursFull_other": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
     "minutes": "{{minutes}}m",
-    "minutesEndsIn": "Ends in {{minutes}} minute",
-    "minutesEndsIn_plural": "Ends in {{minutes}} minutes",
-    "minutesFull": "{{count}} minute",
-    "minutesFull_plural": "{{count}} minutes",
+    "minutesEndsIn_one": "Ends in {{minutes}} minute",
+    "minutesEndsIn_other": "Ends in {{minutes}} minutes",
+    "minutesFull_one": "{{count}} minute",
+    "minutesFull_other": "{{count}} minutes",
     "never": "Never",
     "unlimited": "Unlimited",
-    "weeks": "{{count}} week",
-    "weeksEndsIn": "Ends in {{weeks}} week",
-    "weeksEndsIn_plural": "Ends in {{weeks}} weeks",
-    "weeks_plural": "{{count}} weeks"
+    "weeks_one": "{{count}} week",
+    "weeks_other": "{{count}} weeks",
+    "weeksEndsIn_one": "Ends in {{weeks}} week",
+    "weeksEndsIn_other": "Ends in {{weeks}} weeks"
   }
 }
