@@ -403,11 +403,15 @@ export const synchronizePolls = async () => {
     select: { id: true, config: { id: true, closingAt: true } },
     relations: ['config'],
   });
-
-  for (const poll of polls) {
-    await synchronizePoll(poll);
+  if (polls.length === 0) {
+    return;
   }
-  console.info('Synchronized polls 🗳️');
+
+  // Synchronize polls in parallel
+  await Promise.all(polls.map(synchronizePoll));
+
+  // TODO: Set up logging with winston or a similar tool
+  console.info(`Synchronized ${polls.length} polls 🗳️`);
 };
 
 export const deletePoll = async (pollId: string) => {
