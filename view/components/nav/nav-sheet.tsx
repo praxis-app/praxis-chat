@@ -61,12 +61,9 @@ export const NavSheet = ({ trigger }: Props) => {
       if (!serverId) {
         throw new Error('Current server not found');
       }
-      if (!inviteToken) {
-        throw new Error('Invite token is required');
-      }
       return api.getChannels(serverId, inviteToken);
     },
-    enabled: isNavSheetOpen && !!serverId && !!inviteToken && !me,
+    enabled: isNavSheetOpen && !!serverId && !me,
   });
 
   const channels =
