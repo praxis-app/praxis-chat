@@ -22,7 +22,7 @@ import { Textarea } from '../ui/textarea';
 interface Props {
   editServer?: ServerRes;
   isSubmitting: boolean;
-  onSubmit: (data: ServerReq) => Promise<ServerRes | void>;
+  onSubmit: (data: ServerReq) => Promise<ServerRes>;
   className?: string;
 }
 
@@ -57,10 +57,10 @@ export const ServerForm = ({
 
     if (editServer) {
       const nextValues = {
-        name: editServer.name || result?.name,
-        slug: editServer.slug || result?.slug,
-        description: editServer.description ?? result?.description ?? '',
-        isDefaultServer: editServer.isDefaultServer || result?.isDefaultServer,
+        name: result.name,
+        slug: result.slug,
+        description: result.description ?? '',
+        isDefaultServer: result.isDefaultServer,
       };
       form.reset(nextValues);
       return;
