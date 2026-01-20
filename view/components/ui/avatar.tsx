@@ -62,7 +62,8 @@ const avatarBadgeVariants = cva(
 );
 
 export interface AvatarBadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof avatarBadgeVariants> {
   children?:
     | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>>

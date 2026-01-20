@@ -20,14 +20,20 @@ export class ServerConfig {
   @Column({ type: 'enum', enum: DECISION_MAKING_MODEL, default: 'consensus' })
   decisionMakingModel: DecisionMakingModel;
 
-  @Column({ default: 2 })
+  @Column({ type: 'int', default: 2 })
   disagreementsLimit: number;
 
-  @Column({ default: 2 })
+  @Column({ type: 'int', default: 2 })
   abstainsLimit: number;
 
-  @Column({ default: 51 })
-  ratificationThreshold: number;
+  @Column({ type: 'int', default: 51 })
+  agreementThreshold: number;
+
+  @Column({ type: 'boolean', default: true })
+  quorumEnabled: boolean;
+
+  @Column({ type: 'int', default: 25 })
+  quorumThreshold: number;
 
   @Column({ default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;

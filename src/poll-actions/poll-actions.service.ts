@@ -129,8 +129,8 @@ export const implementChangeServerRole = async (pollActionId: string) => {
     ?.filter(({ changeType }) => changeType === 'remove')
     .map(({ userId }) => userId);
 
-  // Update role itself
-  await serverRolesService.updateServerRole(
+  // Update role details
+  await serverRolesService.updateServerRoleDetails(
     roleToUpdate.serverId,
     roleToUpdate.id,
     {

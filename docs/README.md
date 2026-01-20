@@ -10,6 +10,8 @@ This directory contains technical documentation for the Praxis codebase, coverin
 
 - [Poll Entity](architecture/poll-entity-architecture.md) - Documentation of the poll entity design and how it serves as the base abstraction for all decision-making processes.
 
+- [Proposal Ratification](architecture/proposal-ratification.md) - How agreement threshold and quorum are evaluated for proposal ratification.
+
 - [Anonymous Users and Invites](architecture/anon-users-and-invites.md) - Current implementation details for anonymous users and invite functionality.
 
 ### Deployment

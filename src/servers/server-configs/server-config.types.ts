@@ -7,7 +7,7 @@ export type ServerConfigDto = Partial<
     | 'decisionMakingModel'
     | 'disagreementsLimit'
     | 'abstainsLimit'
-    | 'ratificationThreshold'
+    | 'agreementThreshold'
     | 'votingTimeLimit'
   >
 >;

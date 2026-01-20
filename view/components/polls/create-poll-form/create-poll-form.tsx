@@ -237,7 +237,10 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
             type: 'poll',
           };
           if (!old) {
-            return { pages: [{ feed: [newItem] }], pageParams: [0] };
+            return {
+              pages: [{ feed: [newItem] }],
+              pageParams: [0],
+            };
           }
           const pages = old.pages.map((page, idx) => {
             if (idx !== 0) {

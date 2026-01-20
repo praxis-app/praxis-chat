@@ -36,7 +36,7 @@ export const createServerRole = async (req: Request, res: Response) => {
 };
 
 export const updateServerRole = async (req: Request, res: Response) => {
-  const result = await serverRolesService.updateServerRole(
+  const result = await serverRolesService.updateServerRoleDetails(
     req.params.serverId,
     req.params.serverRoleId,
     req.body,

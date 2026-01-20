@@ -5,7 +5,9 @@ export interface ServerConfigReq {
   decisionMakingModel?: DecisionMakingModel;
   disagreementsLimit?: number;
   abstainsLimit?: number;
-  ratificationThreshold?: number;
+  agreementThreshold?: number;
+  quorumEnabled?: boolean;
+  quorumThreshold?: number;
   votingTimeLimit?: number;
 }
 
@@ -14,7 +16,9 @@ export interface ServerConfigRes {
   decisionMakingModel: DecisionMakingModel;
   disagreementsLimit: number;
   abstainsLimit: number;
-  ratificationThreshold: number;
+  agreementThreshold: number;
+  quorumEnabled: boolean;
+  quorumThreshold: number;
   votingTimeLimit: number;
   updatedAt: Date;
 }

@@ -25,7 +25,11 @@ export type FeedItemRes =
   | (MessageRes & { type: 'message' })
   | (PollRes & { type: 'poll' });
 
+export interface FeedQueryPage {
+  feed: FeedItemRes[];
+}
+
 export interface FeedQuery {
-  pages: { feed: FeedItemRes[] }[];
+  pages: FeedQueryPage[];
   pageParams: number[];
 }

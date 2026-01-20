@@ -116,7 +116,7 @@ export const PollActionRole = ({ action }: Props) => {
 
   const getAccordionLabel = () => {
     if (action.actionType === 'change-role') {
-      return t('polls.labels.roleChangeProposal');
+      return t('polls.labels.roleChanges');
     }
     return t('polls.labels.roleProposal');
   };

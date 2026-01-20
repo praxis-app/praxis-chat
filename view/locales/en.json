@@ -151,12 +151,19 @@
       "proposedSettings": "Settings proposal",
       "ratified": "Ratified",
       "revision": "Revision",
-      "roleChangeProposal": "Role change proposal",
+      "roleChanges": "Role changes",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
       "roleSelection": "Role selection",
-      "voteCount": "{{agreementVoteCount}}/{{votesNeededToRatify}} voted",
+      "totalVotes_one": "{{count}} vote",
+      "totalVotes_other": "{{count}} votes",
+      "quorumProgress": "Quorum (participation)",
+      "quorumMet": "Met",
+      "quorumNotMet": "Not met",
+      "thresholdProgress": "Threshold (approval)",
+      "thresholdMet": "Met",
+      "thresholdNotMet": "Not met",
       "voting": "Voting"
     },
     "headers": {
@@ -175,7 +182,8 @@
       "searchMembers": "Search Members",
       "selectRole": "Select Role",
       "selectedRole": "Selected Role",
-      "selectedRoleInfo": "Selected Role Information"
+      "selectedRoleInfo": "Selected Role Information",
+      "voteProgress": "Vote Progress"
     },
     "placeholders": {
       "action": "Select an action type",
@@ -194,6 +202,8 @@
       "basicInfoDescription": "Provide the basic details for your proposal",
       "body": "Enter your proposal",
       "create": "Submit a proposal to discuss and vote on.",
+      "thresholdStatus": "{{current}} of {{required}} agreements needed ({{threshold}}% threshold)",
+      "quorumStatus": "{{current}} of {{required}} participants needed ({{threshold}}% quorum)",
       "reviewDescription": "Review your proposal before submitting",
       "roleAttributesDescription": "Modify the role's name and color",
       "roleMembersDescription": "Add or remove members from the role",
@@ -212,7 +222,8 @@
       "noUsersFound": "No users found",
       "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
       "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on.",
-      "ratifiedSuccess": "This proposal has been ratified! 🎉"
+      "ratifiedSuccess": "This proposal has been ratified! 🎉",
+      "signInToVote": "Sign in to vote on proposals"
     },
     "errors": {
       "registerToCreateNonTestProposals": "Anonymous users can only create test proposals. Please register to create other proposal types.",
@@ -394,7 +405,9 @@
     },
     "names": {
       "decisionMakingModel": "Decision making model",
-      "ratificationThreshold": "Ratification threshold",
+      "agreementThreshold": "Agreement threshold",
+      "quorumEnabled": "Require quorum",
+      "quorumThreshold": "Quorum threshold",
       "disagreementsLimit": "Disagreements limit",
       "abstainsLimit": "Abstains limit",
       "votingTimeLimit": "Voting time limit",
@@ -402,7 +415,9 @@
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
-      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
+      "agreementThreshold": "Set the minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Require a minimum number of members to participate before a proposal can pass.",
+      "quorumThreshold": "Set the minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified.",
@@ -410,14 +425,16 @@
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
-      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to reach consensus.",
+      "agreementThreshold": "The minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Whether a minimum participation threshold is required for proposals to be valid.",
+      "quorumThreshold": "The minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."
     },
     "errors": {
       "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
-      "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
+      "majorityVoteAgreementThreshold": "Agreement threshold must be greater than 50% for majority vote."
     }
   },
 
@@ -449,7 +466,7 @@
     "prompts": {
       "creating": "Creating server...",
       "removeMember": "Remove server member?",
-      "switchServersDescription": "Pick another server to jump to.",
+      "switchServersDescription": "Choose another server to explore.",
       "noServersAvailable": "No other servers available."
     },
     "errors": {
@@ -490,8 +507,8 @@
       },
       "maxUsesOptions": {
         "noLimit": "No limit (default)",
-        "xUses": "{{uses}} use",
-        "xUses_plural": "{{uses}} uses"
+        "xUses_one": "{{uses}} use",
+        "xUses_other": "{{uses}} uses"
       },
       "labels": {
         "expiresAt": "Expires after",
@@ -543,28 +560,28 @@
 
   "time": {
     "days": "{{days}}d",
-    "daysEndsIn": "Ends in {{days}} day",
-    "daysEndsIn_plural": "Ends in {{days}} days",
-    "daysFull": "{{count}} day",
-    "daysFull_plural": "{{count}} days",
+    "daysEndsIn_one": "Ends in {{days}} day",
+    "daysEndsIn_other": "Ends in {{days}} days",
+    "daysFull_one": "{{count}} day",
+    "daysFull_other": "{{count}} days",
     "hours": "{{hours}}h",
-    "hoursEndsIn": "Ends in {{hours}} hour",
-    "hoursEndsIn_plural": "Ends in {{hours}} hours",
-    "hoursFull": "{{count}} hour",
-    "hoursFull_plural": "{{count}} hours",
+    "hoursEndsIn_one": "Ends in {{hours}} hour",
+    "hoursEndsIn_other": "Ends in {{hours}} hours",
+    "hoursFull_one": "{{count}} hour",
+    "hoursFull_other": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
     "minutes": "{{minutes}}m",
-    "minutesEndsIn": "Ends in {{minutes}} minute",
-    "minutesEndsIn_plural": "Ends in {{minutes}} minutes",
-    "minutesFull": "{{count}} minute",
-    "minutesFull_plural": "{{count}} minutes",
+    "minutesEndsIn_one": "Ends in {{minutes}} minute",
+    "minutesEndsIn_other": "Ends in {{minutes}} minutes",
+    "minutesFull_one": "{{count}} minute",
+    "minutesFull_other": "{{count}} minutes",
     "never": "Never",
     "unlimited": "Unlimited",
-    "weeks": "{{count}} week",
-    "weeksEndsIn": "Ends in {{weeks}} week",
-    "weeksEndsIn_plural": "Ends in {{weeks}} weeks",
-    "weeks_plural": "{{count}} weeks"
+    "weeks_one": "{{count}} week",
+    "weeks_other": "{{count}} weeks",
+    "weeksEndsIn_one": "Ends in {{weeks}} week",
+    "weeksEndsIn_other": "Ends in {{weeks}} weeks"
   }
 }

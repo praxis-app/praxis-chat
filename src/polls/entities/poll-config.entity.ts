@@ -26,7 +26,13 @@ export class PollConfig {
   abstainsLimit: number;
 
   @Column({ type: 'int', default: 51 })
-  ratificationThreshold: number;
+  agreementThreshold: number;
+
+  @Column({ type: 'boolean', default: true })
+  quorumEnabled: boolean;
+
+  @Column({ type: 'int', default: 25 })
+  quorumThreshold: number;
 
   @Column({ type: 'timestamp', nullable: true })
   closingAt?: Date;
