@@ -46,17 +46,18 @@ export const VoteProgressDialog = ({
   const quorum = votes.length;
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
+  const participants = yesVotes + noVotes;
 
   // Agreement progress
   const requiredAgreements = Math.max(
     1,
-    getRequiredCount(yesVotes + noVotes, agreementThreshold),
+    getRequiredCount(participants, agreementThreshold),
   );
   const agreementsPercentage = getProgressPercentage(
     yesVotes,
     requiredAgreements,
   );
-  const isAgreementMet = yesVotes >= requiredAgreements;
+  const isAgreementMet = participants > 0 && yesVotes >= requiredAgreements;
 
   // Quorum progress
   const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
