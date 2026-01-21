@@ -194,4 +194,4 @@ Project uses TypeScript project references:
 - `tsconfig.src.json` - Backend (src/)
 - `tsconfig.view.json` - Frontend (view/)
 
-Backend uses `ts-node` with `tsconfig-paths` for path resolution and `tsc-alias` for build-time alias resolution.
+Backend uses `tsx` for TypeScript execution and `tsc-alias` for build-time alias resolution. TypeORM entities require explicit `type` in `@Column()` decorators since tsx/esbuild doesn't support `emitDecoratorMetadata`.
