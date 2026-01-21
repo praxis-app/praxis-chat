@@ -26,7 +26,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   name: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -42,10 +42,10 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   bio: string | null;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   anonymous: boolean;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   locked: boolean;
 
   @OneToMany(() => Poll, (poll) => poll.user, {

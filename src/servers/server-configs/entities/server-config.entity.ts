@@ -35,10 +35,10 @@ export class ServerConfig {
   @Column({ type: 'int', default: 25 })
   quorumThreshold: number;
 
-  @Column({ default: VotingTimeLimit.Unlimited })
+  @Column({ type: 'int', default: VotingTimeLimit.Unlimited })
   votingTimeLimit: number;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   anonymousUsersEnabled: boolean;
 
   @OneToOne(() => Server, (server: Server) => server.config, {

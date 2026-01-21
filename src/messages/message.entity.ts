@@ -38,7 +38,7 @@ export class Message {
   })
   user: User | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   userId: string | null;
 
   @ManyToOne(() => Bot, (bot) => bot.messages, {
@@ -47,7 +47,7 @@ export class Message {
   })
   bot: Bot | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   botId: string | null;
 
   @Column({ type: 'enum', enum: COMMAND_STATUS, nullable: true })
@@ -64,7 +64,7 @@ export class Message {
   })
   channel: Channel;
 
-  @Column()
+  @Column({ type: 'uuid' })
   channelId: string;
 
   @CreateDateColumn()
