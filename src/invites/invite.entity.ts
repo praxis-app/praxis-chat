@@ -14,19 +14,19 @@ export class Invite {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   token: string;
 
-  @Column({ default: 0 })
+  @Column({ type: 'int', default: 0 })
   uses: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   maxUses?: number;
 
   @ManyToOne(() => User, (user) => user.invites, { onDelete: 'CASCADE' })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   userId: string;
 
   @ManyToOne(() => Server, (server) => server.invites, {
