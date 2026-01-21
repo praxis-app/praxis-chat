@@ -2,6 +2,7 @@
 
 import { getRequiredCount } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
+import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
@@ -20,7 +21,7 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
 import {
-  sortConsensusVotesByType,
+  filterProposalVotes,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
 import { PollDto } from './dtos/poll.dto';
@@ -470,7 +471,8 @@ const hasConsensus = (
 
   // Agreement check (always performed)
   const { agreements, disagreements, abstains, blocks } =
-    sortConsensusVotesByType(votes);
+    sortConsensusVotesByType(filterProposalVotes(votes));
+
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
   const participants = yesVotes + noVotes;
@@ -508,7 +510,8 @@ const hasMajorityVote = (
   }
 
   // Threshold check (always performed)
-  const { agreements, disagreements } = sortMajorityVotesByType(votes);
+  const proposalVotes = filterProposalVotes(votes);
+  const { agreements, disagreements } = sortMajorityVotesByType(proposalVotes);
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
   const participants = yesVotes + noVotes;
@@ -524,7 +527,9 @@ const hasMajorityVote = (
 };
 
 const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
-  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
+  const { disagreements, abstains, blocks } = sortConsensusVotesByType(
+    filterProposalVotes(votes),
+  );
   const { disagreementsLimit, abstainsLimit, closingAt } = pollConfig;
 
   return (
