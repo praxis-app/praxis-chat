@@ -1,7 +1,7 @@
 import { VoteType } from './vote.types';
 
 interface WithVoteType {
-  voteType: VoteType;
+  voteType: VoteType | null;
 }
 
 interface SortedConsensusVotes<T> {

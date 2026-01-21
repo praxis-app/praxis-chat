@@ -9,6 +9,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { PollOption } from '../polls/entities/poll-option.entity';
 import { Poll } from '../polls/entities/poll.entity';
 import { User } from '../users/user.entity';
 
@@ -18,8 +19,18 @@ export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: VOTE_TYPES })
-  voteType: VoteType;
+  // Used for regular polls (references chosen option)
+  @ManyToOne(() => PollOption, (pollOption) => pollOption.votes, {
+    onDelete: 'CASCADE',
+  })
+  pollOption?: PollOption;
+
+  @Column({ type: 'uuid', nullable: true })
+  pollOptionId: string | null;
+
+  // Used for proposals (agree/disagree/abstain/block)
+  @Column({ type: 'enum', enum: VOTE_TYPES, nullable: true })
+  voteType: VoteType | null;
 
   @ManyToOne(() => Poll, (poll) => poll.votes, {
     onDelete: 'CASCADE',
