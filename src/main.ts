@@ -42,6 +42,9 @@ dotenv.config();
   app.use(morgan('dev'));
   app.use(cors());
 
+  // Trust first proxy for correct IP detection (needed for rate limiting)
+  app.set('trust proxy', 1);
+
   // Serve static files and API routes
   app.use(express.static(join(__dirname, '../view')));
   app.use('/api', appRouter);
