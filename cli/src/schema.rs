@@ -1,17 +1,25 @@
+use std::io::IsTerminal;
+
 use anyhow::Result;
 use owo_colors::OwoColorize;
 use sqlx::{FromRow, PgPool};
 
 pub async fn run_schema(pool: &PgPool) -> Result<()> {
-    println!("\n{}", "Database Schema".bold().underline());
+    let color = std::io::stdout().is_terminal();
 
-    print_enums(pool).await?;
-    print_tables(pool).await?;
+    if color {
+        println!("\n{}", "Database Schema".bold().underline());
+    } else {
+        println!("\nDatabase Schema");
+    }
+
+    print_enums(pool, color).await?;
+    print_tables(pool, color).await?;
 
     Ok(())
 }
 
-async fn print_enums(pool: &PgPool) -> Result<()> {
+async fn print_enums(pool: &PgPool, color: bool) -> Result<()> {
     let enums: Vec<EnumInfo> = sqlx::query_as(
         r#"
         SELECT t.typname AS name,
@@ -28,21 +36,29 @@ async fn print_enums(pool: &PgPool) -> Result<()> {
     .await?;
 
     if !enums.is_empty() {
-        println!("\n{}", "Enums".bold());
+        if color {
+            println!("\n{}", "Enums".bold());
+        } else {
+            println!("\nEnums");
+        }
         for EnumInfo { name, values } in enums {
-            println!(
-                "  {} {} = {{ {} }}",
-                "•".cyan(),
-                name.yellow(),
-                values.join(", ")
-            );
+            if color {
+                println!(
+                    "  {} {} = {{ {} }}",
+                    "•".cyan(),
+                    name.yellow(),
+                    values.join(", ")
+                );
+            } else {
+                println!("  - {} = {{ {} }}", name, values.join(", "));
+            }
         }
     }
 
     Ok(())
 }
 
-async fn print_tables(pool: &PgPool) -> Result<()> {
+async fn print_tables(pool: &PgPool, color: bool) -> Result<()> {
     let tables: Vec<TableInfo> = sqlx::query_as(
         r#"
         SELECT table_name AS name
@@ -56,17 +72,21 @@ async fn print_tables(pool: &PgPool) -> Result<()> {
     .await?;
 
     for TableInfo { name } in tables {
-        println!("\n{} {}", "Table:".bold(), name.green().bold());
+        if color {
+            println!("\n{} {}", "Table:".bold(), name.green().bold());
+        } else {
+            println!("\nTable: {}", name);
+        }
 
-        print_columns(pool, &name).await?;
-        print_indexes(pool, &name).await?;
-        print_constraints(pool, &name).await?;
+        print_columns(pool, &name, color).await?;
+        print_indexes(pool, &name, color).await?;
+        print_constraints(pool, &name, color).await?;
     }
 
     Ok(())
 }
 
-async fn print_columns(pool: &PgPool, table_name: &str) -> Result<()> {
+async fn print_columns(pool: &PgPool, table_name: &str, color: bool) -> Result<()> {
     let columns: Vec<ColumnInfo> = sqlx::query_as(
         r#"
         SELECT column_name AS name,
@@ -93,7 +113,12 @@ async fn print_columns(pool: &PgPool, table_name: &str) -> Result<()> {
     .fetch_all(pool)
     .await?;
 
-    println!("  {}", "Columns:".dimmed());
+    if color {
+        println!("  {}", "Columns:".dimmed());
+    } else {
+        println!("  Columns:");
+    }
+
     for ColumnInfo {
         name,
         data_type,
@@ -103,22 +128,30 @@ async fn print_columns(pool: &PgPool, table_name: &str) -> Result<()> {
     {
         let null_marker = if nullable == "YES" { "?" } else { "" };
         let default_str = default_value
-            .map(|d| format!(" = {}", d.dimmed()))
+            .map(|d| format!(" = {}", d))
             .unwrap_or_default();
-        println!(
-            "    {} {:<30} {}{}{}",
-            "→".dimmed(),
-            name,
-            data_type.cyan(),
-            null_marker.yellow(),
-            default_str
-        );
+
+        if color {
+            println!(
+                "    {} {:<30} {}{}{}",
+                "→".dimmed(),
+                name,
+                data_type.cyan(),
+                null_marker.yellow(),
+                default_str.dimmed()
+            );
+        } else {
+            println!(
+                "    - {:<30} {}{}{}",
+                name, data_type, null_marker, default_str
+            );
+        }
     }
 
     Ok(())
 }
 
-async fn print_indexes(pool: &PgPool, table_name: &str) -> Result<()> {
+async fn print_indexes(pool: &PgPool, table_name: &str, color: bool) -> Result<()> {
     let indexes: Vec<IndexInfo> = sqlx::query_as(
         r#"
         SELECT indexname AS name,
@@ -134,28 +167,48 @@ async fn print_indexes(pool: &PgPool, table_name: &str) -> Result<()> {
     .await?;
 
     if !indexes.is_empty() {
-        println!("  {}", "Indexes:".dimmed());
+        if color {
+            println!("  {}", "Indexes:".dimmed());
+        } else {
+            println!("  Indexes:");
+        }
+
         for IndexInfo { name, definition } in indexes {
             let is_unique = definition.to_lowercase().contains("unique");
             let is_primary = name.ends_with("_pkey") || name.contains("PK_");
             let marker = if is_primary {
-                "PK".magenta().bold().to_string()
+                "PK"
             } else if is_unique {
-                "UQ".blue().bold().to_string()
+                "UQ"
             } else {
-                "IX".dimmed().to_string()
+                "IX"
             };
 
-            // Extract column(s) from definition
             let cols = extract_index_columns(&definition);
-            println!("    {} [{}] {} ({})", "→".dimmed(), marker, name, cols);
+
+            if color {
+                let colored_marker = match marker {
+                    "PK" => marker.magenta().bold().to_string(),
+                    "UQ" => marker.blue().bold().to_string(),
+                    _ => marker.dimmed().to_string(),
+                };
+                println!(
+                    "    {} [{}] {} ({})",
+                    "→".dimmed(),
+                    colored_marker,
+                    name,
+                    cols
+                );
+            } else {
+                println!("    - [{}] {} ({})", marker, name, cols);
+            }
         }
     }
 
     Ok(())
 }
 
-async fn print_constraints(pool: &PgPool, table_name: &str) -> Result<()> {
+async fn print_constraints(pool: &PgPool, table_name: &str, color: bool) -> Result<()> {
     let constraints: Vec<ConstraintInfo> = sqlx::query_as(
         r#"
         SELECT
@@ -182,26 +235,42 @@ async fn print_constraints(pool: &PgPool, table_name: &str) -> Result<()> {
     .await?;
 
     if !constraints.is_empty() {
-        println!("  {}", "Constraints:".dimmed());
+        if color {
+            println!("  {}", "Constraints:".dimmed());
+        } else {
+            println!("  Constraints:");
+        }
+
         for ConstraintInfo {
             name,
             constraint_type,
             definition,
         } in constraints
         {
-            let type_marker = match constraint_type.as_str() {
-                "FOREIGN KEY" => "FK".yellow().bold().to_string(),
-                "CHECK" => "CK".cyan().bold().to_string(),
-                "EXCLUDE" => "EX".red().bold().to_string(),
-                _ => constraint_type.dimmed().to_string(),
+            let marker = match constraint_type.as_str() {
+                "FOREIGN KEY" => "FK",
+                "CHECK" => "CK",
+                "EXCLUDE" => "EX",
+                _ => &constraint_type,
             };
-            println!(
-                "    {} [{}] {} {}",
-                "→".dimmed(),
-                type_marker,
-                name,
-                definition.dimmed()
-            );
+
+            if color {
+                let colored_marker = match marker {
+                    "FK" => marker.yellow().bold().to_string(),
+                    "CK" => marker.cyan().bold().to_string(),
+                    "EX" => marker.red().bold().to_string(),
+                    _ => marker.dimmed().to_string(),
+                };
+                println!(
+                    "    {} [{}] {} {}",
+                    "→".dimmed(),
+                    colored_marker,
+                    name,
+                    definition.dimmed()
+                );
+            } else {
+                println!("    - [{}] {} {}", marker, name, definition);
+            }
         }
     }
 
@@ -209,7 +278,6 @@ async fn print_constraints(pool: &PgPool, table_name: &str) -> Result<()> {
 }
 
 fn extract_index_columns(definition: &str) -> String {
-    // Extract columns from index definition like "CREATE INDEX ... ON table USING btree (col1, col2)"
     if let Some(start) = definition.rfind('(') {
         if let Some(end) = definition.rfind(')') {
             return definition[start + 1..end].to_string();
