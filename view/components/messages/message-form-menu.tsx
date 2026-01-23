@@ -1,7 +1,4 @@
-import { ReactNode, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MdPoll } from 'react-icons/md';
-import { CreatePollForm } from '../polls/create-poll-form/create-poll-form';
+import { CreatePollForm } from '@/components/polls/create-poll-form/create-poll-form';
 import {
   Dialog,
   DialogContent,
@@ -9,21 +6,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { Separator } from '../ui/separator';
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { ReactNode, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { MdPoll } from 'react-icons/md';
 
 interface Props {
   showMenu: boolean;
   setShowMenu: (show: boolean) => void;
   trigger: ReactNode;
   channelId?: string;
-  isGeneralChannel?: boolean;
   disabled?: boolean;
 }
 
@@ -32,7 +31,6 @@ export const MessageFormMenu = ({
   showMenu,
   setShowMenu,
   channelId,
-  isGeneralChannel,
   disabled,
 }: Props) => {
   const [showPollForm, setShowPollForm] = useState(false);
@@ -86,7 +84,6 @@ export const MessageFormMenu = ({
 
         <CreatePollForm
           channelId={channelId}
-          isGeneralChannel={isGeneralChannel}
           onSuccess={() => setShowPollForm(false)}
           onNavigate={handlePollFormNavigate}
         />

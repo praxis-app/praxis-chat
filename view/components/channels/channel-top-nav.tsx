@@ -1,3 +1,7 @@
+import { ChannelDetailsDialogDesktop } from '@/components/channels/channel-details-dialog-desktop';
+import { ChannelDetailsDrawer } from '@/components/channels/channel-details-drawer';
+import { NavSheet } from '@/components/nav/nav-sheet';
+import { Button } from '@/components/ui/button';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { truncate } from '@/lib/text.utils';
@@ -7,10 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
 import { MdChevronRight, MdSearch, MdTag } from 'react-icons/md';
 import { toast } from 'sonner';
-import { NavSheet } from '../nav/nav-sheet';
-import { Button } from '../ui/button';
-import { ChannelDetailsDialogDesktop } from './channel-details-dialog-desktop';
-import { ChannelDetailsDrawer } from './channel-details-drawer';
 
 interface Props {
   channel?: ChannelRes;
@@ -22,11 +22,11 @@ export const ChannelTopNav = ({ channel }: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
 
-  const description = channel?.description ?? '';
+  const description = channel?.description || '';
   const truncatedDescription = truncate(description, 50);
 
   const truncatedChannelName = truncate(
-    channel?.name ?? '',
+    channel?.name || '',
     isDesktop ? 23 : 25,
   );
 

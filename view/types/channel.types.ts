@@ -5,6 +5,10 @@ export interface ChannelRes {
   id: string;
   name: string;
   description: string | null;
+  server?: {
+    id: string;
+    slug: string;
+  };
 }
 
 export interface CreateChannelReq {
@@ -21,7 +25,11 @@ export type FeedItemRes =
   | (MessageRes & { type: 'message' })
   | (PollRes & { type: 'poll' });
 
+export interface FeedQueryPage {
+  feed: FeedItemRes[];
+}
+
 export interface FeedQuery {
-  pages: { feed: FeedItemRes[] }[];
+  pages: FeedQueryPage[];
   pageParams: number[];
 }

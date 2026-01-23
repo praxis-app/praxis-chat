@@ -1,6 +1,4 @@
 {
-  "brand": "praxis",
-
   "actions": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -38,7 +36,8 @@
 
   "errors": {
     "pageNotFound": "Page not found.",
-    "somethingWentWrong": "Something went wrong."
+    "somethingWentWrong": "Something went wrong.",
+    "fieldRequired": "This field is required."
   },
 
   "auth": {
@@ -59,6 +58,7 @@
       "alreadyRegistered": "You have already created an account.",
       "authenticated": "You are authenticated.",
       "chooseAuthFlow": "You can send this message anonymously right now or create an account to unlock more features. Which would you prefer to do?",
+      "signUpToChat": "Log in or sign up to chat and make decisions with other members of this server.",
       "createAccount": "Create an account",
       "createPassword": "Create a strong password",
       "dontHaveAccount": "Don't have an account?",
@@ -151,12 +151,19 @@
       "proposedSettings": "Settings proposal",
       "ratified": "Ratified",
       "revision": "Revision",
-      "roleChangeProposal": "Role change proposal",
+      "roleChanges": "Role changes",
       "roleColorChange": "Role color",
       "roleNameChange": "Role name",
       "roleProposal": "Role proposal",
       "roleSelection": "Role selection",
-      "voteCount": "{{agreementVoteCount}}/{{votesNeededToRatify}} voted",
+      "totalVotes_one": "{{count}} vote",
+      "totalVotes_other": "{{count}} votes",
+      "quorumProgress": "Quorum (participation)",
+      "quorumMet": "Met",
+      "quorumNotMet": "Not met",
+      "thresholdProgress": "Threshold (approval)",
+      "thresholdMet": "Met",
+      "thresholdNotMet": "Not met",
       "voting": "Voting"
     },
     "headers": {
@@ -175,7 +182,8 @@
       "searchMembers": "Search Members",
       "selectRole": "Select Role",
       "selectedRole": "Selected Role",
-      "selectedRoleInfo": "Selected Role Information"
+      "selectedRoleInfo": "Selected Role Information",
+      "voteProgress": "Vote Progress"
     },
     "placeholders": {
       "action": "Select an action type",
@@ -194,6 +202,8 @@
       "basicInfoDescription": "Provide the basic details for your proposal",
       "body": "Enter your proposal",
       "create": "Submit a proposal to discuss and vote on.",
+      "thresholdStatus": "{{current}} of {{required}} agreements needed ({{threshold}}% threshold)",
+      "quorumStatus": "{{current}} of {{required}} participants needed ({{threshold}}% quorum)",
       "reviewDescription": "Review your proposal before submitting",
       "roleAttributesDescription": "Modify the role's name and color",
       "roleMembersDescription": "Add or remove members from the role",
@@ -205,20 +215,23 @@
       "changeSettings": "Change settings",
       "createRole": "Create role",
       "planEvent": "Plan event",
+      "general": "General decision",
       "test": "Test"
     },
     "prompts": {
       "noUsersFound": "No users found",
       "noVotingAfterClose": "This proposal has been closed and can no longer be voted on.",
       "noVotingAfterRatification": "This proposal has been ratified and can no longer be voted on.",
-      "ratifiedSuccess": "This proposal has been ratified! 🎉"
+      "ratifiedSuccess": "This proposal has been ratified! 🎉",
+      "signInToVote": "Sign in to vote on proposals"
     },
     "errors": {
       "registerToCreateNonTestProposals": "Anonymous users can only create test proposals. Please register to create other proposal types.",
       "changeRoleRequiresChanges": "Proposals to change roles must include at least 1 change to the selected role.",
       "errorCreatingProposal": "Error creating proposal",
       "longBody": "Proposal body cannot exceed 6000 characters",
-      "testProposalRequiresBody": "Test proposals must include a body"
+      "testProposalRequiresBody": "Test proposals must include a body",
+      "generalProposalRequiresBody": "General proposals must include a body"
     }
   },
 
@@ -234,7 +247,7 @@
       "sendAMessage": "Send a message...",
       "noMessagesYet": "No messages yet",
       "onlyVisibleToYou": "Only visible to you",
-      "inviteRequired": "You need to be invited before you can send messages.",
+      "inviteRequired": "You need to be invited or logged in before you can send messages.",
       "processingCommand": "Processing your command..."
     },
     "errors": {
@@ -296,7 +309,7 @@
       "add": "Add",
       "addMembers": "Add members",
       "delete": "Delete role",
-      "manageRoles": "Manage roles",
+      "manageServerRoles": "Manage roles",
       "viewRoles": "View roles"
     },
     "prompts": {
@@ -304,6 +317,7 @@
     },
     "headers": {
       "serverRoles": "Roles",
+      "instanceRoles": "Instance Roles",
       "viewServerRoles": "Roles Overview"
     },
     "descriptions": {
@@ -339,29 +353,33 @@
       "createInvites": "Create invites",
       "manageChannels": "Manage channels",
       "manageEvents": "Manage events",
+      "manageInstanceRoles": "Manage instance roles",
+      "manageInstanceSettings": "Manage instance settings",
       "manageInvites": "Manage invites",
       "managePosts": "Manage posts",
-      "manageQuestionnaires": "Manage questionnaires",
       "manageQuestions": "Manage questions",
-      "manageRoles": "Manage roles",
       "manageRules": "Manage rules",
-      "manageSettings": "Manage settings",
+      "manageServerRoles": "Manage roles",
+      "manageServerSettings": "Manage settings",
+      "manageServers": "Manage servers",
       "removeMembers": "Remove members",
       "removeProposals": "Remove proposals"
     },
     "descriptions": {
       "createEvents": "Allows members to create and plan events.",
       "createInvites": "Allows members to invite new people to the server.",
-      "manageComments": "Allows members to remove or hide comments by other members.",
       "manageChannels": "Allows members to create, edit, or delete channels.",
+      "manageComments": "Allows members to remove or hide comments by other members.",
       "manageEvents": "Allows members to remove or edit events created by other members.",
+      "manageInstanceRoles": "Allows members to create new instance roles as well as edit or delete other instance roles.",
+      "manageInstanceSettings": "Allows members to make changes to the instance's settings.",
       "manageInvites": "Allows members to create or delete invite links for the server.",
       "managePosts": "Allows members to remove or hide posts by other members.",
-      "manageQuestionnaires": "Allows members vote on, review, and delete questionnaire tickets.",
       "manageQuestions": "Allows members to create, edit, or delete membership questions.",
-      "manageRoles": "Allows members to create new roles as well as edit or delete other roles.",
       "manageRules": "Allows members to create, edit, or delete rules for the server.",
-      "manageSettings": "Allows members to make changes to the server's settings.",
+      "manageServerRoles": "Allows members to create new roles as well as edit or delete other roles.",
+      "manageServerSettings": "Allows members to make changes to the server's settings.",
+      "manageServers": "Allows members to create new servers as well as edit or delete other servers.",
       "removeMembers": "Allows members to remove other members from the server.",
       "removeProposals": "Allows members to remove proposals posted by other members."
     },
@@ -382,46 +400,103 @@
   },
 
   "settings": {
+    "headers": {
+      "manageServers": "Manage Servers"
+    },
     "names": {
       "decisionMakingModel": "Decision making model",
-      "ratificationThreshold": "Ratification threshold",
+      "agreementThreshold": "Agreement threshold",
+      "quorumEnabled": "Require quorum",
+      "quorumThreshold": "Quorum threshold",
       "disagreementsLimit": "Disagreements limit",
       "abstainsLimit": "Abstains limit",
-      "votingTimeLimit": "Voting time limit"
+      "votingTimeLimit": "Voting time limit",
+      "anonymousUsersEnabled": "Anonymous users"
     },
     "descriptions": {
       "decisionMakingModel": "Choose from consensus, consent, or majority vote to determine how decisions are made in the server.",
-      "ratificationThreshold": "Set the minimum percentage of positive votes required for a proposal to reach consensus.",
+      "agreementThreshold": "Set the minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Require a minimum number of members to participate before a proposal can pass.",
+      "quorumThreshold": "Set the minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "Set a limit for the acceptable number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "Set a limit for the acceptable number of abstains allowed for a proposal to still be able to pass.",
-      "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified."
+      "votingTimeLimit": "Set a time limit for how long proposals can be voted on before they're closed or ratified.",
+      "anonymousUsersEnabled": "Allow users to participate without creating an account or providing personal information."
     },
     "explanations": {
       "decisionMakingModel": "The process used to make decisions in the server, which can be based on consensus, consent, or majority vote.",
-      "ratificationThreshold": "The minimum percentage of positive votes required for a proposal to reach consensus.",
+      "agreementThreshold": "The minimum percentage of positive votes required for a proposal to pass.",
+      "quorumEnabled": "Whether a minimum participation threshold is required for proposals to be valid.",
+      "quorumThreshold": "The minimum percentage of eligible members that must participate for a proposal to be valid.",
       "disagreementsLimit": "The maximum number of disagreements allowed for a proposal to still be able to pass.",
       "abstainsLimit": "The maximum number of abstains allowed for a proposal to still be able to pass.",
       "votingTimeLimit": "The minimum amount of time proposals can be voted on before they're closed or ratified."
     },
     "errors": {
       "consentVotingTimeLimitRequired": "Voting time limit is required for consent decision making.",
-      "majorityVoteRatificationThreshold": "Ratification threshold must be greater than 50% for majority vote."
+      "majorityVoteAgreementThreshold": "Agreement threshold must be greater than 50% for majority vote."
+    }
+  },
+
+  "servers": {
+    "headers": {
+      "create": "Create Server",
+      "edit": "Edit Server"
+    },
+    "actions": {
+      "addMembers": "Add members"
+    },
+    "labels": {
+      "default": "Default"
+    },
+    "form": {
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "defaultServer": "Default server",
+      "defaultServerDescription": "New visitors and users without an invite start here."
+    },
+    "descriptions": {
+      "addMembers": "Add members to this server."
+    },
+    "tabs": {
+      "properties": "Properties",
+      "members": "Members"
+    },
+    "prompts": {
+      "creating": "Creating server...",
+      "removeMember": "Remove server member?",
+      "switchServersDescription": "Choose another server to explore.",
+      "noServersAvailable": "No other servers available."
+    },
+    "errors": {
+      "nameLength": "Name must be between 2 and 30 characters.",
+      "slugLength": "Slug must be between 2 and 30 characters.",
+      "invalidSlug": "Slug can only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.",
+      "descriptionLength": "Description must be at most 255 characters.",
+      "noServersFound": "No servers found.",
+      "noServersFoundDescription": "You don't belong to any servers yet."
     }
   },
 
   "invites": {
     "actions": {
-      "generateLink": "Generate a new link"
+      "generateLink": "Generate a new link",
+      "acceptInvite": "Accept Invite",
+      "joinServer": "Join Server"
     },
     "prompts": {
       "alreadySignedUp": "You've already signed up.",
       "copiedToClipboard": "Copied to clipboard",
       "expiredOrInvalid": "Your invite link is either expired or invalid.",
       "inviteRequired": "You need to be invited in order to sign up.",
-      "noInvites": "No invites have been created yet."
+      "joinServerToStart": "Join this server to start chatting, making decisions, and organizing with other members.",
+      "noInvites": "No invites have been created yet.",
+      "youHaveBeenInvited": "You've been invited"
     },
     "headers": {
-      "serverInvites": "Invites"
+      "serverInvites": "Invites",
+      "invitedToJoin": "Invited to join {{serverName}}"
     },
     "form": {
       "expiresAtOptions": {
@@ -432,8 +507,8 @@
       },
       "maxUsesOptions": {
         "noLimit": "No limit (default)",
-        "xUses": "{{uses}} use",
-        "xUses_plural": "{{uses}} uses"
+        "xUses_one": "{{uses}} use",
+        "xUses_other": "{{uses}} uses"
       },
       "labels": {
         "expiresAt": "Expires after",
@@ -464,10 +539,15 @@
       "navDrawer": "Navigation drawer"
     },
     "headers": {
-      "serverSettings": "Server Settings"
+      "serverSettings": "Server Settings",
+      "instanceSettings": "Instance Settings"
     },
     "labels": {
+      "general": "General",
       "serverSettings": "Server settings",
+      "instanceSettings": "Instance settings",
+      "switchServers": "Switch servers",
+      "instanceRoles": "Instance Roles",
       "proposals": "Proposals",
       "invites": "Invites",
       "roles": "Roles"
@@ -480,28 +560,28 @@
 
   "time": {
     "days": "{{days}}d",
-    "daysEndsIn": "Ends in {{days}} day",
-    "daysEndsIn_plural": "Ends in {{days}} days",
-    "daysFull": "{{count}} day",
-    "daysFull_plural": "{{count}} days",
+    "daysEndsIn_one": "Ends in {{days}} day",
+    "daysEndsIn_other": "Ends in {{days}} days",
+    "daysFull_one": "{{count}} day",
+    "daysFull_other": "{{count}} days",
     "hours": "{{hours}}h",
-    "hoursEndsIn": "Ends in {{hours}} hour",
-    "hoursEndsIn_plural": "Ends in {{hours}} hours",
-    "hoursFull": "{{count}} hour",
-    "hoursFull_plural": "{{count}} hours",
+    "hoursEndsIn_one": "Ends in {{hours}} hour",
+    "hoursEndsIn_other": "Ends in {{hours}} hours",
+    "hoursFull_one": "{{count}} hour",
+    "hoursFull_other": "{{count}} hours",
     "hr": "hr",
     "infinity": "∞",
     "min": "min",
     "minutes": "{{minutes}}m",
-    "minutesEndsIn": "Ends in {{minutes}} minute",
-    "minutesEndsIn_plural": "Ends in {{minutes}} minutes",
-    "minutesFull": "{{count}} minute",
-    "minutesFull_plural": "{{count}} minutes",
+    "minutesEndsIn_one": "Ends in {{minutes}} minute",
+    "minutesEndsIn_other": "Ends in {{minutes}} minutes",
+    "minutesFull_one": "{{count}} minute",
+    "minutesFull_other": "{{count}} minutes",
     "never": "Never",
     "unlimited": "Unlimited",
-    "weeks": "{{count}} week",
-    "weeksEndsIn": "Ends in {{weeks}} week",
-    "weeksEndsIn_plural": "Ends in {{weeks}} weeks",
-    "weeks_plural": "{{count}} weeks"
+    "weeks_one": "{{count}} week",
+    "weeks_other": "{{count}} weeks",
+    "weeksEndsIn_one": "Ends in {{weeks}} week",
+    "weeksEndsIn_other": "Ends in {{weeks}} weeks"
   }
 }

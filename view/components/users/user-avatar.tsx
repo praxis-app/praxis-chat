@@ -31,7 +31,7 @@ export const UserAvatar = ({
 }: Props) => {
   const getStringAvatarProps = () => {
     const colorHash = new ColorHash();
-    const baseColor = colorHash.hex(userId ?? name);
+    const baseColor = colorHash.hex(userId || name);
     const color = chroma(baseColor).brighten(1.5).hex();
     const backgroundColor = chroma(baseColor).darken(1.35).hex();
 

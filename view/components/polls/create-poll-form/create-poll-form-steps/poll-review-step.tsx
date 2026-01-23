@@ -1,7 +1,7 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
-import { PermissionKeys } from '@/types/server-role.types';
+import { getServerPermissionValuesMap } from '@/lib/role.utils';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { UserRes } from '@/types/user.types';
 import {
   PollActionType,
@@ -41,7 +41,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const nameChanged = serverRoleName !== selectedServerRole?.name;
   const colorChanged = serverRoleColor !== selectedServerRole?.color;
 
-  const shapedRolePermissions = getPermissionValuesMap(
+  const shapedRolePermissions = getServerPermissionValuesMap(
     selectedServerRole?.permissions || [],
   );
 
@@ -73,6 +73,9 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   const { t } = useTranslation();
 
   const getPollActionLabel = (action: PollActionType | '') => {
+    if (action === 'general') {
+      return t('polls.actionTypes.general');
+    }
     if (action === 'change-role') {
       return t('polls.actionTypes.changeRole');
     }
@@ -91,7 +94,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
     return '';
   };
 
-  const getPermissionName = (name: PermissionKeys | '') => {
+  const getPermissionName = (name: ServerPermissionKeys | '') => {
     if (!name) {
       return '';
     }
@@ -99,16 +102,18 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
   };
 
   const handleSubmitBtnClick = () => {
-    if (
-      !nameChanged &&
-      !colorChanged &&
-      !memberChanges.length &&
-      !Object.keys(permissionChanges).length
-    ) {
-      form.setError('root', {
-        message: t('polls.errors.changeRoleRequiresChanges'),
-      });
-      return;
+    if (action === 'change-role') {
+      if (
+        !nameChanged &&
+        !colorChanged &&
+        !memberChanges.length &&
+        !Object.keys(permissionChanges).length
+      ) {
+        form.setError('root', {
+          message: t('polls.errors.changeRoleRequiresChanges'),
+        });
+        return;
+      }
     }
     onSubmit();
   };
@@ -255,7 +260,9 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
                         className="flex items-center justify-between"
                       >
                         <span className="text-sm">
-                          {getPermissionName(permissionName as PermissionKeys)}
+                          {getPermissionName(
+                            permissionName as ServerPermissionKeys,
+                          )}
                         </span>
                         <Badge
                           variant={permissionValue ? 'default' : 'destructive'}

@@ -7,13 +7,14 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { PERMISSION_KEYS } from '@/constants/server-role.constants';
+import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
+import { useServerData } from '@/hooks/use-server-data';
 import {
   PollActionRes,
   PollActionServerRoleMemberRes,
 } from '@/types/poll-action.types';
-import { PermissionKeys } from '@/types/server-role.types';
+import { ServerPermissionKeys } from '@/types/role.types';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,22 +28,25 @@ interface Props {
 export const PollActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
+  const { serverId } = useServerData();
+
   const { data: serverRoleData, isLoading: isServerRoleLoading } = useQuery({
-    queryKey: ['serverRole', action.serverRole?.serverRoleId],
+    queryKey: ['servers', serverId, 'roles', action.serverRole?.serverRoleId],
     queryFn: () => {
-      if (!action.serverRole?.serverRoleId) {
+      if (!action.serverRole?.serverRoleId || !serverId) {
         throw new Error('Server role ID is required');
       }
-      return api.getServerRole(action.serverRole.serverRoleId);
+      return api.getServerRole(serverId, action.serverRole.serverRoleId);
     },
     enabled:
       accordionValue === ACCORDION_ITEM_VALUE &&
-      !!action.serverRole?.serverRoleId,
+      !!action.serverRole?.serverRoleId &&
+      !!serverId,
   });
 
-  const permissionChanges = PERMISSION_KEYS.reduce<
+  const permissionChanges = SERVER_PERMISSION_KEYS.reduce<
     {
-      name: PermissionKeys;
+      name: ServerPermissionKeys;
       value: boolean;
     }[]
   >((result, name) => {
@@ -57,7 +61,7 @@ export const PollActionRole = ({ action }: Props) => {
         });
       }
     }
-    if (name === 'manageSettings') {
+    if (name === 'manageServerSettings') {
       const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'ServerConfig' && p.action.includes('manage'),
       );
@@ -68,7 +72,7 @@ export const PollActionRole = ({ action }: Props) => {
         });
       }
     }
-    if (name === 'manageRoles') {
+    if (name === 'manageServerRoles') {
       const match = action.serverRole?.permissions?.find(
         (p) => p.subject === 'ServerRole' && p.action.includes('manage'),
       );
@@ -112,12 +116,12 @@ export const PollActionRole = ({ action }: Props) => {
 
   const getAccordionLabel = () => {
     if (action.actionType === 'change-role') {
-      return t('polls.labels.roleChangeProposal');
+      return t('polls.labels.roleChanges');
     }
     return t('polls.labels.roleProposal');
   };
 
-  const getPermissionName = (name: PermissionKeys | '') => {
+  const getPermissionName = (name: ServerPermissionKeys | '') => {
     if (!name) {
       return '';
     }
@@ -229,7 +233,9 @@ export const PollActionRole = ({ action }: Props) => {
                     className="flex items-center justify-between"
                   >
                     <span className="text-sm">
-                      {getPermissionName(permission.name as PermissionKeys)}
+                      {getPermissionName(
+                        permission.name as ServerPermissionKeys,
+                      )}
                     </span>
                     <Badge
                       variant={permission.value ? 'default' : 'destructive'}

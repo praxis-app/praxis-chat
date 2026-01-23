@@ -1,25 +1,21 @@
-import {
-  BrowserEvents,
-  KeyCodes,
-  NavigationPaths,
-} from '@/constants/shared.constants';
+import { NavSheet } from '@/components/nav/nav-sheet';
+import { Button } from '@/components/ui/button';
+import { BrowserEvents, KeyCodes } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-import { useAppStore } from '@/store/app.store';
+import { useServerData } from '@/hooks/use-server-data';
+import { useNavStore } from '@/store/nav.store';
 import { ReactNode, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuArrowLeft } from 'react-icons/lu';
 import { MdSearch } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Button } from '../ui/button';
-import { NavSheet } from './nav-sheet';
 
 interface Props {
   header?: string;
   onBackClick?: () => void;
   backBtnIcon?: ReactNode;
   goBackOnEscape?: boolean;
-  bypassNavSheet?: boolean;
 }
 
 export const TopNav = ({
@@ -27,13 +23,14 @@ export const TopNav = ({
   onBackClick,
   backBtnIcon,
   goBackOnEscape = false,
-  bypassNavSheet = false,
 }: Props) => {
-  const { isNavSheetOpen, setIsNavSheetOpen } = useAppStore();
+  const { isNavSheetOpen, setIsNavSheetOpen } = useNavStore();
 
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+
+  const { serverPath } = useServerData();
 
   const handleBackClick = useCallback(
     (isEscapeKey = false) => {
@@ -42,7 +39,7 @@ export const TopNav = ({
         return;
       }
       if (isDesktop) {
-        navigate(NavigationPaths.Home);
+        navigate(serverPath);
         return;
       }
       if (isEscapeKey) {
@@ -50,7 +47,7 @@ export const TopNav = ({
       }
       setIsNavSheetOpen(true);
     },
-    [isDesktop, navigate, onBackClick, setIsNavSheetOpen],
+    [isDesktop, navigate, onBackClick, serverPath, setIsNavSheetOpen],
   );
 
   // Handle escape key to go back or open nav sheet
@@ -70,22 +67,26 @@ export const TopNav = ({
     };
   }, [handleBackClick, isNavSheetOpen, setIsNavSheetOpen, goBackOnEscape]);
 
-  const renderBackBtn = () => (
-    <Button variant="ghost" size="icon" onClick={() => handleBackClick()}>
-      {backBtnIcon || <LuArrowLeft className="size-6" />}
-    </Button>
-  );
+  const renderBackBtn = () => {
+    const renderBtn = () => (
+      <Button variant="ghost" size="icon" onClick={() => handleBackClick()}>
+        {backBtnIcon || <LuArrowLeft className="size-6" />}
+      </Button>
+    );
+
+    if (!isDesktop && !onBackClick) {
+      return <NavSheet trigger={renderBtn()} />;
+    }
+
+    return renderBtn();
+  };
 
   return (
     <header className="flex h-[55px] items-center justify-between border-b border-[--color-border] px-2">
-      <div className="mr-1 flex flex-1 items-center gap-2.5">
-        {isDesktop || bypassNavSheet ? (
-          renderBackBtn()
-        ) : (
-          <NavSheet trigger={renderBackBtn()} />
-        )}
+      <div className="mr-1 flex min-w-0 flex-1 items-center gap-2.5">
+        {renderBackBtn()}
 
-        <div className="flex flex-1 items-center text-[1.05rem] font-medium select-none">
+        <div className="min-w-0 flex-1 truncate text-[1.05rem] font-medium select-none">
           {header}
         </div>
       </div>

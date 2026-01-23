@@ -1,70 +1,69 @@
+import { api } from '@/client/api-client';
+import { ChannelListItemDesktop } from '@/components/channels/channel-list-item-desktop';
+import { useAuthData } from '@/hooks/use-auth-data';
+import { useServerData } from '@/hooks/use-server-data';
 import { useAppStore } from '@/store/app.store';
-import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
+import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useParams } from 'react-router-dom';
-import { api } from '../../client/api-client';
-import { NavigationPaths } from '../../constants/shared.constants';
-import { CurrentUserRes } from '../../types/user.types';
-import { ChannelListItemDesktop } from './channel-list-item-desktop';
-
-interface Props {
-  me?: CurrentUserRes;
-}
+import { useParams } from 'react-router-dom';
 
 /**
  * Channel list component for the left navigation panel on desktop
  */
-export const ChannelListDesktop = ({ me }: Props) => {
+export const ChannelListDesktop = () => {
+  const { inviteToken } = useAuthStore();
   const { isAppLoading } = useAppStore();
 
+  const { isMeSuccess, isAuthError } = useAuthData();
+  const { serverId, serverSlug } = useServerData();
+
   const { channelId } = useParams();
-  const { pathname } = useLocation();
 
-  const isRegistered = !!me && !me.anonymous;
-
-  const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-    queryKey: ['channels'],
-    queryFn: api.getJoinedChannels,
-    enabled: isRegistered,
-  });
-
-  const { data: generalChannelData, isLoading: isGeneralChannelLoading } =
+  const { data: joinedChannelsData, isLoading: isJoinedChannelsLoading } =
     useQuery({
-      queryKey: ['channels', GENERAL_CHANNEL_NAME],
-      queryFn: () => api.getGeneralChannel(),
-      enabled: !isRegistered,
+      queryKey: ['servers', serverId, 'channels', 'joined'],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getJoinedChannels(serverId);
+      },
+      enabled: !!serverId && isMeSuccess,
+    });
+
+  const { data: publicChannelsData, isLoading: isPublicChannelsLoading } =
+    useQuery({
+      queryKey: ['servers', serverId, 'channels', inviteToken],
+      queryFn: async () => {
+        if (!serverId) {
+          throw new Error('Current server not found');
+        }
+        return api.getChannels(serverId, inviteToken);
+      },
+      enabled: !!serverId && isAuthError,
     });
 
   const isLoading =
-    isChannelsLoading || isGeneralChannelLoading || isAppLoading;
+    isJoinedChannelsLoading || isPublicChannelsLoading || isAppLoading;
 
-  if (generalChannelData && !isRegistered && !isLoading) {
-    return (
-      <div className="flex flex-1 flex-col overflow-y-scroll py-2 select-none">
-        <ChannelListItemDesktop
-          channel={generalChannelData.channel}
-          isGeneralChannel
-          isActive
-        />
-      </div>
-    );
+  // TODO: Add skeleton loader
+  if (!serverSlug || isLoading) {
+    return <div className="flex flex-1" />;
   }
+
+  const channels =
+    joinedChannelsData?.channels || publicChannelsData?.channels || [];
 
   return (
     <div className="flex flex-1 flex-col gap-0.5 overflow-y-scroll py-2 select-none">
-      {channelsData?.channels.map((channel) => {
-        const isHome = pathname === NavigationPaths.Home;
-        const isGeneral = channel.name === GENERAL_CHANNEL_NAME;
-        const isActive = channelId === channel.id || (isHome && isGeneral);
-
-        return (
-          <ChannelListItemDesktop
-            key={channel.id}
-            channel={channel}
-            isActive={isActive}
-          />
-        );
-      })}
+      {channels.map((channel) => (
+        <ChannelListItemDesktop
+          key={channel.id}
+          channel={channel}
+          isActive={channelId === channel.id}
+          serverSlug={serverSlug}
+        />
+      ))}
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
+import { PollActionType } from '@common/poll-actions/poll-action.types';
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { PollActionType } from '../../../../../common/poll-actions/poll-action.types';
 import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
 import { Button } from '../../../ui/button';
 import {
@@ -45,6 +45,9 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
   };
 
   const getPollActionLabel = (action: PollActionType | '') => {
+    if (action === 'general') {
+      return t('polls.actionTypes.general');
+    }
     if (action === 'change-role') {
       return t('polls.actionTypes.changeRole');
     }

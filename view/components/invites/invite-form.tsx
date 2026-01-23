@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { useServerData } from '../../hooks/use-server-data';
 
 const MAX_USES_OPTIONS = [1, 5, 10, 25, 50, 100];
 
@@ -31,6 +32,8 @@ const inviteFormSchema = zod.object({
 export const InviteForm = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+
+  const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof inviteFormSchema>>({
     defaultValues: { expiresAt: '', maxUses: '' },
@@ -46,13 +49,16 @@ export const InviteForm = () => {
 
   const { mutate: createInvite } = useMutation({
     mutationFn: async (data: zod.infer<typeof inviteFormSchema>) => {
-      const { invite } = await api.createInvite({
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      const { invite } = await api.createInvite(serverId, {
         expiresAt: getFormattedExpiresAt(data.expiresAt),
         maxUses: Number(data.maxUses) || undefined,
       });
 
       queryClient.setQueryData<{ invites: InviteRes[] }>(
-        ['invites'],
+        ['servers', serverId, 'invites'],
         (oldData) => {
           if (!oldData) {
             return { invites: [] };

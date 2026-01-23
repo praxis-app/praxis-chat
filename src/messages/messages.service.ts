@@ -5,13 +5,14 @@ import { IsNull, Not } from 'typeorm';
 import { getDefaultBot } from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
 import * as commandsService from '../commands/commands.service';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
+import * as instanceService from '../instance/instance.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
 
@@ -22,6 +23,7 @@ const imageRepository = dataSource.getRepository(Image);
 
 // TODO: Return `resolvedName` field for users
 export const getMessages = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
@@ -52,7 +54,9 @@ export const getMessages = async (
     .leftJoin('message.bot', 'messageBot')
     .addSelect(['messageBot.id', 'messageBot.name', 'messageBot.displayName'])
     .leftJoin('message.images', 'messageImage')
-    .where('message.channelId = :channelId', { channelId })
+    .innerJoin('message.channel', 'channel')
+    .where('channel.serverId = :serverId', { serverId })
+    .andWhere('message.channelId = :channelId', { channelId })
     .orderBy('message.createdAt', 'DESC')
     .skip(offset)
     .take(limit)
@@ -107,7 +111,25 @@ export const getMessages = async (
   return shapedMessages;
 };
 
+export const isPublicChannelMessage = async (
+  serverId: string,
+  channelId: string,
+  messageId: string,
+) => {
+  const exists = await messageRepository.exists({
+    where: { id: messageId, channel: { serverId, id: channelId } },
+  });
+  if (!exists) {
+    throw new Error('Message not found');
+  }
+
+  const { defaultServerId } = await instanceService.getInstanceConfigSafely();
+
+  return defaultServerId === serverId;
+};
+
 export const createMessage = async (
+  serverId: string,
   channelId: string,
   { body, imageCount }: CreateMessageDto,
   user: User,
@@ -177,10 +199,13 @@ export const createMessage = async (
     if (member.userId === user.id) {
       continue;
     }
-    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: PubSubMessageType.MESSAGE,
-      message: messagePayload,
-    });
+    await pubSubService.publish(
+      getNewMessageKey(serverId, channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   // TODO: Send an error message for invalid command messages
@@ -193,12 +218,14 @@ export const createMessage = async (
   ) {
     try {
       const botMessage = await createBotMessage(
+        serverId,
         channelId,
         'Processing your command...',
         'processing',
       );
 
       await commandsService.queueCommandJob({
+        serverId,
         channelId,
         messageBody: plaintext,
         botMessageId: botMessage.id,
@@ -212,6 +239,7 @@ export const createMessage = async (
 };
 
 const createBotMessage = async (
+  serverId: string,
   channelId: string,
   body: string,
   commandStatus: CommandStatus | null = null,
@@ -260,16 +288,20 @@ const createBotMessage = async (
 
   const channelMembers = await channelsService.getChannelMembers(channelId);
   for (const member of channelMembers) {
-    await pubSubService.publish(getNewMessageKey(channelId, member.userId), {
-      type: PubSubMessageType.MESSAGE,
-      message: messagePayload,
-    });
+    await pubSubService.publish(
+      getNewMessageKey(serverId, channelId, member.userId),
+      {
+        type: PubSubMessageType.MESSAGE,
+        message: messagePayload,
+      },
+    );
   }
 
   return messagePayload;
 };
 
 export const updateBotMessage = async (
+  serverId: string,
   messageId: string,
   updates: {
     body: string;
@@ -328,7 +360,7 @@ export const updateBotMessage = async (
   );
   for (const member of channelMembers) {
     await pubSubService.publish(
-      getNewMessageKey(message.channelId, member.userId),
+      getNewMessageKey(serverId, message.channelId, member.userId),
       {
         type: PubSubMessageType.MESSAGE,
         message: messagePayload,
@@ -340,6 +372,7 @@ export const updateBotMessage = async (
 };
 
 export const saveMessageImage = async (
+  serverId: string,
   messageId: string,
   imageId: string,
   filename: string,
@@ -360,7 +393,11 @@ export const saveMessageImage = async (
     if (member.userId === user.id) {
       continue;
     }
-    const channelKey = getNewMessageKey(message.channelId, member.userId);
+    const channelKey = getNewMessageKey(
+      serverId,
+      message.channelId,
+      member.userId,
+    );
     await pubSubService.publish(channelKey, {
       type: PubSubMessageType.IMAGE,
       isPlaceholder: false,
@@ -371,6 +408,10 @@ export const saveMessageImage = async (
   return image;
 };
 
-const getNewMessageKey = (channelId: string, userId: string) => {
-  return `new-message-${channelId}-${userId}`;
+const getNewMessageKey = (
+  serverId: string,
+  channelId: string,
+  userId: string,
+) => {
+  return `new-message-${serverId}-${channelId}-${userId}`;
 };

@@ -24,9 +24,9 @@ const rotateChannelKeys = async () => {
   await channelKeyRepository.save(newChannelKeysToSave);
 };
 
-export const rotateChannelKeysJob = new CronJob(
-  CronExpression.EVERY_QUARTER,
-  async () => {
+export const rotateChannelKeysJob = CronJob.from({
+  cronTime: CronExpression.EVERY_QUARTER,
+  onTick: async () => {
     await rotateChannelKeys();
   },
-);
+});

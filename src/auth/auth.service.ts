@@ -1,8 +1,9 @@
 import { compare, hash } from 'bcrypt';
 import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import { normalizeText } from '../common/common.utils';
+import { normalizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
+import { Invite } from '../invites/invite.entity';
 import * as invitesService from '../invites/invites.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
@@ -25,6 +26,7 @@ export interface LoginDto {
 }
 
 const userRepository = dataSource.getRepository(User);
+const inviteRepository = dataSource.getRepository(Invite);
 
 // TODO: Move validation to middleware with zod
 export const login = async ({ email, password }: LoginDto) => {
@@ -58,7 +60,12 @@ export const signUp = async ({
   inviteToken,
 }: SignUpDto) => {
   const passwordHash = await hash(password, SALT_ROUNDS);
-  const user = await usersService.createUser(email, name, passwordHash);
+  const user = await usersService.createUser(
+    email,
+    name,
+    passwordHash,
+    inviteToken,
+  );
 
   if (inviteToken) {
     await invitesService.redeemInvite(inviteToken);
@@ -74,12 +81,18 @@ export const upgradeAnonSession = async (
   await usersService.upgradeAnonUser(userId, email, passwordHash, name);
 };
 
-export const createAnonSession = async (inviteToken?: string) => {
-  const user = await usersService.createAnonUser();
-
-  if (inviteToken) {
-    await invitesService.redeemInvite(inviteToken);
+export const createAnonSession = async (inviteToken: string) => {
+  const invite = await inviteRepository.findOne({
+    where: { token: inviteToken },
+    select: ['id', 'serverId'],
+  });
+  if (!invite) {
+    throw new Error('Invalid invite token');
   }
+
+  const user = await usersService.createAnonUser(invite.serverId);
+  await invitesService.redeemInvite(inviteToken);
+
   return generateAccessToken(user.id);
 };
 

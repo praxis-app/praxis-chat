@@ -10,10 +10,10 @@ Refer to README.md for more information.
 
 **Tech Stack**:
 
-- Backend: Node.js, Express, TypeORM, PostgreSQL, Redis (WebSocket pub-sub)
+- Backend: Node.js, Express, TypeORM, PostgreSQL, Redis
 - Frontend: React, React Router, Vite, Tailwind CSS, Radix UI
 - Testing: Vitest (both client and server)
-- Required: Node.js v22.11.0
+- Required: Node.js v24.12.0
 
 ## Architecture
 
@@ -25,7 +25,7 @@ Refer to README.md for more information.
   - Import via `@common` alias
   - **Include**: TypeScript types/interfaces, constants/enums, pure utility functions, validation schemas
   - **Exclude**: Business logic, database models, Express middleware, React components
-  - **Examples**: `common/proposals/proposal.types.ts`, `common/votes/vote.constants.ts`
+  - **Examples**: `common/polls/poll.types.ts`, `common/votes/vote.constants.ts`
 
 ### Backend Architecture (`src/`)
 
@@ -60,9 +60,9 @@ Refer to README.md for more information.
 - `images/` - Image uploads (multer) and processing
 - `invites/` - Server invitations
 - `messages/` - Chat messages
-- `proposal-actions/` - Actions proposed for approval (roles, permissions, members)
-- `proposals/` - Formal proposals and voting
-- `pub-sub/` - WebSocket pub-sub server with Redis
+- `poll-actions/` - Actions proposed for approval (roles, permissions, members)
+- `polls/` - Polls and proposals (proposals are implemented as polls with `pollType: 'proposal'`)
+- `pub-sub/` - WebSocket pub-sub server with Redis-backed channel subscriptions
 - `roles/` - RBAC with permissions (CASL-based)
 - `server-configs/` - Server-wide settings
 - `tests/` - Test utilities and fixtures
@@ -174,6 +174,7 @@ npm run check          # Full verification: types, lint, tests (client + server)
 - After completing a logical unit of work (e.g., implementing a feature, fixing a bug, completing a refactor)
 - For multi-step changes, run the check after the expected final step, not after every intermediate change
 - Skip for very small changes (a few lines in a single file)
+- Skip for changes that only affect documentation
 - When in doubt about whether a change is "small", err on the side of running the check
 
 ## Code Guidelines
@@ -193,4 +194,4 @@ Project uses TypeScript project references:
 - `tsconfig.src.json` - Backend (src/)
 - `tsconfig.view.json` - Frontend (view/)
 
-Backend uses `ts-node` with `tsconfig-paths` for path resolution and `tsc-alias` for build-time alias resolution.
+Backend uses `tsx` for TypeScript execution and `tsc-alias` for build-time alias resolution. TypeORM entities require explicit `type` in `@Column()` decorators since tsx/esbuild doesn't support `emitDecoratorMetadata`.

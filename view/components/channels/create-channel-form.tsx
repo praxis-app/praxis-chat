@@ -1,5 +1,5 @@
 import { api } from '@/client/api-client';
-import { NavigationPaths } from '@/constants/shared.constants';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { ChannelRes, CreateChannelReq } from '@/types/channel.types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,6 +59,8 @@ export const CreateChannelForm = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const { serverId, serverPath } = useServerData();
+
   const form = useForm<zod.infer<typeof createChannelFormSchema>>({
     resolver: zodResolver(createChannelFormSchema),
     defaultValues: {
@@ -69,10 +71,13 @@ export const CreateChannelForm = ({
 
   const { mutate: createChannel, isPending } = useMutation({
     mutationFn: async (values: CreateChannelReq) => {
-      const { channel } = await api.createChannel(values);
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      const { channel } = await api.createChannel(serverId, values);
 
       queryClient.setQueryData<{ channels: ChannelRes[] }>(
-        ['channels'],
+        ['servers', serverId, 'channels', 'joined'],
         (oldData) => {
           if (!oldData) {
             return { channels: [] };
@@ -83,7 +88,7 @@ export const CreateChannelForm = ({
 
       onSubmit?.();
 
-      navigate(`${NavigationPaths.Channels}/${channel.id}`);
+      navigate(`${serverPath}/c/${channel.id}`);
     },
     onError(error: Error) {
       handleError(error);

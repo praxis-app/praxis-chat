@@ -1,7 +1,9 @@
+import { api } from '@/client/api-client';
+import { useInView } from '@/hooks/use-in-view';
+import { useServerData } from '@/hooks/use-server-data';
+import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { RefObject } from 'react';
-import { api } from '../client/api-client';
-import { useInView } from './use-in-view';
 
 interface UseImageSrcProps {
   enabled?: boolean;
@@ -24,6 +26,9 @@ export const useImageSrc = ({
   onError,
   ref,
 }: UseImageSrcProps) => {
+  const { inviteToken } = useAuthStore();
+  const { serverId } = useServerData();
+
   const { viewed } = useInView(ref, '100px');
 
   const getImageSrc = async () => {
@@ -35,9 +40,27 @@ export const useImageSrc = ({
 
       // Determine which API method to call based on parent context
       if (messageId && channelId) {
-        result = await api.getMessageImage(channelId, messageId, imageId);
+        if (!serverId) {
+          throw new Error('Server ID is required for message images');
+        }
+        result = await api.getMessageImage(
+          serverId,
+          channelId,
+          messageId,
+          imageId,
+          inviteToken,
+        );
       } else if (pollId && channelId) {
-        result = await api.getPollImage(channelId, pollId, imageId);
+        if (!serverId) {
+          throw new Error('Server ID is required for poll images');
+        }
+        result = await api.getPollImage(
+          serverId,
+          channelId,
+          pollId,
+          imageId,
+          inviteToken,
+        );
       } else if (userId) {
         result = await api.getUserImage(userId, imageId);
       } else {
@@ -54,9 +77,17 @@ export const useImageSrc = ({
   };
 
   const { data } = useQuery({
-    queryKey: ['images', channelId, imageId, messageId, pollId, userId],
+    queryKey: [
+      'images',
+      serverId,
+      channelId,
+      imageId,
+      messageId,
+      pollId,
+      userId,
+    ],
     queryFn: getImageSrc,
-    enabled: enabled && !!imageId && viewed,
+    enabled: !!imageId && viewed && enabled,
   });
 
   return data;

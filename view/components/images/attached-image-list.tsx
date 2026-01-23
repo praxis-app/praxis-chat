@@ -5,6 +5,7 @@ import { AttachedImage } from './attached-image';
 
 interface Props {
   images: ImageRes[];
+  serverId?: string;
   channelId?: string;
   messageId?: string;
   pollId?: string;
@@ -17,6 +18,7 @@ interface Props {
 
 export const AttachedImageList = ({
   images,
+  serverId,
   channelId,
   messageId,
   pollId,
@@ -41,6 +43,7 @@ export const AttachedImageList = ({
         <AttachedImage
           key={image.id}
           image={image}
+          serverId={serverId}
           channelId={channelId}
           messageId={messageId}
           pollId={pollId}

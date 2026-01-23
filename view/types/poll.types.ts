@@ -1,8 +1,8 @@
+import { ImageRes } from '@/types/image.types';
+import { CreatePollActionReq, PollActionRes } from '@/types/poll-action.types';
+import { UserRes } from '@/types/user.types';
+import { VoteRes } from '@/types/vote.types';
 import { DecisionMakingModel, PollStage } from '@common/polls/poll.types';
-import { VoteType } from '@common/votes/vote.types';
-import { ImageRes } from './image.types';
-import { CreatePollActionReq, PollActionRes } from './poll-action.types';
-import { UserRes } from './user.types';
 
 export interface PollRes {
   id: string;
@@ -12,15 +12,18 @@ export interface PollRes {
   config: PollConfigRes;
   images: ImageRes[];
   user: UserRes;
-  createdAt: string;
-  myVote?: { id: string; voteType: VoteType };
-  votesNeededToRatify: number;
+  votes: VoteRes[];
+  myVote?: VoteRes;
   agreementVoteCount: number;
+  memberCount: number;
+  createdAt: string;
 }
 
 export interface PollConfigRes {
   decisionMakingModel: DecisionMakingModel;
-  ratificationThreshold: number;
+  agreementThreshold: number;
+  quorumEnabled: boolean;
+  quorumThreshold: number;
   disagreementsLimit: number;
   abstainsLimit: number;
   closingAt?: string;

@@ -9,8 +9,10 @@ export type Model =
   // Small, text only model released by Google - https://ollama.com/library/gemma2:2b
   | 'gemma2:2b';
 
-export interface PromptTemplate
-  extends Pick<ChatRequest, 'format' | 'options'> {
+export interface PromptTemplate extends Pick<
+  ChatRequest,
+  'format' | 'options'
+> {
   system?: string;
   user: string;
 }

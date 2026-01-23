@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { GENERAL_CHANNEL_NAME } from '../../../common/channels/channel.constants';
 import * as channelsService from '../../channels/channels.service';
 import { dataSource } from '../../database/data-source';
-import * as imagesService from '../../images/images.service';
+import { Image } from '../../images/entities/image.entity';
+import * as invitesService from '../../invites/invites.service';
 import { User } from '../../users/user.entity';
-import { Message } from '../message.entity';
+import * as messagesService from '../messages.service';
 
-const messageRepository = dataSource.getRepository(Message);
+const imageRepository = dataSource.getRepository(Image);
 
 export const canReadMessageImage = async (
   req: Request,
@@ -14,32 +14,56 @@ export const canReadMessageImage = async (
   next: NextFunction,
 ) => {
   const currentUser: User | undefined = res.locals.user;
-  const { channelId, messageId, imageId } = req.params;
+  const { serverId, channelId, messageId, imageId } = req.params;
+  const { inviteToken } = req.query;
 
-  const image = await imagesService.getImage(imageId);
-
+  // Check if the image exists
+  const image = await imageRepository.findOne({
+    select: ['id', 'messageId'],
+    where: { id: imageId },
+  });
   if (!image || image.messageId !== messageId) {
     res.status(404).send('Image not found');
     return;
   }
 
-  if (currentUser) {
-    const isChannelMember = await channelsService.isChannelMember(
+  if (!currentUser) {
+    // Check if the message is in a public channel (a default server channel)
+    const isPublicChannelMessage = await messagesService.isPublicChannelMessage(
+      serverId,
       channelId,
-      currentUser.id,
+      messageId,
     );
-    if (!isChannelMember) {
-      res.status(403).send('Forbidden');
+    if (isPublicChannelMessage) {
+      next();
       return;
     }
-  } else {
-    const isGeneralChannelMessage = await messageRepository.exist({
-      where: { id: messageId, channel: { name: GENERAL_CHANNEL_NAME } },
-    });
-    if (!isGeneralChannelMessage) {
-      res.status(403).send('Forbidden');
-      return;
+
+    // Check if the user has been invited to the server for this message
+    if (inviteToken && typeof inviteToken === 'string') {
+      const isValid = await invitesService.isValidInvite({
+        token: inviteToken,
+        serverId: req.params.serverId,
+      });
+      if (isValid) {
+        next();
+        return;
+      }
     }
+
+    res.status(403).send('Forbidden');
+    return;
+  }
+
+  // Check if the current user is a member of the channel
+  const isChannelMember = await channelsService.isChannelMember(
+    serverId,
+    channelId,
+    currentUser.id,
+  );
+  if (!isChannelMember) {
+    res.status(403).send('Forbidden');
+    return;
   }
 
   next();

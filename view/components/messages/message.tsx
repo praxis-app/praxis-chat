@@ -13,11 +13,13 @@ import { CurrentUser } from '../../types/user.types';
 interface Props {
   message: MessageRes;
   me?: CurrentUser;
+  serverId?: string;
   channelId?: string;
 }
 
 export const Message = ({
   message: { id, body, images, user, createdAt },
+  serverId,
   channelId,
   me,
 }: Props) => {
@@ -41,7 +43,7 @@ export const Message = ({
         userId={user.id}
         me={me}
         trigger={
-          <button className="flex-shrink-0 cursor-pointer self-start">
+          <button className="shrink-0 cursor-pointer self-start">
             <UserAvatar
               name={name}
               userId={user.id}
@@ -76,6 +78,7 @@ export const Message = ({
         {showImages && (
           <AttachedImageList
             images={images}
+            serverId={serverId}
             channelId={channelId}
             messageId={id}
             imageClassName="rounded-lg"

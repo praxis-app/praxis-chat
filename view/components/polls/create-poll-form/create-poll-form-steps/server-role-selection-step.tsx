@@ -1,6 +1,7 @@
 import { api } from '@/client/api-client';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
-import { getPermissionValuesMap } from '@/lib/server-role.utils';
+import { getServerPermissionValuesMap } from '@/lib/role.utils';
+import { useServerData } from '@/hooks/use-server-data';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -26,12 +27,19 @@ import { CreatePollFormSchema } from '../create-poll-form.types';
 export const ServerRoleSelectionStep = () => {
   const form = useFormContext<CreatePollFormSchema>();
   const { onNext, onPrevious } = useWizardContext();
+  const { serverId } = useServerData();
 
   const { t } = useTranslation();
 
   const { data: serverRolesData, isLoading } = useQuery({
-    queryKey: ['serverRoles'],
-    queryFn: () => api.getServerRoles(),
+    queryKey: ['servers', serverId, 'roles'],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getServerRoles(serverId);
+    },
+    enabled: !!serverId,
   });
   const serverRoles = serverRolesData?.serverRoles || [];
 
@@ -47,7 +55,7 @@ export const ServerRoleSelectionStep = () => {
 
       form.setValue(
         'permissions',
-        getPermissionValuesMap(selectedServerRole.permissions),
+        getServerPermissionValuesMap(selectedServerRole.permissions),
       );
       form.setValue(
         'serverRoleMembers',

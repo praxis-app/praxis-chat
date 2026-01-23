@@ -9,7 +9,7 @@
 
 ## Required verifications
 
-- After every code change, includingbackend, frontend, configuration, or shared library, run `npm run check` before signaling that the work is ready for review.
+- After every code change, including backend, frontend, configuration, or shared library, run `npm run check` before signaling that the work is ready for review. This does not include changes to documentation.
 - The command sequences `npm run types`, `npm run lint`, `npm run test`, `npm run test:client`, and `npm audit`; a clean run is required for any review or merge request.
 - Fix failing steps locally and rerun `npm run check` until the entire chain succeeds; partial or skipped checks are not acceptable sign-off.
 

@@ -28,7 +28,7 @@ export const ChannelDetailsDialogDesktop = ({ channel, trigger }: Props) => {
             </div>
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-primary min-w-[25rem]">
+        <DialogDescription className="text-primary min-w-100">
           {channel.description}
         </DialogDescription>
       </DialogContent>

@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ServerRole } from '../../server-roles/entities/server-role.entity';
+import { ServerRole } from '../../servers/server-roles/entities/server-role.entity';
 import { PollActionPermission } from './poll-action-permission.entity';
 import { PollActionRoleMember } from './poll-action-role-member.entity';
 import { PollAction } from './poll-action.entity';
@@ -56,7 +56,7 @@ export class PollActionRole {
   @Column({ type: 'uuid' })
   pollActionId: string;
 
-  @ManyToOne(() => ServerRole, (role) => role.pollActionRoles, {
+  @ManyToOne(() => ServerRole, (role: ServerRole) => role.pollActionRoles, {
     nullable: true,
     onDelete: 'CASCADE',
   })

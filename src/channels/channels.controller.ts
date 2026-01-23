@@ -2,32 +2,35 @@ import { Request, Response } from 'express';
 import * as channelsService from './channels.service';
 
 export const getChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.getChannel(req.params.channelId);
+  const { serverId, channelId } = req.params;
+  const channel = await channelsService.getChannel(serverId, channelId);
+  if (!channel) {
+    res.status(404).send('Channel not found');
+    return;
+  }
   res.json({ channel });
 };
 
-// TODO: This is currently unused on the FE - consider removing
-export const getChannels = async (_: Request, res: Response) => {
-  const channels = await channelsService.getChannelsSafely();
+export const getChannels = async (req: Request, res: Response) => {
+  const channels = await channelsService.getChannels(req.params.serverId);
   res.json({ channels });
 };
 
-export const getJoinedChannels = async (_: Request, res: Response) => {
-  const channels = await channelsService.getJoinedChannels(res.locals.user.id);
+export const getJoinedChannels = async (req: Request, res: Response) => {
+  const channels = await channelsService.getJoinedChannels(
+    req.params.serverId,
+    res.locals.user.id,
+  );
   res.json({ channels });
-};
-
-export const getGeneralChannel = async (_: Request, res: Response) => {
-  const channel = await channelsService.getGeneralChannel();
-  res.json({ channel });
 };
 
 export const getChannelFeed = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
+  const { serverId, channelId } = req.params;
   const offset = req.query.offset ? Number(req.query.offset) : undefined;
   const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
   const feed = await channelsService.getChannelFeed(
+    serverId,
     channelId,
     offset,
     limit,
@@ -36,25 +39,17 @@ export const getChannelFeed = async (req: Request, res: Response) => {
   res.json({ feed });
 };
 
-export const getGeneralChannelFeed = async (req: Request, res: Response) => {
-  const offset = req.query.offset ? Number(req.query.offset) : undefined;
-  const limit = req.query.limit ? Number(req.query.limit) : undefined;
-
-  const feed = await channelsService.getGeneralChannelFeed(
-    offset,
-    limit,
-    res.locals.user?.id,
-  );
-  res.json({ feed });
-};
-
 export const createChannel = async (req: Request, res: Response) => {
-  const channel = await channelsService.createChannel(req.body);
+  const channel = await channelsService.createChannel(
+    req.params.serverId,
+    req.body,
+  );
   res.json({ channel });
 };
 
 export const updateChannel = async (req: Request, res: Response) => {
   const result = await channelsService.updateChannel(
+    req.params.serverId,
     req.params.channelId,
     req.body,
   );
@@ -62,6 +57,9 @@ export const updateChannel = async (req: Request, res: Response) => {
 };
 
 export const deleteChannel = async (req: Request, res: Response) => {
-  const result = await channelsService.deleteChannel(req.params.channelId);
+  const result = await channelsService.deleteChannel(
+    req.params.serverId,
+    req.params.channelId,
+  );
   res.json(result);
 };

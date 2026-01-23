@@ -5,22 +5,25 @@ import { ServerConfigErrorKeys } from './server-config.constants';
 
 export const serverConfigSchema = zod
   .object({
+    anonymousUsersEnabled: zod.boolean().optional(),
     decisionMakingModel: zod.enum(DECISION_MAKING_MODEL).optional(),
     disagreementsLimit: zod.number().min(0).max(10).optional(),
     abstainsLimit: zod.number().min(0).max(10).optional(),
-    ratificationThreshold: zod.number().min(1).max(100).optional(),
+    agreementThreshold: zod.number().min(1).max(100).optional(),
+    quorumEnabled: zod.boolean().optional(),
+    quorumThreshold: zod.number().min(1).max(100).optional(),
     votingTimeLimit: zod.number().optional(),
   })
   .refine(
     (data) =>
       !(
         data.decisionMakingModel === 'majority-vote' &&
-        data.ratificationThreshold !== undefined &&
-        data.ratificationThreshold <= 50
+        data.agreementThreshold !== undefined &&
+        data.agreementThreshold <= 50
       ),
     {
-      message: ServerConfigErrorKeys.MajorityVoteRatificationThreshold,
-      path: ['ratificationThreshold'],
+      message: ServerConfigErrorKeys.MajorityVoteAgreementThreshold,
+      path: ['agreementThreshold'],
     },
   )
   .refine(

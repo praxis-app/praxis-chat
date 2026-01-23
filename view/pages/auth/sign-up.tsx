@@ -15,7 +15,7 @@ import {
   NavigationPaths,
 } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
-import { useAppStore } from '@/store/app.store';
+import { useAuthStore } from '@/store/auth.store';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,21 +23,29 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export const SignUp = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const { isLoggedIn, setInviteToken } = useAppStore();
+  const { isLoggedIn, setInviteToken } = useAuthStore();
 
   const { t } = useTranslation();
   const { token } = useParams();
   const navigate = useNavigate();
 
-  const { isFirstUser, isAnon, isRegistered, me } = useAuthData();
+  const { isFirstUser, isAnon, isRegistered, me } = useAuthData({
+    isFirstUserQueryEnabled: true,
+  });
 
   const { isLoading: isInviteLoading, error: inviteError } = useQuery({
     queryKey: ['invites', token],
     queryFn: async () => {
-      const { invite } = await api.getInvite(token!);
-      localStorage.setItem(LocalStorageKeys.InviteToken, invite.token);
-      setInviteToken(invite.token);
-      return invite;
+      if (!token) {
+        throw new Error('Invite token is required');
+      }
+      const { isValidInvite } = await api.isValidInvite(token!);
+      if (!isValidInvite) {
+        throw new Error('Invalid invite');
+      }
+      localStorage.setItem(LocalStorageKeys.InviteToken, token);
+      setInviteToken(token);
+      return isValidInvite;
     },
     enabled: !!token,
   });

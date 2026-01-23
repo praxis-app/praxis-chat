@@ -16,6 +16,7 @@ import { LazyLoadImage } from './lazy-load-image';
 
 interface Props {
   image: ImageRes;
+  serverId?: string;
   channelId?: string;
   messageId?: string;
   pollId?: string;
@@ -25,6 +26,7 @@ interface Props {
 
 export const AttachedImage = ({
   image,
+  serverId,
   channelId,
   messageId,
   pollId,
@@ -34,6 +36,7 @@ export const AttachedImage = ({
   const queryClient = useQueryClient();
   const previouslyLoaded = queryClient.getQueryData([
     'images',
+    serverId,
     channelId,
     image.id,
     messageId,

@@ -39,15 +39,16 @@ export const handleCommandExecution = async (
 
 export const startCommandProcessor = () => {
   commandQueue.process(async (job: Bull.Job<CommandJobData>) => {
-    const { channelId, messageBody, botMessageId } = job.data;
+    const { serverId, channelId, messageBody, botMessageId } = job.data;
 
     try {
       const result = await handleCommandExecution({
+        serverId,
         channelId,
         messageBody,
       });
 
-      await messagesService.updateBotMessage(botMessageId, {
+      await messagesService.updateBotMessage(serverId, botMessageId, {
         body: result,
         commandStatus: 'completed',
       });
@@ -56,7 +57,7 @@ export const startCommandProcessor = () => {
     } catch (error) {
       console.error('Error processing command:', error);
 
-      await messagesService.updateBotMessage(botMessageId, {
+      await messagesService.updateBotMessage(serverId, botMessageId, {
         body: 'Sorry, I encountered an error while processing your command. Please try again.',
         commandStatus: 'failed',
       });

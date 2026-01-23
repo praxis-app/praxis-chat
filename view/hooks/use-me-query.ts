@@ -1,20 +1,32 @@
+import { api } from '@/client/api-client';
+import { LocalStorageKeys } from '@/constants/shared.constants';
+import { useAppStore } from '@/store/app.store';
+import { useAuthStore } from '@/store/auth.store';
+import { CurrentUser } from '@/types/user.types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { api } from '../client/api-client';
-import { LocalStorageKeys } from '../constants/shared.constants';
-import { useAppStore } from '../store/app.store';
-import { CurrentUser } from '../types/user.types';
 
-export const useMeQuery = (
-  options?: Omit<UseQueryOptions<{ user: CurrentUser }>, 'queryKey'>,
-) => {
-  const { setIsAppLoading, setIsLoggedIn } = useAppStore();
+type UseMeQueryOptions = Omit<
+  UseQueryOptions<{ user: CurrentUser }>,
+  'queryKey'
+>;
 
-  const defaultOptions = {
+export const useMeQuery = (options?: UseMeQueryOptions) => {
+  const { accessToken, setIsLoggedIn, setAccessToken } = useAuthStore();
+  const { setIsAppLoading } = useAppStore();
+
+  const defaultOptions: Partial<UseMeQueryOptions> = {
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: 2,
+  };
+
+  const enabled = !!accessToken && (options?.enabled ?? true);
+  const resolvedOptions: UseMeQueryOptions = {
+    ...defaultOptions,
+    ...options,
+    enabled,
   };
 
   const result = useQuery({
@@ -45,6 +57,7 @@ export const useMeQuery = (
       } catch (error) {
         if ((error as AxiosError).response?.status === 401) {
           localStorage.removeItem(LocalStorageKeys.AccessToken);
+          setAccessToken(null);
           setIsLoggedIn(false);
         }
         throw error;
@@ -52,8 +65,7 @@ export const useMeQuery = (
         setIsAppLoading(false);
       }
     },
-    ...defaultOptions,
-    ...options,
+    ...resolvedOptions,
   });
 
   return result;

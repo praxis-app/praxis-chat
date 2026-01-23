@@ -3,17 +3,16 @@
 import { GENERAL_CHANNEL_NAME } from '@common/channels/channel.constants';
 import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
-import { FindManyOptions, In, QueryFailedError } from 'typeorm';
+import { In, QueryFailedError } from 'typeorm';
 import {
   AES_256_GCM_ALGORITHM,
   AES_256_GCM_IV_LENGTH,
 } from '../common/common.constants';
-import { sanitizeText } from '../common/common.utils';
+import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import * as messagesService from '../messages/messages.service';
 import * as pollsService from '../polls/polls.service';
 import { ServerMember } from '../servers/entities/server-member.entity';
-import { getServerSafely } from '../servers/servers.service';
 import { User } from '../users/user.entity';
 import { ChannelKey } from './entities/channel-key.entity';
 import { ChannelMember } from './entities/channel-member.entity';
@@ -37,29 +36,33 @@ const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const channelKeyRepository = dataSource.getRepository(ChannelKey);
 const serverMemberRepository = dataSource.getRepository(ServerMember);
 
-export const getChannel = (channelId: string) => {
-  return channelRepository.findOneOrFail({
-    where: { id: channelId },
-  });
-};
-
-export const getChannelsSafely = async (options?: FindManyOptions<Channel>) => {
-  const channelCount = await channelRepository.count();
-  if (channelCount === 0) {
-    await initializeGeneralChannel();
-  }
-  return channelRepository.find({
-    order: { createdAt: 'ASC', ...options?.order },
-    ...options,
-  });
-};
-
-export const getJoinedChannels = async (userId: string) => {
-  return getChannelsSafely({
-    where: {
-      members: { userId },
+export const getChannel = (serverId: string, channelId: string) => {
+  return channelRepository.findOne({
+    where: { id: channelId, serverId },
+    relations: ['server'],
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      server: { id: true, slug: true },
     },
   });
+};
+
+export const getChannels = async (serverId: string) => {
+  const channels = await channelRepository.find({
+    where: { serverId },
+    order: { createdAt: 'ASC' },
+  });
+  return channels;
+};
+
+export const getJoinedChannels = async (serverId: string, userId: string) => {
+  const channels = await channelRepository.find({
+    where: { serverId, members: { userId } },
+    order: { createdAt: 'ASC' },
+  });
+  return channels;
 };
 
 export const getChannelMembers = (channelId: string) => {
@@ -68,25 +71,32 @@ export const getChannelMembers = (channelId: string) => {
   });
 };
 
-export const getGeneralChannel = async () => {
+export const getGeneralChannel = async (serverId: string) => {
   const generalChannel = await channelRepository.findOne({
-    where: { name: GENERAL_CHANNEL_NAME },
+    where: { name: GENERAL_CHANNEL_NAME, serverId },
   });
   if (!generalChannel) {
-    return initializeGeneralChannel();
+    throw new Error('General channel not found');
   }
   return generalChannel;
 };
 
 export const getChannelFeed = async (
+  serverId: string,
   channelId: string,
   offset?: number,
   limit?: number,
   currentUserId?: string,
 ) => {
   const [messages, polls] = await Promise.all([
-    messagesService.getMessages(channelId, offset, limit),
-    pollsService.getInlinePolls(channelId, offset, limit, currentUserId),
+    messagesService.getMessages(serverId, channelId, offset, limit),
+    pollsService.getInlinePolls(
+      serverId,
+      channelId,
+      offset,
+      limit,
+      currentUserId,
+    ),
   ]);
 
   const shapedMessages = messages.map((message) => ({
@@ -106,18 +116,17 @@ export const getChannelFeed = async (
   return feed;
 };
 
-export const getGeneralChannelFeed = async (
-  offset?: number,
-  limit?: number,
-  currentUserId?: string,
+export const isChannelMember = async (
+  serverId: string,
+  channelId: string,
+  userId: string,
 ) => {
-  const channel = await getGeneralChannel();
-  return getChannelFeed(channel.id, offset, limit, currentUserId);
-};
-
-export const isChannelMember = async (channelId: string, userId: string) => {
-  return channelMemberRepository.exist({
-    where: { channelId, userId },
+  return channelMemberRepository.exists({
+    where: {
+      channel: { serverId },
+      channelId,
+      userId,
+    },
   });
 };
 
@@ -143,24 +152,11 @@ export const getUnwrappedChannelKey = async (channelId: string) => {
   return { ...channelKey, unwrappedKey };
 };
 
-export const addMemberToGeneralChannel = async (userId: string) => {
-  const generalChannel = await getGeneralChannel();
-  await channelMemberRepository.save({
-    channelId: generalChannel.id,
-    userId,
-  });
-};
-
 // TODO: Reconsider how new users are added to channels
 export const addMemberToAllServerChannels = async (
   userId: string,
   serverId: string,
 ) => {
-  const channelCount = await channelRepository.count();
-  if (channelCount === 0) {
-    await initializeGeneralChannel();
-  }
-
   const channels = await channelRepository
     .createQueryBuilder('channel')
     .leftJoin('channel.members', 'member', 'member.userId = :userId', {
@@ -181,10 +177,29 @@ export const addMemberToAllServerChannels = async (
   await channelMemberRepository.save(channelMembers);
 };
 
-export const createChannel = async ({
-  name,
-  description,
-}: CreateChannelDto) => {
+export const removeMemberFromAllServerChannels = async (
+  userId: string,
+  serverId: string,
+) => {
+  const channelIdsSubquery = channelRepository
+    .createQueryBuilder('channel')
+    .select('channel.id')
+    .where('channel.serverId = :serverId', { serverId });
+
+  await channelMemberRepository
+    .createQueryBuilder()
+    .delete()
+    .from(ChannelMember)
+    .where('userId = :userId', { userId })
+    .andWhere(`channelId IN (${channelIdsSubquery.getQuery()})`)
+    .setParameters(channelIdsSubquery.getParameters())
+    .execute();
+};
+
+export const createChannel = async (
+  serverId: string,
+  { name, description }: CreateChannelDto,
+) => {
   const sanitizedName = sanitizeText(name);
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
@@ -192,9 +207,8 @@ export const createChannel = async ({
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
-  const server = await getServerSafely();
   const serverMembers = await serverMemberRepository.find({
-    where: { serverId: server.id },
+    where: { serverId },
   });
 
   const channel = await channelRepository.save({
@@ -202,7 +216,7 @@ export const createChannel = async ({
     description: sanitizedDescription,
     members: serverMembers.map((member) => ({ userId: member.userId })),
     keys: [{ wrappedKey, tag, iv }],
-    server,
+    serverId,
   });
 
   return channel;
@@ -224,6 +238,7 @@ export const generateChannelKey = () => {
 };
 
 export const updateChannel = async (
+  serverId: string,
   channelId: string,
   { name, description }: UpdateChannelDto,
 ) => {
@@ -231,14 +246,17 @@ export const updateChannel = async (
   const normalizedName = sanitizedName.toLocaleLowerCase();
   const sanitizedDescription = sanitizeText(description);
 
-  return channelRepository.update(channelId, {
-    name: normalizedName,
-    description: sanitizedDescription,
-  });
+  return channelRepository.update(
+    { id: channelId, serverId },
+    {
+      name: normalizedName,
+      description: sanitizedDescription,
+    },
+  );
 };
 
-export const deleteChannel = async (channelId: string) => {
-  return channelRepository.delete(channelId);
+export const deleteChannel = async (serverId: string, channelId: string) => {
+  return channelRepository.delete({ id: channelId, serverId });
 };
 
 // -------------------------------------------------------------------------
@@ -270,9 +288,7 @@ const getChannelKeyMaster = () => {
   return Buffer.from(channelKeyMaster, 'base64');
 };
 
-const initializeGeneralChannel = async () => {
-  const server = await getServerSafely();
-
+export const initializeGeneralChannel = async (serverId: string) => {
   // Generate per-channel key
   const { wrappedKey, tag, iv } = generateChannelKey();
 
@@ -286,7 +302,7 @@ const initializeGeneralChannel = async () => {
       name: GENERAL_CHANNEL_NAME,
       keys: [{ wrappedKey, tag, iv }],
       members: channelMembers,
-      server,
+      serverId,
     });
 
     return channel;
