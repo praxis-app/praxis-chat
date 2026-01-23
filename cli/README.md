@@ -1,0 +1,77 @@
+# Praxis CLI
+
+A general purpose CLI tool with utilities for both development and production operations. The CLI provides utilities for checking statistics, viewing database schemas, and more.
+
+## Quick start
+
+```bash
+# from repo root (relies on DB_* vars from your .env)
+npm run cli -- proposal-funnel --days 14
+# or run the binary directly
+cd cli && cargo run -- vote-stats --channel-id d2f7...
+```
+
+The CLI derives its PostgreSQL connection string from `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, and `DB_PORT`. Every pooled connection sets `SET default_transaction_read_only = on` to guard the production database.
+
+## Current subcommands
+
+### Statistics commands
+
+- `proposal-funnel` – stage distribution, day-by-day creation trend, and top channels for proposals.
+- `vote-stats` – vote mix, turnout, and most active polls (or a single poll via `--poll-id`).
+
+Both subcommands share `--days <int>` to control the lookback window (max 5 years).
+
+### Database commands
+
+- `schema` – prints the current database schema including tables, columns with data types, indexes, constraints, and enums.
+
+## Future commands
+
+The CLI is designed to expand with additional utilities for:
+
+- Inspect config / environment variables (for "works on my machine")
+- Viewing and filtering application logs with custom views
+- Inspect background jobs or queues, retries, and failures
+- Seed / reset database, with a variety of scenarios
+- Trigger a DB backup, list recent backups, restore
+- Health check / "is anything broken?" button
+
+## Query verification
+
+Because the CLI uses dynamic `sqlx` queries, you can still verify them via:
+
+```bash
+export DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_SCHEMA}"
+cd cli
+cargo sqlx prepare -- --database-url "$DATABASE_URL"
+# or, if you prefer, dry-run your existing migrations
+sqlx migrate run \
+  --source ../src/database/migrations \
+  --database-url "$DATABASE_URL" \
+  --dry-run
+```
+
+## Environment variables
+
+- `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, `DB_PORT` – same variables used by the rest of the Praxis stack.
+
+Optional vars are surfaced as CLI flags so developers can override per invocation.
+
+## Sample invocations
+
+```bash
+# Highlight funnel stats for a single decision room/channel
+npm run cli -- proposal-funnel --channel-id 8a7...
+
+# Deep dive into a single poll's vote mix
+cd cli && cargo run -- vote-stats --poll-id 4bb...
+
+# Bigger window with more leaders
+npm run cli -- proposal-funnel --days 90 --top-channels 10
+
+# Print database schema
+npm run cli -- schema
+```
+
+The CLI stays out of the primary workflow; running it is entirely optional but provides quick operational awareness during incident reviews and development tasks.
