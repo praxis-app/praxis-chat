@@ -1,6 +1,6 @@
 # Praxis CLI
 
-A general-purpose Rust CLI for development and production utilities for Praxis Chat. The CLI provides tools for inspecting database statistics, checking logs, viewing database schemas, and more.
+A general purpose CLI tool with utilities for both development and production operations. The CLI provides utilities for checking statistics, viewing database schemas, and more.
 
 ## Quick start
 
@@ -25,6 +25,7 @@ Both subcommands share `--days <int>` to control the lookback window (max 5 year
 ## Future commands
 
 The CLI is designed to expand with additional utilities for:
+
 - Viewing and filtering application logs
 - Inspecting database schema and migrations
 - Other development and production operations
@@ -63,4 +64,4 @@ cd cli && cargo run -- vote-stats --poll-id 4bb...
 npm run cli -- proposal-funnel --days 90 --top-channels 10
 ```
 
-The CLI stays out of the primary workflow; running it is entirely optional but provides quick operational awareness during incident reviews, governance cadences, and development tasks.
+The CLI stays out of the primary workflow; running it is entirely optional but provides quick operational awareness during incident reviews and development tasks.
