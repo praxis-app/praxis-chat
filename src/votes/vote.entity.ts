@@ -19,15 +19,6 @@ export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // Used for regular polls (references chosen option)
-  @ManyToOne(() => PollOption, (pollOption) => pollOption.votes, {
-    onDelete: 'CASCADE',
-  })
-  pollOption?: PollOption;
-
-  @Column({ type: 'uuid', nullable: true })
-  pollOptionId: string | null;
-
   // Used for proposals (agree/disagree/abstain/block)
   @Column({ type: 'enum', enum: VOTE_TYPES, nullable: true })
   voteType: VoteType | null;
@@ -39,6 +30,15 @@ export class Vote {
 
   @Column({ type: 'varchar', nullable: true })
   pollId: string | null;
+
+  // Used for regular polls (references chosen option)
+  @ManyToOne(() => PollOption, (pollOption) => pollOption.votes, {
+    onDelete: 'CASCADE',
+  })
+  pollOption?: PollOption;
+
+  @Column({ type: 'uuid', nullable: true })
+  pollOptionId: string | null;
 
   // TODO: Uncomment when QuestionnaireTicket is defined
   // @ManyToOne(

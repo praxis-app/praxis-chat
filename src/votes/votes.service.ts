@@ -2,14 +2,16 @@ import { VoteType } from '@common/votes/vote.types';
 import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
+import { Poll } from '../polls/entities/poll.entity';
 import * as pollsService from '../polls/polls.service';
 import { Vote } from './vote.entity';
 
-interface CreateVoteDto {
-  pollId: string;
-  voteType: VoteType;
+interface VoteDto {
+  voteType?: VoteType;
+  pollOptionId?: string;
 }
 
+const pollRepository = dataSource.getRepository(Poll);
 const voteRepository = dataSource.getRepository(Vote);
 
 export const getVote = async (id: string, relations?: string[]) => {
@@ -24,37 +26,85 @@ export const getVoteCount = async () => {
   return voteRepository.count();
 };
 
-export const createVote = async (voteData: CreateVoteDto, userId: string) => {
+// TODO: Move validation to middleware
+
+export const createVote = async (
+  pollId: string,
+  userId: string,
+  { voteType, pollOptionId }: VoteDto,
+) => {
+  const poll = await pollRepository.findOne({
+    where: { id: pollId },
+  });
+  if (!poll) {
+    throw new Error(`Poll not found with ID: ${pollId}`);
+  }
+
+  // Validate vote data based on poll type
+  const isProposal = poll.pollType === 'proposal';
+  if (isProposal) {
+    if (!voteType) {
+      throw new Error('Vote type is required for proposals');
+    }
+  } else {
+    if (!pollOptionId) {
+      throw new Error('Poll option is required for regular polls');
+    }
+  }
+
   const vote = await voteRepository.save({
-    ...voteData,
+    pollOptionId: pollOptionId || null,
+    voteType: voteType || null,
+    pollId,
     userId,
   });
 
-  const isPollRatifiable = await pollsService.isPollRatifiable(vote.pollId);
-  if (isPollRatifiable) {
-    // Update poll to reflect newly created vote
-    await pollsService.ratifyPoll(vote.pollId);
-    await pollActionsService.implementPollAction(vote.pollId);
+  // Only check ratification for proposals
+  let isPollRatifiable = false;
+  if (isProposal) {
+    isPollRatifiable = await pollsService.isPollRatifiable(vote.pollId!);
+    if (isPollRatifiable) {
+      await pollsService.ratifyPoll(vote.pollId);
+      await pollActionsService.implementPollAction(vote.pollId!);
+    }
   }
 
   return { ...vote, isRatifyingVote: isPollRatifiable };
 };
 
-export const updateVote = async (voteId: string, voteType: VoteType) => {
-  const result = await voteRepository.update(voteId, { voteType });
+export const updateVote = async (
+  voteId: string,
+  { voteType, pollOptionId }: VoteDto,
+) => {
   const vote = await getVote(voteId, ['poll']);
+  const isProposal = vote.poll?.pollType === 'proposal';
 
+  // Update based on poll type
+  if (isProposal) {
+    if (!voteType) {
+      throw new Error('Vote type is required for proposals');
+    }
+    await voteRepository.update(voteId, { voteType });
+  } else {
+    if (!pollOptionId) {
+      throw new Error('Poll option is required for regular polls');
+    }
+    await voteRepository.update(voteId, {
+      pollOptionId,
+    });
+  }
+
+  // Only check ratification for proposals
   let isPollRatifiable = false;
-  if (vote.pollId) {
+  if (vote.pollId && isProposal) {
     isPollRatifiable = await pollsService.isPollRatifiable(vote.pollId);
     if (isPollRatifiable) {
-      // Update poll to reflect change in vote
       await pollsService.ratifyPoll(vote.pollId);
       await pollActionsService.implementPollAction(vote.pollId);
     }
   }
 
-  return { ...result, isRatifyingVote: isPollRatifiable };
+  return { isRatifyingVote: isPollRatifiable };
 };
 
 export const deleteVote = async (voteId: string) => {
