@@ -31,7 +31,7 @@ export class Vote {
   @Column({ type: 'varchar', nullable: true })
   pollId: string | null;
 
-  // Used for regular polls (references chosen option)
+  // Used for simple polls (references chosen option)
   @ManyToOne(() => PollOption, (pollOption) => pollOption.votes, {
     onDelete: 'CASCADE',
   })

@@ -58,7 +58,7 @@ export const createVote = async (
     }
   } else {
     if (!pollOptionId) {
-      throw new Error('Poll option is required for regular polls');
+      throw new Error('Poll option is required for polls');
     }
     // For single choice polls, check if user has already voted
     if (!poll.config.multipleChoice) {
@@ -115,7 +115,7 @@ export const updateVote = async (
     await voteRepository.update(voteId, { voteType });
   } else {
     if (!pollOptionId) {
-      throw new Error('Poll option is required for regular polls');
+      throw new Error('Poll option is required for polls');
     }
     await voteRepository.update(voteId, {
       pollOptionId,

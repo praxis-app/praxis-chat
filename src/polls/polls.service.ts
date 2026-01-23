@@ -324,7 +324,7 @@ export const createPoll = async (
 
   const poll = await pollRepository.save(pollData);
 
-  // Create poll options for regular polls
+  // Create poll options for simple polls
   let savedOptions: PollOption[] = [];
   if (!isProposal && options) {
     const pollOptions = options.map((text) =>
