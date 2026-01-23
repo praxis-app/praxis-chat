@@ -22,12 +22,15 @@ The CLI derives its PostgreSQL connection string from `DB_USERNAME`, `DB_PASSWOR
 
 Both subcommands share `--days <int>` to control the lookback window (max 5 years).
 
+### Database commands
+
+- `schema` – prints the current database schema including tables, columns with data types, indexes, constraints, and enums.
+
 ## Future commands
 
 The CLI is designed to expand with additional utilities for:
 
 - Viewing and filtering application logs
-- Inspecting database schema and migrations
 - Other development and production operations
 
 ## Query verification
@@ -62,6 +65,9 @@ cd cli && cargo run -- vote-stats --poll-id 4bb...
 
 # Bigger window with more leaders
 npm run cli -- proposal-funnel --days 90 --top-channels 10
+
+# Print database schema
+npm run cli -- schema
 ```
 
 The CLI stays out of the primary workflow; running it is entirely optional but provides quick operational awareness during incident reviews and development tasks.
