@@ -69,9 +69,11 @@ const pollActionSchema = zod
     },
   );
 
-const pollSchema = zod
+// Schema for proposals (pollType: 'proposal' or undefined)
+const proposalSchema = zod
   .object({
     body: zod.string().optional(),
+    pollType: zod.literal('proposal').optional(),
     action: pollActionSchema,
     closingAt: zod.date().optional(),
   })
@@ -98,6 +100,20 @@ const pollSchema = zod
     },
   );
 
+// TODO: Refactor to avoid "regular poll" terminology
+
+// Schema for regular polls (pollType: 'poll')
+const regularPollSchema = zod
+  .object({
+    body: zod.string().optional(),
+    pollType: zod.literal('poll'),
+    options: zod.array(zod.string().max(200)).min(2).max(10),
+    closingAt: zod.date().optional(),
+  })
+  .refine((data) => !!data.body, { message: 'Polls must include a question' });
+
+const pollSchema = zod.union([proposalSchema, regularPollSchema]);
+
 export const validatePoll = async (
   req: Request,
   res: Response,
@@ -109,8 +125,14 @@ export const validatePoll = async (
     // Validate request body shape
     pollSchema.parse(body);
 
-    // Check if user is registered for non-test proposals
-    if (body.action.actionType !== 'test' && res.locals.user.anonymous) {
+    // For proposals, check if user is registered for non-test proposals
+    const isProposal = !body.pollType || body.pollType === 'proposal';
+    if (
+      isProposal &&
+      body.action &&
+      body.action.actionType !== 'test' &&
+      res.locals.user.anonymous
+    ) {
       res
         .status(403)
         .send('Only registered users can create non-test proposals');

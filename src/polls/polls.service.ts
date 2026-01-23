@@ -26,6 +26,7 @@ import {
 } from '../votes/votes.utils';
 import { PollDto } from './dtos/poll.dto';
 import { PollConfig } from './entities/poll-config.entity';
+import { PollOption } from './entities/poll-option.entity';
 import { Poll } from './entities/poll.entity';
 
 const POLL_SYNC_BATCH_SIZE = 20;
@@ -33,6 +34,7 @@ const POLL_SYNC_BATCH_SIZE = 20;
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
 const pollRepository = dataSource.getRepository(Poll);
+const pollOptionRepository = dataSource.getRepository(PollOption);
 const voteRepository = dataSource.getRepository(Vote);
 
 export const getPoll = (id: string, relations?: string[]) => {
@@ -234,15 +236,38 @@ export const isPublicChannelPoll = async (
   return defaultServerId === serverId;
 };
 
+/**
+ * TODO: Move validation to middleware
+ * TODO: Decide whether to split this into createProposal and createPoll
+ */
 export const createPoll = async (
   serverId: string,
   channelId: string,
-  { body, closingAt, action, imageCount }: PollDto,
+  {
+    body,
+    action,
+    options,
+    closingAt,
+    imageCount,
+    pollType = 'proposal',
+  }: PollDto,
   user: User,
 ) => {
   const sanitizedBody = sanitizeText(body);
+  const isProposal = pollType === 'proposal';
+
   if (body && body.length > 8000) {
     throw new Error('Polls must be 8000 characters or less');
+  }
+
+  // Validate poll options
+  if (!isProposal) {
+    if (!options || options.length < 2) {
+      throw new Error('Polls must have at least 2 options');
+    }
+    if (options.length > 10) {
+      throw new Error('Polls cannot have more than 10 options');
+    }
   }
 
   const serverConfig = await serverConfigsService.getServerConfig(serverId);
@@ -250,26 +275,33 @@ export const createPoll = async (
     ? new Date(Date.now() + serverConfig.votingTimeLimit * 60 * 1000)
     : undefined;
 
-  const pollConfig: Partial<PollConfig> = {
-    decisionMakingModel: serverConfig.decisionMakingModel,
-    agreementThreshold: serverConfig.agreementThreshold,
-    quorumEnabled: serverConfig.quorumEnabled,
-    quorumThreshold: serverConfig.quorumThreshold,
-    disagreementsLimit: serverConfig.disagreementsLimit,
-    abstainsLimit: serverConfig.abstainsLimit,
-    closingAt: closingAt || configClosingAt,
-  };
-
-  const pollAction: Partial<PollAction> = {
-    actionType: action.actionType,
-  };
+  // Proposals need full config, regular polls only need closingAt
+  const pollConfig: Partial<PollConfig> = isProposal
+    ? {
+        decisionMakingModel: serverConfig.decisionMakingModel,
+        agreementThreshold: serverConfig.agreementThreshold,
+        quorumEnabled: serverConfig.quorumEnabled,
+        quorumThreshold: serverConfig.quorumThreshold,
+        disagreementsLimit: serverConfig.disagreementsLimit,
+        abstainsLimit: serverConfig.abstainsLimit,
+        closingAt: closingAt || configClosingAt,
+      }
+    : { closingAt: closingAt || configClosingAt };
 
   let pollData: DeepPartial<Poll> = {
+    pollType,
     config: pollConfig,
-    action: pollAction,
     userId: user.id,
     channelId,
   };
+
+  // Only proposals have actions
+  if (isProposal && action) {
+    const pollAction: Partial<PollAction> = {
+      actionType: action.actionType,
+    };
+    pollData.action = pollAction;
+  }
 
   if (sanitizedBody) {
     const { unwrappedKey, ...channelKey } =
@@ -288,10 +320,22 @@ export const createPoll = async (
 
   const poll = await pollRepository.save(pollData);
 
+  // Create poll options for regular polls
+  let savedOptions: PollOption[] = [];
+  if (!isProposal && options) {
+    const pollOptions = options.map((text) =>
+      pollOptionRepository.create({
+        text: sanitizeText(text),
+        pollId: poll.id,
+      }),
+    );
+    savedOptions = await pollOptionRepository.save(pollOptions);
+  }
+
   const pollMemberCount = await getPollMemberCount(poll.id);
 
   let pollActionRole: PollActionRole | undefined;
-  if (action.serverRole) {
+  if (isProposal && action?.serverRole) {
     pollActionRole = await pollActionsService.createPollActionRole(
       poll.action.id,
       action.serverRole,
@@ -320,13 +364,21 @@ export const createPoll = async (
   const shapedPoll = {
     id: poll.id,
     body: sanitizedBody,
+    pollType: poll.pollType,
     stage: poll.stage,
     channelId: poll.channelId,
-    action: {
-      actionType: poll.action?.actionType,
-      serverRole: pollActionRole,
-    },
+    action: isProposal
+      ? {
+          actionType: poll.action?.actionType,
+          serverRole: pollActionRole,
+        }
+      : undefined,
     config: pollConfig,
+    options: savedOptions.map((opt) => ({
+      id: opt.id,
+      text: opt.text,
+      voteCount: 0,
+    })),
     user: {
       id: user.id,
       name: user.name,

@@ -15,7 +15,7 @@ export class PollOption {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 200 })
+  @Column({ type: 'varchar' })
   text: string;
 
   @ManyToOne(() => Poll, (poll) => poll.options, {
