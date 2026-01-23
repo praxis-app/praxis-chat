@@ -8,7 +8,7 @@ Colorful, read-only Rust CLI for inspecting proposal and vote throughput in your
 # from repo root (relies on DB_* vars from your .env)
 npm run stats:reports -- proposal-funnel --days 14
 # or run the binary directly
-cd rust/stats-cli && cargo run -- vote-stats --channel-id d2f7...
+cd cli/stats-cli && cargo run -- vote-stats --channel-id d2f7...
 ```
 
 The CLI derives its PostgreSQL connection string from `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, and `DB_PORT`. Every pooled connection sets `SET default_transaction_read_only = on` to guard the production database.
@@ -26,7 +26,7 @@ Because the CLI uses dynamic `sqlx` queries, you can still verify them via:
 
 ```bash
 export DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_SCHEMA}"
-cd rust/stats-cli
+cd cli/stats-cli
 cargo sqlx prepare -- --database-url "$DATABASE_URL"
 # or, if you prefer, dry-run your existing migrations
 sqlx migrate run \

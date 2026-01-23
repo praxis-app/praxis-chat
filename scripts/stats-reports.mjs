@@ -10,7 +10,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const cliDir = resolve(repoRoot, 'rust/stats-cli');
+const cliDir = resolve(repoRoot, 'cli/stats-cli');
 const userArgs = process.argv.slice(2);
 
 const result = spawnSync('cargo', ['run', '--', ...userArgs], {
