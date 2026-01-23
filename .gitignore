@@ -31,4 +31,4 @@ lerna-debug.log*
 !/content/README.md
 
 # Rust
-/cli/stats-cli/target
+/cli/target

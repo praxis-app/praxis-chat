@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Thin helper that shells into the Rust stats CLI so developers can run
- * `npm run stats:reports -- …` without remembering the cargo path.
+ * Thin helper that shells into the Rust Praxis CLI so developers can run
+ * `npm run cli -- …` without remembering the cargo path.
  */
 
 import { spawnSync } from 'node:child_process';
@@ -10,7 +10,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const cliDir = resolve(repoRoot, 'cli/stats-cli');
+const cliDir = resolve(repoRoot, 'cli');
 const userArgs = process.argv.slice(2);
 
 const result = spawnSync('cargo', ['run', '--', ...userArgs], {

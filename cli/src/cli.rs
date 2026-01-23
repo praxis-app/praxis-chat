@@ -3,9 +3,9 @@ use uuid::Uuid;
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "Praxis Stats CLI",
+    name = "Praxis CLI",
     version,
-    about = "Colorful read-only stats for Praxis proposals and votes",
+    about = "Development and production utilities for Praxis Chat",
     arg_required_else_help = true
 )]
 pub struct Cli {
