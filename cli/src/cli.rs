@@ -39,4 +39,6 @@ pub enum Commands {
         #[arg(long, default_value_t = 5)]
         top_polls: u32,
     },
+    /// Print the current database schema (tables, columns, indexes, constraints, enums)
+    Schema,
 }

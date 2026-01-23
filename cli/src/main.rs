@@ -1,6 +1,7 @@
 mod cli;
 mod db;
 mod proposal;
+mod schema;
 mod utils;
 mod vote;
 
@@ -11,6 +12,7 @@ use sqlx::postgres::PgPoolOptions;
 use cli::{Cli, Commands};
 use db::build_database_url_from_env;
 use proposal::run_proposal_funnel;
+use schema::run_schema;
 use utils::normalize_window;
 use vote::run_vote_stats;
 
@@ -52,6 +54,9 @@ async fn main() -> Result<()> {
             top_polls,
         } => {
             run_vote_stats(&pool, day_window, channel_id, poll_id, top_polls).await?;
+        }
+        Commands::Schema => {
+            run_schema(&pool).await?;
         }
     }
 
