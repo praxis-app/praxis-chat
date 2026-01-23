@@ -35,6 +35,7 @@ export const createVote = async (
 ) => {
   const poll = await pollRepository.findOne({
     where: { id: pollId },
+    relations: ['config'],
   });
   if (!poll) {
     throw new Error(`Poll not found with ID: ${pollId}`);
@@ -46,9 +47,36 @@ export const createVote = async (
     if (!voteType) {
       throw new Error('Vote type is required for proposals');
     }
+    // Check if user already voted on this proposal
+    // PostgreSQL treats NULLs as distinct in unique constraints,
+    // so we need to check manually for proposals (where pollOptionId is null)
+    const existingVote = await voteRepository.findOne({
+      where: { pollId, userId },
+    });
+    if (existingVote) {
+      throw new Error('User has already voted on this proposal');
+    }
   } else {
     if (!pollOptionId) {
       throw new Error('Poll option is required for regular polls');
+    }
+    // For single choice polls, check if user has already voted
+    if (!poll.config.multipleChoice) {
+      const existingVote = await voteRepository.findOne({
+        where: { pollId, userId },
+      });
+      if (existingVote) {
+        throw new Error('User has already voted on this poll');
+      }
+    }
+    // For multiple choice polls, check if user already voted for this specific option
+    if (poll.config.multipleChoice) {
+      const existingVote = await voteRepository.findOne({
+        where: { pollId, userId, pollOptionId },
+      });
+      if (existingVote) {
+        throw new Error('User has already selected this option');
+      }
     }
   }
 

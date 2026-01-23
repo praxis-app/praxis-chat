@@ -250,6 +250,7 @@ export const createPoll = async (
     closingAt,
     imageCount,
     pollType = 'proposal',
+    multipleChoice = false,
   }: PollDto,
   user: User,
 ) => {
@@ -275,7 +276,7 @@ export const createPoll = async (
     ? new Date(Date.now() + serverConfig.votingTimeLimit * 60 * 1000)
     : undefined;
 
-  // Proposals need full config, regular polls only need closingAt
+  // Proposals need full config, polls only need closingAt and multipleChoice
   const pollConfig: Partial<PollConfig> = isProposal
     ? {
         decisionMakingModel: serverConfig.decisionMakingModel,
@@ -286,7 +287,10 @@ export const createPoll = async (
         abstainsLimit: serverConfig.abstainsLimit,
         closingAt: closingAt || configClosingAt,
       }
-    : { closingAt: closingAt || configClosingAt };
+    : {
+        closingAt: closingAt || configClosingAt,
+        multipleChoice,
+      };
 
   let pollData: DeepPartial<Poll> = {
     pollType,

@@ -14,7 +14,7 @@ import { Poll } from '../polls/entities/poll.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
-@Unique(['pollId', 'userId'])
+@Unique(['pollId', 'userId', 'pollOptionId'])
 export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;

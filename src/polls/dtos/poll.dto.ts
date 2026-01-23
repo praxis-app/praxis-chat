@@ -8,4 +8,5 @@ export interface PollDto {
   imageCount?: number;
   action?: PollActionDto;
   options?: string[];
+  multipleChoice?: boolean;
 }

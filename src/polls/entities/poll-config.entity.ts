@@ -37,6 +37,9 @@ export class PollConfig {
   @Column({ type: 'timestamp', nullable: true })
   closingAt?: Date;
 
+  @Column({ type: 'boolean', default: false })
+  multipleChoice: boolean;
+
   @OneToOne(() => Poll, (poll) => poll.config, {
     onDelete: 'CASCADE',
   })
