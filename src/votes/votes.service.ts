@@ -8,7 +8,7 @@ import { Vote } from './vote.entity';
 
 interface VoteDto {
   voteType?: VoteType;
-  pollOptionId?: string;
+  pollOptionIds?: string[];
 }
 
 const pollRepository = dataSource.getRepository(Poll);
@@ -31,7 +31,7 @@ export const getVoteCount = async () => {
 export const createVote = async (
   pollId: string,
   userId: string,
-  { voteType, pollOptionId }: VoteDto,
+  { voteType, pollOptionIds }: VoteDto,
 ) => {
   const poll = await pollRepository.findOne({
     where: { id: pollId },
@@ -43,46 +43,26 @@ export const createVote = async (
 
   // Validate vote data based on poll type
   const isProposal = poll.pollType === 'proposal';
-  if (isProposal) {
-    if (!voteType) {
-      throw new Error('Vote type is required for proposals');
-    }
-    // Check if user already voted on this proposal
-    // PostgreSQL treats NULLs as distinct in unique constraints,
-    // so we need to check manually for proposals (where pollOptionId is null)
-    const existingVote = await voteRepository.findOne({
-      where: { pollId, userId },
-    });
-    if (existingVote) {
-      throw new Error('User has already voted on this proposal');
-    }
-  } else {
-    if (!pollOptionId) {
-      throw new Error('Poll option is required for polls');
-    }
-    // For single choice polls, check if user has already voted
-    if (!poll.config.multipleChoice) {
-      const existingVote = await voteRepository.findOne({
-        where: { pollId, userId },
-      });
-      if (existingVote) {
-        throw new Error('User has already voted on this poll');
-      }
-    }
-    // For multiple choice polls, check if user already voted for this specific option
-    if (poll.config.multipleChoice) {
-      const existingVote = await voteRepository.findOne({
-        where: { pollId, userId, pollOptionId },
-      });
-      if (existingVote) {
-        throw new Error('User has already selected this option');
-      }
-    }
+  if (isProposal && !voteType) {
+    throw new Error('Vote type is required for proposals');
+  }
+  if (!isProposal && !pollOptionIds) {
+    throw new Error('Poll option IDs are required for simple polls');
+  }
+
+  // Check if user has already voted on this poll
+  const existingVote = await voteRepository.findOne({
+    where: { pollId, userId },
+  });
+  if (existingVote) {
+    throw new Error('User has already voted on this poll');
   }
 
   const vote = await voteRepository.save({
-    pollOptionId: pollOptionId || null,
-    voteType: voteType || null,
+    pollOptionSelections: pollOptionIds?.map((pollOptionId) => ({
+      pollOptionId,
+    })),
+    voteType,
     pollId,
     userId,
   });
@@ -102,7 +82,7 @@ export const createVote = async (
 
 export const updateVote = async (
   voteId: string,
-  { voteType, pollOptionId }: VoteDto,
+  { voteType, pollOptionIds }: VoteDto,
 ) => {
   const vote = await getVote(voteId, ['poll']);
   const isProposal = vote.poll?.pollType === 'proposal';
@@ -114,11 +94,13 @@ export const updateVote = async (
     }
     await voteRepository.update(voteId, { voteType });
   } else {
-    if (!pollOptionId) {
+    if (!pollOptionIds) {
       throw new Error('Poll option is required for polls');
     }
     await voteRepository.update(voteId, {
-      pollOptionId,
+      pollOptionSelections: pollOptionIds?.map((pollOptionId) => ({
+        pollOptionId,
+      })),
     });
   }
 

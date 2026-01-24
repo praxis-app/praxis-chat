@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import * as votesService from './votes.service';
 
 export const createVote = async (req: Request, res: Response) => {
-  const { voteType, pollOptionId } = req.body;
+  const { voteType, pollOptionIds } = req.body;
   const { pollId } = req.params;
   const { user } = res.locals;
 
   const vote = await votesService.createVote(pollId, user.id, {
     voteType,
-    pollOptionId,
+    pollOptionIds,
   });
 
   res.json({ vote });
