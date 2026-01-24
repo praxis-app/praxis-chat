@@ -55,6 +55,7 @@ export const getInlinePolls = async (
     .createQueryBuilder('poll')
     .select([
       'poll.id',
+      'poll.pollType',
       'poll.ciphertext',
       'poll.keyId',
       'poll.tag',
@@ -72,6 +73,7 @@ export const getInlinePolls = async (
       'pollConfig.disagreementsLimit',
       'pollConfig.abstainsLimit',
       'pollConfig.closingAt',
+      'pollConfig.multipleChoice',
     ])
     .addSelect([
       'pollActionRole.id',
@@ -96,9 +98,13 @@ export const getInlinePolls = async (
     .addSelect(['pollVotes.id', 'pollVotes.voteType'])
     .addSelect(['pollUser.id', 'pollUser.name', 'pollUser.displayName'])
     .addSelect(['pollImage.id', 'pollImage.filename', 'pollImage.createdAt'])
+    .addSelect(['pollOption.id', 'pollOption.text'])
+    .addSelect(['pollOptionSelection.id', 'pollOptionSelection.pollOptionId'])
     .leftJoin('poll.user', 'pollUser')
     .leftJoin('poll.votes', 'pollVotes')
     .leftJoin('poll.images', 'pollImage')
+    .leftJoin('poll.options', 'pollOption')
+    .leftJoin('pollOption.pollOptionSelections', 'pollOptionSelection')
     .leftJoin('poll.action', 'pollAction')
     .leftJoin('poll.config', 'pollConfig')
     .leftJoin('pollAction.serverRole', 'pollActionRole')
@@ -134,6 +140,8 @@ export const getInlinePolls = async (
 
   const shapedPolls = polls.map((poll) => {
     const { ciphertext, tag, iv, keyId } = poll;
+    const isProposal = poll.pollType === 'proposal';
+    const userVote = myVotesMap[poll.id];
 
     let body: string | null = null;
     if (ciphertext && tag && iv && keyId) {
@@ -141,16 +149,29 @@ export const getInlinePolls = async (
       body = decryptText(ciphertext, tag, iv, unwrappedKey);
     }
 
-    const agreementVoteCount = poll.votes.filter(
-      (vote) => vote.voteType === 'agree',
-    ).length;
+    // For proposals, count agreement votes and get single myVote
+    const agreementVoteCount = isProposal
+      ? poll.votes.filter((vote) => vote.voteType === 'agree').length
+      : 0;
+    const myVote =
+      isProposal && userVote
+        ? { id: userVote.id, voteType: userVote.voteType }
+        : undefined;
 
-    const myVote = myVotesMap[poll.id]
-      ? {
-          id: myVotesMap[poll.id].id,
-          voteType: myVotesMap[poll.id].voteType,
-        }
-      : undefined;
+    // For simple polls, get user's selected option IDs from their vote's selections
+    const myVotedOptionIds =
+      !isProposal && userVote?.pollOptionSelections
+        ? userVote.pollOptionSelections.map((s) => s.pollOptionId)
+        : [];
+
+    // For simple polls, build options with vote counts from pollOptionSelections
+    const options = !isProposal
+      ? (poll.options || []).map((opt) => ({
+          id: opt.id,
+          text: opt.text,
+          voteCount: opt.pollOptionSelections?.length || 0,
+        }))
+      : [];
 
     const memberCount = pollMemberCountMap[poll.id];
     const profilePicture = profilePicturesMap[poll.user.id];
@@ -159,7 +180,7 @@ export const getInlinePolls = async (
       return r.poll_id === poll.id;
     });
 
-    const actionRole = poll.action.serverRole
+    const actionRole = poll.action?.serverRole
       ? {
           ...poll.action.serverRole,
           permissions: rowsForPoll.map((r) => ({
@@ -170,13 +191,20 @@ export const getInlinePolls = async (
         }
       : undefined;
 
+    const action = isProposal
+      ? {
+          ...poll.action,
+          serverRole: actionRole,
+        }
+      : undefined;
+
     return {
       id: poll.id,
       stage: poll.stage,
-      action: {
-        ...poll.action,
-        serverRole: actionRole,
-      },
+      votes: poll.votes,
+      config: poll.config,
+      pollType: poll.pollType,
+      createdAt: poll.createdAt,
       images: poll.images.map((image) => ({
         id: image.id,
         isPlaceholder: !image.filename,
@@ -186,13 +214,13 @@ export const getInlinePolls = async (
         ...poll.user,
         profilePicture,
       },
-      votes: poll.votes,
-      config: poll.config,
-      createdAt: poll.createdAt,
+      body,
+      action,
+      myVote,
+      myVotedOptionIds,
       agreementVoteCount,
       memberCount,
-      myVote,
-      body,
+      options,
     };
   });
 
@@ -615,6 +643,7 @@ const synchronizePoll = async (poll: Poll) => {
 const getMyVotesMap = async (pollIds: string[], currentUserId: string) => {
   const myVotes = await voteRepository.find({
     where: { pollId: In(pollIds), userId: currentUserId },
+    relations: ['pollOptionSelections'],
   });
   return myVotes.reduce<Record<string, Vote>>((result, vote) => {
     result[vote.pollId!] = vote;
