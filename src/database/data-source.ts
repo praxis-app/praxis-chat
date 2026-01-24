@@ -27,6 +27,7 @@ import { Vote } from '../votes/vote.entity';
 import { Initial1767572300125 } from './migrations/1767572300125-Initial';
 import { GeneralProposals1768246067251 } from './migrations/1768246067251-GeneralProposals';
 import { Quorum1768785488966 } from './migrations/1768785488966-Quorum';
+import { PollOptionSelection } from '../polls/entities/poll-option-selection.entity';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ export const dataSource = new DataSource({
     PollActionRoleMember,
     PollConfig,
     PollOption,
+    PollOptionSelection,
     Server,
     ServerConfig,
     ServerMember,

@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Vote } from '../../votes/vote.entity';
+import { PollOptionSelection } from './poll-option-selection.entity';
 import { Poll } from './poll.entity';
 
 @Entity()
@@ -26,8 +26,12 @@ export class PollOption {
   @Column({ type: 'uuid' })
   pollId: string;
 
-  @OneToMany(() => Vote, (vote) => vote.pollOption)
-  votes: Vote[];
+  @OneToMany(
+    () => PollOptionSelection,
+    (pollOptionSelection) => pollOptionSelection.pollOption,
+    { cascade: true },
+  )
+  pollOptionSelections: PollOptionSelection[];
 
   @CreateDateColumn()
   createdAt: Date;
