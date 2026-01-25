@@ -16,29 +16,34 @@ export class PollConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: DECISION_MAKING_MODEL, default: 'consensus' })
-  decisionMakingModel: DecisionMakingModel;
+  @Column({
+    type: 'enum',
+    enum: DECISION_MAKING_MODEL,
+    default: 'consensus',
+    nullable: true,
+  })
+  decisionMakingModel: DecisionMakingModel | null;
 
-  @Column({ type: 'int', default: 2 })
-  disagreementsLimit: number;
+  @Column({ type: 'int', default: 2, nullable: true })
+  disagreementsLimit: number | null;
 
-  @Column({ type: 'int', default: 2 })
-  abstainsLimit: number;
+  @Column({ type: 'int', default: 2, nullable: true })
+  abstainsLimit: number | null;
 
-  @Column({ type: 'int', default: 51 })
-  agreementThreshold: number;
+  @Column({ type: 'int', default: 51, nullable: true })
+  agreementThreshold: number | null;
 
-  @Column({ type: 'boolean', default: true })
-  quorumEnabled: boolean;
+  @Column({ type: 'boolean', default: true, nullable: true })
+  quorumEnabled: boolean | null;
 
-  @Column({ type: 'int', default: 25 })
-  quorumThreshold: number;
+  @Column({ type: 'int', default: 25, nullable: true })
+  quorumThreshold: number | null;
+
+  @Column({ type: 'boolean', default: false, nullable: true })
+  multipleChoice: boolean | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  closingAt?: Date;
-
-  @Column({ type: 'boolean', default: false })
-  multipleChoice: boolean;
+  closingAt: Date | null;
 
   @OneToOne(() => Poll, (poll) => poll.config, {
     onDelete: 'CASCADE',

@@ -540,12 +540,18 @@ const hasConsensus = (
   }: PollConfig,
   memberCount: number,
 ) => {
+  if (!agreementThreshold || !disagreementsLimit || !abstainsLimit) {
+    throw new Error('Missing required fields for model of consensus');
+  }
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
 
   // Quorum check (if enabled)
   if (quorumEnabled) {
+    if (!quorumThreshold) {
+      throw new Error('Quorum threshold is not set');
+    }
     const quorum = votes.length;
     const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (quorum < requiredQuorum) {
@@ -580,12 +586,18 @@ const hasMajorityVote = (
   { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
   memberCount: number,
 ) => {
+  if (!agreementThreshold) {
+    throw new Error('Agreement threshold is not set');
+  }
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
 
   // Quorum check (if enabled)
   if (quorumEnabled) {
+    if (!quorumThreshold) {
+      throw new Error('Quorum threshold is not set');
+    }
     const quorum = votes.length;
     const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (quorum < requiredQuorum) {
@@ -610,11 +622,16 @@ const hasMajorityVote = (
   return isRatifiable;
 };
 
-const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
+const hasConsent = (
+  votes: Vote[],
+  { disagreementsLimit, abstainsLimit, closingAt }: PollConfig,
+) => {
+  if (!disagreementsLimit || !abstainsLimit) {
+    throw new Error('Missing required fields for consent model');
+  }
   const { disagreements, abstains, blocks } = sortConsensusVotesByType(
     filterProposalVotes(votes),
   );
-  const { disagreementsLimit, abstainsLimit, closingAt } = pollConfig;
 
   return (
     Date.now() >= Number(closingAt) &&
