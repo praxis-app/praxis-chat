@@ -177,6 +177,11 @@ npm run check          # Full verification: types, lint, tests (client + server)
 - Skip for changes that only affect documentation
 - When in doubt about whether a change is "small", err on the side of running the check
 
+## Git command restrictions
+
+- Do not run git commands that stage, commit, amend, stash, or rewrite history (`git add`, `git commit`, `git reset`, etc.); human maintainers own all source-control actions.
+- Restrict yourself to read-only inspection commands such as `git status` or `git diff` when additional context is needed for editing.
+
 ## Code Guidelines
 
 - Follow clear naming (no 1-2 letter names). Functions are verbs; variables are concrete nouns.
