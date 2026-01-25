@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 
 interface Props {
   channel: ChannelRes;
-  myVote?: { id: string; voteType: VoteType };
+  myVote?: VoteRes;
   pollId: string;
   stage: PollStage;
 }

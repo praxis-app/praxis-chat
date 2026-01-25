@@ -77,7 +77,11 @@ export const createVote = async (
     }
   }
 
-  return { ...vote, isRatifyingVote: isPollRatifiable };
+  return {
+    ...vote,
+    pollOptionIds,
+    isRatifyingVote: isPollRatifiable,
+  };
 };
 
 export const updateVote = async (
