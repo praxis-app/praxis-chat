@@ -1,16 +1,16 @@
 import { PollActionRes } from '@/types/poll-action.types';
-import { PollActionRole } from './poll-action-role';
+import { ProposalActionRole } from './proposal-action-role';
 
 interface Props {
   action: PollActionRes;
 }
 
-export const PollAction = ({ action }: Props) => {
+export const ProposalAction = ({ action }: Props) => {
   if (
     action.serverRole &&
     (action.actionType === 'change-role' || action.actionType === 'create-role')
   ) {
-    return <PollActionRole action={action} />;
+    return <ProposalActionRole action={action} />;
   }
 
   return null;

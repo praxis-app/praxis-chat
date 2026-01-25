@@ -17,18 +17,18 @@ import {
 } from '../../../ui/form';
 import { Input } from '../../../ui/input';
 import {
-  CreatePollFormSchema,
-  CreatePollWizardContext,
-} from '../create-poll-form.types';
+  CreateProposalFormSchema,
+  CreateProposalWizardContext,
+} from '../create-proposal-form.types';
 
 export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const {
     onNext,
     onPrevious,
     context: { selectedServerRole },
-  } = useWizardContext<CreatePollWizardContext>();
+  } = useWizardContext<CreateProposalWizardContext>();
 
-  const form = useFormContext<CreatePollFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
   const { t } = useTranslation();
 
   if (isLoading) {

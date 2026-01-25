@@ -16,16 +16,16 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Wizard } from '../../shared/wizard/wizard';
-import { PollDetailsStep } from './create-poll-form-steps/poll-details-step';
-import { PollReviewStep } from './create-poll-form-steps/poll-review-step';
-import { ServerRoleAttributesStep } from './create-poll-form-steps/server-role-attributes-step';
-import { ServerRoleMembersStep } from './create-poll-form-steps/server-role-members-step';
-import { ServerRolePermissionsStep } from './create-poll-form-steps/server-role-permissions-step';
-import { ServerRoleSelectionStep } from './create-poll-form-steps/server-role-selection-step';
+import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
+import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
+import { ServerRoleAttributesStep } from './create-proposal-form-steps/server-role-attributes-step';
+import { ServerRoleMembersStep } from './create-proposal-form-steps/server-role-members-step';
+import { ServerRolePermissionsStep } from './create-proposal-form-steps/server-role-permissions-step';
+import { ServerRoleSelectionStep } from './create-proposal-form-steps/server-role-selection-step';
 import {
-  CreatePollFormSchema,
-  createPollFormSchema,
-} from './create-poll-form.types';
+  CreateProposalFormSchema,
+  createProposalFormSchema,
+} from './create-proposal-form.types';
 
 interface Props {
   channelId?: string;
@@ -33,15 +33,15 @@ interface Props {
   onNavigate: () => void;
 }
 
-export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
+export const CreateProposalForm = ({ channelId, onSuccess, onNavigate }: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const { t } = useTranslation();
   const { serverId } = useServerData();
   const queryClient = useQueryClient();
 
-  const form = useForm<CreatePollFormSchema>({
-    resolver: zodResolver(createPollFormSchema),
+  const form = useForm<CreateProposalFormSchema>({
+    resolver: zodResolver(createProposalFormSchema),
     defaultValues: {
       body: '',
       action: '',
@@ -96,7 +96,7 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
     });
 
   const { mutate: createPoll, isPending } = useMutation({
-    mutationFn: async (values: CreatePollFormSchema) => {
+    mutationFn: async (values: CreateProposalFormSchema) => {
       if (!serverId) {
         throw new Error('Server ID is required');
       }
@@ -276,8 +276,8 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
 
   const steps: WizardStepData[] = [
     {
-      id: 'poll-details',
-      component: PollDetailsStep,
+      id: 'proposal-details',
+      component: ProposalDetailsStep,
       props: { isLoading: false },
     },
     ...(showChangeRoleSteps
@@ -307,8 +307,8 @@ export const CreatePollForm = ({ channelId, onSuccess, onNavigate }: Props) => {
         ]
       : []),
     {
-      id: 'poll-review',
-      component: PollReviewStep,
+      id: 'proposal-review',
+      component: ProposalReviewStep,
       props: { isLoading: false },
     },
   ];

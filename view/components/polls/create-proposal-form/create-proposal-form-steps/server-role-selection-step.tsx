@@ -22,10 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../ui/select';
-import { CreatePollFormSchema } from '../create-poll-form.types';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
 export const ServerRoleSelectionStep = () => {
-  const form = useFormContext<CreatePollFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
   const { onNext, onPrevious } = useWizardContext();
   const { serverId } = useServerData();
 

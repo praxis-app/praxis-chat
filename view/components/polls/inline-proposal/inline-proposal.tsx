@@ -1,6 +1,6 @@
-import { VoteProgressDialog } from '@/components/polls/inline-poll/vote-progress-dialog';
-import { PollAction } from '@/components/polls/poll-actions/poll-action';
-import { PollVoteButtons } from '@/components/polls/poll-vote-buttons';
+import { VoteProgressDialog } from '@/components/polls/inline-proposal/vote-progress-dialog';
+import { ProposalAction } from '@/components/polls/proposal-actions/proposal-action';
+import { ProposalVoteButtons } from '@/components/polls/proposal-vote-buttons';
 import { FormattedText } from '@/components/shared/formatted-text';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardAction } from '@/components/ui/card';
@@ -22,7 +22,7 @@ interface Props {
   me?: CurrentUser;
 }
 
-export const InlinePoll = ({ poll, channel, me }: Props) => {
+export const InlineProposal = ({ poll, channel, me }: Props) => {
   const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -84,10 +84,10 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
 
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
-          {action && <PollAction action={action} />}
+          {action && <ProposalAction action={action} />}
 
           <CardAction className="flex w-full flex-wrap gap-2">
-            <PollVoteButtons
+            <ProposalVoteButtons
               pollId={id}
               channel={channel}
               myVote={myVote}
