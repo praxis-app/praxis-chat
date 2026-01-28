@@ -3,10 +3,10 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import { Input } from '../../../ui/input';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
+import { Input } from '../../../../ui/input';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
@@ -63,10 +63,10 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.roleMembers')}
+          {t('proposals.headers.roleMembers')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.roleMembersDescription')}
+          {t('proposals.descriptions.roleMembersDescription')}
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
         {selectedServerRoleId && (
           <>
             <Input
-              placeholder={t('polls.placeholders.searchMembersPlaceholder')}
+              placeholder={t('proposals.placeholders.searchMembersPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="mb-5"
@@ -83,7 +83,7 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-1.5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('polls.headers.memberChanges')}
+                  {t('proposals.headers.memberChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -98,7 +98,7 @@ export const ServerRoleMembersStep = ({ isLoading }: WizardStepProps) => {
                   ))}
                   {filteredUsers.length === 0 && (
                     <p className="text-muted-foreground text-sm">
-                      {t('polls.prompts.noUsersFound')}
+                      {t('proposals.prompts.noUsersFound')}
                     </p>
                   )}
                 </div>

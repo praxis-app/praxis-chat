@@ -11,7 +11,7 @@ export const createProposalFormSchema = zod
     body: zod
       .string()
       .max(POLL_BODY_MAX, {
-        message: t('polls.errors.longBody'),
+        message: t('proposals.errors.longBody'),
       })
       .optional(),
     serverRoleName: zod.string().optional(),
@@ -32,7 +32,7 @@ export const createProposalFormSchema = zod
     },
     {
       path: ['body'],
-      message: t('polls.errors.testProposalRequiresBody'),
+      message: t('proposals.errors.testProposalRequiresBody'),
     },
   )
   .refine(
@@ -44,7 +44,7 @@ export const createProposalFormSchema = zod
     },
     {
       path: ['body'],
-      message: t('polls.errors.generalProposalRequiresBody'),
+      message: t('proposals.errors.generalProposalRequiresBody'),
     },
   )
   .refine(
@@ -58,7 +58,9 @@ export const createProposalFormSchema = zod
     },
   );
 
-export type CreateProposalFormSchema = zod.infer<typeof createProposalFormSchema>;
+export type CreateProposalFormSchema = zod.infer<
+  typeof createProposalFormSchema
+>;
 
 export interface CreateProposalWizardContext {
   selectedServerRole?: ServerRoleRes;

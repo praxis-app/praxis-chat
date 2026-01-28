@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Wizard } from '../../shared/wizard/wizard';
+import { Wizard } from '../../../shared/wizard/wizard';
 import { ProposalDetailsStep } from './create-proposal-form-steps/proposal-details-step';
 import { ProposalReviewStep } from './create-proposal-form-steps/proposal-review-step';
 import { ServerRoleAttributesStep } from './create-proposal-form-steps/server-role-attributes-step';
@@ -270,7 +270,7 @@ export const CreateProposalForm = ({
         toast(error.response?.data);
         return;
       }
-      toast(t('polls.errors.errorCreatingProposal'), {
+      toast(t('proposals.errors.errorCreatingProposal'), {
         description: error.message,
       });
     },

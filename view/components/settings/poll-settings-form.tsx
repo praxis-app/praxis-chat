@@ -132,12 +132,12 @@ export const PollSettingsForm = ({ serverConfig }: Props) => {
                     <SelectItem value={option} key={option}>
                       {(() => {
                         if (option === 'consent') {
-                          return t('polls.labels.consent');
+                          return t('proposals.labels.consent');
                         }
                         if (option === 'majority-vote') {
-                          return t('polls.labels.majority');
+                          return t('proposals.labels.majority');
                         }
-                        return t('polls.labels.consensus');
+                        return t('proposals.labels.consensus');
                       })()}
                     </SelectItem>
                   ))}

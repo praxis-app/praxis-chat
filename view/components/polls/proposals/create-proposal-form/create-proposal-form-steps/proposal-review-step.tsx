@@ -9,10 +9,10 @@ import {
 } from '@common/poll-actions/poll-action.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Badge } from '../../../ui/badge';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Badge } from '../../../../ui/badge';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,
@@ -74,22 +74,22 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const getProposalActionLabel = (action: PollActionType | '') => {
     if (action === 'general') {
-      return t('polls.actionTypes.general');
+      return t('proposals.actionTypes.general');
     }
     if (action === 'change-role') {
-      return t('polls.actionTypes.changeRole');
+      return t('proposals.actionTypes.changeRole');
     }
     if (action === 'change-settings') {
-      return t('polls.actionTypes.changeSettings');
+      return t('proposals.actionTypes.changeSettings');
     }
     if (action === 'create-role') {
-      return t('polls.actionTypes.createRole');
+      return t('proposals.actionTypes.createRole');
     }
     if (action === 'plan-event') {
-      return t('polls.actionTypes.planEvent');
+      return t('proposals.actionTypes.planEvent');
     }
     if (action === 'test') {
-      return t('polls.actionTypes.test');
+      return t('proposals.actionTypes.test');
     }
     return '';
   };
@@ -110,7 +110,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
         !Object.keys(permissionChanges).length
       ) {
         form.setError('root', {
-          message: t('polls.errors.changeRoleRequiresChanges'),
+          message: t('proposals.errors.changeRoleRequiresChanges'),
         });
         return;
       }
@@ -129,9 +129,11 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">{t('polls.headers.review')}</h2>
+        <h2 className="text-lg font-semibold">
+          {t('proposals.headers.review')}
+        </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.reviewDescription')}
+          {t('proposals.descriptions.reviewDescription')}
         </p>
       </div>
 
@@ -140,7 +142,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.labels.body')}
+                {t('proposals.labels.body')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -152,7 +154,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
         <Card className="gap-3 py-5">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('polls.labels.actionType')}
+              {t('proposals.labels.actionType')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -164,7 +166,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.headers.selectedRole')}
+                {t('proposals.headers.selectedRole')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -193,7 +195,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('polls.headers.roleAttributesChanges')}
+                  {t('proposals.headers.roleAttributesChanges')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -201,7 +203,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
                   {nameChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('polls.labels.roleNameChange')}
+                        {t('proposals.labels.roleNameChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <span className="text-muted-foreground text-sm">
@@ -217,7 +219,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
                   {colorChanged && (
                     <div className="space-y-1">
                       <span className="text-sm font-medium">
-                        {t('polls.labels.roleColorChange')}
+                        {t('proposals.labels.roleColorChange')}
                       </span>
                       <div className="flex items-center space-x-2">
                         <div
@@ -248,7 +250,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
             <Card className="gap-3 py-5">
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t('polls.headers.permissions')}
+                  {t('proposals.headers.permissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -284,7 +286,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-3 py-5">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.headers.memberChanges')}
+                {t('proposals.headers.memberChanges')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -326,7 +328,7 @@ export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
           {t('actions.previous')}
         </Button>
         <Button onClick={handleSubmitBtnClick} disabled={isSubmitting}>
-          {t('polls.actions.create')}
+          {t('proposals.actions.create')}
         </Button>
       </div>
     </div>

@@ -138,7 +138,7 @@
     }
   },
 
-  "polls": {
+  "proposals": {
     "labels": {
       "actionType": "Action",
       "active": "Active",
@@ -232,6 +232,35 @@
       "longBody": "Proposal body cannot exceed 6000 characters",
       "testProposalRequiresBody": "Test proposals must include a body",
       "generalProposalRequiresBody": "General proposals must include a body"
+    }
+  },
+
+  "polls": {
+    "headers": {
+      "create": "Create a Poll"
+    },
+    "descriptions": {
+      "create": "Create a poll for your group to vote on."
+    },
+    "labels": {
+      "question": "Question",
+      "answers": "Answers",
+      "duration": "Duration",
+      "allowMultipleAnswers": "Allow multiple answers"
+    },
+    "placeholders": {
+      "question": "What question do you want to ask?",
+      "answer": "Answer {{number}}",
+      "duration": "Select a duration"
+    },
+    "actions": {
+      "addAnswer": "Add another answer",
+      "createPoll": "Create poll"
+    },
+    "errors": {
+      "questionRequired": "Question is required",
+      "answerRequired": "Answer is required",
+      "minAnswersRequired": "At least 2 answers are required"
     }
   },
 
