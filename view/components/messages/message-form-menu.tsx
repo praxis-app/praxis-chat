@@ -63,7 +63,7 @@ export const MessageFormMenu = ({
           <DialogTrigger asChild>
             <DropdownMenuItem className="text-md">
               <MdPoll className="text-foreground size-5" />
-              {t('polls.actions.create')}
+              {t('proposals.actions.create')}
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>
@@ -74,10 +74,10 @@ export const MessageFormMenu = ({
         ref={proposalFormDialogContentRef}
       >
         <DialogHeader>
-          <DialogTitle>{t('polls.headers.create')}</DialogTitle>
+          <DialogTitle>{t('proposals.headers.create')}</DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-center md:text-left">
-          {t('polls.descriptions.create')}
+          {t('proposals.descriptions.create')}
         </DialogDescription>
 
         <Separator className="mt-1" />

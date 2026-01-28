@@ -29,7 +29,9 @@ const MIN_OPTIONS = 2;
 const createPollFormSchema = z.object({
   body: z.string().min(1, 'polls.errors.questionRequired'),
   options: z
-    .array(z.object({ value: z.string().min(1, 'polls.errors.answerRequired') }))
+    .array(
+      z.object({ value: z.string().min(1, 'polls.errors.answerRequired') }),
+    )
     .min(MIN_OPTIONS, 'polls.errors.minAnswersRequired'),
   closingAt: z.number().optional(),
   allowMultipleAnswers: z.boolean(),
@@ -78,10 +80,10 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('polls.labels.question')}</FormLabel>
+              <FormLabel>{t('proposals.labels.question')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t('polls.placeholders.question')}
+                  placeholder={t('proposals.placeholders.question')}
                   {...field}
                 />
               </FormControl>
@@ -91,7 +93,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
         />
 
         <div className="space-y-3">
-          <FormLabel>{t('polls.labels.answers')}</FormLabel>
+          <FormLabel>{t('proposals.labels.answers')}</FormLabel>
           {fields.map((field, index) => (
             <FormField
               key={field.id}
@@ -102,7 +104,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Input
-                        placeholder={t('polls.placeholders.answer', {
+                        placeholder={t('proposals.placeholders.answer', {
                           number: index + 1,
                         })}
                         {...inputField}
@@ -133,7 +135,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
             className="mt-2"
           >
             <LuPlus className="mr-1 size-4" />
-            {t('polls.actions.addAnswer')}
+            {t('proposals.actions.addAnswer')}
           </Button>
         </div>
 
@@ -142,14 +144,16 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
           name="closingAt"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('polls.labels.duration')}</FormLabel>
+              <FormLabel>{t('proposals.labels.duration')}</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('polls.placeholders.duration')} />
+                    <SelectValue
+                      placeholder={t('proposals.placeholders.duration')}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -196,7 +200,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
                 />
               </FormControl>
               <FormLabel className="cursor-pointer font-normal">
-                {t('polls.labels.allowMultipleAnswers')}
+                {t('proposals.labels.allowMultipleAnswers')}
               </FormLabel>
             </FormItem>
           )}
@@ -204,7 +208,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {t('polls.actions.createPoll')}
+            {t('proposals.actions.createPoll')}
           </Button>
         </div>
       </form>

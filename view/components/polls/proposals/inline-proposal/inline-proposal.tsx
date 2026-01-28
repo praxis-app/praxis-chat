@@ -79,7 +79,7 @@ export const InlineProposal = ({ poll, channel, me }: Props) => {
         <Card className="before:border-l-border relative w-full gap-3.5 rounded-md px-3 py-3.5 before:absolute before:top-0 before:bottom-0 before:left-0 before:mt-[-0.025rem] before:mb-[-0.025rem] before:w-3 before:rounded-l-md before:border-l-3">
           <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
             <FaClipboard className="mb-0.5" />
-            {t('polls.labels.consensusProposal')}
+            {t('proposals.labels.consensusProposal')}
           </div>
 
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
@@ -114,7 +114,7 @@ export const InlineProposal = ({ poll, channel, me }: Props) => {
                 )}
               </div>
             </div>
-            <Badge variant="outline">{t(`polls.labels.${stage}`)}</Badge>
+            <Badge variant="outline">{t(`proposals.labels.${stage}`)}</Badge>
           </div>
         </Card>
       </div>

@@ -270,7 +270,7 @@ export const CreateProposalForm = ({
         toast(error.response?.data);
         return;
       }
-      toast(t('polls.errors.errorCreatingProposal'), {
+      toast(t('proposals.errors.errorCreatingProposal'), {
         description: error.message,
       });
     },

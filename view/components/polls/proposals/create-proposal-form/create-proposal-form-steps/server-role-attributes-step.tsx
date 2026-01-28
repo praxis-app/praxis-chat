@@ -43,10 +43,10 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.roleAttributes')}
+          {t('proposals.headers.roleAttributes')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.roleAttributesDescription')}
+          {t('proposals.descriptions.roleAttributesDescription')}
         </p>
       </div>
 
@@ -54,7 +54,7 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
         <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('polls.headers.roleAttributesTitle')}
+              {t('proposals.headers.roleAttributesTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -99,7 +99,7 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.headers.currentRoleInfo')}
+                {t('proposals.headers.currentRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>

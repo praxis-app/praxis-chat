@@ -68,10 +68,10 @@ export const ServerRoleSelectionStep = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.selectRole')}
+          {t('proposals.headers.selectRole')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.selectRoleDescription')}
+          {t('proposals.descriptions.selectRoleDescription')}
         </p>
       </div>
 
@@ -79,7 +79,7 @@ export const ServerRoleSelectionStep = () => {
         <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('polls.headers.availableRoles')}
+              {t('proposals.headers.availableRoles')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -88,7 +88,7 @@ export const ServerRoleSelectionStep = () => {
               name="selectedServerRoleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('polls.labels.roleSelection')}</FormLabel>
+                  <FormLabel>{t('proposals.labels.roleSelection')}</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -97,7 +97,7 @@ export const ServerRoleSelectionStep = () => {
                       <SelectTrigger className="w-full">
                         <SelectValue
                           placeholder={t(
-                            'polls.placeholders.selectRolePlaceholder',
+                            'proposals.placeholders.selectRolePlaceholder',
                           )}
                         />
                       </SelectTrigger>
@@ -136,7 +136,7 @@ export const ServerRoleSelectionStep = () => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.headers.selectedRoleInfo')}
+                {t('proposals.headers.selectedRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>
