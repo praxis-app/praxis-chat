@@ -21,17 +21,17 @@ import {
   SelectValue,
 } from '../../../ui/select';
 import { Textarea } from '../../../ui/textarea';
-import { CreatePollFormSchema } from '../create-poll-form.types';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
-export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
-  const form = useFormContext<CreatePollFormSchema>();
+export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
+  const form = useFormContext<CreateProposalFormSchema>();
   const { onNext } = useWizardContext();
   const { isAnon } = useAuthData();
   const { t } = useTranslation();
 
-  const handlePollActionChange = (
+  const handleProposalActionChange = (
     value: string,
-    field: ControllerRenderProps<CreatePollFormSchema>,
+    field: ControllerRenderProps<CreateProposalFormSchema>,
   ) => {
     field.onChange(value);
     if (isAnon && value !== 'test') {
@@ -44,7 +44,7 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
     }
   };
 
-  const getPollActionLabel = (action: PollActionType | '') => {
+  const getProposalActionLabel = (action: PollActionType | '') => {
     if (action === 'general') {
       return t('polls.actionTypes.general');
     }
@@ -96,7 +96,7 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
                 <Select
                   value={field.value}
                   onValueChange={(value) =>
-                    handlePollActionChange(value, field)
+                    handleProposalActionChange(value, field)
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -105,7 +105,7 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
                   <SelectContent>
                     {POLL_ACTION_TYPE.map((action) => (
                       <SelectItem key={action} value={action}>
-                        {getPollActionLabel(action)}
+                        {getProposalActionLabel(action)}
                       </SelectItem>
                     ))}
                   </SelectContent>

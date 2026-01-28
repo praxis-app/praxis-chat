@@ -6,7 +6,7 @@ import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import { POLL_BODY_MAX } from '@common/polls/poll.constants';
 import * as zod from 'zod';
 
-export const createPollFormSchema = zod
+export const createProposalFormSchema = zod
   .object({
     body: zod
       .string()
@@ -58,9 +58,9 @@ export const createPollFormSchema = zod
     },
   );
 
-export type CreatePollFormSchema = zod.infer<typeof createPollFormSchema>;
+export type CreateProposalFormSchema = zod.infer<typeof createProposalFormSchema>;
 
-export interface CreatePollWizardContext {
+export interface CreateProposalWizardContext {
   selectedServerRole?: ServerRoleRes;
   usersEligibleForServerRole?: UserRes[];
 }

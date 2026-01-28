@@ -13,7 +13,10 @@ import {
   getProgressPercentage,
   getRequiredCount,
 } from '@common/polls/poll.utils';
-import { sortConsensusVotesByType } from '@common/votes/vote.utils';
+import {
+  sortConsensusVotesByType,
+  WithVoteType,
+} from '@common/votes/vote.utils';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,12 +39,13 @@ export const VoteProgressDialog = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const { agreements, disagreements } = useMemo(
-    () => sortConsensusVotesByType(votes),
-    [votes],
-  );
+  const { agreements, disagreements } = useMemo(() => {
+    const proposalVotes = votes.filter((vote) => !!vote.voteType);
+    return sortConsensusVotesByType(proposalVotes as WithVoteType[]);
+  }, [votes]);
 
-  const { agreementThreshold, quorumThreshold } = config;
+  const agreementThreshold = config.agreementThreshold ?? 0;
+  const quorumThreshold = config.quorumThreshold ?? 0;
 
   const quorum = votes.length;
   const yesVotes = agreements.length;

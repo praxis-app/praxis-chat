@@ -1,6 +1,6 @@
 import { VoteType } from './vote.types';
 
-interface WithVoteType {
+export interface WithVoteType {
   voteType: VoteType;
 }
 

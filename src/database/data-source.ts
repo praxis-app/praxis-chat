@@ -15,6 +15,7 @@ import { PollActionRoleMember } from '../poll-actions/entities/poll-action-role-
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import { PollConfig } from '../polls/entities/poll-config.entity';
+import { PollOption } from '../polls/entities/poll-option.entity';
 import { Poll } from '../polls/entities/poll.entity';
 import { ServerMember } from '../servers/entities/server-member.entity';
 import { Server } from '../servers/entities/server.entity';
@@ -26,6 +27,7 @@ import { Vote } from '../votes/vote.entity';
 import { Initial1767572300125 } from './migrations/1767572300125-Initial';
 import { GeneralProposals1768246067251 } from './migrations/1768246067251-GeneralProposals';
 import { Quorum1768785488966 } from './migrations/1768785488966-Quorum';
+import { PollOptionSelection } from '../polls/entities/poll-option-selection.entity';
 
 dotenv.config();
 
@@ -54,6 +56,8 @@ export const dataSource = new DataSource({
     PollActionRole,
     PollActionRoleMember,
     PollConfig,
+    PollOption,
+    PollOptionSelection,
     Server,
     ServerConfig,
     ServerMember,

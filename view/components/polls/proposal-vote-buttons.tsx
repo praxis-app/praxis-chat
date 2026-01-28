@@ -15,12 +15,12 @@ import { toast } from 'sonner';
 
 interface Props {
   channel: ChannelRes;
-  myVote?: { id: string; voteType: VoteType };
+  myVote?: VoteRes;
   pollId: string;
   stage: PollStage;
 }
 
-export const PollVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
+export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { serverId } = useServerData();

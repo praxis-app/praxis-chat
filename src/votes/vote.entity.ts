@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { PollOptionSelection } from '../polls/entities/poll-option-selection.entity';
 import { Poll } from '../polls/entities/poll.entity';
 import { User } from '../users/user.entity';
 
@@ -18,8 +20,8 @@ export class Vote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: VOTE_TYPES })
-  voteType: VoteType;
+  @Column({ type: 'enum', enum: VOTE_TYPES, nullable: true })
+  voteType: VoteType | null;
 
   @ManyToOne(() => Poll, (poll) => poll.votes, {
     onDelete: 'CASCADE',
@@ -29,25 +31,18 @@ export class Vote {
   @Column({ type: 'varchar', nullable: true })
   pollId: string | null;
 
-  // TODO: Uncomment when QuestionnaireTicket is defined
-  // @ManyToOne(
-  //   () => QuestionnaireTicket,
-  //   (questionnaireTicket) => questionnaireTicket.votes,
-  //   {
-  //     onDelete: 'CASCADE',
-  //   },
-  // )
-  // questionnaireTicket?: QuestionnaireTicket;
-
-  // TODO: Uncomment when QuestionnaireTicket is defined
-  // @Column({ type: 'varchar', nullable: true })
-  // questionnaireTicketId: string | null;
-
   @ManyToOne(() => User, (user) => user.votes, { onDelete: 'CASCADE' })
   user: User;
 
   @Column({ type: 'uuid' })
   userId: string;
+
+  @OneToMany(
+    () => PollOptionSelection,
+    (pollOptionSelection) => pollOptionSelection.vote,
+    { cascade: true },
+  )
+  pollOptionSelections: PollOptionSelection[];
 
   // TODO: Uncomment when Notification is defined
   // @OneToMany(() => Notification, (notification) => notification.vote)

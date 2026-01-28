@@ -1,4 +1,4 @@
-import { CreatePollForm } from '@/components/polls/create-poll-form/create-poll-form';
+import { CreateProposalForm } from '@/components/polls/create-proposal-form/create-proposal-form';
 import {
   Dialog,
   DialogContent,
@@ -82,7 +82,7 @@ export const MessageFormMenu = ({
 
         <Separator className="mt-1" />
 
-        <CreatePollForm
+        <CreateProposalForm
           channelId={channelId}
           onSuccess={() => setShowPollForm(false)}
           onNavigate={handlePollFormNavigate}

@@ -14,19 +14,19 @@ import { Badge } from '../../../ui/badge';
 import { Button } from '../../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import {
-  CreatePollFormSchema,
-  CreatePollWizardContext,
-} from '../create-poll-form.types';
+  CreateProposalFormSchema,
+  CreateProposalWizardContext,
+} from '../create-proposal-form.types';
 
-export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
+export const ProposalReviewStep = ({ isLoading }: WizardStepProps) => {
   const {
     context: { selectedServerRole, usersEligibleForServerRole },
     onSubmit,
     onPrevious,
     isSubmitting,
-  } = useWizardContext<CreatePollWizardContext>();
+  } = useWizardContext<CreateProposalWizardContext>();
 
-  const form = useFormContext<CreatePollFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
 
   const formValues = form.getValues();
   const {
@@ -72,7 +72,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
 
   const { t } = useTranslation();
 
-  const getPollActionLabel = (action: PollActionType | '') => {
+  const getProposalActionLabel = (action: PollActionType | '') => {
     if (action === 'general') {
       return t('polls.actionTypes.general');
     }
@@ -156,7 +156,7 @@ export const PollReviewStep = ({ isLoading }: WizardStepProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">{getPollActionLabel(action)}</p>
+            <p className="text-sm">{getProposalActionLabel(action)}</p>
           </CardContent>
         </Card>
 

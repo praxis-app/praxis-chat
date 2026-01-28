@@ -1,7 +1,7 @@
 import { WelcomeMessage } from '@/components/invites/welcome-message';
 import { BotMessage } from '@/components/messages/bot-message';
 import { Message } from '@/components/messages/message';
-import { InlinePoll } from '@/components/polls/inline-poll/inline-poll';
+import { InlineProposal } from '@/components/polls/inline-proposal/inline-proposal';
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useInView } from '@/hooks/use-in-view';
@@ -122,7 +122,7 @@ export const ChannelFeed = ({
           return null;
         }
         return (
-          <InlinePoll
+          <InlineProposal
             key={`poll-${item.id}`}
             poll={item}
             channel={channel}
