@@ -262,25 +262,25 @@ export const CreatePollForm = ({ channelId, onSuccess }: Props) => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="allowMultipleAnswers"
-          render={({ field }) => (
-            <FormItem className="flex items-center gap-2 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormLabel className="cursor-pointer font-normal">
-                {t('polls.labels.allowMultipleAnswers')}
-              </FormLabel>
-            </FormItem>
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <FormField
+            control={form.control}
+            name="allowMultipleAnswers"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="cursor-pointer font-normal">
+                  {t('polls.labels.allowMultipleAnswers')}
+                </FormLabel>
+              </FormItem>
+            )}
+          />
 
-        <div className="flex justify-end">
           <Button type="submit" disabled={isPending}>
             {t('polls.actions.createPoll')}
           </Button>
