@@ -44,7 +44,7 @@ export interface PollConfigRes {
 
 export interface CreatePollReq {
   body?: string;
-  pollType?: PollType;
+  pollType: PollType;
   action?: CreatePollActionReq;
   options?: string[];
   multipleChoice?: boolean;

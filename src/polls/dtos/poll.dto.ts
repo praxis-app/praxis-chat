@@ -3,7 +3,7 @@ import { PollActionDto } from '../../poll-actions/dtos/poll-action.dto';
 
 export interface PollDto {
   body: string;
-  pollType?: PollType;
+  pollType: PollType;
   closingAt?: Date;
   imageCount?: number;
   action?: PollActionDto;

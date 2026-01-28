@@ -33,7 +33,11 @@ interface Props {
   onNavigate: () => void;
 }
 
-export const CreateProposalForm = ({ channelId, onSuccess, onNavigate }: Props) => {
+export const CreateProposalForm = ({
+  channelId,
+  onSuccess,
+  onNavigate,
+}: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const { t } = useTranslation();
@@ -217,6 +221,7 @@ export const CreateProposalForm = ({ channelId, onSuccess, onNavigate }: Props) 
 
       return api.createPoll(serverId, channelId, {
         body: values.body?.trim(),
+        pollType: 'proposal',
         action: {
           actionType: values.action,
           serverRole,

@@ -277,7 +277,7 @@ export const createPoll = async (
     options,
     closingAt,
     imageCount,
-    pollType = 'proposal',
+    pollType,
     multipleChoice = false,
   }: PollDto,
   user: User,
