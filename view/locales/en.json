@@ -236,6 +236,12 @@
   },
 
   "polls": {
+    "headers": {
+      "create": "Create a Poll"
+    },
+    "descriptions": {
+      "create": "Create a poll for your group to vote on."
+    },
     "labels": {
       "question": "Question",
       "answers": "Answers",
@@ -243,7 +249,7 @@
       "allowMultipleAnswers": "Allow multiple answers"
     },
     "placeholders": {
-      "question": "Enter your question...",
+      "question": "What question do you want to ask?",
       "answer": "Answer {{number}}",
       "duration": "Select a duration"
     },

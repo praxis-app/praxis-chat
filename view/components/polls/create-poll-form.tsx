@@ -1,3 +1,4 @@
+import { api } from '@/client/api-client';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -17,8 +18,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useServerData } from '@/hooks/use-server-data';
+import { handleError } from '@/lib/error.utils';
+import { FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { VotingTimeLimit } from '@common/votes/vote.constants';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { LuPlus, LuX } from 'react-icons/lu';
@@ -40,12 +45,14 @@ const createPollFormSchema = z.object({
 type CreatePollFormSchema = z.infer<typeof createPollFormSchema>;
 
 interface Props {
-  onSubmit: (data: CreatePollFormSchema) => void;
-  isSubmitting?: boolean;
+  channelId?: string;
+  onSuccess: () => void;
 }
 
-export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
+export const CreatePollForm = ({ channelId, onSuccess }: Props) => {
   const { t } = useTranslation();
+  const { serverId } = useServerData();
+  const queryClient = useQueryClient();
 
   const form = useForm<CreatePollFormSchema>({
     resolver: zodResolver(createPollFormSchema),
@@ -62,6 +69,69 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
     name: 'options',
   });
 
+  const { mutate: createPoll, isPending } = useMutation({
+    mutationFn: async (values: CreatePollFormSchema) => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      if (!channelId) {
+        throw new Error('Channel ID is required');
+      }
+
+      const closingAt =
+        values.closingAt && values.closingAt !== VotingTimeLimit.Unlimited
+          ? new Date(Date.now() + values.closingAt * 60 * 1000).toISOString()
+          : undefined;
+
+      return api.createPoll(serverId, channelId, {
+        body: values.body.trim(),
+        pollType: 'poll',
+        options: values.options.map((option) => option.value.trim()),
+        multipleChoice: values.allowMultipleAnswers,
+        closingAt,
+      });
+    },
+    onSuccess: ({ poll }) => {
+      if (!channelId || !serverId) {
+        return;
+      }
+
+      queryClient.setQueryData<FeedQuery>(
+        ['servers', serverId, 'channels', channelId, 'feed'],
+        (old) => {
+          const newItem: FeedItemRes = {
+            ...poll,
+            type: 'poll',
+          };
+          if (!old) {
+            return {
+              pages: [{ feed: [newItem] }],
+              pageParams: [0],
+            };
+          }
+          const pages = old.pages.map((page, idx) => {
+            if (idx !== 0) {
+              return page;
+            }
+            const exists = page.feed.some(
+              (fi) => fi.type === 'poll' && fi.id === poll.id,
+            );
+            if (exists) {
+              return page;
+            }
+            return { feed: [newItem, ...page.feed] };
+          });
+          return { pages, pageParams: old.pageParams };
+        },
+      );
+
+      onSuccess();
+    },
+    onError: (error: Error) => {
+      handleError(error);
+    },
+  });
+
   const handleAddOption = () => {
     append({ value: '' });
   };
@@ -72,9 +142,13 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
     }
   };
 
+  const handleSubmit = () => {
+    form.handleSubmit((values) => createPoll(values))();
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="body"
@@ -207,7 +281,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
         />
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isPending}>
             {t('polls.actions.createPoll')}
           </Button>
         </div>
