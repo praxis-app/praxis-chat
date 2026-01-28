@@ -164,11 +164,7 @@
       "thresholdProgress": "Threshold (approval)",
       "thresholdMet": "Met",
       "thresholdNotMet": "Not met",
-      "voting": "Voting",
-      "question": "Question",
-      "answers": "Answers",
-      "duration": "Duration",
-      "allowMultipleAnswers": "Allow multiple answers"
+      "voting": "Voting"
     },
     "headers": {
       "availableRoles": "Available Roles",
@@ -193,19 +189,14 @@
       "action": "Select an action type",
       "body": "Enter your proposal details...",
       "searchMembersPlaceholder": "Search members...",
-      "selectRolePlaceholder": "Select a role...",
-      "question": "Enter your question...",
-      "answer": "Answer {{number}}",
-      "duration": "Select a duration"
+      "selectRolePlaceholder": "Select a role..."
     },
     "actions": {
       "abstain": "Abstain",
       "agree": "Agree",
       "block": "Block",
       "create": "Create proposal",
-      "disagree": "Disagree",
-      "addAnswer": "Add another answer",
-      "createPoll": "Create poll"
+      "disagree": "Disagree"
     },
     "descriptions": {
       "basicInfoDescription": "Provide the basic details for your proposal",
@@ -240,7 +231,27 @@
       "errorCreatingProposal": "Error creating proposal",
       "longBody": "Proposal body cannot exceed 6000 characters",
       "testProposalRequiresBody": "Test proposals must include a body",
-      "generalProposalRequiresBody": "General proposals must include a body",
+      "generalProposalRequiresBody": "General proposals must include a body"
+    }
+  },
+
+  "polls": {
+    "labels": {
+      "question": "Question",
+      "answers": "Answers",
+      "duration": "Duration",
+      "allowMultipleAnswers": "Allow multiple answers"
+    },
+    "placeholders": {
+      "question": "Enter your question...",
+      "answer": "Answer {{number}}",
+      "duration": "Select a duration"
+    },
+    "actions": {
+      "addAnswer": "Add another answer",
+      "createPoll": "Create poll"
+    },
+    "errors": {
       "questionRequired": "Question is required",
       "answerRequired": "Answer is required",
       "minAnswersRequired": "At least 2 answers are required"

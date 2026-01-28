@@ -80,10 +80,10 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('proposals.labels.question')}</FormLabel>
+              <FormLabel>{t('polls.labels.question')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t('proposals.placeholders.question')}
+                  placeholder={t('polls.placeholders.question')}
                   {...field}
                 />
               </FormControl>
@@ -93,7 +93,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
         />
 
         <div className="space-y-3">
-          <FormLabel>{t('proposals.labels.answers')}</FormLabel>
+          <FormLabel>{t('polls.labels.answers')}</FormLabel>
           {fields.map((field, index) => (
             <FormField
               key={field.id}
@@ -104,7 +104,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Input
-                        placeholder={t('proposals.placeholders.answer', {
+                        placeholder={t('polls.placeholders.answer', {
                           number: index + 1,
                         })}
                         {...inputField}
@@ -135,7 +135,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
             className="mt-2"
           >
             <LuPlus className="mr-1 size-4" />
-            {t('proposals.actions.addAnswer')}
+            {t('polls.actions.addAnswer')}
           </Button>
         </div>
 
@@ -144,7 +144,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
           name="closingAt"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('proposals.labels.duration')}</FormLabel>
+              <FormLabel>{t('polls.labels.duration')}</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value?.toString()}
@@ -152,7 +152,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue
-                      placeholder={t('proposals.placeholders.duration')}
+                      placeholder={t('polls.placeholders.duration')}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -200,7 +200,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
                 />
               </FormControl>
               <FormLabel className="cursor-pointer font-normal">
-                {t('proposals.labels.allowMultipleAnswers')}
+                {t('polls.labels.allowMultipleAnswers')}
               </FormLabel>
             </FormItem>
           )}
@@ -208,7 +208,7 @@ export const CreatePollForm = ({ onSubmit, isSubmitting }: Props) => {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {t('proposals.actions.createPoll')}
+            {t('polls.actions.createPoll')}
           </Button>
         </div>
       </form>
