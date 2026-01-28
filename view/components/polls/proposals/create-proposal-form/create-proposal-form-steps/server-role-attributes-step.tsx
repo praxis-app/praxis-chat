@@ -4,18 +4,18 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ColorPicker } from '../../../shared/color-picker';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { ColorPicker } from '../../../../shared/color-picker';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../ui/form';
-import { Input } from '../../../ui/input';
+} from '../../../../ui/form';
+import { Input } from '../../../../ui/input';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,

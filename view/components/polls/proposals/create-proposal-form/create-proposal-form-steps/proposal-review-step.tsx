@@ -9,10 +9,10 @@ import {
 } from '@common/poll-actions/poll-action.types';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Badge } from '../../../ui/badge';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Badge } from '../../../../ui/badge';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,

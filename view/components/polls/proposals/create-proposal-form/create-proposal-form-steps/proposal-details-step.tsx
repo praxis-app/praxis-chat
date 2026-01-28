@@ -4,23 +4,23 @@ import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import { PollActionType } from '@common/poll-actions/poll-action.types';
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../ui/form';
+} from '../../../../ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../ui/select';
-import { Textarea } from '../../../ui/textarea';
+} from '../../../../ui/select';
+import { Textarea } from '../../../../ui/textarea';
 import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
 export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {

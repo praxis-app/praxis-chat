@@ -2,9 +2,9 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
 import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
 import { CreateProposalFormSchema } from '../create-proposal-form.types';
 

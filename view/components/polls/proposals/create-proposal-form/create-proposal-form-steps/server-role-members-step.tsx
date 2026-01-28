@@ -3,10 +3,10 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import { Input } from '../../../ui/input';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
+import { Input } from '../../../../ui/input';
 import {
   CreateProposalFormSchema,
   CreateProposalWizardContext,

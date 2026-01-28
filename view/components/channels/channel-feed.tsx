@@ -1,7 +1,7 @@
 import { WelcomeMessage } from '@/components/invites/welcome-message';
 import { BotMessage } from '@/components/messages/bot-message';
 import { Message } from '@/components/messages/message';
-import { InlineProposal } from '@/components/polls/inline-proposal/inline-proposal';
+import { InlineProposal } from '@/components/polls/proposals/inline-proposal/inline-proposal';
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useInView } from '@/hooks/use-in-view';

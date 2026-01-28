@@ -1,6 +1,6 @@
-import { VoteProgressDialog } from '@/components/polls/inline-proposal/vote-progress-dialog';
-import { ProposalAction } from '@/components/polls/proposal-actions/proposal-action';
-import { ProposalVoteButtons } from '@/components/polls/proposal-vote-buttons';
+import { VoteProgressDialog } from '@/components/polls/proposals/inline-proposal/vote-progress-dialog';
+import { ProposalAction } from '@/components/polls/proposals/proposal-actions/proposal-action';
+import { ProposalVoteButtons } from '@/components/polls/proposals/proposal-vote-buttons';
 import { FormattedText } from '@/components/shared/formatted-text';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardAction } from '@/components/ui/card';

@@ -1,4 +1,4 @@
-import { CreateProposalForm } from '@/components/polls/create-proposal-form/create-proposal-form';
+import { CreateProposalForm } from '@/components/polls/proposals/create-proposal-form/create-proposal-form';
 import {
   Dialog,
   DialogContent,
