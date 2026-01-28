@@ -34,13 +34,13 @@ export const MessageFormMenu = ({
   disabled,
 }: Props) => {
   const [showPollForm, setShowPollForm] = useState(false);
-  const dialogContentRef = useRef<HTMLDivElement>(null);
+  const proposalFormDialogContentRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
 
   const handlePollFormNavigate = () => {
-    if (dialogContentRef.current) {
-      dialogContentRef.current.scrollTop = 0;
+    if (proposalFormDialogContentRef.current) {
+      proposalFormDialogContentRef.current.scrollTop = 0;
     }
   };
 
@@ -71,7 +71,7 @@ export const MessageFormMenu = ({
 
       <DialogContent
         className="overflow-y-auto md:max-h-[90vh] md:w-xl"
-        ref={dialogContentRef}
+        ref={proposalFormDialogContentRef}
       >
         <DialogHeader>
           <DialogTitle>{t('polls.headers.create')}</DialogTitle>
