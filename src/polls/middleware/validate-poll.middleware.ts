@@ -8,13 +8,13 @@ import { NextFunction, Request, Response } from 'express';
 import * as zod from 'zod';
 import { PollDto } from '../dtos/poll.dto';
 
-// Schema for polls (pollType: 'poll')
 const pollSchema = zod
   .object({
     body: zod.string().optional(),
     pollType: zod.literal('poll'),
     options: zod.array(zod.string().max(200)).min(2).max(10),
-    closingAt: zod.date().optional(),
+    closingAt: zod.coerce.date().optional(),
+    multipleChoice: zod.boolean().optional(),
   })
   .refine((data) => !!data.body, {
     message: 'Polls must include a question',
@@ -87,7 +87,7 @@ const proposalSchema = zod
     body: zod.string().optional(),
     pollType: zod.literal('proposal').optional(),
     action: pollActionSchema,
-    closingAt: zod.date().optional(),
+    closingAt: zod.coerce.date().optional(),
   })
   .refine(
     (data) => {
