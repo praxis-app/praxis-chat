@@ -104,28 +104,28 @@ export const ChannelFeed = ({
       )}
 
       {feed.map((item) => {
-        if (item.type === 'message') {
-          if (item.bot) {
-            return <BotMessage key={`message-${item.id}`} message={item} />;
-          }
+        if (!channel) {
+          return null;
+        }
+        if (item.type === 'poll') {
           return (
-            <Message
-              key={`message-${item.id}`}
-              channelId={channel?.id}
-              serverId={serverId}
-              message={item}
+            <InlineProposal
+              key={`poll-${item.id}`}
+              poll={item}
+              channel={channel}
               me={me}
             />
           );
         }
-        if (!channel) {
-          return null;
+        if (item.bot) {
+          return <BotMessage key={`message-${item.id}`} message={item} />;
         }
         return (
-          <InlineProposal
-            key={`poll-${item.id}`}
-            poll={item}
-            channel={channel}
+          <Message
+            key={`message-${item.id}`}
+            channelId={channel?.id}
+            serverId={serverId}
+            message={item}
             me={me}
           />
         );
