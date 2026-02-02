@@ -246,7 +246,10 @@
       "question": "Question",
       "answers": "Answers",
       "duration": "Duration",
-      "allowMultipleAnswers": "Allow multiple answers"
+      "allowMultipleAnswers": "Allow multiple answers",
+      "poll": "Poll",
+      "selectOne": "Select one answer",
+      "selectMultiple": "Select one or more answers"
     },
     "placeholders": {
       "question": "What question do you want to ask?",
@@ -255,12 +258,14 @@
     },
     "actions": {
       "addAnswer": "Add another answer",
-      "createPoll": "Create poll"
+      "createPoll": "Create poll",
+      "vote": "Vote"
     },
     "errors": {
       "questionRequired": "Question is required",
       "answerRequired": "Answer is required",
-      "minAnswersRequired": "At least 2 answers are required"
+      "minAnswersRequired": "At least 2 answers are required",
+      "selectAtLeastOne": "Please select at least one option"
     }
   },
 
