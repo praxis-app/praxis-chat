@@ -2,22 +2,17 @@ import { api } from '@/client/api-client';
 import { FormattedText } from '@/components/shared/formatted-text';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { UserAvatar } from '@/components/users/user-avatar';
 import { UserProfileDrawer } from '@/components/users/user-profile-drawer';
+import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useServerData } from '@/hooks/use-server-data';
 import { handleError } from '@/lib/error.utils';
+import { cn } from '@/lib/shared.utils';
 import { truncate } from '@/lib/text.utils';
-import { timeAgo } from '@/lib/time.utils';
+import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
 import { PollRes } from '@/types/poll.types';
 import { CurrentUser } from '@/types/user.types';
@@ -26,10 +21,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FaChartBar } from 'react-icons/fa';
+import { LuCheck, LuCircle } from 'react-icons/lu';
 import * as z from 'zod';
 
 const inlinePollFormSchema = z.object({
-  selectedOptions: z.array(z.string()).min(1, 'polls.errors.selectAtLeastOne'),
+  selectedOptions: z.array(z.string()),
 });
 
 type InlinePollFormSchema = z.infer<typeof inlinePollFormSchema>;
@@ -45,8 +41,10 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const { serverId } = useServerData();
   const queryClient = useQueryClient();
 
-  const { id, body, user, options, config, myVote, createdAt } = poll;
+  const { id, body, user, options, config, myVote, votes, createdAt } = poll;
   const isMultipleChoice = config?.multipleChoice ?? false;
+  const hasVoted = !!myVote?.pollOptionIds?.length;
+  const totalVotes = votes?.length ?? 0;
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
@@ -59,72 +57,100 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
     },
   });
 
-  const { mutate: submitVote, isPending } = useMutation({
+  const updateFeedCache = (newMyVote: typeof myVote) => {
+    queryClient.setQueryData<FeedQuery>(
+      ['servers', serverId, 'channels', channel.id, 'feed'],
+      (old) => {
+        if (!old) {
+          return old;
+        }
+        const pages = old.pages.map((page) => ({
+          feed: page.feed.map((item: FeedItemRes) => {
+            if (item.type === 'poll' && item.id === id) {
+              return {
+                ...item,
+                myVote: newMyVote,
+              };
+            }
+            return item;
+          }),
+        }));
+        return { pages, pageParams: old.pageParams };
+      },
+    );
+  };
+
+  const { mutate: submitVote, isPending: isSubmitting } = useMutation({
     mutationFn: async (values: InlinePollFormSchema) => {
       if (!serverId) {
         throw new Error('Server ID is required');
       }
-      if (myVote) {
-        return api.updateVote(serverId, channel.id, id, myVote.id, {
+      if (myVote?.id) {
+        await api.updateVote(serverId, channel.id, id, myVote.id, {
           pollOptionIds: values.selectedOptions,
         });
+        return { voteId: myVote.id, selectedOptions: values.selectedOptions };
       }
-      return api.createVote(serverId, channel.id, id, {
+      const { vote } = await api.createVote(serverId, channel.id, id, {
         pollOptionIds: values.selectedOptions,
       });
+      return { voteId: vote.id, selectedOptions: values.selectedOptions };
     },
-    onSuccess: () => {
-      const selectedOptionIds = form.getValues('selectedOptions');
-
-      queryClient.setQueryData<FeedQuery>(
-        ['servers', serverId, 'channels', channel.id, 'feed'],
-        (old) => {
-          if (!old) {
-            return old;
-          }
-          const pages = old.pages.map((page) => ({
-            feed: page.feed.map((item: FeedItemRes) => {
-              if (item.type === 'poll' && item.id === id) {
-                return {
-                  ...item,
-                  myVote: {
-                    id: myVote?.id ?? 'temp-vote-id',
-                    pollOptionIds: selectedOptionIds,
-                  },
-                };
-              }
-              return item;
-            }),
-          }));
-          return { pages, pageParams: old.pageParams };
-        },
-      );
+    onSuccess: ({ voteId, selectedOptions }) => {
+      updateFeedCache({
+        id: voteId,
+        pollOptionIds: selectedOptions,
+      });
     },
     onError: (error: Error) => {
       handleError(error);
     },
   });
 
-  const handleOptionChange = (optionId: string, checked: boolean) => {
+  const { mutate: removeVote, isPending: isRemoving } = useMutation({
+    mutationFn: async () => {
+      if (!serverId || !myVote?.id) {
+        throw new Error('Cannot remove vote');
+      }
+      return api.deleteVote(serverId, channel.id, id, myVote.id);
+    },
+    onSuccess: () => {
+      form.setValue('selectedOptions', []);
+      updateFeedCache(undefined);
+    },
+    onError: (error: Error) => {
+      handleError(error);
+    },
+  });
+
+  const handleOptionToggle = (optionId: string) => {
     const currentOptions = form.getValues('selectedOptions');
+    const isSelected = currentOptions.includes(optionId);
 
     if (isMultipleChoice) {
-      if (checked) {
+      if (isSelected) {
+        form.setValue(
+          'selectedOptions',
+          currentOptions.filter((id) => id !== optionId),
+        );
+      } else {
         form.setValue('selectedOptions', [...currentOptions, optionId]);
-        return;
       }
-      form.setValue(
-        'selectedOptions',
-        currentOptions.filter((id) => id !== optionId),
-      );
-      return;
+    } else {
+      form.setValue('selectedOptions', isSelected ? [] : [optionId]);
     }
-    form.setValue('selectedOptions', checked ? [optionId] : []);
   };
 
   const handleSubmit = () => {
-    form.handleSubmit((values) => submitVote(values))();
+    const selectedOptions = form.getValues('selectedOptions');
+    if (selectedOptions.length === 0) {
+      return;
+    }
+    submitVote({ selectedOptions });
   };
+
+  const isPending = isSubmitting || isRemoving;
+  const selectedOptions = form.watch('selectedOptions');
 
   return (
     <div className="flex gap-4 pt-4">
@@ -181,27 +207,31 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                 render={() => (
                   <FormItem className="space-y-2">
                     {options?.map((option) => {
-                      const isSelected = form
-                        .watch('selectedOptions')
-                        .includes(option.id);
+                      const isSelected = selectedOptions.includes(option.id);
 
                       return (
-                        <FormItem
+                        <button
                           key={option.id}
-                          className="flex items-center gap-2 space-y-0"
+                          type="button"
+                          onClick={() => handleOptionToggle(option.id)}
+                          disabled={isPending}
+                          className={cn(
+                            'flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2.5 text-left transition-colors',
+                            isSelected
+                              ? 'border-primary bg-primary/10'
+                              : 'border-input bg-background hover:bg-accent',
+                            isPending && 'cursor-not-allowed opacity-50',
+                          )}
                         >
-                          <FormControl>
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={(checked) =>
-                                handleOptionChange(option.id, !!checked)
-                              }
-                            />
-                          </FormControl>
-                          <FormLabel className="cursor-pointer font-normal">
-                            {option.text}
-                          </FormLabel>
-                        </FormItem>
+                          <span className="text-sm">{option.text}</span>
+                          {isSelected ? (
+                            <div className="bg-primary text-primary-foreground flex size-5 items-center justify-center rounded-full">
+                              <LuCheck className="size-3" />
+                            </div>
+                          ) : (
+                            <LuCircle className="text-muted-foreground size-5" />
+                          )}
+                        </button>
                       );
                     })}
                     <FormMessage />
@@ -209,16 +239,50 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                 )}
               />
 
-              <Button
-                type="submit"
-                size="sm"
-                disabled={isPending}
-                className="mt-4"
-              >
-                {t('polls.actions.vote')}
-              </Button>
+              <div className="mt-4">
+                {hasVoted ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isPending}
+                    onClick={() => removeVote()}
+                    className="w-full"
+                  >
+                    {t('polls.actions.removeVote')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isPending || selectedOptions.length === 0}
+                    onClick={handleSubmit}
+                    className="w-full"
+                  >
+                    {t('polls.actions.vote')}
+                  </Button>
+                )}
+              </div>
             </form>
           </Form>
+
+          <Separator className="my-1" />
+
+          <div className="text-muted-foreground text-sm">
+            {t('polls.labels.totalVotes', { count: totalVotes })}
+            {config?.closingAt && (
+              <>
+                {MIDDOT_WITH_SPACES}
+                {timeFromNow(config.closingAt, true)}
+              </>
+            )}
+            {!config?.closingAt && (
+              <>
+                {MIDDOT_WITH_SPACES}
+                <span className="text-lg">{t('time.infinity')}</span>
+              </>
+            )}
+          </div>
         </Card>
       </div>
     </div>

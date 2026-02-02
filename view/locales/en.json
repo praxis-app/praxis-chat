@@ -249,7 +249,9 @@
       "allowMultipleAnswers": "Allow multiple answers",
       "poll": "Poll",
       "selectOne": "Select one answer",
-      "selectMultiple": "Select one or more answers"
+      "selectMultiple": "Select one or more answers",
+      "totalVotes_one": "{{count}} vote",
+      "totalVotes_other": "{{count}} votes"
     },
     "placeholders": {
       "question": "What question do you want to ask?",
@@ -259,7 +261,8 @@
     "actions": {
       "addAnswer": "Add another answer",
       "createPoll": "Create poll",
-      "vote": "Vote"
+      "vote": "Vote",
+      "removeVote": "Remove vote"
     },
     "errors": {
       "questionRequired": "Question is required",

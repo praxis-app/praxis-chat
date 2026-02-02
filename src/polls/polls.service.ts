@@ -153,16 +153,22 @@ export const getInlinePolls = async (
     const agreementVoteCount = isProposal
       ? poll.votes.filter((vote) => vote.voteType === 'agree').length
       : 0;
-    const myVote =
-      isProposal && userVote
-        ? { id: userVote.id, voteType: userVote.voteType }
-        : undefined;
 
-    // For simple polls, get user's selected option IDs from their vote's selections
-    const myVotedOptionIds =
-      !isProposal && userVote?.pollOptionSelections
-        ? userVote.pollOptionSelections.map((s) => s.pollOptionId)
-        : [];
+    // Build myVote object based on poll type
+    let myVote:
+      | { id: string; voteType?: string | null; pollOptionIds?: string[] }
+      | undefined;
+    if (userVote) {
+      if (isProposal) {
+        myVote = { id: userVote.id, voteType: userVote.voteType };
+      } else {
+        myVote = {
+          id: userVote.id,
+          pollOptionIds:
+            userVote.pollOptionSelections?.map((s) => s.pollOptionId) ?? [],
+        };
+      }
+    }
 
     // For simple polls, build options with vote counts from pollOptionSelections
     const options = !isProposal
@@ -217,7 +223,6 @@ export const getInlinePolls = async (
       body,
       action,
       myVote,
-      myVotedOptionIds,
       agreementVoteCount,
       memberCount,
       options,
@@ -487,9 +492,13 @@ export const synchronizePolls = async () => {
   const polls = await pollRepository.find({
     where: {
       config: { closingAt: Not(IsNull()) },
+      pollType: 'proposal',
       stage: 'voting',
     },
-    select: { id: true, config: { id: true, closingAt: true } },
+    select: {
+      id: true,
+      config: { id: true, closingAt: true },
+    },
     relations: ['config'],
   });
   if (polls.length === 0) {
@@ -510,7 +519,9 @@ export const synchronizePolls = async () => {
       continue;
     }
 
-    console.info(`Synchronized ${batch.length} polls 🗳️`);
+    console.info(
+      `Synchronized ${batch.length} poll${batch.length > 1 || batch.length === 0 ? 's' : ''} 🗳️`,
+    );
   }
 };
 
