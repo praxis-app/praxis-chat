@@ -17,12 +17,15 @@ const synchronizePollsJob = CronJob.from({
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
     synchronizePollsJob.stop();
+    disableTimeout = null;
   }, HALF_HOUR_MS);
 };
 
 const resetDisableTimeout = () => {
-  clearTimeout(disableTimeout!);
-  disableTimeout = null;
+  if (disableTimeout !== null) {
+    clearTimeout(disableTimeout);
+    disableTimeout = null;
+  }
   addDisableTimeout();
 };
 
