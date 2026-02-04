@@ -21,7 +21,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FaChartBar } from 'react-icons/fa';
-import { LuCheck, LuCircle } from 'react-icons/lu';
+import { LuCheck, LuCircle, LuSquare } from 'react-icons/lu';
 import * as z from 'zod';
 
 const inlinePollFormSchema = z.object({
@@ -240,9 +240,18 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                         >
                           <span className="text-sm">{option.text}</span>
                           {isSelected ? (
-                            <div className="bg-primary text-primary-foreground flex size-5 items-center justify-center rounded-full">
+                            <div
+                              className={cn(
+                                'bg-primary text-primary-foreground flex size-5 items-center justify-center',
+                                isMultipleChoice && !hasVoted
+                                  ? 'rounded-sm'
+                                  : 'rounded-full',
+                              )}
+                            >
                               <LuCheck className="size-3" />
                             </div>
+                          ) : isMultipleChoice ? (
+                            <LuSquare className="text-muted-foreground size-5 rounded-sm" />
                           ) : (
                             <LuCircle className="text-muted-foreground size-5" />
                           )}
