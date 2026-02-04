@@ -214,13 +214,15 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                           key={option.id}
                           type="button"
                           onClick={() => handleOptionToggle(option.id)}
-                          disabled={isPending}
+                          disabled={isPending || hasVoted}
                           className={cn(
-                            'flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2.5 text-left transition-colors',
+                            'flex w-full items-center justify-between rounded-md border px-3 py-2.5 text-left transition-colors',
                             isSelected
                               ? 'border-primary bg-primary/10'
-                              : 'border-input bg-background hover:bg-accent',
+                              : 'border-input bg-background',
+                            !isSelected && !hasVoted && 'hover:bg-accent',
                             isPending && 'cursor-not-allowed opacity-50',
+                            !hasVoted && 'cursor-pointer',
                           )}
                         >
                           <span className="text-sm">{option.text}</span>
