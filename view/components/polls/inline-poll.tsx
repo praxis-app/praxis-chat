@@ -66,13 +66,26 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
         }
         const pages = old.pages.map((page) => ({
           feed: page.feed.map((item: FeedItemRes) => {
-            if (item.type === 'poll' && item.id === id) {
-              return {
-                ...item,
-                myVote: newMyVote,
-              };
+            if (
+              item.id !== id ||
+              item.type !== 'poll' ||
+              item.pollType !== 'poll'
+            ) {
+              return item;
             }
-            return item;
+
+            let updatedVotes = item.votes;
+            if (!myVote && newMyVote) {
+              updatedVotes = [
+                ...item.votes,
+                { id: newMyVote.id, pollOptionIds: newMyVote.pollOptionIds },
+              ];
+            }
+            if (myVote && !newMyVote) {
+              updatedVotes = item.votes.filter((vote) => vote.id !== myVote.id);
+            }
+
+            return { ...item, votes: updatedVotes, myVote: newMyVote };
           }),
         }));
         return { pages, pageParams: old.pageParams };
