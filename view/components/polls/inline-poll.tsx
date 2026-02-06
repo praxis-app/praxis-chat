@@ -18,6 +18,7 @@ import { PollRes } from '@/types/poll.types';
 import { CurrentUser } from '@/types/user.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FaChartBar } from 'react-icons/fa';
@@ -75,17 +76,36 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
             }
 
             let updatedVotes = item.votes;
+            let updatedOptions = item.options;
+
             if (!myVote && newMyVote) {
               updatedVotes = [
                 ...item.votes,
                 { id: newMyVote.id, pollOptionIds: newMyVote.pollOptionIds },
               ];
+              updatedOptions = item.options?.map((option) => ({
+                ...option,
+                voteCount: newMyVote.pollOptionIds?.includes(option.id)
+                  ? option.voteCount + 1
+                  : option.voteCount,
+              }));
             }
             if (myVote && !newMyVote) {
               updatedVotes = item.votes.filter((vote) => vote.id !== myVote.id);
+              updatedOptions = item.options?.map((option) => ({
+                ...option,
+                voteCount: myVote.pollOptionIds?.includes(option.id)
+                  ? option.voteCount - 1
+                  : option.voteCount,
+              }));
             }
 
-            return { ...item, votes: updatedVotes, myVote: newMyVote };
+            return {
+              ...item,
+              votes: updatedVotes,
+              options: updatedOptions,
+              myVote: newMyVote,
+            };
           }),
         }));
         return { pages, pageParams: old.pageParams };
@@ -165,6 +185,17 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const isPending = isSubmitting || isRemoving;
   const selectedOptions = form.watch('selectedOptions');
 
+  const [showResults, setShowResults] = useState(hasVoted);
+
+  useEffect(() => {
+    if (hasVoted) {
+      // Delay to trigger the width transition after mount
+      const timeout = setTimeout(() => setShowResults(true), 50);
+      return () => clearTimeout(timeout);
+    }
+    setShowResults(false);
+  }, [hasVoted]);
+
   return (
     <div className="flex gap-4 pt-4">
       <UserProfileDrawer
@@ -221,6 +252,12 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                   <FormItem className="space-y-2">
                     {options?.map((option) => {
                       const isSelected = selectedOptions.includes(option.id);
+                      const votePercentage =
+                        totalVotes > 0
+                          ? Math.round(
+                              (option.voteCount / totalVotes) * 100,
+                            )
+                          : 0;
 
                       return (
                         <button
@@ -229,7 +266,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                           onClick={() => handleOptionToggle(option.id)}
                           disabled={isPending || hasVoted}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-md border px-3 py-2.5 text-left transition-colors',
+                            'relative flex w-full items-center justify-between overflow-hidden rounded-md border px-3 py-2.5 text-left transition-colors',
                             isSelected
                               ? 'border-primary bg-primary/10'
                               : 'border-input bg-background',
@@ -238,23 +275,42 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                             !hasVoted && 'cursor-pointer',
                           )}
                         >
-                          <span className="text-sm">{option.text}</span>
-                          {isSelected ? (
+                          {hasVoted && (
                             <div
                               className={cn(
-                                'bg-primary text-primary-foreground flex size-5 items-center justify-center',
-                                isMultipleChoice && !hasVoted
-                                  ? 'rounded-sm'
-                                  : 'rounded-full',
+                                'absolute inset-y-0 left-0 transition-all duration-500 ease-out',
+                                isSelected
+                                  ? 'bg-primary/15'
+                                  : 'bg-muted-foreground/10',
                               )}
-                            >
-                              <LuCheck className="size-3" />
-                            </div>
-                          ) : isMultipleChoice ? (
-                            <LuSquare className="text-muted-foreground size-5 rounded-sm" />
-                          ) : (
-                            <LuCircle className="text-muted-foreground size-5" />
+                              style={{
+                                width: showResults
+                                  ? `${votePercentage}%`
+                                  : '0%',
+                              }}
+                            />
                           )}
+                          <span className="relative z-10 text-sm">
+                            {option.text}
+                          </span>
+                          <div className="relative z-10 flex items-center gap-2">
+                            {isSelected ? (
+                              <div
+                                className={cn(
+                                  'bg-primary text-primary-foreground flex size-5 items-center justify-center',
+                                  isMultipleChoice && !hasVoted
+                                    ? 'rounded-sm'
+                                    : 'rounded-full',
+                                )}
+                              >
+                                <LuCheck className="size-3" />
+                              </div>
+                            ) : isMultipleChoice ? (
+                              <LuSquare className="text-muted-foreground size-5 rounded-sm" />
+                            ) : (
+                              <LuCircle className="text-muted-foreground size-5" />
+                            )}
+                          </div>
                         </button>
                       );
                     })}
