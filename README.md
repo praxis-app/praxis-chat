@@ -46,6 +46,18 @@ $ npm run start:client
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view and interact with the UI.
 
+## End-to-end testing (Playwright)
+
+```bash
+# One-time: install Chromium for Playwright
+$ npm run test:e2e:install
+
+# Run E2E tests (starts and cleans isolated Docker services automatically)
+$ npm run test:e2e
+```
+
+The E2E setup uses `docker-compose.e2e.yml` with fresh Postgres and Redis instances on each run. The first test is `e2e/00-sign-up.spec.ts`, and tests run serially (`workers: 1`) so signup stays first as additional E2E tests are added.
+
 ## Docker
 
 Install [Docker](https://docs.docker.com/engine/install) to use the following commands.

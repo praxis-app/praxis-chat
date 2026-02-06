@@ -16,6 +16,9 @@
     "types": "tsc -b",
     "test": "vitest run --config vitest.src.config.mts",
     "test:client": "vitest run --config vite.config.mts",
+    "test:e2e": "tsx --tsconfig ./tsconfig.src.json ./e2e/run-e2e.ts",
+    "test:e2e:headed": "tsx --tsconfig ./tsconfig.src.json ./e2e/run-e2e.ts --headed",
+    "test:e2e:install": "playwright install chromium",
     "test:llm": "vitest run --config src/chat-analysis/__tests__/vitest.llm.config.mts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
@@ -92,6 +95,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.58.1",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

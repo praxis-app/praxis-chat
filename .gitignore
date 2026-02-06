@@ -30,3 +30,7 @@ lerna-debug.log*
 # Uploaded content
 /content/*
 !/content/README.md
+
+# Playwright
+/playwright-report/
+/test-results/
