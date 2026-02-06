@@ -19,6 +19,7 @@ lerna-debug.log*
 # Editor / OS files
 .idea
 .claude
+.docs
 .DS_Store
 *.suo
 *.ntvs*
