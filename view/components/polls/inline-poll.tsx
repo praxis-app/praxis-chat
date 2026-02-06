@@ -1,4 +1,5 @@
 import { api } from '@/client/api-client';
+import { PollVoteBreakdown } from '@/components/polls/poll-vote-breakdown';
 import { FormattedText } from '@/components/shared/formatted-text';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -47,6 +48,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const totalVotes = votes?.length ?? 0;
 
   const [showResults, setShowResults] = useState(hasVoted);
+  const [showVoteBreakdown, setShowVoteBreakdown] = useState(false);
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
@@ -265,11 +267,25 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                       const votePercentage = getVotePercentage(option);
 
                       return (
-                        <button
+                        <div
                           key={option.id}
-                          type="button"
-                          onClick={() => handleOptionToggle(option.id)}
-                          disabled={isPending || hasVoted}
+                          role="button"
+                          tabIndex={hasVoted ? -1 : 0}
+                          onClick={() => {
+                            if (!hasVoted && !isPending) {
+                              handleOptionToggle(option.id);
+                            }
+                          }}
+                          onKeyDown={(event) => {
+                            if (
+                              !hasVoted &&
+                              !isPending &&
+                              (event.key === 'Enter' || event.key === ' ')
+                            ) {
+                              event.preventDefault();
+                              handleOptionToggle(option.id);
+                            }
+                          }}
                           className={cn(
                             'relative flex w-full items-center gap-3 overflow-hidden rounded-md border px-3 py-2.5 text-left transition-colors',
                             isSelected
@@ -300,7 +316,14 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                               {option.text}
                             </span>
                             {hasVoted && (
-                              <div className="text-muted-foreground text-xs">
+                              <button
+                                type="button"
+                                className="text-muted-foreground block cursor-pointer text-xs"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setShowVoteBreakdown(true);
+                                }}
+                              >
                                 <span className="font-medium">
                                   {votePercentage}%
                                 </span>
@@ -308,7 +331,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                                 {t('polls.labels.totalVotes', {
                                   count: option.voteCount,
                                 })}
-                              </div>
+                              </button>
                             )}
                           </div>
                           <div className="relative z-10 shrink-0 self-center">
@@ -329,7 +352,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                               <LuCircle className="text-muted-foreground size-5" />
                             )}
                           </div>
-                        </button>
+                        </div>
                       );
                     })}
                     <FormMessage />
@@ -367,7 +390,17 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
           <Separator className="my-1" />
 
           <div className="text-muted-foreground text-sm">
-            {t('polls.labels.totalVotes', { count: totalVotes })}
+            {hasVoted ? (
+              <button
+                type="button"
+                className="cursor-pointer"
+                onClick={() => setShowVoteBreakdown(true)}
+              >
+                {t('polls.labels.totalVotes', { count: totalVotes })}
+              </button>
+            ) : (
+              t('polls.labels.totalVotes', { count: totalVotes })
+            )}
             {config?.closingAt && (
               <>
                 {MIDDOT_WITH_SPACES}
@@ -381,6 +414,12 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
               </>
             )}
           </div>
+
+          <PollVoteBreakdown
+            poll={poll}
+            open={showVoteBreakdown}
+            onOpenChange={setShowVoteBreakdown}
+          />
         </Card>
       </div>
     </div>

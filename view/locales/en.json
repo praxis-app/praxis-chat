@@ -237,7 +237,8 @@
 
   "polls": {
     "headers": {
-      "create": "Create a Poll"
+      "create": "Create a Poll",
+      "voteBreakdown": "Vote Breakdown"
     },
     "descriptions": {
       "create": "Create a poll for your group to vote on."
