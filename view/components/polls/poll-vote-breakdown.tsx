@@ -11,12 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from '../ui/drawer';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface Props {
@@ -93,9 +88,7 @@ export const PollVoteBreakdown = ({ poll, open, onOpenChange }: Props) => {
               </DialogDescription>
             </VisuallyHidden>
           </DialogHeader>
-          {body && (
-            <p className="text-muted-foreground text-sm">{body}</p>
-          )}
+          {body && <p className="text-muted-foreground text-sm">{body}</p>}
           <p className="text-muted-foreground text-xs">
             {t('polls.labels.totalVotes', { count: totalVotes })}
           </p>
@@ -107,13 +100,11 @@ export const PollVoteBreakdown = ({ poll, open, onOpenChange }: Props) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
+      <DrawerContent className="min-h-[calc(100%-4.2rem)] px-4 pb-6">
         <DrawerHeader className="pt-5 pb-2">
           <DrawerTitle>{t('polls.headers.voteBreakdown')}</DrawerTitle>
         </DrawerHeader>
-        {body && (
-          <p className="text-muted-foreground text-sm">{body}</p>
-        )}
+        {body && <p className="text-muted-foreground text-sm">{body}</p>}
         <p className="text-muted-foreground text-xs">
           {t('polls.labels.totalVotes', { count: totalVotes })}
         </p>
