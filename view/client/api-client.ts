@@ -34,6 +34,7 @@ import {
 import {
   CreateVoteReq,
   CreateVoteRes,
+  PollOptionVoterRes,
   UpdateVoteReq,
   UpdateVoteRes,
 } from '@/types/vote.types';
@@ -297,6 +298,16 @@ class ApiClient {
   ) => {
     const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes/${voteId}`;
     return this.executeRequest<void>('delete', path);
+  };
+
+  getVotersByPollOption = async (
+    serverId: string,
+    channelId: string,
+    pollId: string,
+    pollOptionId: string,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes/poll-options/${pollOptionId}/voters`;
+    return this.executeRequest<{ voters: PollOptionVoterRes[] }>('get', path);
   };
 
   // -------------------------------------------------------------------------

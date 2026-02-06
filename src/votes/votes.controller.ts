@@ -23,3 +23,10 @@ export const deleteVote = async (req: Request, res: Response) => {
   const result = await votesService.deleteVote(req.params.voteId);
   res.json(result);
 };
+
+export const getVotersByPollOption = async (req: Request, res: Response) => {
+  const result = await votesService.getVotersByPollOption(
+    req.params.pollOptionId,
+  );
+  res.json(result);
+};

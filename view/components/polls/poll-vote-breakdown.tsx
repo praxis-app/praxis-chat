@@ -1,9 +1,14 @@
+import { api } from '@/client/api-client';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
+import { useServerData } from '@/hooks/use-server-data';
 import { cn } from '@/lib/shared.utils';
 import { PollOptionRes, PollRes } from '@/types/poll.types';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserAvatar } from '../users/user-avatar';
 import {
   Dialog,
   DialogContent,
@@ -16,17 +21,44 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface Props {
   poll: PollRes;
+  channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export const PollVoteBreakdown = ({ poll, open, onOpenChange }: Props) => {
+export const PollVoteBreakdown = ({
+  poll,
+  channelId,
+  open,
+  onOpenChange,
+}: Props) => {
   const { t } = useTranslation();
   const isDesktop = useIsDesktop();
+  const { serverId } = useServerData();
 
   const { body, options, votes, config } = poll;
   const isMultipleChoice = config?.multipleChoice ?? false;
   const totalVotes = votes?.length ?? 0;
+
+  const defaultTab = options?.[0]?.id ?? '';
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  const { data: votersData } = useQuery({
+    queryKey: [
+      'pollOptionVoters',
+      serverId,
+      channelId,
+      poll.id,
+      activeTab,
+    ],
+    queryFn: () => {
+      if (!serverId) {
+        throw new Error('Server ID is required');
+      }
+      return api.getVotersByPollOption(serverId, channelId, poll.id, activeTab);
+    },
+    enabled: open && !!activeTab && !!serverId,
+  });
 
   const getVotePercentage = (option: PollOptionRes) => {
     const totalOptionSelections =
@@ -41,10 +73,10 @@ export const PollVoteBreakdown = ({ poll, open, onOpenChange }: Props) => {
       : 0;
   };
 
-  const defaultTab = options?.[0]?.id ?? '';
+  const voters = votersData?.voters ?? [];
 
   const content = (
-    <Tabs defaultValue={defaultTab} className="mt-2">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
       <TabsList className="w-full">
         {options?.map((option) => (
           <TabsTrigger key={option.id} value={option.id}>
@@ -70,6 +102,27 @@ export const PollVoteBreakdown = ({ poll, open, onOpenChange }: Props) => {
                 style={{ width: `${percentage}%` }}
               />
             </div>
+
+            {voters.length > 0 ? (
+              <div className="mt-3 space-y-2">
+                {voters.map((voter) => (
+                  <div key={voter.id} className="flex items-center gap-2">
+                    <UserAvatar
+                      name={voter.displayName || voter.name}
+                      userId={voter.id}
+                      imageId={voter.profilePicture?.id}
+                    />
+                    <span className="text-sm">
+                      {voter.displayName || voter.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground mt-3 text-sm">
+                {t('polls.labels.noVotesYet')}
+              </p>
+            )}
           </TabsContent>
         );
       })}

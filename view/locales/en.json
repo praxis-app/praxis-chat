@@ -252,7 +252,8 @@
       "selectOne": "Select one answer",
       "selectMultiple": "Select one or more answers",
       "totalVotes_one": "{{count}} vote",
-      "totalVotes_other": "{{count}} votes"
+      "totalVotes_other": "{{count}} votes",
+      "noVotesYet": "No votes yet"
     },
     "placeholders": {
       "question": "What question do you want to ask?",

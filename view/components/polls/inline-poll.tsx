@@ -137,6 +137,9 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
         id: voteId,
         pollOptionIds: selectedOptions,
       });
+      queryClient.invalidateQueries({
+        queryKey: ['pollOptionVoters', serverId, channel.id, id],
+      });
     },
     onError: (error: Error) => {
       handleError(error);
@@ -153,6 +156,9 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
     onSuccess: () => {
       form.setValue('selectedOptions', []);
       updateFeedCache(undefined);
+      queryClient.invalidateQueries({
+        queryKey: ['pollOptionVoters', serverId, channel.id, id],
+      });
     },
     onError: (error: Error) => {
       handleError(error);
@@ -417,6 +423,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
 
           <PollVoteBreakdown
             poll={poll}
+            channelId={channel.id}
             open={showVoteBreakdown}
             onOpenChange={setShowVoteBreakdown}
           />
