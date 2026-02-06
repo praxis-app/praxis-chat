@@ -14,7 +14,7 @@ import { cn } from '@/lib/shared.utils';
 import { truncate } from '@/lib/text.utils';
 import { timeAgo, timeFromNow } from '@/lib/time.utils';
 import { ChannelRes, FeedItemRes, FeedQuery } from '@/types/channel.types';
-import { PollRes } from '@/types/poll.types';
+import { PollOptionRes, PollRes } from '@/types/poll.types';
 import { CurrentUser } from '@/types/user.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -46,6 +46,8 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const isMultipleChoice = config?.multipleChoice ?? false;
   const hasVoted = !!myVote?.pollOptionIds?.length;
   const totalVotes = votes?.length ?? 0;
+
+  const [showResults, setShowResults] = useState(hasVoted);
 
   const name = user.displayName || user.name;
   const truncatedName = truncate(name, 18);
@@ -156,6 +158,15 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
     },
   });
 
+  useEffect(() => {
+    if (hasVoted) {
+      // Delay to trigger the width transition after mount
+      const timeout = setTimeout(() => setShowResults(true), 50);
+      return () => clearTimeout(timeout);
+    }
+    setShowResults(false);
+  }, [hasVoted]);
+
   const handleOptionToggle = (optionId: string) => {
     const currentOptions = form.getValues('selectedOptions');
     const isSelected = currentOptions.includes(optionId);
@@ -185,16 +196,21 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const isPending = isSubmitting || isRemoving;
   const selectedOptions = form.watch('selectedOptions');
 
-  const [showResults, setShowResults] = useState(hasVoted);
+  const getVotePercentage = (option: PollOptionRes) => {
+    const totalOptionSelections =
+      options?.reduce((sum, option) => sum + option.voteCount, 0) ?? 0;
 
-  useEffect(() => {
-    if (hasVoted) {
-      // Delay to trigger the width transition after mount
-      const timeout = setTimeout(() => setShowResults(true), 50);
-      return () => clearTimeout(timeout);
-    }
-    setShowResults(false);
-  }, [hasVoted]);
+    const voteDenominator = isMultipleChoice
+      ? totalOptionSelections
+      : totalVotes;
+
+    const votePercentage =
+      voteDenominator > 0
+        ? Math.round((option.voteCount / voteDenominator) * 100)
+        : 0;
+
+    return votePercentage;
+  };
 
   return (
     <div className="flex gap-4 pt-4">
@@ -252,12 +268,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                   <FormItem className="space-y-2">
                     {options?.map((option) => {
                       const isSelected = selectedOptions.includes(option.id);
-                      const votePercentage =
-                        totalVotes > 0
-                          ? Math.round(
-                              (option.voteCount / totalVotes) * 100,
-                            )
-                          : 0;
+                      const votePercentage = getVotePercentage(option);
 
                       return (
                         <button
