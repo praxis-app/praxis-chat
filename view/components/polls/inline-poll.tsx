@@ -21,7 +21,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FaChartBar } from 'react-icons/fa';
 import { LuCheck, LuCircle, LuSquare } from 'react-icons/lu';
 import * as z from 'zod';
 
@@ -245,12 +244,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
           <div className="text-muted-foreground text-sm">{formattedDate}</div>
         </div>
 
-        <Card className="before:border-l-border relative w-full gap-3.5 rounded-md px-3 py-3.5 before:absolute before:top-0 before:bottom-0 before:left-0 before:mt-[-0.025rem] before:mb-[-0.025rem] before:w-3 before:rounded-l-md before:border-l-3">
-          <div className="text-muted-foreground flex items-center gap-1.5 font-medium">
-            <FaChartBar className="mb-0.5" />
-            {t('polls.labels.poll')}
-          </div>
-
+        <Card className="before:border-l-border relative w-full gap-3.5 rounded-md px-3 py-3.5 pt-2.5 before:absolute before:top-0 before:bottom-0 before:left-0 before:mt-[-0.025rem] before:mb-[-0.025rem] before:w-3 before:rounded-l-md before:border-l-3">
           {body && <FormattedText text={body} className="pt-1 pb-2" />}
 
           <Form {...form}>
@@ -277,7 +271,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                           onClick={() => handleOptionToggle(option.id)}
                           disabled={isPending || hasVoted}
                           className={cn(
-                            'relative flex w-full items-center justify-between overflow-hidden rounded-md border px-3 py-2.5 text-left transition-colors',
+                            'relative flex w-full items-center gap-3 overflow-hidden rounded-md border px-3 py-2.5 text-left transition-colors',
                             isSelected
                               ? 'border-primary bg-primary/10'
                               : 'border-input bg-background',
@@ -301,10 +295,23 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                               }}
                             />
                           )}
-                          <span className="relative z-10 text-sm">
-                            {option.text}
-                          </span>
-                          <div className="relative z-10 flex items-center gap-2">
+                          <div className="relative z-10 min-w-0 flex-1">
+                            <span className="text-sm font-medium">
+                              {option.text}
+                            </span>
+                            {hasVoted && (
+                              <div className="text-muted-foreground text-xs">
+                                <span className="font-medium">
+                                  {votePercentage}%
+                                </span>
+                                {MIDDOT_WITH_SPACES}
+                                {t('polls.labels.totalVotes', {
+                                  count: option.voteCount,
+                                })}
+                              </div>
+                            )}
+                          </div>
+                          <div className="relative z-10 shrink-0 self-center">
                             {isSelected ? (
                               <div
                                 className={cn(
