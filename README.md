@@ -56,8 +56,7 @@ $ npm run test:e2e:install
 $ npm run test:e2e
 ```
 
-The E2E setup uses `docker-compose.e2e.yml` with fresh Postgres and Redis instances on each run.  
-The first test is `e2e/00-sign-up.spec.ts`, and tests run serially (`workers: 1`) so signup stays first as additional E2E tests are added.
+The E2E setup uses `docker-compose.e2e.yml` with fresh Postgres and Redis instances on each run. The first test is `e2e/00-sign-up.spec.ts`, and tests run serially (`workers: 1`) so signup stays first as additional E2E tests are added.
 
 ## Docker
 
