@@ -24,6 +24,7 @@
   - Spans multiple files
 
 - Keep entries short and human-readable, but include enough metadata for future search/audits.
+- Include a brief summary of the prompt or query that prompted the substantial change (e.g. the user request or task that led to the work).
 - Use one file per substantial change with this naming convention:
   - `.docs/logs/YYYY-MM-DD-HHMM-short-slug.md` (UTC timestamp recommended).
 
@@ -38,6 +39,8 @@ area: src/messages, view/components/messages
 files_changed: 2-3 files
 lines_changed: '+128/-34'
 verification: `npm run check` passed
+prompt_summary: Short summary of the user request or query that prompted this change
+content: The body of this log entry - 1-3 sentences on what changed, why, and any other relevant details
 ---
 
 ## Summary
