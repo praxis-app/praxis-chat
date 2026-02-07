@@ -152,5 +152,5 @@ export const getVotersByPollOption = async (pollOptionId: string) => {
     };
   });
 
-  return { voters };
+  return voters;
 };
