@@ -1,4 +1,19 @@
 import { api } from '@/client/api-client';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserAvatar } from '@/components/users/user-avatar';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
 import { useServerData } from '@/hooks/use-server-data';
@@ -8,16 +23,6 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserAvatar } from '../users/user-avatar';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface Props {
   poll: PollRes;
@@ -44,13 +49,7 @@ export const PollVoteBreakdown = ({
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   const { data: votersData } = useQuery({
-    queryKey: [
-      'pollOptionVoters',
-      serverId,
-      channelId,
-      poll.id,
-      activeTab,
-    ],
+    queryKey: ['pollOptionVoters', serverId, channelId, poll.id, activeTab],
     queryFn: () => {
       if (!serverId) {
         throw new Error('Server ID is required');
@@ -132,7 +131,7 @@ export const PollVoteBreakdown = ({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="md:w-xl">
           <DialogHeader>
             <DialogTitle>{t('polls.headers.voteBreakdown')}</DialogTitle>
             <VisuallyHidden>
