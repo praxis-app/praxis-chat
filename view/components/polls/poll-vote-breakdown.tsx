@@ -129,9 +129,14 @@ export const PollVoteBreakdown = ({
       <DrawerContent className="min-h-[calc(100%-4.2rem)] px-4 pb-6">
         <DrawerHeader className="pt-5 pb-2">
           <DrawerTitle>{body}</DrawerTitle>
+          <VisuallyHidden>
+            <DialogDescription>
+              {t('polls.headers.voteBreakdown')}
+            </DialogDescription>
+          </VisuallyHidden>
         </DrawerHeader>
 
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground pt-1 pb-5 text-center text-sm">
           {t('polls.labels.totalVotes', { count: totalVotes })}
         </p>
         {content}
