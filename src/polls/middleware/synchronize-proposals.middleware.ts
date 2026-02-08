@@ -7,16 +7,16 @@ const HALF_HOUR_MS = 1000 * 60 * 30;
 
 let disableTimeout: NodeJS.Timeout | null = null;
 
-const synchronizePollsJob = CronJob.from({
+const synchronizeProposalsJob = CronJob.from({
   cronTime: CronExpression.EVERY_5_MINUTES,
   onTick: async () => {
-    await pollsService.synchronizePolls();
+    await pollsService.synchronizeProposals();
   },
 });
 
 const addDisableTimeout = () => {
   disableTimeout = setTimeout(() => {
-    synchronizePollsJob.stop();
+    synchronizeProposalsJob.stop();
     disableTimeout = null;
   }, HALF_HOUR_MS);
 };
@@ -32,17 +32,17 @@ const resetDisableTimeout = () => {
 /**
  * Synchronizes polls with regard to voting duration and ratifiability
  *
- * TODO: Implement consent decision making model. `synchronizePolls` basically
+ * TODO: Implement consent decision making model. `synchronizeProposals` basically
  * has no effect until consent is implemented, since it's the only model that
  * requires a set voting duration
  */
-export const synchronizePolls = async (
+export const synchronizeProposals = async (
   _req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!synchronizePollsJob.isActive) {
-    synchronizePollsJob.start();
+  if (!synchronizeProposalsJob.isActive) {
+    synchronizeProposalsJob.start();
   }
   if (disableTimeout === null) {
     addDisableTimeout();

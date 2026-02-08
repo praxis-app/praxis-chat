@@ -29,7 +29,7 @@ import { PollConfig } from './entities/poll-config.entity';
 import { PollOption } from './entities/poll-option.entity';
 import { Poll } from './entities/poll.entity';
 
-const POLL_SYNC_BATCH_SIZE = 20;
+const PROPOSAL_SYNC_BATCH_SIZE = 20;
 
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
@@ -487,9 +487,9 @@ export const ratifyPoll = async (pollId: string) => {
   });
 };
 
-/** Synchronizes polls with regard to voting duration and ratifiability */
-export const synchronizePolls = async () => {
-  const polls = await pollRepository.find({
+/** Synchronizes proposals with regard to voting duration and ratifiability */
+export const synchronizeProposals = async () => {
+  const proposals = await pollRepository.find({
     where: {
       config: { closingAt: Not(IsNull()) },
       pollType: 'proposal',
@@ -501,26 +501,26 @@ export const synchronizePolls = async () => {
     },
     relations: ['config'],
   });
-  if (polls.length === 0) {
+  if (proposals.length === 0) {
     return;
   }
 
-  // Synchronize polls in batches
-  for (let i = 0; i < polls.length; i += POLL_SYNC_BATCH_SIZE) {
-    const batch = polls.slice(i, i + POLL_SYNC_BATCH_SIZE);
-    const results = await Promise.allSettled(batch.map(synchronizePoll));
+  // Synchronize proposals in batches
+  for (let i = 0; i < proposals.length; i += PROPOSAL_SYNC_BATCH_SIZE) {
+    const batch = proposals.slice(i, i + PROPOSAL_SYNC_BATCH_SIZE);
+    const results = await Promise.allSettled(batch.map(synchronizeProposal));
     const failures = results.filter((r) => r.status === 'rejected');
 
     if (failures.length > 0) {
       console.error(
-        `Failed to synchronize ${failures.length} polls:`,
+        `Failed to synchronize ${failures.length} proposals:`,
         failures,
       );
       continue;
     }
 
     console.info(
-      `Synchronized ${batch.length} poll${batch.length > 1 || batch.length === 0 ? 's' : ''} 🗳️`,
+      `Synchronized ${batch.length} proposal${batch.length > 1 || batch.length === 0 ? 's' : ''} 🗳️`,
     );
   }
 };
@@ -653,7 +653,7 @@ const hasConsent = (
 };
 
 /** Synchronizes polls with regard to voting duration and ratifiability */
-const synchronizePoll = async (poll: Poll) => {
+const synchronizeProposal = async (poll: Poll) => {
   if (!poll.config.closingAt || Date.now() < Number(poll.config.closingAt)) {
     return;
   }
