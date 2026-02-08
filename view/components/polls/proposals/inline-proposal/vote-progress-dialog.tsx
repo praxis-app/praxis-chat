@@ -71,11 +71,12 @@ export const VoteProgressDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <button className="flex cursor-pointer items-center gap-1.5 hover:underline">
+        <button className="flex cursor-pointer items-center gap-1.5">
           <MdHowToVote className="text-muted-foreground" />
           <span>{t('proposals.labels.totalVotes', { count: quorum })}</span>
         </button>
       </DialogTrigger>
+
       <DialogContent className="md:w-lg">
         <DialogHeader>
           <DialogTitle className="mb-0">

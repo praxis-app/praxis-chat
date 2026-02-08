@@ -396,17 +396,13 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
           <Separator className="my-1" />
 
           <div className="text-muted-foreground text-sm">
-            {hasVoted ? (
-              <button
-                type="button"
-                className="cursor-pointer"
-                onClick={() => setShowVoteBreakdown(true)}
-              >
-                {t('polls.labels.totalVotes', { count: totalVotes })}
-              </button>
-            ) : (
-              t('polls.labels.totalVotes', { count: totalVotes })
-            )}
+            <button
+              type="button"
+              className="cursor-pointer"
+              onClick={() => setShowVoteBreakdown(true)}
+            >
+              {t('polls.labels.totalVotes', { count: totalVotes })}
+            </button>
             {config?.closingAt && (
               <>
                 {MIDDOT_WITH_SPACES}
