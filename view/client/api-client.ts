@@ -306,7 +306,7 @@ class ApiClient {
     pollId: string,
     pollOptionId: string,
   ) => {
-    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/votes/poll-options/${pollOptionId}/voters`;
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/options/${pollOptionId}/voters`;
     return this.executeRequest<{ voters: PollOptionVoterRes[] }>('get', path);
   };
 

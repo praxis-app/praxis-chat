@@ -7,6 +7,7 @@ import { uploadImage } from '../images/middleware/upload-image.middleware';
 import { verifyImage } from '../images/middleware/verify-image.middleware';
 import { votesRouter } from '../votes/votes.router';
 import { validatePoll } from './middleware/validate-poll.middleware';
+import { getVotersByPollOption } from '../votes/votes.controller';
 import { createPoll, getPollImage, uploadPollImage } from './polls.controller';
 
 const IMAGE_ROUTE = '/:pollId/images/:imageId';
@@ -27,6 +28,7 @@ pollsRouter.get(
 // Protected routes
 pollsRouter
   .use(authenticate, isChannelMember)
+  .get('/:pollId/options/:pollOptionId/voters', getVotersByPollOption)
   .post('/', validatePoll, createPoll)
   .post(`${IMAGE_ROUTE}/upload`, uploadImage, uploadPollImage)
   .use('/:pollId/votes', votesRouter);
