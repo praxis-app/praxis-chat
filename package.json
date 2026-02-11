@@ -6,7 +6,6 @@
     "start:dev": "nodemon --config ./nodemon.json",
     "start:client": "vite --host",
     "cli": "node ./cli/praxis-cli.mjs",
-    "routes": "node ./cli/praxis-cli.mjs routes",
     "build": "tsc -b && eslint src --ext ts && tsc --project ./tsconfig.src.json && tsc-alias -p ./tsconfig.src.json",
     "build:client": "tsc -b && eslint view --ext ts,tsx && vite build --emptyOutDir true",
     "typeorm": "tsx --tsconfig ./tsconfig.src.json ./node_modules/typeorm/cli.js",
