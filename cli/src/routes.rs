@@ -375,16 +375,32 @@ fn build_tree(
 // Flat output
 // ---------------------------------------------------------------------------
 
-fn print_flat(root: &RouterNode, path_filter: Option<&str>, color: bool) {
-    let mut routes: Vec<(String, String)> = Vec::new();
-    collect_flat_routes(root, "", &mut routes);
+/// A route tagged with its position in the mount hierarchy.
+struct FlatRoute {
+    full_path: String,
+    method: String,
+    /// Mount prefix of the router that owns this route
+    section: String,
+    /// Breadcrumb trail of resource names (e.g. ["servers", "channels", "messages"])
+    breadcrumb: Vec<String>,
+}
 
-    // Sort by path, then method
-    routes.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
+fn print_flat(root: &RouterNode, path_filter: Option<&str>, color: bool) {
+    let mut routes: Vec<FlatRoute> = Vec::new();
+    collect_flat_routes(root, "", None, &mut routes);
+
+    // Sort by section path first to keep sub-resources grouped under their
+    // parent, then by full path and method within each section
+    routes.sort_by(|a, b| {
+        a.section
+            .cmp(&b.section)
+            .then(a.full_path.cmp(&b.full_path))
+            .then(a.method.cmp(&b.method))
+    });
 
     // Apply filter
     if let Some(filter) = path_filter {
-        routes.retain(|(path, _)| path.contains(filter));
+        routes.retain(|r| r.full_path.contains(filter));
     }
 
     if routes.is_empty() {
@@ -398,24 +414,18 @@ fn print_flat(root: &RouterNode, path_filter: Option<&str>, color: bool) {
         println!("\nAPI Routes");
     }
 
-    // Group by top-level resource (first path segment after /api/)
-    let mut current_group = String::new();
-    for (path, method) in &routes {
-        let group = extract_group(path);
-        if group != current_group {
-            current_group = group.clone();
-            if color {
-                println!("\n  {}", group.bold());
-            } else {
-                println!("\n  {}", group);
-            }
+    let mut current_section = String::new();
+    for route in &routes {
+        if route.section != current_section {
+            current_section = route.section.clone();
+            print_section_header(&route.breadcrumb, color);
         }
 
         if color {
-            let colored_method = colorize_method(method);
-            println!("    {:<8} {}", colored_method, path);
+            let colored_method = colorize_method(&route.method);
+            println!("    {:<8} {}", colored_method, route.full_path);
         } else {
-            println!("    {:<8} {}", method, path);
+            println!("    {:<8} {}", route.method, route.full_path);
         }
     }
 
@@ -431,26 +441,68 @@ fn print_flat(root: &RouterNode, path_filter: Option<&str>, color: bool) {
     }
 }
 
-fn collect_flat_routes(node: &RouterNode, prefix: &str, routes: &mut Vec<(String, String)>) {
-    let current_path = normalize_path(&format!("{}{}", prefix, node.mount_path));
-
-    for leaf in &node.leaf_routes {
-        let full_path = normalize_path(&format!("{}{}", current_path, leaf.path));
-        routes.push((full_path, leaf.method.clone()));
-    }
-
-    for child in &node.children {
-        collect_flat_routes(child, &current_path, routes);
+fn print_section_header(breadcrumb: &[String], color: bool) {
+    if color {
+        let parts: Vec<String> = breadcrumb
+            .iter()
+            .enumerate()
+            .map(|(i, name)| {
+                if i == breadcrumb.len() - 1 {
+                    name.bold().to_string()
+                } else {
+                    name.dimmed().to_string()
+                }
+            })
+            .collect();
+        let separator = " > ".dimmed().to_string();
+        println!("\n  {}", parts.join(&separator));
+    } else {
+        println!("\n  {}", breadcrumb.join(" > "));
     }
 }
 
-fn extract_group(path: &str) -> String {
-    // Extract the segment after /api/
-    let parts: Vec<&str> = path.trim_start_matches('/').split('/').collect();
-    if parts.len() >= 2 {
-        format!("/{}", parts[1])
-    } else {
-        "/".to_string()
+/// Extract resource name from a mount path (e.g. "/:serverId/channels" -> "channels")
+fn mount_path_resource(mount_path: &str) -> String {
+    mount_path
+        .split('/')
+        .filter(|s| !s.is_empty() && !s.starts_with(':'))
+        .last()
+        .unwrap_or("root")
+        .to_string()
+}
+
+fn collect_flat_routes(
+    node: &RouterNode,
+    prefix: &str,
+    parent_breadcrumb: Option<&[String]>,
+    routes: &mut Vec<FlatRoute>,
+) {
+    let current_path = normalize_path(&format!("{}{}", prefix, node.mount_path));
+
+    // Build breadcrumb for this node.
+    // The root /api node passes `None` so its children start fresh
+    // with just their own resource name (e.g. ["servers"] not ["api", "servers"]).
+    let effective_breadcrumb: Vec<String> = match parent_breadcrumb {
+        None => Vec::new(),
+        Some(bc) => {
+            let mut new_bc = bc.to_vec();
+            new_bc.push(mount_path_resource(&node.mount_path));
+            new_bc
+        }
+    };
+
+    for leaf in &node.leaf_routes {
+        let full_path = normalize_path(&format!("{}{}", current_path, leaf.path));
+        routes.push(FlatRoute {
+            full_path,
+            method: leaf.method.clone(),
+            section: current_path.clone(),
+            breadcrumb: effective_breadcrumb.clone(),
+        });
+    }
+
+    for child in &node.children {
+        collect_flat_routes(child, &current_path, Some(&effective_breadcrumb), routes);
     }
 }
 
