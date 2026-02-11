@@ -19,6 +19,7 @@ lerna-debug.log*
 # Editor / OS files
 .idea
 .claude
+.docs
 .DS_Store
 *.suo
 *.ntvs*
@@ -32,3 +33,7 @@ lerna-debug.log*
 
 # Rust
 /cli/target
+
+# Playwright
+/playwright-report/
+/test-results/
