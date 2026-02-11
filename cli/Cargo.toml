@@ -9,7 +9,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "std"
 clap = { version = "4.5", features = ["derive", "env"] }
 dotenvy = "0.15"
 owo-colors = "4.0"
-sqlx = { version = "0.7", default-features = false, features = [
+sqlx = { version = "0.8", default-features = false, features = [
     "postgres",
     "runtime-tokio-native-tls",
     "chrono",
