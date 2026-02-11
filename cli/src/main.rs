@@ -1,6 +1,7 @@
 mod cli;
 mod db;
 mod proposal;
+mod routes;
 mod schema;
 mod utils;
 mod vote;
@@ -12,6 +13,7 @@ use sqlx::postgres::PgPoolOptions;
 use cli::{Cli, Commands};
 use db::build_database_url_from_env;
 use proposal::run_proposal_funnel;
+use routes::run_routes;
 use schema::run_schema;
 use utils::normalize_window;
 use vote::run_vote_stats;
@@ -22,6 +24,11 @@ const DEFAULT_MAX_CONNECTIONS: u32 = 5;
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let cli = Cli::parse();
+
+    // Routes command doesn't need a database connection
+    if let Commands::Routes { path, tree } = cli.command {
+        return run_routes(path, tree);
+    }
 
     let database_url = build_database_url_from_env()?;
 
@@ -58,6 +65,7 @@ async fn main() -> Result<()> {
         Commands::Schema => {
             run_schema(&pool).await?;
         }
+        Commands::Routes { .. } => unreachable!(),
     }
 
     Ok(())

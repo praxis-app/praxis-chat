@@ -41,4 +41,13 @@ pub enum Commands {
     },
     /// Print the current database schema (tables, columns, indexes, constraints, enums)
     Schema,
+    /// Print all Express API routes extracted from router files
+    Routes {
+        /// Filter routes by path substring
+        #[arg(long)]
+        path: Option<String>,
+        /// Display as nested tree instead of flat list
+        #[arg(long)]
+        tree: bool,
+    },
 }
