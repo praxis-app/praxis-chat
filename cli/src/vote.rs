@@ -91,10 +91,11 @@ pub async fn run_vote_stats(
             } else {
                 0.0
             };
+            let label = vote_type.as_deref().unwrap_or("unknown");
             println!(
                 "  {} {:<9} {:>6} ({:>5.1}%)",
                 "→".dimmed(),
-                color_vote(&vote_type),
+                color_vote(label),
                 count.to_string().bold(),
                 pct
             );
@@ -156,7 +157,7 @@ pub async fn run_vote_stats(
 
 #[derive(Debug, FromRow)]
 struct VoteTypeCount {
-    vote_type: String,
+    vote_type: Option<String>,
     count: i64,
 }
 
