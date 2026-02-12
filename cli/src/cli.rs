@@ -18,17 +18,8 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Summaries of proposal throughput and stage distribution
-    ProposalFunnel {
-        /// Optional channel to scope results
-        #[arg(long)]
-        channel_id: Option<Uuid>,
-        /// Limit of top channels to display
-        #[arg(long, default_value_t = 5)]
-        top_channels: u32,
-    },
-    /// Vote mix, turnout, and engagement stats
-    VoteStats {
+    /// Poll and proposal stats with vote breakdown
+    PollStats {
         /// Optional channel scope
         #[arg(long)]
         channel_id: Option<Uuid>,
@@ -38,6 +29,9 @@ pub enum Commands {
         /// How many high-participation polls to list (ignored when poll_id is set)
         #[arg(long, default_value_t = 5)]
         top_polls: u32,
+        /// Limit of top channels to display
+        #[arg(long, default_value_t = 5)]
+        top_channels: u32,
     },
     /// Print the current database schema (tables, columns, indexes, constraints, enums)
     Schema,
