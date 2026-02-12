@@ -130,19 +130,23 @@ export const MessageForm = ({ channelId, onSend }: Props) => {
       const optimisticImageUrls = currentImages.map((file) =>
         URL.createObjectURL(file),
       );
-      const optimisticImages: ImageRes[] = optimisticImageUrls.map(
-        (src, i) => ({
-          id: `temp-img-${i}-${crypto.randomUUID()}`,
+      const optimisticImages: ImageRes[] = optimisticImageUrls.map((src, i) => {
+        const uuid =
+          self.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+        const tempId = `temp-img-${i}-${uuid}`;
+
+        return {
+          id: tempId,
           isPlaceholder: true,
           createdAt: new Date().toISOString(),
 
           // TODO: Ensure image file isn't fetched from BE if its already cached
           src,
-        }),
-      );
+        };
+      });
 
       const optimisticMessage: MessageRes = {
-        id: `temp-${crypto.randomUUID()}`,
+        id: `temp-${self.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`,
         body,
         user: me
           ? {
