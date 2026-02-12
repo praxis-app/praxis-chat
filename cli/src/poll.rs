@@ -218,6 +218,7 @@ pub async fn run_poll_stats(
         FROM poll
         WHERE "createdAt" >= NOW() - ($1::int * INTERVAL '1 day')
           AND ($2::uuid IS NULL OR "channelId" = $2)
+          AND ($3::uuid IS NULL OR id = $3)
         GROUP BY day
         ORDER BY day DESC
         LIMIT 14
@@ -225,6 +226,7 @@ pub async fn run_poll_stats(
     )
     .bind(days)
     .bind(channel_id)
+    .bind(poll_id)
     .fetch_all(pool)
     .await?;
 
