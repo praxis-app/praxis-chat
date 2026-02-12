@@ -1,6 +1,7 @@
 use std::env;
 
 use anyhow::{Context, Result};
+use urlencoding::encode;
 
 pub fn build_database_url_from_env() -> Result<String> {
     let username = env_required("DB_USERNAME")?;
@@ -13,7 +14,11 @@ pub fn build_database_url_from_env() -> Result<String> {
 
     Ok(format!(
         "postgres://{}:{}@{}:{}/{}",
-        username, password, host, port, schema
+        encode(&username),
+        encode(&password),
+        host,
+        port,
+        encode(&schema),
     ))
 }
 

@@ -79,8 +79,8 @@ To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` fi
 The project includes a Rust-based CLI tool for both development and production operations. It provides utilities for viewing statistics, inspecting database schema, and more.
 
 ```bash
-# Example: view proposal funnel stats
-npm run cli -- proposal-funnel --days 14
+# Example: view poll and proposal stats
+npm run cli -- poll-stats --days 14
 
 # Example: print database schema
 npm run cli -- schema
