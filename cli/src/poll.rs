@@ -255,6 +255,7 @@ pub async fn run_poll_stats(
             WHERE p."createdAt" >= NOW() - ($1::int * INTERVAL '1 day')
               AND ($2::uuid IS NULL OR p."channelId" = $2)
             GROUP BY p.id
+            HAVING COUNT(v.id) > 0
             ORDER BY votes DESC, last_vote_at DESC NULLS LAST
             LIMIT $3::int
             "#,
