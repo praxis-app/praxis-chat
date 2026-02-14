@@ -1,11 +1,46 @@
 use std::collections::{HashMap, HashSet};
 use std::io::IsTerminal;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 
 use anyhow::{Context, Result};
 use glob::glob;
 use owo_colors::OwoColorize;
 use regex::Regex;
+
+// ---------------------------------------------------------------------------
+// Pre-compiled regexes
+// ---------------------------------------------------------------------------
+
+/// Matches `const FOO = '/path'` or `export const FOO = "/path"`
+static CONST_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"(?m)^(?:export\s+)?const\s+(\w+)\s*=\s*['"]([^'"]+)['"]"#).unwrap()
+});
+
+/// Matches `export const fooRouter = express.Router(...)`
+static ROUTER_DECL_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)(?:export\s+)?const\s+(\w+Router)\s*=\s*express\.Router").unwrap()
+});
+
+/// Matches `app.use('/api', appRouter)` in main.ts
+static APP_USE_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"app\.use\(\s*['"]([^'"]+)['"]\s*,\s*(\w+Router)\s*\)"#).unwrap()
+});
+
+/// Matches `.use('/path', someRouter)`
+static USE_MOUNT_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"\.use\(\s*['"]([^'"]+)['"]\s*,\s*(\w+Router)\s*\)"#).unwrap()
+});
+
+/// Matches `.get('/path', ...)`, `.post(...)`, etc.
+static ROUTE_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"\.(get|post|put|delete|patch)\(\s*(?:'([^']*)'|"([^"]*)"|`([^`]*)`|(\w+))\s*,"#)
+        .unwrap()
+});
+
+/// Matches template literal interpolation: `${VAR_NAME}`
+static INTERPOLATION_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\$\{(\w+)\}").unwrap());
 
 // ---------------------------------------------------------------------------
 // Data structures
@@ -133,18 +168,13 @@ fn parse_file(file_path: &Path) -> Result<Vec<ParsedRouter>> {
         .unwrap_or(false);
 
     // --- Extract local constants: `const FOO = '/path'` or `const FOO = "/path"`
-    let const_re =
-        Regex::new(r#"(?m)^(?:export\s+)?const\s+(\w+)\s*=\s*['"]([^'"]+)['"]"#).unwrap();
     let mut constants: HashMap<String, String> = HashMap::new();
-    for cap in const_re.captures_iter(&content) {
+    for cap in CONST_RE.captures_iter(&content) {
         constants.insert(cap[1].to_string(), cap[2].to_string());
     }
 
     // --- Extract router declarations
     //     `export const fooRouter = express.Router(...)`
-    let router_decl_re =
-        Regex::new(r"(?m)(?:export\s+)?const\s+(\w+Router)\s*=\s*express\.Router").unwrap();
-
     let mut routers: Vec<ParsedRouter> = Vec::new();
 
     if is_main {
@@ -155,9 +185,7 @@ fn parse_file(file_path: &Path) -> Result<Vec<ParsedRouter>> {
             mount_calls: Vec::new(),
         };
 
-        let app_use_re =
-            Regex::new(r#"app\.use\(\s*['"]([^'"]+)['"]\s*,\s*(\w+Router)\s*\)"#).unwrap();
-        for cap in app_use_re.captures_iter(&content) {
+        for cap in APP_USE_RE.captures_iter(&content) {
             main_router.mount_calls.push(MountCall {
                 path: cap[1].to_string(),
                 router_name: cap[2].to_string(),
@@ -168,7 +196,7 @@ fn parse_file(file_path: &Path) -> Result<Vec<ParsedRouter>> {
     }
 
     // Find all router variable names declared in this file
-    let declared_names: Vec<String> = router_decl_re
+    let declared_names: Vec<String> = ROUTER_DECL_RE
         .captures_iter(&content)
         .map(|cap| cap[1].to_string())
         .collect();
@@ -213,11 +241,9 @@ fn extract_routes_for_router(
     // with whitespace or a dot (indicating a new statement).
     let blocks = extract_router_blocks(content, router_name);
 
-    let use_mount_re = Regex::new(r#"\.use\(\s*['"]([^'"]+)['"]\s*,\s*(\w+Router)\s*\)"#).unwrap();
-
     for block in &blocks {
         // Extract mount calls
-        for cap in use_mount_re.captures_iter(block) {
+        for cap in USE_MOUNT_RE.captures_iter(block) {
             parsed.mount_calls.push(MountCall {
                 path: cap[1].to_string(),
                 router_name: cap[2].to_string(),
@@ -296,12 +322,7 @@ fn extract_leaf_routes(
 ) {
     // Match: .get('/path', ...) or .post('/path', ...) etc.
     // Path can be a string literal, template literal, or variable reference
-    let route_re = Regex::new(
-        r#"\.(get|post|put|delete|patch)\(\s*(?:'([^']*)'|"([^"]*)"|`([^`]*)`|(\w+))\s*,"#,
-    )
-    .unwrap();
-
-    for cap in route_re.captures_iter(block) {
+    for cap in ROUTE_RE.captures_iter(block) {
         let method = cap[1].to_uppercase();
         let raw_path = cap
             .get(2)
@@ -320,8 +341,7 @@ fn extract_leaf_routes(
 /// constant values. E.g. `${IMAGE_ROUTE}/upload` becomes `/:messageId/images/:imageId/upload`.
 fn resolve_path(raw: &str, constants: &HashMap<String, String>) -> String {
     // Handle template literal interpolation: ${VAR_NAME}
-    let interpolation_re = Regex::new(r"\$\{(\w+)\}").unwrap();
-    let resolved = interpolation_re.replace_all(raw, |caps: &regex::Captures| {
+    let resolved = INTERPOLATION_RE.replace_all(raw, |caps: &regex::Captures| {
         let var_name = &caps[1];
         constants.get(var_name).cloned().unwrap_or(raw.to_string())
     });
