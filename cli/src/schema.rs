@@ -4,6 +4,8 @@ use anyhow::Result;
 use owo_colors::OwoColorize;
 use sqlx::{FromRow, PgPool};
 
+use crate::utils::{print_header, print_section_label};
+
 pub async fn run_schema(pool: &PgPool) -> Result<()> {
     let color = std::io::stdout().is_terminal();
 
@@ -36,11 +38,7 @@ async fn print_enums(pool: &PgPool, color: bool) -> Result<()> {
     .await?;
 
     if !enums.is_empty() {
-        if color {
-            println!("\n{}", "Enums".bold());
-        } else {
-            println!("\nEnums");
-        }
+        print_header("Enums", color);
         for EnumInfo { name, values } in enums {
             if color {
                 println!(
@@ -113,11 +111,7 @@ async fn print_columns(pool: &PgPool, table_name: &str, color: bool) -> Result<(
     .fetch_all(pool)
     .await?;
 
-    if color {
-        println!("  {}", "Columns:".dimmed());
-    } else {
-        println!("  Columns:");
-    }
+    print_section_label("Columns:", color);
 
     for ColumnInfo {
         name,
@@ -167,11 +161,7 @@ async fn print_indexes(pool: &PgPool, table_name: &str, color: bool) -> Result<(
     .await?;
 
     if !indexes.is_empty() {
-        if color {
-            println!("  {}", "Indexes:".dimmed());
-        } else {
-            println!("  Indexes:");
-        }
+        print_section_label("Indexes:", color);
 
         for IndexInfo { name, definition } in indexes {
             let is_unique = definition.to_lowercase().contains("unique");
@@ -235,11 +225,7 @@ async fn print_constraints(pool: &PgPool, table_name: &str, color: bool) -> Resu
     .await?;
 
     if !constraints.is_empty() {
-        if color {
-            println!("  {}", "Constraints:".dimmed());
-        } else {
-            println!("  Constraints:");
-        }
+        print_section_label("Constraints:", color);
 
         for ConstraintInfo {
             name,

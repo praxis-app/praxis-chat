@@ -4,7 +4,7 @@ use owo_colors::OwoColorize;
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
-use crate::utils::{color_stage, color_vote, format_number, humanize};
+use crate::utils::{color_stage, color_vote, format_number, humanize, pct};
 
 pub async fn run_poll_stats(
     pool: &PgPool,
@@ -49,17 +49,12 @@ pub async fn run_poll_stats(
     );
 
     for PollTypeCount { poll_type, count } in &poll_type_counts {
-        let pct = if total_polls > 0 {
-            (*count as f64 / total_polls as f64) * 100.0
-        } else {
-            0.0
-        };
         println!(
             "  {} {:<10} {:>6} ({:>5.1}%)",
             "→".dimmed(),
             poll_type.bold(),
             count.to_string().bold(),
-            pct
+            pct(*count, total_polls)
         );
     }
 
@@ -87,17 +82,12 @@ pub async fn run_poll_stats(
     if !stage_counts.is_empty() {
         println!("\n{}", "Proposal Stages".bold());
         for StageCount { stage, count } in &stage_counts {
-            let pct = if total_proposals > 0 {
-                (*count as f64 / total_proposals as f64) * 100.0
-            } else {
-                0.0
-            };
             println!(
                 "  {} {:<10} {:>6} ({:>5.1}%)",
                 "→".dimmed(),
                 color_stage(stage),
                 count.to_string().bold(),
-                pct
+                pct(*count, total_proposals)
             );
         }
     }
@@ -166,18 +156,13 @@ pub async fn run_poll_stats(
 
     if !vote_mix.is_empty() {
         for VoteTypeCount { vote_type, count } in &vote_mix {
-            let pct = if total_votes > 0 {
-                (*count as f64 / total_votes as f64) * 100.0
-            } else {
-                0.0
-            };
             let label = vote_type.as_deref().unwrap_or("unknown");
             println!(
                 "  {} {:<9} {:>6} ({:>5.1}%)",
                 "→".dimmed(),
                 color_vote(label),
                 count.to_string().bold(),
-                pct
+                pct(*count, total_votes)
             );
         }
     }

@@ -38,6 +38,30 @@ pub fn color_vote(vote: &str) -> String {
     }
 }
 
+pub fn pct(count: i64, total: i64) -> f64 {
+    if total > 0 {
+        (count as f64 / total as f64) * 100.0
+    } else {
+        0.0
+    }
+}
+
+pub fn print_header(text: &str, color: bool) {
+    if color {
+        println!("\n{}", text.bold());
+    } else {
+        println!("\n{}", text);
+    }
+}
+
+pub fn print_section_label(text: &str, color: bool) {
+    if color {
+        println!("  {}", text.dimmed());
+    } else {
+        println!("  {}", text);
+    }
+}
+
 pub fn humanize(ts: DateTime<Utc>) -> String {
     let now = Utc::now();
     let delta = now - ts;
