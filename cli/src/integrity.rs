@@ -1,13 +1,17 @@
+use std::collections::HashSet;
+use std::path::Path;
+
 use anyhow::Result;
 use owo_colors::OwoColorize;
 use sqlx::{FromRow, PgPool};
 
-pub async fn run_integrity_check(pool: &PgPool) -> Result<()> {
+pub async fn run_integrity_check(pool: &PgPool, content_path: &Path) -> Result<()> {
     println!("\n{}", "Integrity Check".bold().underline());
 
     let mut total_anomalies: i64 = 0;
 
     total_anomalies += check_orphaned_images(pool).await?;
+    total_anomalies += check_orphaned_image_files(pool, content_path).await?;
     total_anomalies += check_polls_missing_config(pool).await?;
     total_anomalies += check_polls_missing_action(pool).await?;
     total_anomalies += check_impossible_vote_states(pool).await?;
@@ -51,6 +55,48 @@ async fn check_orphaned_images(pool: &PgPool) -> Result<i64> {
 
     print_check("Orphaned images (no owner)", row.count);
     Ok(row.count)
+}
+
+/// Files in the content directory that have no matching image row in the database
+async fn check_orphaned_image_files(pool: &PgPool, content_path: &Path) -> Result<i64> {
+    if !content_path.is_dir() {
+        print_check(
+            "Orphaned image files (no DB row)",
+            0,
+        );
+        return Ok(0);
+    }
+
+    let db_filenames: HashSet<String> = sqlx::query_scalar::<_, String>(
+        r#"SELECT filename FROM image WHERE filename IS NOT NULL"#,
+    )
+    .fetch_all(pool)
+    .await?
+    .into_iter()
+    .collect();
+
+    let mut orphaned_count: i64 = 0;
+    for entry in std::fs::read_dir(content_path)? {
+        let entry = entry?;
+        let file_name = entry.file_name().to_string_lossy().to_string();
+
+        // Skip non-image files like README.md
+        if !file_name.ends_with(".jpeg")
+            && !file_name.ends_with(".jpg")
+            && !file_name.ends_with(".png")
+            && !file_name.ends_with(".gif")
+            && !file_name.ends_with(".webp")
+        {
+            continue;
+        }
+
+        if !db_filenames.contains(&file_name) {
+            orphaned_count += 1;
+        }
+    }
+
+    print_check("Orphaned image files (no DB row)", orphaned_count);
+    Ok(orphaned_count)
 }
 
 /// Polls that have no matching poll_config row

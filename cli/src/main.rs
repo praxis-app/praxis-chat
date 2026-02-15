@@ -61,7 +61,8 @@ async fn main() -> Result<()> {
             run_schema(&pool).await?;
         }
         Commands::IntegrityCheck => {
-            run_integrity_check(&pool).await?;
+            let content_path = std::path::Path::new("../content");
+            run_integrity_check(&pool, content_path).await?;
         }
         Commands::Routes { .. } => unreachable!(),
     }
