@@ -25,6 +25,10 @@ Supports `--days <int>` to control the lookback window (max 5 years).
 
 - `schema` – prints the current database schema including tables, columns with data types, indexes, constraints, and enums.
 
+### Development commands
+
+- `routes` – prints all Express API routes extracted from router files. Supports `--path <substring>` to filter and `--tree` for a nested view.
+
 ## Future commands
 
 The CLI is designed to expand with additional utilities for:
@@ -71,6 +75,9 @@ npm run cli -- poll-stats --days 90 --top-channels 10
 
 # Print database schema
 npm run cli -- schema
+
+# List all API routes
+npm run cli -- routes
 ```
 
 The CLI stays out of the primary workflow; running it is entirely optional but provides quick operational awareness during incident reviews and development tasks.
