@@ -40,21 +40,6 @@ The CLI is designed to expand with additional utilities for:
 - Trigger a DB backup, list recent backups, restore
 - Health check / "is anything broken?" button
 
-## Query verification
-
-Because the CLI uses dynamic `sqlx` queries, you can still verify them via:
-
-```bash
-export DATABASE_URL="postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_SCHEMA}"
-cd cli
-cargo sqlx prepare -- --database-url "$DATABASE_URL"
-# or, if you prefer, dry-run your existing migrations
-sqlx migrate run \
-  --source ../src/database/migrations \
-  --database-url "$DATABASE_URL" \
-  --dry-run
-```
-
 ## Environment variables
 
 - `DB_USERNAME`, `DB_PASSWORD`, `DB_SCHEMA`, `DB_HOST`, `DB_PORT` – same variables used by the rest of the Praxis stack.
