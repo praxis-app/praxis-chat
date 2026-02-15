@@ -36,7 +36,6 @@ The CLI is designed to expand with additional utilities for:
 - Inspect config / environment variables (for "works on my machine")
 - Viewing and filtering application logs with custom views
 - Inspect background jobs or queues, retries, and failures
-- Seed / reset database, with a variety of scenarios
 - Trigger a DB backup, list recent backups, restore
 - Health check / "is anything broken?" button
 
