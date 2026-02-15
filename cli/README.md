@@ -33,11 +33,19 @@ Supports `--days <int>` to control the lookback window (max 5 years).
 
 The CLI is designed to expand with additional utilities for:
 
-- Inspect config / environment variables (for "works on my machine")
-- Viewing and filtering application logs with custom views
-- Inspect background jobs or queues, retries, and failures
-- Trigger a DB backup, list recent backups, restore
-- Health check / "is anything broken?" button
+- `activity-heatmap` – ASCII day × hour heatmap for messages, polls, and votes
+- `channel-activity` – per-channel totals, unique participants, vote/message ratio, fastest-growing channels
+- `code-hotspots` – largest services/components, TODO/FIXME density, complexity heuristics
+- `db-activity` – active PostgreSQL sessions, query runtime, wait events, blocked state
+- `db-backup` – trigger a DB backup, list recent backups, restore
+- `db-locks` – blocker → blocked tree, lock types, blocked durations, relation/query context
+- `decision-funnel` – stage conversion rates (voting → ratified/closed/revision) and median time-to-ratify
+- `env-check` – inspect config and environment variables (for "works on my machine")
+- `image-backlog` – stale upload placeholders by type, oldest placeholders, affected channels/polls
+- `integrity-check` – detect orphaned images, invalid foreign keys, polls missing config/action, impossible vote states
+- `logs` – view and filter application logs with custom views
+- `permission-audit` – who has `manage` scope, roles with no members, overlapping grants, unexpected effective powers
+- `route-guards` – static check for write endpoints missing auth/permission middleware
 
 ## Environment variables
 
