@@ -76,7 +76,7 @@ To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` fi
 
 ## CLI
 
-The project includes a Rust-based CLI tool for both development and production operations. It provides utilities for viewing statistics, inspecting database schema, and more.
+The project includes a Rust-based CLI tool for both development and production operations.
 
 ```bash
 # Example: view poll and proposal stats
