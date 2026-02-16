@@ -86,9 +86,23 @@ $ npm run typeorm:run
 
 To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` file. This will run migrations on startup via `start-prod.sh`.
 
+## CLI
+
+The project includes a Rust-based CLI tool for both development and production operations.
+
+```bash
+# Example: view poll and proposal stats
+npm run cli -- poll-stats --days 14
+
+# Example: print database schema
+npm run cli -- schema
+```
+
+See the [CLI README](cli/README.md) for full documentation.
+
 ## Documentation
 
-For detailed documentation on architecture, deployment, planned features, and implementation details, see the [docs directory](docs/README.md).
+For detailed documentation on architecture, deployment, planned features, and implementation details, see the [/docs](docs/README.md) directory.
 
 ## Contributions
 
