@@ -71,19 +71,20 @@ export const VoteProgressDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <button className="flex cursor-pointer items-center gap-1.5 hover:underline">
+        <button className="flex cursor-pointer items-center gap-1.5">
           <MdHowToVote className="text-muted-foreground" />
-          <span>{t('polls.labels.totalVotes', { count: quorum })}</span>
+          <span>{t('proposals.labels.totalVotes', { count: quorum })}</span>
         </button>
       </DialogTrigger>
+
       <DialogContent className="md:w-lg">
         <DialogHeader>
           <DialogTitle className="mb-0">
-            {t('polls.headers.voteProgress')}
+            {t('proposals.headers.voteProgress')}
           </DialogTitle>
           <VisuallyHidden>
             <DialogDescription>
-              {t('polls.headers.voteProgress')}
+              {t('proposals.headers.voteProgress')}
             </DialogDescription>
           </VisuallyHidden>
         </DialogHeader>
@@ -91,7 +92,7 @@ export const VoteProgressDialog = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">
-                {t('polls.labels.thresholdProgress')}
+                {t('proposals.labels.thresholdProgress')}
               </span>
               <span
                 className={
@@ -101,13 +102,13 @@ export const VoteProgressDialog = ({
                 }
               >
                 {isAgreementMet
-                  ? t('polls.labels.thresholdMet')
-                  : t('polls.labels.thresholdNotMet')}
+                  ? t('proposals.labels.thresholdMet')
+                  : t('proposals.labels.thresholdNotMet')}
               </span>
             </div>
             <Progress value={agreementsPercentage} />
             <p className="text-muted-foreground text-sm">
-              {t('polls.descriptions.thresholdStatus', {
+              {t('proposals.descriptions.thresholdStatus', {
                 current: yesVotes,
                 required: requiredAgreements,
                 threshold: config.agreementThreshold,
@@ -119,7 +120,7 @@ export const VoteProgressDialog = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">
-                  {t('polls.labels.quorumProgress')}
+                  {t('proposals.labels.quorumProgress')}
                 </span>
                 <span
                   className={
@@ -129,13 +130,13 @@ export const VoteProgressDialog = ({
                   }
                 >
                   {isQuorumMet
-                    ? t('polls.labels.quorumMet')
-                    : t('polls.labels.quorumNotMet')}
+                    ? t('proposals.labels.quorumMet')
+                    : t('proposals.labels.quorumNotMet')}
                 </span>
               </div>
               <Progress value={quorumPercentage} />
               <p className="text-muted-foreground text-sm">
-                {t('polls.descriptions.quorumStatus', {
+                {t('proposals.descriptions.quorumStatus', {
                   current: quorum,
                   required: requiredQuorum,
                   threshold: config.quorumThreshold,

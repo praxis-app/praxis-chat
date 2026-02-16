@@ -20,7 +20,12 @@ interface Props {
   stage: PollStage;
 }
 
-export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) => {
+export const ProposalVoteButtons = ({
+  channel,
+  pollId,
+  myVote,
+  stage,
+}: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { serverId } = useServerData();
@@ -80,7 +85,11 @@ export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) =
         }
         const pages = oldData.pages.map((page) => {
           const feed = page.feed.map((item) => {
-            if (item.type !== 'poll' || item.id !== pollId) {
+            if (
+              item.id !== pollId ||
+              item.type !== 'poll' ||
+              item.pollType !== 'proposal'
+            ) {
               return item;
             }
 
@@ -135,7 +144,7 @@ export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) =
       });
 
       if (result.isRatifyingVote) {
-        toast(t('polls.prompts.ratifiedSuccess'));
+        toast(t('proposals.prompts.ratifiedSuccess'));
       }
     },
     onError(error: Error) {
@@ -145,15 +154,15 @@ export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) =
 
   const handleVoteBtnClick = (voteType: VoteType) => {
     if (!isLoggedIn) {
-      toast(t('polls.prompts.signInToVote'));
+      toast(t('proposals.prompts.signInToVote'));
       return;
     }
     if (stage === 'closed') {
-      toast(t('polls.prompts.noVotingAfterClose'));
+      toast(t('proposals.prompts.noVotingAfterClose'));
       return;
     }
     if (stage === 'ratified') {
-      toast(t('polls.prompts.noVotingAfterRatification'));
+      toast(t('proposals.prompts.noVotingAfterRatification'));
       return;
     }
     castVote(voteType);
@@ -173,7 +182,7 @@ export const ProposalVoteButtons = ({ channel, pollId, myVote, stage }: Props) =
           onClick={() => handleVoteBtnClick(vote)}
           disabled={isPending}
         >
-          {t(`polls.actions.${vote}`)}
+          {t(`proposals.actions.${vote}`)}
         </Button>
       ))}
     </div>

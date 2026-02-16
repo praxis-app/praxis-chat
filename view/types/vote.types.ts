@@ -19,6 +19,13 @@ export type UpdateVoteRes = {
   isRatifyingVote: boolean;
 };
 
+export interface PollOptionVoterRes {
+  id: string;
+  name: string;
+  displayName?: string;
+  profilePicture: { id: string } | null;
+}
+
 export interface CreateVoteReq {
   voteType?: VoteType;
   pollOptionIds?: string[];

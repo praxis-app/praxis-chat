@@ -177,6 +177,49 @@ npm run check          # Full verification: types, lint, tests (client + server)
 - Skip for changes that only affect documentation
 - When in doubt about whether a change is "small", err on the side of running the check
 
+## Substantial change logging
+
+- For every substantial change, add a new log entry file in `.docs/logs/`.
+- A change is substantial when any of the following conditions are true:
+  - Introduces a new feature or significant functionality changes
+  - Changes more than 100 lines of code in total (added + removed)
+  - Fixes a bug that is likely to be encountered by users
+  - Improves the performance of the application
+  - Spans multiple files
+
+- Keep entries short and human-readable, but include enough metadata for future search/audits.
+- Include a brief summary of the prompt or query that prompted the substantial change (e.g. the user request or task that led to the work).
+- Use one file per substantial change with this naming convention:
+  - `.docs/logs/YYYY-MM-DD-HHMM-short-slug.md` (UTC timestamp recommended).
+
+### Recommended entry format:
+
+```md
+---
+date: 2026-02-06T15:45:00Z
+author: claude
+verification: `npm run check` passed|failed|skipped:reason
+change_type: feat|fix|refactor|perf|docs|chore
+area: src/messages, view/components/messages
+lines_changed: '+128/-34'
+files_changed: 2
+prompt_summary: Short summary of the user request or query that prompted this change
+content: The body of this log entry - 1-3 sentences on what changed, why, and any other relevant details
+---
+
+## Summary
+
+1-3 sentences on what changed.
+
+## Why
+
+Reason for the change and intended outcome.
+
+## Risks / Follow-ups
+
+Known risks, migrations, or next steps.
+```
+
 ## Git command restrictions
 
 - Do not run git commands that stage, commit, amend, stash, or rewrite history (`git add`, `git commit`, `git reset`, etc.); human maintainers own all source-control actions.

@@ -1,8 +1,8 @@
 import { getPermissionText } from '@/lib/role.utils';
 import { ServerPermissionKeys } from '@/types/role.types';
 import { UseFormSetValue } from 'react-hook-form';
-import { Label } from '../../ui/label';
-import { Switch } from '../../ui/switch';
+import { Label } from '../../../ui/label';
+import { Switch } from '../../../ui/switch';
 import { CreateProposalFormSchema } from '../create-proposal-form/create-proposal-form.types';
 
 interface Props {

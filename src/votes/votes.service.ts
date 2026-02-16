@@ -2,8 +2,10 @@ import { VoteType } from '@common/votes/vote.types';
 import { FindOptionsWhere } from 'typeorm';
 import { dataSource } from '../database/data-source';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
+import { PollOptionSelection } from '../polls/entities/poll-option-selection.entity';
 import { Poll } from '../polls/entities/poll.entity';
 import * as pollsService from '../polls/polls.service';
+import * as usersService from '../users/users.service';
 import { Vote } from './vote.entity';
 
 interface VoteDto {
@@ -13,6 +15,9 @@ interface VoteDto {
 
 const pollRepository = dataSource.getRepository(Poll);
 const voteRepository = dataSource.getRepository(Vote);
+
+const pollOptionSelectionRepository =
+  dataSource.getRepository(PollOptionSelection);
 
 export const getVote = async (id: string, relations?: string[]) => {
   return voteRepository.findOneOrFail({ where: { id }, relations });
@@ -123,4 +128,29 @@ export const updateVote = async (
 
 export const deleteVote = async (voteId: string) => {
   return voteRepository.delete(voteId);
+};
+
+export const getVotersByPollOption = async (pollOptionId: string) => {
+  const selections = await pollOptionSelectionRepository.find({
+    where: { pollOptionId },
+    relations: ['vote', 'vote.user'],
+  });
+
+  const userIds = selections.map((selection) => selection.vote.user.id);
+  const profilePicturesMap =
+    await usersService.getUserProfilePicturesMap(userIds);
+
+  const voters = selections.map((selection) => {
+    const { id, name, displayName } = selection.vote.user;
+    const profilePicture = profilePicturesMap[id] ?? null;
+
+    return {
+      id,
+      name,
+      displayName,
+      profilePicture: profilePicture ? { id: profilePicture.id } : null,
+    };
+  });
+
+  return voters;
 };

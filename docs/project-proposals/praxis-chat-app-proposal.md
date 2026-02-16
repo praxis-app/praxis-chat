@@ -37,20 +37,20 @@ The V1 scope matches the current roadmap for the project. The feature estimates 
 
 ### Decision-Making (about 4.5 months total)
 
-- Proposals and voting: Core feature for structured group decisions (2.5 wks).
-- General proposal type, manual: Non-functional, user defined proposals (2.5 wks).
+- Proposals and voting: Core feature for structured group decisions (2.5 wks). [DONE ✅]
+- General proposal type, manual: Non-functional, user defined proposals (2.5 wks). [DONE ✅]
 - Proposals to change settings: Server-level settings changes executed through proposals (2.0 wks).
-- Proposals to change roles: Role and permission changes executed through proposals (2.0 wks).
+- Proposals to change roles: Role and permission changes executed through proposals (2.0 wks). [DONE ✅]
 - Proposals to plan events: Integrated decision flow for event planning (1.0 wk).
 - Majority vote model: Standard majority-based voting system (2.5 wks).
-- Model of consensus: Decision model requiring full or near unanimous agreement (2.0 wks).
+- Model of consensus: Decision model requiring full or near unanimous agreement (2.0 wks). [DONE ✅]
 - Consent model: A decision passes unless objections are raised (2.0 wks).
-- Basic polls: Lightweight, informal decision-making or preference collection (2.5 wks).
+- Basic polls: Lightweight, informal decision-making or preference collection (2.5 wks). [IN PROGRESS 🏃‍♂️]
 
 ### Auxiliary Features (about 1.5 months total)
 
 - Demo mode (PoC): Simplified environment for showcasing functionality (1.5 wks).
-- Server management: Manage and moderate multiple chat "servers" (workspaces) per instance (1.5 wks).
+- Server management: Manage and moderate multiple chat "servers" (workspaces) per instance (1.5 wks). [DONE ✅]
 - Basic search: Search messages, proposals, threads, and forum posts (1.0 wk).
 - Notifications: Real-time updates and push alerts (1.0 wk).
 

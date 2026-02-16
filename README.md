@@ -46,6 +46,18 @@ $ npm run start:client
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to view and interact with the UI.
 
+## End-to-end testing (Playwright)
+
+```bash
+# One-time: install Chromium for Playwright
+$ npm run test:e2e:install
+
+# Run E2E tests (starts and cleans isolated Docker services automatically)
+$ npm run test:e2e
+```
+
+The E2E setup uses `docker-compose.e2e.yml` with fresh Postgres and Redis instances on each run. The first test is `e2e/00-sign-up.spec.ts`, and tests run serially (`workers: 1`) so signup stays first as additional E2E tests are added.
+
 ## Docker
 
 Install [Docker](https://docs.docker.com/engine/install) to use the following commands.
@@ -74,9 +86,23 @@ $ npm run typeorm:run
 
 To run migrations in production, set `DB_MIGRATIONS` to `true` in your `.env` file. This will run migrations on startup via `start-prod.sh`.
 
+## CLI
+
+The project includes a Rust-based CLI tool for both development and production operations.
+
+```bash
+# Example: view poll and proposal stats
+npm run cli -- poll-stats --days 14
+
+# Example: print database schema
+npm run cli -- schema
+```
+
+See the [CLI README](cli/README.md) for full documentation.
+
 ## Documentation
 
-For detailed documentation on architecture, deployment, planned features, and implementation details, see the [docs directory](docs/README.md).
+For detailed documentation on architecture, deployment, planned features, and implementation details, see the [/docs](docs/README.md) directory.
 
 ## Contributions
 

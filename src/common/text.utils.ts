@@ -15,3 +15,13 @@ export const sanitizeText = (dirty?: string) => {
 export const normalizeText = (text?: string) => {
   return text?.trim().toLowerCase() || '';
 };
+
+/**
+ * Pluralize a word based on the count
+ */
+export const pluralize = (count: number, singular: string, plural?: string) => {
+  if (count !== 1 && plural) {
+    return plural;
+  }
+  return `${count} ${singular}${count === 1 ? '' : 's'}`;
+};
