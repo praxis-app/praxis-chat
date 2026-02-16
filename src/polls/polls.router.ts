@@ -8,7 +8,6 @@ import { verifyImage } from '../images/middleware/verify-image.middleware';
 import { getVotersByPollOption } from '../votes/votes.controller';
 import { votesRouter } from '../votes/votes.router';
 import { canReadPollOptions } from './middleware/can-read-poll-options.middleware';
-import { closeExpiredPolls } from './middleware/close-expired-polls.middleware';
 import { validatePoll } from './middleware/validate-poll.middleware';
 import { createPoll, getPollImage, uploadPollImage } from './polls.controller';
 
@@ -36,7 +35,7 @@ pollsRouter
 
 // Protected routes
 pollsRouter
-  .use(authenticate, isChannelMember, closeExpiredPolls)
+  .use(authenticate, isChannelMember)
   .post('/', validatePoll, createPoll)
   .post(`${IMAGE_ROUTE}/upload`, uploadImage, uploadPollImage)
   .use('/:pollId/votes', votesRouter);
