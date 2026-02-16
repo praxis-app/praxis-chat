@@ -42,12 +42,14 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   const { serverId } = useServerData();
   const queryClient = useQueryClient();
 
-  const { id, body, user, options, config, myVote, votes, createdAt } = poll;
+  const { id, body, user, options, config, stage, myVote, votes, createdAt } =
+    poll;
   const isMultipleChoice = config?.multipleChoice ?? false;
+  const isClosed = stage === 'closed';
   const hasVoted = !!myVote?.pollOptionIds?.length;
   const totalVotes = votes?.length ?? 0;
 
-  const [showResults, setShowResults] = useState(hasVoted);
+  const [showResults, setShowResults] = useState(hasVoted || isClosed);
   const [showVoteBreakdown, setShowVoteBreakdown] = useState(false);
 
   const name = user.displayName || user.name;
@@ -166,13 +168,13 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
   });
 
   useEffect(() => {
-    if (hasVoted) {
+    if (hasVoted || isClosed) {
       // Delay to trigger the width transition after mount
       const timeout = setTimeout(() => setShowResults(true), 50);
       return () => clearTimeout(timeout);
     }
     setShowResults(false);
-  }, [hasVoted]);
+  }, [hasVoted, isClosed]);
 
   const handleOptionToggle = (optionId: string) => {
     const currentOptions = form.getValues('selectedOptions');
@@ -257,11 +259,13 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <Label className="text-muted-foreground mb-3 text-sm font-normal">
-                {isMultipleChoice
-                  ? t('polls.labels.selectMultiple')
-                  : t('polls.labels.selectOne')}
-              </Label>
+              {!isClosed && (
+                <Label className="text-muted-foreground mb-3 text-sm font-normal">
+                  {isMultipleChoice
+                    ? t('polls.labels.selectMultiple')
+                    : t('polls.labels.selectOne')}
+                </Label>
+              )}
 
               <FormField
                 control={form.control}
@@ -276,15 +280,16 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                         <div
                           key={option.id}
                           role="button"
-                          tabIndex={hasVoted ? -1 : 0}
+                          tabIndex={hasVoted || isClosed ? -1 : 0}
                           onClick={() => {
-                            if (!hasVoted && !isPending) {
+                            if (!hasVoted && !isClosed && !isPending) {
                               handleOptionToggle(option.id);
                             }
                           }}
                           onKeyDown={(event) => {
                             if (
                               !hasVoted &&
+                              !isClosed &&
                               !isPending &&
                               (event.key === 'Enter' || event.key === ' ')
                             ) {
@@ -297,12 +302,15 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                             isSelected
                               ? 'border-primary bg-primary/10'
                               : 'border-input bg-background',
-                            !isSelected && !hasVoted && 'hover:bg-accent',
+                            !isSelected &&
+                              !hasVoted &&
+                              !isClosed &&
+                              'hover:bg-accent',
                             isPending && 'cursor-not-allowed opacity-50',
-                            !hasVoted && 'cursor-pointer',
+                            !hasVoted && !isClosed && 'cursor-pointer',
                           )}
                         >
-                          {hasVoted && (
+                          {(hasVoted || isClosed) && (
                             <div
                               className={cn(
                                 'absolute inset-y-0 left-0 transition-all duration-500 ease-out',
@@ -321,7 +329,7 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                             <span className="text-sm font-medium">
                               {option.text}
                             </span>
-                            {hasVoted && (
+                            {(hasVoted || isClosed) && (
                               <button
                                 type="button"
                                 className="text-muted-foreground block cursor-pointer text-xs"
@@ -340,24 +348,26 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                               </button>
                             )}
                           </div>
-                          <div className="relative z-10 shrink-0 self-center">
-                            {isSelected ? (
-                              <div
-                                className={cn(
-                                  'bg-primary text-primary-foreground flex size-5 items-center justify-center',
-                                  isMultipleChoice && !hasVoted
-                                    ? 'rounded-sm'
-                                    : 'rounded-full',
-                                )}
-                              >
-                                <LuCheck className="size-3" />
-                              </div>
-                            ) : isMultipleChoice ? (
-                              <LuSquare className="text-muted-foreground size-5 rounded-sm" />
-                            ) : (
-                              <LuCircle className="text-muted-foreground size-5" />
-                            )}
-                          </div>
+                          {(!isClosed || isSelected) && (
+                            <div className="relative z-10 shrink-0 self-center">
+                              {isSelected ? (
+                                <div
+                                  className={cn(
+                                    'bg-primary text-primary-foreground flex size-5 items-center justify-center',
+                                    isMultipleChoice && !hasVoted
+                                      ? 'rounded-sm'
+                                      : 'rounded-full',
+                                  )}
+                                >
+                                  <LuCheck className="size-3" />
+                                </div>
+                              ) : isMultipleChoice ? (
+                                <LuSquare className="text-muted-foreground size-5 rounded-sm" />
+                              ) : (
+                                <LuCircle className="text-muted-foreground size-5" />
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -366,30 +376,32 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                 )}
               />
 
-              <div className="mt-4">
-                {hasVoted ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={isPending}
-                    onClick={() => removeVote()}
-                    className="w-full"
-                  >
-                    {t('polls.actions.removeVote')}
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={isPending || selectedOptions.length === 0}
-                    onClick={handleSubmit}
-                    className="w-full"
-                  >
-                    {t('polls.actions.vote')}
-                  </Button>
-                )}
-              </div>
+              {!isClosed && (
+                <div className="mt-4">
+                  {hasVoted ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isPending}
+                      onClick={() => removeVote()}
+                      className="w-full"
+                    >
+                      {t('polls.actions.removeVote')}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      disabled={isPending || selectedOptions.length === 0}
+                      onClick={handleSubmit}
+                      className="w-full"
+                    >
+                      {t('polls.actions.vote')}
+                    </Button>
+                  )}
+                </div>
+              )}
             </form>
           </Form>
 
@@ -403,16 +415,39 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
             >
               {t('polls.labels.totalVotes', { count: totalVotes })}
             </button>
-            {config?.closingAt && (
+            {isClosed ? (
               <>
                 {MIDDOT_WITH_SPACES}
-                {timeFromNow(config.closingAt, true)}
+                <span
+                  title={
+                    config?.closingAt
+                      ? t('polls.labels.closedAt', {
+                          date: new Date(config.closingAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }),
+                        })
+                      : undefined
+                  }
+                >
+                  {t('polls.labels.closed')}
+                </span>
               </>
-            )}
-            {!config?.closingAt && (
+            ) : (
               <>
-                {MIDDOT_WITH_SPACES}
-                <span className="text-lg">{t('time.infinity')}</span>
+                {config?.closingAt && (
+                  <>
+                    {MIDDOT_WITH_SPACES}
+                    <span
+                      title={new Date(config.closingAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                    >
+                      {timeFromNow(config.closingAt, true)}
+                    </span>
+                  </>
+                )}
+                {!config?.closingAt && (
+                  <>
+                    {MIDDOT_WITH_SPACES}
+                    <span className="text-lg">{t('time.infinity')}</span>
+                  </>
+                )}
               </>
             )}
           </div>

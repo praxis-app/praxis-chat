@@ -1,3 +1,4 @@
+import * as botsService from '../bots/bots.service';
 import { dataSource } from '../database/data-source';
 import { Server } from '../servers/entities/server.entity';
 import { createInitialServer } from '../servers/servers.service';
@@ -42,11 +43,14 @@ export const updateInstanceConfig = async ({
 };
 
 export const initializeInstance = async () => {
+  await botsService.ensureDefaultBotExists();
+
   const instanceConfigCount = await instanceConfigRepository.count();
   if (instanceConfigCount > 0) {
     return;
   }
   await initializeInstanceConfig();
+
   console.info('Instance initialized');
 };
 
