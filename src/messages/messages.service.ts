@@ -238,7 +238,7 @@ export const createMessage = async (
   return messagePayload;
 };
 
-const createBotMessage = async (
+export const createBotMessage = async (
   serverId: string,
   channelId: string,
   body: string,

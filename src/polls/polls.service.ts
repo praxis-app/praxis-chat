@@ -3,7 +3,7 @@
 import { getRequiredCount } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import { sortConsensusVotesByType } from '@common/votes/vote.utils';
-import { DeepPartial, In, IsNull, Not } from 'typeorm';
+import { DeepPartial, In, IsNull, LessThanOrEqual, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
 import { decryptText, encryptText } from '../common/encryption.utils';
@@ -12,6 +12,7 @@ import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
 import { deleteImageFile } from '../images/images.utils';
 import * as instanceService from '../instance/instance.service';
+import * as messagesService from '../messages/messages.service';
 import { PollActionRole } from '../poll-actions/entities/poll-action-role.entity';
 import { PollAction } from '../poll-actions/entities/poll-action.entity';
 import * as pollActionsService from '../poll-actions/poll-actions.service';
@@ -523,6 +524,88 @@ export const synchronizeProposals = async () => {
       `Synchronized ${batch.length} proposal${batch.length > 1 || batch.length === 0 ? 's' : ''} 🗳️`,
     );
   }
+};
+
+const POLL_CLOSURE_BATCH_SIZE = 20;
+
+/** Closes polls that have passed their closingAt time and sends result summaries */
+export const closeExpiredPolls = async () => {
+  const expiredPolls = await pollRepository.find({
+    where: {
+      pollType: 'poll',
+      stage: 'voting',
+      config: { closingAt: LessThanOrEqual(new Date()) },
+    },
+    select: {
+      id: true,
+      channelId: true,
+      ciphertext: true,
+      tag: true,
+      iv: true,
+      keyId: true,
+      config: { id: true, closingAt: true },
+    },
+    relations: ['config', 'options', 'channel'],
+  });
+
+  if (expiredPolls.length === 0) {
+    return;
+  }
+
+  for (let i = 0; i < expiredPolls.length; i += POLL_CLOSURE_BATCH_SIZE) {
+    const batch = expiredPolls.slice(i, i + POLL_CLOSURE_BATCH_SIZE);
+    const results = await Promise.allSettled(batch.map(closeExpiredPoll));
+    const failures = results.filter((r) => r.status === 'rejected');
+
+    if (failures.length > 0) {
+      console.error(
+        `Failed to close ${failures.length} polls:`,
+        failures,
+      );
+      continue;
+    }
+
+    console.info(
+      `Closed ${batch.length} poll${batch.length !== 1 ? 's' : ''} 🗳️`,
+    );
+  }
+};
+
+const closeExpiredPoll = async (poll: Poll) => {
+  await pollRepository.update(poll.id, { stage: 'closed' });
+
+  // Build result summary for bot message
+  const optionSelectionCounts = await pollOptionRepository
+    .createQueryBuilder('option')
+    .select('option.id', 'optionId')
+    .addSelect('option.text', 'text')
+    .addSelect('COUNT(selection.id)', 'count')
+    .leftJoin('option.pollOptionSelections', 'selection')
+    .where('option.pollId = :pollId', { pollId: poll.id })
+    .groupBy('option.id')
+    .addGroupBy('option.text')
+    .getRawMany<{ optionId: string; text: string; count: string }>();
+
+  // Decrypt poll question for the summary
+  let question = 'Poll';
+  if (poll.ciphertext && poll.tag && poll.iv && poll.keyId) {
+    const unwrappedKeyMap = await channelsService.getUnwrappedChannelKeyMap([
+      poll.keyId,
+    ]);
+    const unwrappedKey = unwrappedKeyMap[poll.keyId];
+    if (unwrappedKey) {
+      question = decryptText(poll.ciphertext, poll.tag, poll.iv, unwrappedKey);
+    }
+  }
+
+  const resultParts = optionSelectionCounts.map(
+    (row) => `${row.text}: ${row.count} vote${parseInt(row.count, 10) !== 1 ? 's' : ''}`,
+  );
+
+  const summaryBody = `Poll closed: '${question}' — ${resultParts.join(', ')}`;
+  const serverId = poll.channel.serverId;
+
+  await messagesService.createBotMessage(serverId, poll.channelId, summaryBody);
 };
 
 export const deletePoll = async (pollId: string) => {
