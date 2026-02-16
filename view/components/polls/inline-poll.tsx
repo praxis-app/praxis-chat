@@ -425,7 +425,11 @@ export const InlinePoll = ({ poll, channel, me }: Props) => {
                 {config?.closingAt && (
                   <>
                     {MIDDOT_WITH_SPACES}
-                    {timeFromNow(config.closingAt, true)}
+                    <span
+                      title={new Date(config.closingAt).toLocaleString()}
+                    >
+                      {timeFromNow(config.closingAt, true)}
+                    </span>
                   </>
                 )}
                 {!config?.closingAt && (
