@@ -34,6 +34,7 @@ import {
 import {
   CreateVoteReq,
   CreateVoteRes,
+  PollOptionVoterRes,
   UpdateVoteReq,
   UpdateVoteRes,
 } from '@/types/vote.types';
@@ -239,17 +240,6 @@ class ApiClient {
   // Polls & Votes
   // -------------------------------------------------------------------------
 
-  createPoll = async (
-    serverId: string,
-    channelId: string,
-    data: CreatePollReq,
-  ) => {
-    const path = `/servers/${serverId}/channels/${channelId}/polls`;
-    return this.executeRequest<{ poll: PollRes }>('post', path, {
-      data,
-    });
-  };
-
   getPollImage = (
     serverId: string,
     channelId: string,
@@ -261,6 +251,27 @@ class ApiClient {
     return this.executeRequest<Blob>('get', path, {
       responseType: 'blob',
       params: { inviteToken },
+    });
+  };
+
+  getVotersByPollOption = async (
+    serverId: string,
+    channelId: string,
+    pollId: string,
+    pollOptionId: string,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls/${pollId}/options/${pollOptionId}/voters`;
+    return this.executeRequest<{ voters: PollOptionVoterRes[] }>('get', path);
+  };
+
+  createPoll = async (
+    serverId: string,
+    channelId: string,
+    data: CreatePollReq,
+  ) => {
+    const path = `/servers/${serverId}/channels/${channelId}/polls`;
+    return this.executeRequest<{ poll: PollRes }>('post', path, {
+      data,
     });
   };
 

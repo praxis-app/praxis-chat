@@ -5,8 +5,9 @@ import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
 import morgan from 'morgan';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import 'reflect-metadata';
+import { fileURLToPath } from 'url';
 import { appRouter } from './app/app.router';
 import * as appService from './app/app.service';
 import * as cacheService from './cache/cache.service';
@@ -20,6 +21,9 @@ dotenv.config();
   const app = express();
   const server = createServer(app);
   const webSocketServer = new WebSocketServerWithIds({ path: '/ws', server });
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
   await dataSource.initialize();
   await cacheService.initializeCache();

@@ -13,7 +13,7 @@ COPY tsconfig.json /app
 COPY tsconfig.src.json /app
 COPY tsconfig.view.json /app
 COPY vite.config.mts /app
-COPY .eslintrc.cjs /app
+COPY eslint.config.js /app
 COPY start-prod.sh /app
 
 WORKDIR /app
@@ -30,7 +30,7 @@ RUN npm run build:client
 
 # Prep for runtime image
 RUN mv content dist/content
-RUN rm package-lock.json vite.config.mts .eslintrc.cjs
+RUN rm package-lock.json vite.config.mts eslint.config.js
 RUN rm tsconfig.json tsconfig.view.json
 RUN rm -rf view
 

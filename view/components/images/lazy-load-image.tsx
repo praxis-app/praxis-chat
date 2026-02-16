@@ -92,7 +92,7 @@ export const LazyLoadImage = forwardRef<HTMLDivElement, Props>(
       isPlaceholder || !loaded || !showImage;
 
     const handleLoad = (event: SyntheticEvent<HTMLImageElement, Event>) => {
-      onLoad && onLoad(event);
+      onLoad?.(event);
       setLoaded(true);
     };
 

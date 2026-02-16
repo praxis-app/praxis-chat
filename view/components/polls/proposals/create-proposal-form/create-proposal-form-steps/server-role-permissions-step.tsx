@@ -2,14 +2,14 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { SERVER_PERMISSION_KEYS } from '@/constants/role.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import { ProposePermissionToggle } from '../../poll-actions/propose-permission-toggle';
-import { CreatePollFormSchema } from '../create-poll-form.types';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
+import { ProposePermissionToggle } from '../../proposal-actions/propose-permission-toggle';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
 export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
-  const form = useFormContext<CreatePollFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
   const formPermissions = form.watch('permissions')!;
 
   const { onNext, onPrevious } = useWizardContext();
@@ -27,10 +27,10 @@ export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.rolesPermissions')}
+          {t('proposals.headers.rolesPermissions')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.rolesPermissionsDescription')}
+          {t('proposals.descriptions.rolesPermissionsDescription')}
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export const ServerRolePermissionsStep = ({ isLoading }: WizardStepProps) => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {t('polls.headers.permissions')}
+              {t('proposals.headers.permissions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">

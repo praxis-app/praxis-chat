@@ -5,16 +5,15 @@
     "lib": ["ES2022"],
     "resolveJsonModule": true,
     "allowJs": false,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
 
     /* Modules */
-    "module": "CommonJS",
+    "module": "ESNext",
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
 
     /* Type Checking */
     "strict": true,

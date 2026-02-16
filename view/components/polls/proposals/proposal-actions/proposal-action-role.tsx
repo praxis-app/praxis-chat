@@ -25,7 +25,7 @@ interface Props {
   action: PollActionRes;
 }
 
-export const PollActionRole = ({ action }: Props) => {
+export const ProposalActionRole = ({ action }: Props) => {
   const [accordionValue, setAccordionValue] = useState<string | undefined>();
 
   const { serverId } = useServerData();
@@ -116,9 +116,9 @@ export const PollActionRole = ({ action }: Props) => {
 
   const getAccordionLabel = () => {
     if (action.actionType === 'change-role') {
-      return t('polls.labels.roleChanges');
+      return t('proposals.labels.roleChanges');
     }
-    return t('polls.labels.roleProposal');
+    return t('proposals.labels.roleProposal');
   };
 
   const getPermissionName = (name: ServerPermissionKeys | '') => {
@@ -154,7 +154,7 @@ export const PollActionRole = ({ action }: Props) => {
           {serverRoleData && (
             <div className="space-y-3">
               <div className="text-sm font-medium">
-                {t('polls.headers.selectedRole')}
+                {t('proposals.headers.selectedRole')}
               </div>
               <div className="flex items-center space-x-2">
                 <div
@@ -180,7 +180,7 @@ export const PollActionRole = ({ action }: Props) => {
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
-                {t('polls.labels.roleNameChange')}
+                {t('proposals.labels.roleNameChange')}
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-muted-foreground text-sm">
@@ -198,7 +198,7 @@ export const PollActionRole = ({ action }: Props) => {
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
-                {t('polls.labels.roleColorChange')}
+                {t('proposals.labels.roleColorChange')}
               </div>
               <div className="flex items-center space-x-2">
                 <div
@@ -224,7 +224,7 @@ export const PollActionRole = ({ action }: Props) => {
             <div className="space-y-3">
               <Separator className="mb-4" />
               <div className="text-sm font-medium">
-                {t('polls.headers.permissions')}
+                {t('proposals.headers.permissions')}
               </div>
               <div className="space-y-2">
                 {permissionChanges.map((permission) => (
@@ -256,7 +256,7 @@ export const PollActionRole = ({ action }: Props) => {
               <div className="space-y-3">
                 <Separator className="mb-4" />
                 <div className="text-sm font-medium">
-                  {t('polls.headers.memberChanges')}
+                  {t('proposals.headers.memberChanges')}
                 </div>
                 <div>
                   <div className="space-y-2">

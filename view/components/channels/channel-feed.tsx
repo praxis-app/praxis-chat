@@ -1,7 +1,8 @@
 import { WelcomeMessage } from '@/components/invites/welcome-message';
 import { BotMessage } from '@/components/messages/bot-message';
 import { Message } from '@/components/messages/message';
-import { InlinePoll } from '@/components/polls/inline-poll/inline-poll';
+import { InlinePoll } from '@/components/polls/inline-poll';
+import { InlineProposal } from '@/components/polls/proposals/inline-proposal/inline-proposal';
 import { LocalStorageKeys } from '@/constants/shared.constants';
 import { useAuthData } from '@/hooks/use-auth-data';
 import { useInView } from '@/hooks/use-in-view';
@@ -104,28 +105,38 @@ export const ChannelFeed = ({
       )}
 
       {feed.map((item) => {
-        if (item.type === 'message') {
-          if (item.bot) {
-            return <BotMessage key={`message-${item.id}`} message={item} />;
+        if (!channel) {
+          return null;
+        }
+        if (item.type === 'poll') {
+          if (item.pollType === 'proposal') {
+            return (
+              <InlineProposal
+                key={`poll-${item.id}`}
+                poll={item}
+                channel={channel}
+                me={me}
+              />
+            );
           }
           return (
-            <Message
-              key={`message-${item.id}`}
-              channelId={channel?.id}
-              serverId={serverId}
-              message={item}
+            <InlinePoll
+              key={`poll-${item.id}`}
+              poll={item}
+              channel={channel}
               me={me}
             />
           );
         }
-        if (!channel) {
-          return null;
+        if (item.bot) {
+          return <BotMessage key={`message-${item.id}`} message={item} />;
         }
         return (
-          <InlinePoll
-            key={`poll-${item.id}`}
-            poll={item}
-            channel={channel}
+          <Message
+            key={`message-${item.id}`}
+            channelId={channel?.id}
+            serverId={serverId}
+            message={item}
             me={me}
           />
         );
