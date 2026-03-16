@@ -20,6 +20,7 @@ lerna-debug.log*
 .idea
 .claude
 .docs
+.scripts
 .DS_Store
 *.suo
 *.ntvs*
