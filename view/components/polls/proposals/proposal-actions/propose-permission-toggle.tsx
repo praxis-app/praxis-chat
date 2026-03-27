@@ -1,14 +1,14 @@
 import { getPermissionText } from '@/lib/role.utils';
 import { ServerPermissionKeys } from '@/types/role.types';
 import { UseFormSetValue } from 'react-hook-form';
-import { Label } from '../../ui/label';
-import { Switch } from '../../ui/switch';
-import { CreatePollFormSchema } from '../create-poll-form/create-poll-form.types';
+import { Label } from '../../../ui/label';
+import { Switch } from '../../../ui/switch';
+import { CreateProposalFormSchema } from '../create-proposal-form/create-proposal-form.types';
 
 interface Props {
   permissionName: ServerPermissionKeys;
-  formPermissions: CreatePollFormSchema['permissions'];
-  setValue: UseFormSetValue<CreatePollFormSchema>;
+  formPermissions: CreateProposalFormSchema['permissions'];
+  setValue: UseFormSetValue<CreateProposalFormSchema>;
 }
 
 export const ProposePermissionToggle = ({

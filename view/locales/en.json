@@ -138,7 +138,7 @@
     }
   },
 
-  "polls": {
+  "proposals": {
     "labels": {
       "actionType": "Action",
       "active": "Active",
@@ -232,6 +232,45 @@
       "longBody": "Proposal body cannot exceed 6000 characters",
       "testProposalRequiresBody": "Test proposals must include a body",
       "generalProposalRequiresBody": "General proposals must include a body"
+    }
+  },
+
+  "polls": {
+    "headers": {
+      "create": "Create a Poll",
+      "voteBreakdown": "Vote Breakdown"
+    },
+    "descriptions": {
+      "create": "Create a poll for your group to vote on."
+    },
+    "labels": {
+      "question": "Question",
+      "answers": "Answers",
+      "duration": "Duration",
+      "allowMultipleAnswers": "Allow multiple answers",
+      "poll": "Poll",
+      "selectOne": "Select one answer",
+      "selectMultiple": "Select one or more answers",
+      "totalVotes_one": "{{count}} vote",
+      "totalVotes_other": "{{count}} votes",
+      "noVotesYet": "No votes yet"
+    },
+    "placeholders": {
+      "question": "What question do you want to ask?",
+      "answer": "Answer {{number}}",
+      "duration": "Select a duration"
+    },
+    "actions": {
+      "addAnswer": "Add another answer",
+      "createPoll": "Create poll",
+      "vote": "Vote",
+      "removeVote": "Remove vote"
+    },
+    "errors": {
+      "questionRequired": "Question is required",
+      "answerRequired": "Answer is required",
+      "minAnswersRequired": "At least 2 answers are required",
+      "selectAtLeastOne": "Please select at least one option"
     }
   },
 

@@ -4,64 +4,64 @@ import { POLL_ACTION_TYPE } from '@common/poll-actions/poll-action.constants';
 import { PollActionType } from '@common/poll-actions/poll-action.types';
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../ui/form';
+} from '../../../../ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../ui/select';
-import { Textarea } from '../../../ui/textarea';
-import { CreatePollFormSchema } from '../create-poll-form.types';
+} from '../../../../ui/select';
+import { Textarea } from '../../../../ui/textarea';
+import { CreateProposalFormSchema } from '../create-proposal-form.types';
 
-export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
-  const form = useFormContext<CreatePollFormSchema>();
+export const ProposalDetailsStep = ({ isLoading }: WizardStepProps) => {
+  const form = useFormContext<CreateProposalFormSchema>();
   const { onNext } = useWizardContext();
   const { isAnon } = useAuthData();
   const { t } = useTranslation();
 
-  const handlePollActionChange = (
+  const handleProposalActionChange = (
     value: string,
-    field: ControllerRenderProps<CreatePollFormSchema>,
+    field: ControllerRenderProps<CreateProposalFormSchema>,
   ) => {
     field.onChange(value);
     if (isAnon && value !== 'test') {
       form.setError('action', {
         type: 'manual',
-        message: t('polls.errors.registerToCreateNonTestProposals'),
+        message: t('proposals.errors.registerToCreateNonTestProposals'),
       });
     } else {
       form.clearErrors('action');
     }
   };
 
-  const getPollActionLabel = (action: PollActionType | '') => {
+  const getProposalActionLabel = (action: PollActionType | '') => {
     if (action === 'general') {
-      return t('polls.actionTypes.general');
+      return t('proposals.actionTypes.general');
     }
     if (action === 'change-role') {
-      return t('polls.actionTypes.changeRole');
+      return t('proposals.actionTypes.changeRole');
     }
     if (action === 'change-settings') {
-      return t('polls.actionTypes.changeSettings');
+      return t('proposals.actionTypes.changeSettings');
     }
     if (action === 'create-role') {
-      return t('polls.actionTypes.createRole');
+      return t('proposals.actionTypes.createRole');
     }
     if (action === 'plan-event') {
-      return t('polls.actionTypes.planEvent');
+      return t('proposals.actionTypes.planEvent');
     }
     if (action === 'test') {
-      return t('polls.actionTypes.test');
+      return t('proposals.actionTypes.test');
     }
     return '';
   };
@@ -78,10 +78,10 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.basicInfo')}
+          {t('proposals.headers.basicInfo')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.basicInfoDescription')}
+          {t('proposals.descriptions.basicInfoDescription')}
         </p>
       </div>
 
@@ -91,21 +91,23 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
           name="action"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('polls.labels.actionType')}</FormLabel>
+              <FormLabel>{t('proposals.labels.actionType')}</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
                   onValueChange={(value) =>
-                    handlePollActionChange(value, field)
+                    handleProposalActionChange(value, field)
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('polls.placeholders.action')} />
+                    <SelectValue
+                      placeholder={t('proposals.placeholders.action')}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {POLL_ACTION_TYPE.map((action) => (
                       <SelectItem key={action} value={action}>
-                        {getPollActionLabel(action)}
+                        {getProposalActionLabel(action)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -121,11 +123,11 @@ export const PollDetailsStep = ({ isLoading }: WizardStepProps) => {
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('polls.labels.body')}</FormLabel>
+              <FormLabel>{t('proposals.labels.body')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
-                  placeholder={t('polls.placeholders.body')}
+                  placeholder={t('proposals.placeholders.body')}
                   className="w-full resize-none md:min-w-md"
                   rows={4}
                 />

@@ -4,31 +4,31 @@ import { WizardStepProps } from '@/components/shared/wizard/wizard.types';
 import { MIDDOT_WITH_SPACES } from '@/constants/shared.constants';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ColorPicker } from '../../../shared/color-picker';
-import { useWizardContext } from '../../../shared/wizard/wizard-hooks';
-import { Button } from '../../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+import { ColorPicker } from '../../../../shared/color-picker';
+import { useWizardContext } from '../../../../shared/wizard/wizard-hooks';
+import { Button } from '../../../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../ui/card';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../ui/form';
-import { Input } from '../../../ui/input';
+} from '../../../../ui/form';
+import { Input } from '../../../../ui/input';
 import {
-  CreatePollFormSchema,
-  CreatePollWizardContext,
-} from '../create-poll-form.types';
+  CreateProposalFormSchema,
+  CreateProposalWizardContext,
+} from '../create-proposal-form.types';
 
 export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
   const {
     onNext,
     onPrevious,
     context: { selectedServerRole },
-  } = useWizardContext<CreatePollWizardContext>();
+  } = useWizardContext<CreateProposalWizardContext>();
 
-  const form = useFormContext<CreatePollFormSchema>();
+  const form = useFormContext<CreateProposalFormSchema>();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -43,10 +43,10 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {t('polls.headers.roleAttributes')}
+          {t('proposals.headers.roleAttributes')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t('polls.descriptions.roleAttributesDescription')}
+          {t('proposals.descriptions.roleAttributesDescription')}
         </p>
       </div>
 
@@ -54,7 +54,7 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
         <Card className="gap-3">
           <CardHeader>
             <CardTitle className="text-base">
-              {t('polls.headers.roleAttributesTitle')}
+              {t('proposals.headers.roleAttributesTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -99,7 +99,7 @@ export const ServerRoleAttributesStep = ({ isLoading }: WizardStepProps) => {
           <Card className="gap-2">
             <CardHeader>
               <CardTitle className="text-base">
-                {t('polls.headers.currentRoleInfo')}
+                {t('proposals.headers.currentRoleInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent>

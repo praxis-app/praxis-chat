@@ -7,10 +7,18 @@ import { Vote } from '../vote.entity';
 
 const voteRepository = dataSource.getRepository(Vote);
 
-export const voteSchema = zod.object({
+// Schema for proposal votes (voteType required)
+export const proposalVoteSchema = zod.object({
   voteType: zod.enum(VOTE_TYPES, {
     message: 'Invalid vote type',
   }),
+});
+
+// Schema for poll votes (pollOptionIds required)
+export const pollVoteSchema = zod.object({
+  pollOptionIds: zod
+    .array(zod.uuid())
+    .min(1, 'At least one poll option must be selected'),
 });
 
 export const validateVote = async (
@@ -19,16 +27,25 @@ export const validateVote = async (
   next: NextFunction,
 ) => {
   try {
-    // Ensure shape and types are correct for POST and PUT requests
-    if (['POST', 'PUT'].includes(req.method)) {
-      voteSchema.parse(req.body);
-    }
-
     const { pollId } = req.params;
     const poll = await pollsService.getPoll(pollId, ['action']);
+    const isProposal = poll.pollType === 'proposal';
+
+    // Validate request body based on poll type
+    if (['POST', 'PUT'].includes(req.method)) {
+      if (isProposal) {
+        proposalVoteSchema.parse(req.body);
+      } else {
+        pollVoteSchema.parse(req.body);
+      }
+    }
 
     // For non-test proposals, only registered users can vote
-    if (poll.action.actionType !== 'test' && res.locals.user.anonymous) {
+    if (
+      isProposal &&
+      res.locals.user.anonymous &&
+      poll.action?.actionType !== 'test'
+    ) {
       res
         .status(403)
         .send('Only registered users can vote on non-test proposals');

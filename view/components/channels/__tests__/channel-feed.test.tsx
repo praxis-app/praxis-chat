@@ -1,7 +1,7 @@
 import { ChannelFeed } from '@/components/channels/channel-feed';
 import { useAuthStore } from '@/store/auth.store';
 import { customRender as render } from '@/test/lib/custom-render';
-import { FeedItemRes } from '@/types/channel.types';
+import { ChannelRes, FeedItemRes } from '@/types/channel.types';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
@@ -47,10 +47,26 @@ vi.mock('../../messages/bot-message', () => ({
 vi.mock('@/components/shared/formatted-text', () => ({
   FormattedText: ({ text }: { text: string }) => <div>{text}</div>,
 }));
+vi.mock('@/components/messages/message', () => ({
+  Message: ({ message }: { message: { body: string } }) => (
+    <div data-testid="message">{message.body}</div>
+  ),
+}));
+vi.mock('@/components/polls/inline-poll', () => ({
+  InlinePoll: () => <div data-testid="inline-poll" />,
+}));
+vi.mock('@/components/polls/proposals/inline-proposal/inline-proposal', () => ({
+  InlineProposal: () => <div data-testid="inline-proposal" />,
+}));
 
 describe('ChannelFeed', () => {
   const mockOnLoadMore = vi.fn();
   const mockFeedBoxRef = { current: document.createElement('div') };
+  const mockChannel: ChannelRes = {
+    id: 'channel-1',
+    name: 'general',
+    description: null,
+  };
   const mockFeed: FeedItemRes[] = [
     {
       type: 'message',
@@ -98,6 +114,7 @@ describe('ChannelFeed', () => {
 
     render(
       <ChannelFeed
+        channel={mockChannel}
         feed={mockFeed}
         feedBoxRef={mockFeedBoxRef}
         onLoadMore={mockOnLoadMore}

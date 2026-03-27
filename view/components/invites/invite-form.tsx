@@ -1,10 +1,12 @@
 import { api } from '@/client/api-client';
 import { Time } from '@/constants/shared.constants';
 import { InviteRes } from '@/types/invite.types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as zod from 'zod';
+import { useServerData } from '../../hooks/use-server-data';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -20,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useServerData } from '../../hooks/use-server-data';
 
 const MAX_USES_OPTIONS = [1, 5, 10, 25, 50, 100];
 
@@ -36,6 +37,7 @@ export const InviteForm = () => {
   const { serverId } = useServerData();
 
   const form = useForm<zod.infer<typeof inviteFormSchema>>({
+    resolver: zodResolver(inviteFormSchema),
     defaultValues: { expiresAt: '', maxUses: '' },
     mode: 'onChange',
   });

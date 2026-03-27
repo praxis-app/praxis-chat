@@ -5,7 +5,7 @@
     "src/database/migrations/**",
     "common/**/__tests__/**"
   ],
-  "exec": "tsx --tsconfig ./tsconfig.src.json src/main.ts",
+  "exec": "tsc -b && tsx --tsconfig ./tsconfig.src.json src/main.ts",
   "verbose": false,
   "ext": "ts"
 }

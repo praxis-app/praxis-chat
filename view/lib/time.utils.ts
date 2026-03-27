@@ -11,21 +11,31 @@ export const timeMessage = (
   endsIn = false,
 ) => {
   if (timeDifference < Time.Minute) {
-    return t(`time.${endsIn ? 'minutesEndsIn' : 'minutes'}`, { minutes: 1 });
+    const minutes = 1;
+    return t(`time.${endsIn ? 'minutesEndsIn' : 'minutes'}`, {
+      count: minutes,
+      minutes,
+    });
   }
   if (timeDifference < Time.Hour) {
+    const minutes = Math.round(timeDifference / Time.Minute);
     return t(`time.${endsIn ? 'minutesEndsIn' : 'minutes'}`, {
-      minutes: Math.round(timeDifference / Time.Minute),
+      count: minutes,
+      minutes,
     });
   }
   if (timeDifference < Time.Day) {
+    const hours = Math.round(timeDifference / Time.Hour);
     return t(`time.${endsIn ? 'hoursEndsIn' : 'hours'}`, {
-      hours: Math.round(timeDifference / Time.Hour),
+      count: hours,
+      hours,
     });
   }
   if (timeDifference < Time.Month) {
+    const days = Math.round(timeDifference / Time.Day);
     return t(`time.${endsIn ? 'daysEndsIn' : 'days'}`, {
-      days: Math.round(timeDifference / Time.Day),
+      count: days,
+      days,
     });
   }
   return formatDate(timeStamp);

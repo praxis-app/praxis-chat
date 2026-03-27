@@ -2,6 +2,7 @@
 
 import { getRequiredCount } from '@common/polls/poll.utils';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
+import { sortConsensusVotesByType } from '@common/votes/vote.utils';
 import { DeepPartial, In, IsNull, Not } from 'typeorm';
 import * as channelsService from '../channels/channels.service';
 import { ChannelMember } from '../channels/entities/channel-member.entity';
@@ -20,18 +21,20 @@ import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
 import { Vote } from '../votes/vote.entity';
 import {
-  sortConsensusVotesByType,
+  filterProposalVotes,
   sortMajorityVotesByType,
 } from '../votes/votes.utils';
 import { PollDto } from './dtos/poll.dto';
 import { PollConfig } from './entities/poll-config.entity';
+import { PollOption } from './entities/poll-option.entity';
 import { Poll } from './entities/poll.entity';
 
-const POLL_SYNC_BATCH_SIZE = 20;
+const PROPOSAL_SYNC_BATCH_SIZE = 20;
 
 const channelMemberRepository = dataSource.getRepository(ChannelMember);
 const imageRepository = dataSource.getRepository(Image);
 const pollRepository = dataSource.getRepository(Poll);
+const pollOptionRepository = dataSource.getRepository(PollOption);
 const voteRepository = dataSource.getRepository(Vote);
 
 export const getPoll = (id: string, relations?: string[]) => {
@@ -52,6 +55,7 @@ export const getInlinePolls = async (
     .createQueryBuilder('poll')
     .select([
       'poll.id',
+      'poll.pollType',
       'poll.ciphertext',
       'poll.keyId',
       'poll.tag',
@@ -69,6 +73,7 @@ export const getInlinePolls = async (
       'pollConfig.disagreementsLimit',
       'pollConfig.abstainsLimit',
       'pollConfig.closingAt',
+      'pollConfig.multipleChoice',
     ])
     .addSelect([
       'pollActionRole.id',
@@ -93,9 +98,13 @@ export const getInlinePolls = async (
     .addSelect(['pollVotes.id', 'pollVotes.voteType'])
     .addSelect(['pollUser.id', 'pollUser.name', 'pollUser.displayName'])
     .addSelect(['pollImage.id', 'pollImage.filename', 'pollImage.createdAt'])
+    .addSelect(['pollOption.id', 'pollOption.text'])
+    .addSelect(['pollOptionSelection.id', 'pollOptionSelection.pollOptionId'])
     .leftJoin('poll.user', 'pollUser')
     .leftJoin('poll.votes', 'pollVotes')
     .leftJoin('poll.images', 'pollImage')
+    .leftJoin('poll.options', 'pollOption')
+    .leftJoin('pollOption.pollOptionSelections', 'pollOptionSelection')
     .leftJoin('poll.action', 'pollAction')
     .leftJoin('poll.config', 'pollConfig')
     .leftJoin('pollAction.serverRole', 'pollActionRole')
@@ -131,6 +140,8 @@ export const getInlinePolls = async (
 
   const shapedPolls = polls.map((poll) => {
     const { ciphertext, tag, iv, keyId } = poll;
+    const isProposal = poll.pollType === 'proposal';
+    const userVote = myVotesMap[poll.id];
 
     let body: string | null = null;
     if (ciphertext && tag && iv && keyId) {
@@ -138,16 +149,35 @@ export const getInlinePolls = async (
       body = decryptText(ciphertext, tag, iv, unwrappedKey);
     }
 
-    const agreementVoteCount = poll.votes.filter(
-      (vote) => vote.voteType === 'agree',
-    ).length;
+    // For proposals, count agreement votes and get single myVote
+    const agreementVoteCount = isProposal
+      ? poll.votes.filter((vote) => vote.voteType === 'agree').length
+      : 0;
 
-    const myVote = myVotesMap[poll.id]
-      ? {
-          id: myVotesMap[poll.id].id,
-          voteType: myVotesMap[poll.id].voteType,
-        }
-      : undefined;
+    // Build myVote object based on poll type
+    let myVote:
+      | { id: string; voteType?: string | null; pollOptionIds?: string[] }
+      | undefined;
+    if (userVote) {
+      if (isProposal) {
+        myVote = { id: userVote.id, voteType: userVote.voteType };
+      } else {
+        myVote = {
+          id: userVote.id,
+          pollOptionIds:
+            userVote.pollOptionSelections?.map((s) => s.pollOptionId) ?? [],
+        };
+      }
+    }
+
+    // For simple polls, build options with vote counts from pollOptionSelections
+    const options = !isProposal
+      ? (poll.options || []).map((opt) => ({
+          id: opt.id,
+          text: opt.text,
+          voteCount: opt.pollOptionSelections?.length || 0,
+        }))
+      : [];
 
     const memberCount = pollMemberCountMap[poll.id];
     const profilePicture = profilePicturesMap[poll.user.id];
@@ -156,7 +186,7 @@ export const getInlinePolls = async (
       return r.poll_id === poll.id;
     });
 
-    const actionRole = poll.action.serverRole
+    const actionRole = poll.action?.serverRole
       ? {
           ...poll.action.serverRole,
           permissions: rowsForPoll.map((r) => ({
@@ -167,13 +197,20 @@ export const getInlinePolls = async (
         }
       : undefined;
 
+    const action = isProposal
+      ? {
+          ...poll.action,
+          serverRole: actionRole,
+        }
+      : undefined;
+
     return {
       id: poll.id,
       stage: poll.stage,
-      action: {
-        ...poll.action,
-        serverRole: actionRole,
-      },
+      votes: poll.votes,
+      config: poll.config,
+      pollType: poll.pollType,
+      createdAt: poll.createdAt,
       images: poll.images.map((image) => ({
         id: image.id,
         isPlaceholder: !image.filename,
@@ -183,13 +220,12 @@ export const getInlinePolls = async (
         ...poll.user,
         profilePicture,
       },
-      votes: poll.votes,
-      config: poll.config,
-      createdAt: poll.createdAt,
+      body,
+      action,
+      myVote,
       agreementVoteCount,
       memberCount,
-      myVote,
-      body,
+      options,
     };
   });
 
@@ -233,15 +269,39 @@ export const isPublicChannelPoll = async (
   return defaultServerId === serverId;
 };
 
+/**
+ * TODO: Move validation to middleware
+ * TODO: Decide whether to split this into createProposal and createPoll
+ */
 export const createPoll = async (
   serverId: string,
   channelId: string,
-  { body, closingAt, action, imageCount }: PollDto,
+  {
+    body,
+    action,
+    options,
+    closingAt,
+    imageCount,
+    pollType,
+    multipleChoice = false,
+  }: PollDto,
   user: User,
 ) => {
   const sanitizedBody = sanitizeText(body);
+  const isProposal = pollType === 'proposal';
+
   if (body && body.length > 8000) {
     throw new Error('Polls must be 8000 characters or less');
+  }
+
+  // Validate poll options
+  if (!isProposal) {
+    if (!options || options.length < 2) {
+      throw new Error('Polls must have at least 2 options');
+    }
+    if (options.length > 10) {
+      throw new Error('Polls cannot have more than 10 options');
+    }
   }
 
   const serverConfig = await serverConfigsService.getServerConfig(serverId);
@@ -249,26 +309,36 @@ export const createPoll = async (
     ? new Date(Date.now() + serverConfig.votingTimeLimit * 60 * 1000)
     : undefined;
 
-  const pollConfig: Partial<PollConfig> = {
-    decisionMakingModel: serverConfig.decisionMakingModel,
-    agreementThreshold: serverConfig.agreementThreshold,
-    quorumEnabled: serverConfig.quorumEnabled,
-    quorumThreshold: serverConfig.quorumThreshold,
-    disagreementsLimit: serverConfig.disagreementsLimit,
-    abstainsLimit: serverConfig.abstainsLimit,
-    closingAt: closingAt || configClosingAt,
-  };
-
-  const pollAction: Partial<PollAction> = {
-    actionType: action.actionType,
-  };
+  // Proposals need full config, polls only need closingAt and multipleChoice
+  const pollConfig: Partial<PollConfig> = isProposal
+    ? {
+        decisionMakingModel: serverConfig.decisionMakingModel,
+        agreementThreshold: serverConfig.agreementThreshold,
+        quorumEnabled: serverConfig.quorumEnabled,
+        quorumThreshold: serverConfig.quorumThreshold,
+        disagreementsLimit: serverConfig.disagreementsLimit,
+        abstainsLimit: serverConfig.abstainsLimit,
+        closingAt: closingAt || configClosingAt,
+      }
+    : {
+        closingAt: closingAt || configClosingAt,
+        multipleChoice,
+      };
 
   let pollData: DeepPartial<Poll> = {
+    pollType,
     config: pollConfig,
-    action: pollAction,
     userId: user.id,
     channelId,
   };
+
+  // Only proposals have actions
+  if (isProposal && action) {
+    const pollAction: Partial<PollAction> = {
+      actionType: action.actionType,
+    };
+    pollData.action = pollAction;
+  }
 
   if (sanitizedBody) {
     const { unwrappedKey, ...channelKey } =
@@ -287,10 +357,22 @@ export const createPoll = async (
 
   const poll = await pollRepository.save(pollData);
 
+  // Create poll options for simple polls
+  let savedOptions: PollOption[] = [];
+  if (!isProposal && options) {
+    const pollOptions = options.map((text) =>
+      pollOptionRepository.create({
+        text: sanitizeText(text),
+        pollId: poll.id,
+      }),
+    );
+    savedOptions = await pollOptionRepository.save(pollOptions);
+  }
+
   const pollMemberCount = await getPollMemberCount(poll.id);
 
   let pollActionRole: PollActionRole | undefined;
-  if (action.serverRole) {
+  if (isProposal && action?.serverRole) {
     pollActionRole = await pollActionsService.createPollActionRole(
       poll.action.id,
       action.serverRole,
@@ -319,13 +401,21 @@ export const createPoll = async (
   const shapedPoll = {
     id: poll.id,
     body: sanitizedBody,
+    pollType: poll.pollType,
     stage: poll.stage,
     channelId: poll.channelId,
-    action: {
-      actionType: poll.action?.actionType,
-      serverRole: pollActionRole,
-    },
+    action: isProposal
+      ? {
+          actionType: poll.action?.actionType,
+          serverRole: pollActionRole,
+        }
+      : undefined,
     config: pollConfig,
+    options: savedOptions.map((opt) => ({
+      id: opt.id,
+      text: opt.text,
+      voteCount: 0,
+    })),
     user: {
       id: user.id,
       name: user.name,
@@ -397,35 +487,41 @@ export const ratifyPoll = async (pollId: string) => {
   });
 };
 
-/** Synchronizes polls with regard to voting duration and ratifiability */
-export const synchronizePolls = async () => {
-  const polls = await pollRepository.find({
+/** Synchronizes proposals with regard to voting duration and ratifiability */
+export const synchronizeProposals = async () => {
+  const proposals = await pollRepository.find({
     where: {
       config: { closingAt: Not(IsNull()) },
+      pollType: 'proposal',
       stage: 'voting',
     },
-    select: { id: true, config: { id: true, closingAt: true } },
+    select: {
+      id: true,
+      config: { id: true, closingAt: true },
+    },
     relations: ['config'],
   });
-  if (polls.length === 0) {
+  if (proposals.length === 0) {
     return;
   }
 
-  // Synchronize polls in batches
-  for (let i = 0; i < polls.length; i += POLL_SYNC_BATCH_SIZE) {
-    const batch = polls.slice(i, i + POLL_SYNC_BATCH_SIZE);
-    const results = await Promise.allSettled(batch.map(synchronizePoll));
+  // Synchronize proposals in batches
+  for (let i = 0; i < proposals.length; i += PROPOSAL_SYNC_BATCH_SIZE) {
+    const batch = proposals.slice(i, i + PROPOSAL_SYNC_BATCH_SIZE);
+    const results = await Promise.allSettled(batch.map(synchronizeProposal));
     const failures = results.filter((r) => r.status === 'rejected');
 
     if (failures.length > 0) {
       console.error(
-        `Failed to synchronize ${failures.length} polls:`,
+        `Failed to synchronize ${failures.length} proposals:`,
         failures,
       );
       continue;
     }
 
-    console.info(`Synchronized ${batch.length} polls 🗳️`);
+    console.info(
+      `Synchronized ${batch.length} proposal${batch.length > 1 || batch.length === 0 ? 's' : ''} 🗳️`,
+    );
   }
 };
 
@@ -455,12 +551,18 @@ const hasConsensus = (
   }: PollConfig,
   memberCount: number,
 ) => {
+  if (!agreementThreshold || !disagreementsLimit || !abstainsLimit) {
+    throw new Error('Missing required fields for model of consensus');
+  }
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
 
   // Quorum check (if enabled)
   if (quorumEnabled) {
+    if (!quorumThreshold) {
+      throw new Error('Quorum threshold is not set');
+    }
     const quorum = votes.length;
     const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (quorum < requiredQuorum) {
@@ -470,7 +572,8 @@ const hasConsensus = (
 
   // Agreement check (always performed)
   const { agreements, disagreements, abstains, blocks } =
-    sortConsensusVotesByType(votes);
+    sortConsensusVotesByType(filterProposalVotes(votes));
+
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
   const participants = yesVotes + noVotes;
@@ -494,12 +597,18 @@ const hasMajorityVote = (
   { agreementThreshold, quorumEnabled, quorumThreshold, closingAt }: PollConfig,
   memberCount: number,
 ) => {
+  if (!agreementThreshold) {
+    throw new Error('Agreement threshold is not set');
+  }
   if (closingAt && Date.now() < Number(closingAt)) {
     return false;
   }
 
   // Quorum check (if enabled)
   if (quorumEnabled) {
+    if (!quorumThreshold) {
+      throw new Error('Quorum threshold is not set');
+    }
     const quorum = votes.length;
     const requiredQuorum = getRequiredCount(memberCount, quorumThreshold);
     if (quorum < requiredQuorum) {
@@ -508,7 +617,8 @@ const hasMajorityVote = (
   }
 
   // Threshold check (always performed)
-  const { agreements, disagreements } = sortMajorityVotesByType(votes);
+  const proposalVotes = filterProposalVotes(votes);
+  const { agreements, disagreements } = sortMajorityVotesByType(proposalVotes);
   const yesVotes = agreements.length;
   const noVotes = disagreements.length;
   const participants = yesVotes + noVotes;
@@ -523,9 +633,16 @@ const hasMajorityVote = (
   return isRatifiable;
 };
 
-const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
-  const { disagreements, abstains, blocks } = sortConsensusVotesByType(votes);
-  const { disagreementsLimit, abstainsLimit, closingAt } = pollConfig;
+const hasConsent = (
+  votes: Vote[],
+  { disagreementsLimit, abstainsLimit, closingAt }: PollConfig,
+) => {
+  if (!disagreementsLimit || !abstainsLimit) {
+    throw new Error('Missing required fields for consent model');
+  }
+  const { disagreements, abstains, blocks } = sortConsensusVotesByType(
+    filterProposalVotes(votes),
+  );
 
   return (
     Date.now() >= Number(closingAt) &&
@@ -536,7 +653,7 @@ const hasConsent = (votes: Vote[], pollConfig: PollConfig) => {
 };
 
 /** Synchronizes polls with regard to voting duration and ratifiability */
-const synchronizePoll = async (poll: Poll) => {
+const synchronizeProposal = async (poll: Poll) => {
   if (!poll.config.closingAt || Date.now() < Number(poll.config.closingAt)) {
     return;
   }
@@ -554,6 +671,7 @@ const synchronizePoll = async (poll: Poll) => {
 const getMyVotesMap = async (pollIds: string[], currentUserId: string) => {
   const myVotes = await voteRepository.find({
     where: { pollId: In(pollIds), userId: currentUserId },
+    relations: ['pollOptionSelections'],
   });
   return myVotes.reduce<Record<string, Vote>>((result, vote) => {
     result[vote.pollId!] = vote;

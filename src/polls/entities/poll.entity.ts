@@ -23,6 +23,7 @@ import { PollAction } from '../../poll-actions/entities/poll-action.entity';
 import { User } from '../../users/user.entity';
 import { Vote } from '../../votes/vote.entity';
 import { PollConfig } from './poll-config.entity';
+import { PollOption } from './poll-option.entity';
 
 @Entity()
 export class Poll {
@@ -47,7 +48,6 @@ export class Poll {
   @Column({ type: 'enum', default: 'voting', enum: POLL_STAGE })
   stage: PollStage;
 
-  // TODO: Implement basic polls - only proposal is supported for now
   @Column({ type: 'enum', default: 'proposal', enum: POLL_TYPE })
   pollType: PollType;
 
@@ -70,6 +70,11 @@ export class Poll {
     cascade: true,
   })
   images: Image[];
+
+  @OneToMany(() => PollOption, (option) => option.poll, {
+    cascade: true,
+  })
+  options: PollOption[];
 
   @ManyToOne(() => User, (user) => user.polls, {
     onDelete: 'CASCADE',

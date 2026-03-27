@@ -4,7 +4,7 @@ import express from 'express';
 import { authenticate } from '../auth/middleware/authenticate.middleware';
 import { can } from '../common/roles/can.middleware';
 import { messagesRouter } from '../messages/messages.router';
-import { synchronizePolls } from '../polls/middleware/synchronize-polls.middleware';
+import { synchronizeProposals } from '../polls/middleware/synchronize-proposals.middleware';
 import { pollsRouter } from '../polls/polls.router';
 import { setServerMemberActivity } from '../servers/middleware/set-server-member-activity.middleware';
 import {
@@ -29,7 +29,7 @@ channelsRouter.get(
   '/joined',
   authenticate,
   setServerMemberActivity,
-  synchronizePolls,
+  synchronizeProposals,
   getJoinedChannels,
 );
 
@@ -43,7 +43,7 @@ channelsRouter
 
 // Protected routes
 channelsRouter
-  .use(authenticate, setServerMemberActivity, synchronizePolls)
+  .use(authenticate, setServerMemberActivity, synchronizeProposals)
   .post('/', can('create', 'Channel'), validateChannel, createChannel)
   .put('/:channelId', can('update', 'Channel'), validateChannel, updateChannel)
   .delete('/:channelId', can('delete', 'Channel'), deleteChannel);
