@@ -16,13 +16,13 @@ export const getDefaultBot = async (): Promise<Bot> => {
   return bot;
 };
 
-export const ensureDefaultBotExists = async (): Promise<Bot> => {
-  const existingBot = await botRepository.findOne({
+export const ensureDefaultBotExists = async () => {
+  const defaultBotExists = await botRepository.exists({
     where: { name: DEFAULT_BOT_NAME },
   });
 
-  if (existingBot) {
-    return existingBot;
+  if (defaultBotExists) {
+    return;
   }
 
   const newBot = botRepository.create({
@@ -31,6 +31,4 @@ export const ensureDefaultBotExists = async (): Promise<Bot> => {
 
   await botRepository.save(newBot);
   console.info(`Created default bot: ${DEFAULT_BOT_NAME}`);
-
-  return newBot;
 };

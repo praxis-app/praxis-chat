@@ -70,7 +70,7 @@ vi.mock('../../users/user.entity', () => ({
 }));
 
 vi.mock('../../bots/bots.service', () => ({
-  getDefaultBot: vi.fn().mockResolvedValue({
+  ensureDefaultBotExists: vi.fn().mockResolvedValue({
     id: 'bot-1',
     name: 'praxis-bot',
   }),

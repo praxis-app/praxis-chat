@@ -70,6 +70,17 @@ export default tseslint.config(
       },
     },
   },
+  // ES module Node.js scripts
+  {
+    files: ['**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   // Browser JS files
   {
     files: ['view/public/**/*.js'],

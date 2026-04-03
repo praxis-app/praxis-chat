@@ -2,17 +2,17 @@ import { CommandStatus } from '@common/commands/command.types';
 import { PubSubMessageType } from '@common/pub-sub/pub-sub.constants';
 import * as dotenv from 'dotenv';
 import { IsNull, Not } from 'typeorm';
-import { getDefaultBot } from '../bots/bots.service';
+import * as botsService from '../bots/bots.service';
 import * as channelsService from '../channels/channels.service';
 import * as commandsService from '../commands/commands.service';
-import { sanitizeText } from '../common/text.utils';
 import { decryptText, encryptText } from '../common/encryption.utils';
+import { sanitizeText } from '../common/text.utils';
 import { dataSource } from '../database/data-source';
 import { Image } from '../images/entities/image.entity';
+import * as instanceService from '../instance/instance.service';
 import * as pubSubService from '../pub-sub/pub-sub.service';
 import { User } from '../users/user.entity';
 import * as usersService from '../users/users.service';
-import * as instanceService from '../instance/instance.service';
 import { Message } from './message.entity';
 import { CreateMessageDto } from './message.types';
 
@@ -238,13 +238,13 @@ export const createMessage = async (
   return messagePayload;
 };
 
-const createBotMessage = async (
+export const createBotMessage = async (
   serverId: string,
   channelId: string,
   body: string,
   commandStatus: CommandStatus | null = null,
 ) => {
-  const defaultBot = await getDefaultBot();
+  const defaultBot = await botsService.getDefaultBot();
   const messageData: Partial<Message> = {
     userId: null,
     botId: defaultBot.id,
