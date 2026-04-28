@@ -1,5 +1,6 @@
 mod cli;
 mod db;
+mod integrity;
 mod poll;
 mod routes;
 mod schema;
@@ -11,6 +12,7 @@ use sqlx::postgres::PgPoolOptions;
 
 use cli::{Cli, Commands};
 use db::build_database_url_from_env;
+use integrity::run_integrity_check;
 use poll::run_poll_stats;
 use routes::run_routes;
 use schema::run_schema;
@@ -57,6 +59,10 @@ async fn main() -> Result<()> {
         }
         Commands::Schema => {
             run_schema(&pool).await?;
+        }
+        Commands::IntegrityCheck => {
+            let content_path = std::path::Path::new("../content");
+            run_integrity_check(&pool, content_path).await?;
         }
         Commands::Routes { .. } => unreachable!(),
     }

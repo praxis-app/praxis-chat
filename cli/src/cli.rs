@@ -44,4 +44,6 @@ pub enum Commands {
         #[arg(long)]
         tree: bool,
     },
+    /// Run data integrity checks across the database and other resources
+    IntegrityCheck,
 }
