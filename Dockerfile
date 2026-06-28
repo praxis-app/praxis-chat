@@ -2,10 +2,8 @@ FROM node:24.12.0-alpine AS build_stage
 
 RUN apk add --update python3 build-base
 
-COPY package.json /app
-COPY package-lock.json /app
-
 WORKDIR /app
+COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 COPY src /app/src
