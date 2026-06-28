@@ -4,7 +4,7 @@ RUN apk add --update python3 build-base
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --verbose --foreground-scripts --no-audit --no-fund
 
 COPY src /app/src
 COPY view /app/view
