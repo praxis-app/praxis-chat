@@ -2,22 +2,23 @@ FROM node:24.12.0-alpine AS build_stage
 
 RUN apk add --update python3 build-base
 
+COPY package.json /app
+COPY package-lock.json /app
+
+WORKDIR /app
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+
 COPY src /app/src
 COPY view /app/view
 COPY common /app/common
 COPY content /app/content
-
-COPY package.json /app
-COPY package-lock.json /app
+COPY cli /app/cli
 COPY tsconfig.json /app
 COPY tsconfig.src.json /app
 COPY tsconfig.view.json /app
 COPY vite.config.mts /app
 COPY .eslintrc.cjs /app
 COPY start-prod.sh /app
-
-WORKDIR /app
-RUN npm ci
 
 # Build args
 ARG NODE_ENV
