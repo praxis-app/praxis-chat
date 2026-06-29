@@ -1,5 +1,5 @@
 import { Commands } from '@common/commands/command.constants';
-import Bull from 'bull';
+import { Job, Worker } from 'bullmq';
 import * as dotenv from 'dotenv';
 import {
   handleCompromisesCommand,
@@ -9,7 +9,11 @@ import {
   handleSummaryCommand,
 } from '../chat-analysis/chat-analysis.commands';
 import * as messagesService from '../messages/messages.service';
-import { commandQueue } from './command-queue';
+import {
+  commandQueue,
+  commandQueueConnection,
+  commandQueuePrefix,
+} from './command-queue';
 import { CommandContext, CommandJobData } from './command.types';
 
 dotenv.config();
@@ -37,38 +41,57 @@ export const handleCommandExecution = async (
   return await commandHandlers[command](context);
 };
 
+let commandWorker: Worker<CommandJobData> | undefined;
+
 export const startCommandProcessor = () => {
-  commandQueue.process(async (job: Bull.Job<CommandJobData>) => {
-    const { serverId, channelId, messageBody, botMessageId } = job.data;
+  if (commandWorker) {
+    return commandWorker;
+  }
 
-    try {
-      const result = await handleCommandExecution({
-        serverId,
-        channelId,
-        messageBody,
-      });
+  commandWorker = new Worker<CommandJobData>(
+    commandQueue.name,
+    async (job: Job<CommandJobData>) => {
+      const { serverId, channelId, messageBody, botMessageId } = job.data;
 
-      await messagesService.updateBotMessage(serverId, botMessageId, {
-        body: result,
-        commandStatus: 'completed',
-      });
+      try {
+        const result = await handleCommandExecution({
+          serverId,
+          channelId,
+          messageBody,
+        });
 
-      return { success: true, result };
-    } catch (error) {
-      console.error('Error processing command:', error);
+        await messagesService.updateBotMessage(serverId, botMessageId, {
+          body: result,
+          commandStatus: 'completed',
+        });
 
-      await messagesService.updateBotMessage(serverId, botMessageId, {
-        body: 'Sorry, I encountered an error while processing your command. Please try again.',
-        commandStatus: 'failed',
-      });
+        return { success: true, result };
+      } catch (error) {
+        console.error('Error processing command:', error);
 
-      throw error;
-    }
+        await messagesService.updateBotMessage(serverId, botMessageId, {
+          body: 'Sorry, I encountered an error while processing your command. Please try again.',
+          commandStatus: 'failed',
+        });
+
+        throw error;
+      }
+    },
+    {
+      connection: commandQueueConnection,
+      prefix: commandQueuePrefix,
+    },
+  );
+
+  commandWorker.on('error', (error) => {
+    console.error('Command worker error:', error);
   });
+
+  return commandWorker;
 };
 
 export const queueCommandJob = async (data: CommandJobData) => {
-  const job = await commandQueue.add(data, {
+  const job = await commandQueue.add('execute-command', data, {
     priority: 1,
   });
   return job;
