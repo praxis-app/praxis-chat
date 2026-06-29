@@ -21,7 +21,6 @@ COPY start-prod.sh /app
 # Build args
 ARG NODE_ENV
 ARG VITE_SERVER_PORT
-ARG DB_MIGRATIONS
 
 # Build the app
 RUN npm run build
@@ -36,5 +35,4 @@ RUN rm -rf view
 FROM node:24.12.0-alpine AS runtime_stage
 
 COPY --from=build_stage /app /app
-ENV DB_MIGRATIONS=${DB_MIGRATIONS}
 CMD [ "sh", "/app/start-prod.sh" ]
